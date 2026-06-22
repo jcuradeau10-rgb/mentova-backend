@@ -1809,6 +1809,17 @@ async def like_community_post(
         {"$set": {"likes": likes}}
     )
     
+    # Send notification to post author on like (not self-like)
+    if action == "liked" and post.get("author_id") != user_id:
+        liker_name = current_user.get("name", "Quelqu'un")
+        await send_notification_to_user(
+            post["author_id"],
+            f"{liker_name} a aimé votre publication",
+            "post_like",
+            {"post_id": post_id},
+            "❤️ Nouveau like"
+        )
+    
     return {
         "success": True,
         "action": action,
@@ -2145,6 +2156,18 @@ async def add_comment(
         {"id": current_user["id"]},
         {"$inc": {"community_score": 2}}
     )
+    
+    # Send notification to post author on comment (not self-comment)
+    if post.get("author_id") != current_user["id"]:
+        commenter_name = current_user.get("name", "Quelqu'un")
+        comment_preview = comment_data.content[:50] + ("..." if len(comment_data.content) > 50 else "")
+        await send_notification_to_user(
+            post["author_id"],
+            f"{commenter_name} a commenté: {comment_preview}",
+            "post_comment",
+            {"post_id": post_id, "comment_id": comment_id},
+            "💬 Nouveau commentaire"
+        )
     
     return {
         "success": True,
@@ -6571,6 +6594,15 @@ async def follow_user(user_id: str, current_user: dict = Depends(get_current_use
             "following_id": user_id,
             "created_at": datetime.now(timezone.utc).isoformat()
         })
+        # Notify the followed user
+        follower_name = current_user.get("name", "Quelqu'un")
+        await send_notification_to_user(
+            user_id,
+            f"{follower_name} vous suit maintenant",
+            "follow",
+            {"follower_id": current_user["id"]},
+            "Nouveau follower"
+        )
         return {"success": True, "action": "followed"}
 
 @api_router.get("/users/{user_id}/followers")
@@ -6722,45 +6754,8 @@ async def send_message(user_id: str, message: MessageCreate, current_user: dict 
     
     return {"success": True, "data": {**msg, "_id": None}}
 
-# ==================== NOTIFICATIONS ====================
-
-@api_router.get("/notifications")
-async def get_notifications(limit: int = 50, current_user: dict = Depends(get_current_user)):
-    """Get user's notifications"""
-    notifications = await db.notifications.find(
-        {"user_id": current_user["id"]},
-        {"_id": 0}
-    ).sort("created_at", -1).limit(limit).to_list(limit)
-    
-    unread_count = await db.notifications.count_documents({
-        "user_id": current_user["id"],
-        "read": False
-    })
-    
-    return {
-        "success": True,
-        "data": notifications,
-        "unread_count": unread_count
-    }
-
-@api_router.post("/notifications/read")
-async def mark_notifications_read(current_user: dict = Depends(get_current_user)):
-    """Mark all notifications as read"""
-    await db.notifications.update_many(
-        {"user_id": current_user["id"], "read": False},
-        {"$set": {"read": True}}
-    )
-    return {"success": True, "message": "Notifications marquées comme lues"}
-
-@api_router.post("/notifications/register-token")
-async def register_push_token(token: str, current_user: dict = Depends(get_current_user)):
-    """Register push notification token"""
-    await db.push_tokens.update_one(
-        {"user_id": current_user["id"]},
-        {"$set": {"token": token, "updated_at": datetime.now(timezone.utc).isoformat()}},
-        upsert=True
-    )
-    return {"success": True, "message": "Token enregistré"}
+# ==================== NOTIFICATIONS (uses /notifications/history and /notifications/mark-read) ====================
+# Primary notification endpoints are defined above (lines ~5963-6009) using is_read field
 
 # ==================== PRICE ALERT CHECKER ====================
 

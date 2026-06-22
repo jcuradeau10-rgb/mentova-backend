@@ -34,17 +34,18 @@ const NOTIFICATION_ICONS: Record<string, { icon: string; colors: string[] }> = {
   post_comment: { icon: 'chatbubble', colors: ['#06B6D4', '#0891B2'] },
   achievement: { icon: 'trophy', colors: ['#F59E0B', '#D97706'] },
   vip_announcement: { icon: 'megaphone', colors: ['#8B5CF6', '#7C3AED'] },
-  // Booking notifications
+  new_message: { icon: 'mail', colors: ['#3B82F6', '#2563EB'] },
+  admin_report: { icon: 'flag', colors: ['#F97316', '#EA580C'] },
+  post_report: { icon: 'flag', colors: ['#F97316', '#EA580C'] },
   new_booking: { icon: 'calendar', colors: ['#10B981', '#059669'] },
   booking_confirmed: { icon: 'checkmark-circle', colors: ['#10B981', '#059669'] },
   booking_cancelled: { icon: 'close-circle', colors: ['#EF4444', '#DC2626'] },
   booking_status: { icon: 'calendar', colors: ['#7C3AED', '#6D28D9'] },
-  // Pro notifications
   pro_approved: { icon: 'shield-checkmark', colors: ['#10B981', '#059669'] },
   pro_rejected: { icon: 'shield', colors: ['#EF4444', '#DC2626'] },
-  // Sale notifications
   new_sale: { icon: 'cash', colors: ['#10B981', '#059669'] },
   new_offer: { icon: 'storefront', colors: ['#7C3AED', '#6D28D9'] },
+  follow: { icon: 'person-add', colors: ['#8B5CF6', '#7C3AED'] },
   default: { icon: 'notifications', colors: ['#6B7280', '#4B5563'] },
 };
 
@@ -134,12 +135,18 @@ export default function NotificationCenter() {
       case 'story_reaction':
       case 'post_like':
       case 'post_comment':
-        router.push('/vip/hub');
+        router.push('/(tabs)/community');
+        break;
+      case 'new_message':
+        router.push('/messages');
         break;
       case 'achievement':
         router.push('/vip/hub');
         break;
-      // Booking notifications
+      case 'admin_report':
+      case 'post_report':
+        router.push('/admin');
+        break;
       case 'new_booking':
       case 'booking_status':
         router.push('/pro/dashboard');
@@ -148,14 +155,12 @@ export default function NotificationCenter() {
       case 'booking_cancelled':
         router.push('/bookings');
         break;
-      // Pro notifications
       case 'pro_approved':
         router.push('/pro/dashboard');
         break;
       case 'pro_rejected':
         router.push('/pro/apply');
         break;
-      // Feedback notifications
       case 'feedback':
         router.push('/admin');
         break;
@@ -164,6 +169,9 @@ export default function NotificationCenter() {
         break;
       case 'new_offer':
         router.push('/marketplace');
+        break;
+      case 'follow':
+        router.push('/profile');
         break;
       default:
         break;
@@ -248,8 +256,10 @@ export default function NotificationCenter() {
               {[
                 { id: 'all', label: t('notifications.all'), icon: 'apps' },
                 { id: 'unread', label: t('notifications.unread'), icon: 'mail-unread' },
+                { id: 'new_message', label: 'Messages', icon: 'mail' },
                 { id: 'price_alert', label: t('notifications.alerts'), icon: 'trending-up' },
                 { id: 'post_comment', label: t('notifications.social'), icon: 'chatbubble' },
+                { id: 'post_like', label: 'Likes', icon: 'heart' },
                 { id: 'achievement', label: t('notifications.badges'), icon: 'trophy' },
               ].map((f) => (
                 <TouchableOpacity
