@@ -1,16 +1,10 @@
 headersOrigin = "config"
 redirectsOrigin = "config"
+plugins = []
 
 [functions]
 
 [functions."*"]
-
-[[plugins]]
-origin = "ui"
-package = "@netlify/plugin-lighthouse"
-pinned_version = "6"
-
-[plugins.inputs]
 
 [build]
 publish = "/app/static-site"

@@ -14,19 +14,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
-            --bg: #050505;
-            --bg-secondary: #111111;
-            --bg-surface: #1A1A1A;
-            --yellow: #FACC15;
-            --yellow-hover: #EAB308;
-            --blue: #3B82F6;
+            --bg: #06060F;
+            --bg-secondary: #0D0D1F;
+            --bg-surface: #12122A;
+            --purple: #7C3AED;
+            --purple-light: #A78BFA;
+            --purple-dark: #5B21B6;
+            --green: #00D9A5;
+            --gold: #FFD700;
             --red: #EF4444;
-            --green: #22C55E;
+            --blue: #06B6D4;
             --text: #FFFFFF;
             --text-secondary: #A1A1AA;
-            --text-muted: #52525B;
-            --border: rgba(63,63,70,0.5);
-            --border-active: rgba(250,204,21,0.5);
+            --text-muted: #5A5A6E;
+            --border: rgba(124,58,237,0.15);
+            --border-active: rgba(124,58,237,0.5);
             --radius: 16px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -44,8 +46,8 @@
             letter-spacing: -0.02em;
             line-height: 0.95;
         }
-        a { color: var(--yellow); text-decoration: none; transition: color 0.2s; }
-        a:hover { color: var(--yellow-hover); }
+        a { color: var(--purple-light); text-decoration: none; transition: color 0.2s; }
+        a:hover { color: var(--purple-dark); }
         .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
         @media (min-width: 768px) { .container { padding: 0 48px; } }
         @media (min-width: 1024px) { .container { padding: 0 96px; } }
@@ -72,7 +74,7 @@
             background: rgba(5,5,5,0.6);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border-bottom: 1px solid rgba(63,63,70,0.3);
+            border-bottom: 1px solid rgba(124,58,237,0.1);
             transition: all 0.3s;
         }
         header .container {
@@ -88,7 +90,7 @@
             color: var(--text);
             letter-spacing: -0.03em;
         }
-        .logo span { color: var(--yellow); }
+        .logo span { color: var(--purple-light); }
         .nav-links {
             display: flex;
             gap: 32px;
@@ -124,15 +126,15 @@
             transition: all 0.2s;
         }
         .lang-switch a.active {
-            background: var(--yellow);
-            color: #000;
+            background: var(--purple);
+            color: #fff;
         }
         .btn-primary {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: var(--yellow);
-            color: #000;
+            background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+            color: #fff;
             padding: 10px 24px;
             border-radius: 10px;
             font-weight: 700;
@@ -144,10 +146,10 @@
             letter-spacing: 0.05em;
         }
         .btn-primary:hover {
-            background: var(--yellow-hover);
-            color: #000;
+            background: linear-gradient(135deg, var(--purple-dark), var(--purple));
+            color: #fff;
             transform: translateY(-1px);
-            box-shadow: 0 8px 32px rgba(250,204,21,0.2);
+            box-shadow: 0 8px 32px rgba(124,58,237,0.3);
         }
         .btn-outline {
             display: inline-flex;
@@ -165,8 +167,8 @@
             letter-spacing: 0.05em;
         }
         .btn-outline:hover {
-            border-color: var(--yellow);
-            color: var(--yellow);
+            border-color: var(--purple-light);
+            color: var(--purple-light);
             transform: translateY(-1px);
         }
         .nav-toggle { display: none; background: none; border: none; color: var(--text); font-size: 22px; cursor: pointer; }
@@ -237,13 +239,13 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(250,204,21,0.08);
-            border: 1px solid rgba(250,204,21,0.2);
+            background: rgba(124,58,237,0.08);
+            border: 1px solid rgba(124,58,237,0.2);
             padding: 8px 16px;
             border-radius: 50px;
             font-size: 12px;
             font-weight: 700;
-            color: var(--yellow);
+            color: var(--purple-light);
             text-transform: uppercase;
             letter-spacing: 0.1em;
             margin-bottom: 32px;
@@ -255,7 +257,7 @@
             text-transform: uppercase;
         }
         .hero h1 .accent {
-            color: var(--yellow);
+            color: var(--purple-light);
         }
         .hero-desc {
             font-size: 17px;
@@ -303,7 +305,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            color: var(--yellow);
+            color: var(--purple-light);
             margin-bottom: 8px;
         }
         .countdown-date {
@@ -339,18 +341,18 @@
             color: var(--text-muted);
             font-weight: 700;
         }
-        .countdown-spots {
+        .countdown-spots { color: var(--gold);
             font-size: 14px;
             font-weight: 700;
-            color: var(--yellow);
+            color: var(--purple-light);
         }
 
         /* ═══ MARQUEE ═══ */
         .marquee-section {
             overflow: hidden;
             padding: 32px 0;
-            border-top: 1px solid rgba(63,63,70,0.3);
-            border-bottom: 1px solid rgba(63,63,70,0.3);
+            border-top: 1px solid rgba(124,58,237,0.1);
+            border-bottom: 1px solid rgba(124,58,237,0.1);
         }
         .marquee-track {
             display: flex;
@@ -362,13 +364,13 @@
             font-size: clamp(48px, 8vw, 100px);
             font-weight: 900;
             color: transparent;
-            -webkit-text-stroke: 1px rgba(63,63,70,0.4);
+            -webkit-text-stroke: 1px rgba(124,58,237,0.3);
             text-transform: uppercase;
             padding: 0 40px;
             flex-shrink: 0;
         }
         .marquee-text .highlight {
-            -webkit-text-stroke-color: rgba(250,204,21,0.3);
+            -webkit-text-stroke-color: rgba(124,58,237,0.3);
         }
         @keyframes marqueeScroll {
             0% { transform: translateX(0); }
@@ -425,7 +427,7 @@
             overflow: hidden;
         }
         .bento-card:hover {
-            border-color: rgba(250,204,21,0.3);
+            border-color: rgba(124,58,237,0.3);
             transform: translateY(-4px);
         }
         .bento-card .card-icon {
@@ -530,7 +532,7 @@
             font-family: 'Unbounded', cursive;
             font-size: 12px;
             font-weight: 700;
-            color: var(--yellow);
+            color: var(--purple-light);
         }
         .terminal-body {
             padding: 24px;
@@ -544,7 +546,7 @@
             animation: termFade 0.5s ease forwards;
             opacity: 0;
         }
-        .t-prompt { color: var(--yellow); font-weight: 700; }
+        .t-prompt { color: var(--purple-light); font-weight: 700; }
         .t-response { color: var(--text-secondary); }
         .t-highlight { color: var(--green); font-weight: 700; }
         .t-dim { color: var(--text-muted); }
@@ -559,7 +561,7 @@
         .t-progress-fill {
             height: 100%;
             border-radius: 2px;
-            background: linear-gradient(90deg, var(--yellow), var(--green));
+            background: linear-gradient(90deg, var(--purple-light), var(--green));
         }
         @keyframes termFade {
             from { opacity: 0; transform: translateY(8px); }
@@ -601,16 +603,16 @@
         .price-card.vip {
             border-color: transparent;
             background: linear-gradient(var(--bg), var(--bg)) padding-box,
-                        linear-gradient(135deg, var(--yellow), var(--green), var(--yellow)) border-box;
+                        linear-gradient(135deg, var(--purple-light), var(--green), var(--purple-light)) border-box;
             border: 2px solid transparent;
             animation: tracingBeam 4s linear infinite;
         }
         @keyframes tracingBeam {
-            0% { background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(0deg, var(--yellow), transparent 50%, var(--yellow)) border-box; }
-            25% { background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(90deg, var(--yellow), transparent 50%, var(--yellow)) border-box; }
-            50% { background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(180deg, var(--yellow), transparent 50%, var(--yellow)) border-box; }
-            75% { background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(270deg, var(--yellow), transparent 50%, var(--yellow)) border-box; }
-            100% { background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(360deg, var(--yellow), transparent 50%, var(--yellow)) border-box; }
+            0% { background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(0deg, var(--purple-light), transparent 50%, var(--purple-light)) border-box; }
+            25% { background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(90deg, var(--purple-light), transparent 50%, var(--purple-light)) border-box; }
+            50% { background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(180deg, var(--purple-light), transparent 50%, var(--purple-light)) border-box; }
+            75% { background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(270deg, var(--purple-light), transparent 50%, var(--purple-light)) border-box; }
+            100% { background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(360deg, var(--purple-light), transparent 50%, var(--purple-light)) border-box; }
         }
         .price-label {
             font-family: 'Unbounded', cursive;
@@ -621,7 +623,7 @@
             margin-bottom: 8px;
         }
         .price-label.free-label { color: var(--text-muted); }
-        .price-label.vip-label { color: var(--yellow); }
+        .price-label.vip-label { color: var(--gold); }
         .price-badge {
             display: inline-block;
             background: rgba(239,68,68,0.12);
@@ -651,7 +653,7 @@
             display: inline-block;
         }
         .price-spots.hot { background: rgba(239,68,68,0.1); color: var(--red); }
-        .price-spots.normal { background: rgba(250,204,21,0.1); color: var(--yellow); }
+        .price-spots.normal { background: rgba(124,58,237,0.1); color: var(--gold); }
         .price-features {
             list-style: none;
             margin-bottom: 28px;
@@ -675,10 +677,10 @@
             color: var(--text-muted);
             line-height: 1.6;
             padding: 14px;
-            background: rgba(250,204,21,0.04);
+            background: rgba(124,58,237,0.04);
             border-radius: 12px;
             margin-bottom: 20px;
-            border: 1px solid rgba(250,204,21,0.1);
+            border: 1px solid rgba(124,58,237,0.1);
         }
 
         /* ═══ REGISTRATION ═══ */
@@ -706,7 +708,7 @@
         }
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--yellow), var(--green));
+            background: linear-gradient(90deg, var(--purple-light), var(--green));
             border-radius: 6px;
             transition: width 0.6s ease;
         }
@@ -732,7 +734,7 @@
             outline: none;
             transition: border-color 0.2s;
         }
-        .form-input:focus { border-color: var(--yellow); }
+        .form-input:focus { border-color: var(--purple-light); }
         .form-select {
             width: 100%;
             padding: 14px 16px;
@@ -752,12 +754,12 @@
             gap: 10px;
             margin: 20px 0;
         }
-        .form-checkbox input { margin-top: 3px; accent-color: var(--yellow); width: 18px; height: 18px; }
+        .form-checkbox input { margin-top: 3px; accent-color: var(--purple-light); width: 18px; height: 18px; }
         .form-checkbox label { font-size: 13px; color: var(--text-secondary); line-height: 1.5; cursor: pointer; }
         .form-submit {
             width: 100%;
             padding: 16px;
-            background: var(--yellow);
+            background: var(--purple);
             color: #000;
             border: none;
             border-radius: 14px;
@@ -769,7 +771,7 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-        .form-submit:hover { background: var(--yellow-hover); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(250,204,21,0.2); }
+        .form-submit:hover { background: var(--purple-dark); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,58,237,0.2); }
         .form-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .form-legal { font-size: 11px; color: var(--text-muted); line-height: 1.6; margin-top: 16px; text-align: center; }
         .success-box, .error-box { padding: 24px; border-radius: 16px; text-align: center; margin-top: 20px; display: none; }
@@ -821,11 +823,11 @@
             border-radius: 20px;
             transition: all 0.3s;
         }
-        .ref-step:hover { border-color: rgba(250,204,21,0.3); transform: translateY(-4px); }
+        .ref-step:hover { border-color: rgba(124,58,237,0.3); transform: translateY(-4px); }
         .ref-step-num {
             width: 44px; height: 44px;
             border-radius: 50%;
-            background: var(--yellow);
+            background: var(--purple);
             color: #000;
             display: inline-flex;
             align-items: center;
@@ -856,7 +858,7 @@
             font-weight: 900;
             color: var(--text);
         }
-        .ref-tier .reward { font-size: 13px; color: var(--yellow); font-weight: 700; }
+        .ref-tier .reward { font-size: 13px; color: var(--purple-light); font-weight: 700; }
 
         /* ═══ FOUNDER ═══ */
         .founder-section {
@@ -877,7 +879,7 @@
         .founder-photo {
             width: 180px; height: 180px;
             border-radius: 50%;
-            border: 3px solid var(--yellow);
+            border: 3px solid var(--purple-light);
             overflow: hidden;
             margin: 0 auto;
         }
@@ -909,9 +911,9 @@
             font-weight: 600;
             transition: color 0.2s;
         }
-        .faq-q:hover { color: var(--yellow); }
+        .faq-q:hover { color: var(--purple-light); }
         .faq-q i { transition: transform 0.3s; color: var(--text-muted); }
-        .faq-q.open i { transform: rotate(180deg); color: var(--yellow); }
+        .faq-q.open i { transform: rotate(180deg); color: var(--purple-light); }
         .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s; }
         .faq-a.open { max-height: 300px; padding-bottom: 22px; }
         .faq-a p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
@@ -920,7 +922,7 @@
         .final-cta {
             text-align: center;
             padding: 120px 0;
-            background: radial-gradient(ellipse at center, rgba(250,204,21,0.05) 0%, transparent 70%);
+            background: radial-gradient(ellipse at center, rgba(124,58,237,0.05) 0%, transparent 70%);
         }
         .final-cta h2 {
             font-size: clamp(28px, 4.5vw, 52px);
@@ -955,7 +957,7 @@
             font-weight: 900;
             margin-bottom: 12px;
         }
-        .footer-brand-name span { color: var(--yellow); }
+        .footer-brand-name span { color: var(--purple-light); }
         .footer-brand p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
         .footer-col h4 {
             font-size: 11px;
@@ -979,7 +981,7 @@
             font-size: clamp(48px, 8vw, 96px);
             font-weight: 900;
             color: transparent;
-            -webkit-text-stroke: 1px rgba(63,63,70,0.3);
+            -webkit-text-stroke: 1px rgba(124,58,237,0.1);
             text-transform: uppercase;
             text-align: center;
             margin-bottom: 48px;
@@ -1040,10 +1042,10 @@
     <a href="/blog">Blog</a>
     <a href="/ambassadors">Ambassadors</a>
     <a href="/mentors">Become a Mentor</a>
-    <a href="https://app.mentova-academy.com/login" style="border:1px solid var(--yellow);padding:12px 32px;border-radius:12px;color:var(--yellow)">Log In</a>
+    <a href="https://app.mentova-academy.com/login" style="border:1px solid var(--purple-light);padding:12px 32px;border-radius:12px;color:var(--purple-light)">Log In</a>
     <a href="#pre-register" onclick="this.parentElement.classList.remove('open')" class="btn-primary">Get Started</a>
     <div style="display:flex;gap:8px;margin-top:8px;">
-        <a href="/" style="padding:6px 14px;border-radius:8px;background:var(--yellow);color:#000;font-size:13px;font-weight:700;">EN</a>
+        <a href="/" style="padding:6px 14px;border-radius:8px;background:var(--purple-light);color:#000;font-size:13px;font-weight:700;">EN</a>
         <a href="/fr/" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);color:var(--text-muted);font-size:13px;font-weight:700;">FR</a>
         <a href="/es/" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);color:var(--text-muted);font-size:13px;font-weight:700;">ES</a>
     </div>
@@ -1056,7 +1058,7 @@
     <div class="container">
         <div class="hero-content">
             <div class="hero-tag"><i class="fas fa-bolt"></i> Launching August 10, 2026</div>
-            <h1>Learn Crypto.<br><span class="accent">Your Way.</span></h1>
+            <h1>Learn Crypto.<br><span class="accent" style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Your Way.</span></h1>
             <p class="hero-desc">AI-powered adaptive learning, verified mentors, pro trading tools, and a multilingual community. Mentova is the social network for crypto beginners.</p>
             <div class="hero-actions">
                 <a href="#pre-register" class="btn-primary" style="padding:16px 36px;font-size:15px;" data-testid="hero-cta-button">
@@ -1100,11 +1102,11 @@
 <section class="features-section" id="features" data-testid="features-section">
     <div class="container">
         <div class="section-label">Why Mentova</div>
-        <h2 class="section-title">Everything you need<br>to start <span style="color:var(--yellow)">right</span>.</h2>
+        <h2 class="section-title">Everything you need<br>to start <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">right</span>.</h2>
         <p class="section-desc">Most beginners lose money before they learn the basics. Mentova changes that with structured education, real tools, and a community that grows with you.</p>
         <div class="bento-grid">
             <div class="bento-card bento-1 fade-up">
-                <div class="card-icon" style="background:rgba(250,204,21,0.1)"><i class="fas fa-brain" style="color:var(--yellow)"></i></div>
+                <div class="card-icon" style="background:rgba(124,58,237,0.1)"><i class="fas fa-brain" style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;"></i></div>
                 <h3>Atlas AI Mentor</h3>
                 <p>Your personal AI tutor adapts to your level in real time. It detects your strengths, fills your gaps, and builds a personalized learning path from beginner to advanced. Available 24/7 in 3 languages.</p>
             </div>
@@ -1138,11 +1140,11 @@
         <div class="ai-grid">
             <div>
                 <div class="section-label">Artificial Intelligence</div>
-                <h2 class="section-title">Atlas AI<br>learns <span style="color:var(--yellow)">at your pace</span>.</h2>
+                <h2 class="section-title">Atlas AI<br>learns <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">at your pace</span>.</h2>
                 <p class="section-desc" style="margin-bottom:0;">Forget generic courses nobody finishes. Atlas analyzes every answer, adapts content in real time, and follows you from first concept to advanced trading.</p>
                 <div class="ai-features-list">
                     <div class="ai-feat">
-                        <div class="ai-feat-icon" style="background:rgba(250,204,21,0.1)"><i class="fas fa-brain" style="color:var(--yellow)"></i></div>
+                        <div class="ai-feat-icon" style="background:rgba(124,58,237,0.1)"><i class="fas fa-brain" style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;"></i></div>
                         <div><h4>Adaptive Learning</h4><p>Correct answers increase difficulty. Struggling? It rephrases and guides you step by step.</p></div>
                     </div>
                     <div class="ai-feat">
@@ -1193,7 +1195,7 @@
 <section class="screenshots-section" data-testid="screenshots-section">
     <div class="container">
         <div class="section-label">App Preview</div>
-        <h2 class="section-title">Built for <span style="color:var(--yellow)">mobile</span>.</h2>
+        <h2 class="section-title">Built for <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">mobile</span>.</h2>
         <p class="section-desc">Not just tools. A real community with mentors, AI, and everything you need to learn and grow.</p>
         <div class="screenshots-scroll">
             <div class="screenshot-mock"><img src="screenshots/app_screen_1.png" alt="Mentova News" loading="lazy"></div>
@@ -1209,7 +1211,7 @@
     <div class="container">
         <div style="text-align:center;">
             <div class="section-label">Pricing</div>
-            <h2 class="section-title">Simple. <span style="color:var(--yellow)">Transparent.</span></h2>
+            <h2 class="section-title">Simple. <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Transparent.</span></h2>
             <p class="section-desc" style="margin:0 auto 56px;text-align:center;">No hidden fees. Cancel anytime from your Apple or Google account.</p>
         </div>
         <div class="pricing-grid">
@@ -1257,7 +1259,7 @@
         <div class="register-box">
             <div style="text-align:center;">
                 <div class="section-label">Reserve</div>
-                <h2 class="section-title" id="preregTitle">Lock your<br><span style="color:var(--yellow)">founding spot</span>.</h2>
+                <h2 class="section-title" id="preregTitle">Lock your<br><span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">founding spot</span>.</h2>
                 <p class="section-desc" style="margin:0 auto 40px;text-align:center;" id="preregSub">Free to reserve. $9.99/mo activates at launch. 500 spots. First come, first served.</p>
             </div>
 
@@ -1311,7 +1313,7 @@
     <div class="container">
         <div style="text-align:center;">
             <div class="section-label">Referral Program</div>
-            <h2 class="section-title">Refer friends.<br><span style="color:var(--yellow)">Earn free months.</span></h2>
+            <h2 class="section-title">Refer friends.<br><span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Earn free months.</span></h2>
             <p class="section-desc" style="margin:0 auto 56px;text-align:center;">Every 5 friends who register = 1 free VIP month. No limit.</p>
         </div>
         <div class="referral-steps">
@@ -1332,7 +1334,7 @@
 <section class="founder-section" data-testid="founder-section">
     <div class="container">
         <div class="section-label" style="text-align:center;">Our Story</div>
-        <h2 class="section-title" style="text-align:center;margin-bottom:48px;">Built by someone<br>who <span style="color:var(--yellow)">gets it</span>.</h2>
+        <h2 class="section-title" style="text-align:center;margin-bottom:48px;">Built by someone<br>who <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">gets it</span>.</h2>
         <div class="founder-grid">
             <div class="founder-photo">
                 <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&q=80" alt="Justin, Founder">
@@ -1350,7 +1352,7 @@
     <div class="container">
         <div style="text-align:center;">
             <div class="section-label">FAQ</div>
-            <h2 class="section-title" style="margin-bottom:56px;">Frequently asked<br><span style="color:var(--yellow)">questions</span>.</h2>
+            <h2 class="section-title" style="margin-bottom:56px;">Frequently asked<br><span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">questions</span>.</h2>
         </div>
         <div class="faq-list">
             <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is Mentova available outside Canada?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><p>Yes. Worldwide access in French, English, and Spanish.</p></div></div>
@@ -1369,7 +1371,7 @@
 <!-- ═══ FINAL CTA ═══ -->
 <div class="final-cta" data-testid="final-cta">
     <div class="container">
-        <h2>Your first step<br>costs <span style="color:var(--yellow)">nothing</span>.</h2>
+        <h2>Your first step<br>costs <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">nothing</span>.</h2>
         <p>Reserve your spot. Lock your price. Keep your Founding Member badge forever.</p>
         <a href="#pre-register" class="btn-primary" style="padding:18px 44px;font-size:16px;" data-testid="final-cta-button">Reserve My Founding Spot <i class="fas fa-arrow-right"></i></a>
     </div>
@@ -1517,7 +1519,7 @@ document.getElementById('preregForm').addEventListener('submit', async function(
         const data = await r.json();
 
         if (data.error === 'already_registered') {
-            document.getElementById('errorBox').innerHTML = 'Already registered! <a href="https://app.mentova-academy.com/login" style="color:var(--yellow)">Log in to the app</a>';
+            document.getElementById('errorBox').innerHTML = 'Already registered! <a href="https://app.mentova-academy.com/login" style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Log in to the app</a>';
             document.getElementById('errorBox').style.display = 'block';
         } else if (data.error === 'list_full') {
             document.getElementById('errorBox').textContent = 'All founding spots are taken.';
@@ -1528,7 +1530,7 @@ document.getElementById('preregForm').addEventListener('submit', async function(
         } else if (data.success) {
             document.getElementById('preregForm').style.display = 'none';
             document.getElementById('successTitle').textContent = 'Founding Member #' + data.founder_number + '/' + (data.wave === 2 ? '1000' : '500');
-            document.getElementById('successMsg').innerHTML = 'Your Founding Member badge is yours forever.<br><br>Check your email for your referral link and dashboard access.<br><br><strong>Referral link:</strong><br><code style="background:rgba(250,204,21,0.1);padding:6px 12px;border-radius:6px;color:var(--yellow);font-size:13px;">' + data.referral_link + '</code>';
+            document.getElementById('successMsg').innerHTML = 'Your Founding Member badge is yours forever.<br><br>Check your email for your referral link and dashboard access.<br><br><strong>Referral link:</strong><br><code style="background:rgba(124,58,237,0.1);padding:6px 12px;border-radius:6px;color:var(--purple-light);font-size:13px;">' + data.referral_link + '</code>';
             document.getElementById('successBox').style.display = 'block';
             fetchSpots();
         }
