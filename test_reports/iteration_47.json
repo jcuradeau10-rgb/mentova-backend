@@ -1,0 +1,60 @@
+{
+  "summary": "Settings & Dashboard Revenue Features - All Tests Passed. Backend: 9/9 tests passed. Frontend: Settings page loads, Notifications modal opens with 7 toggle switches, Privacy modal opens with 3 toggle switches, Download Data button functional, Mentor Dashboard loads correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_settings_dashboard_features.py",
+    "/app/test_reports/pytest/pytest_settings_dashboard.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "GET /api/users/me/settings returns proper default notification and privacy settings structure",
+    "PUT /api/users/me/settings correctly persists notification and privacy changes",
+    "GET /api/users/me/export returns complete user data export with all sections (account, profile, settings, posts, bookings, purchases) - password_hash excluded as expected",
+    "GET /api/pro/dashboard now includes total_offer_sales and total_offer_revenue fields - revenue aggregation fixed",
+    "GET /api/pro/earnings includes total_earned_bookings and total_earned_offers breakdown",
+    "Frontend Settings page properly integrated with backend APIs - no 'Coming Soon' alerts"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_settings_dashboard_features.py"
+  ],
+  "success_rate": {
+    "backend": "100% (9/9 tests passed)",
+    "frontend": "100% (All tested features working)"
+  },
+  "test_credentials": {
+    "vip_user": "jcuradeau.7@gmail.com / Crypto2026!",
+    "admin_mentor": "admin@cryptonai.com / Admin123!"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Both reported issues are now fixed: 1) Mentor dashboard revenue now includes offer purchases (total_offer_sales, total_offer_revenue fields in /api/pro/dashboard and total_earned_bookings, total_earned_offers in /api/pro/earnings), 2) Settings page is fully functional - Notifications modal has 7 toggle switches, Privacy modal has 3 toggle switches, Download Data exports user JSON file. Backend endpoints: /api/users/me/settings (GET/PUT), /api/users/me/export (GET), /api/pro/dashboard (GET), /api/pro/earnings (GET) - all working correctly.",
+  "features_verified": {
+    "backend_settings_endpoints": {
+      "GET /api/users/me/settings": "PASS - Returns default notification/privacy settings",
+      "PUT /api/users/me/settings": "PASS - Updates notifications and privacy settings",
+      "GET /api/users/me/export": "PASS - Returns complete user data export"
+    },
+    "backend_dashboard_endpoints": {
+      "GET /api/pro/dashboard": "PASS - Includes total_offer_sales and total_offer_revenue",
+      "GET /api/pro/earnings": "PASS - Includes total_earned_bookings and total_earned_offers"
+    },
+    "frontend_settings_page": {
+      "page_loads": "PASS - Settings page loads without errors",
+      "notifications_modal": "PASS - Opens with 7 toggle switches (new_message, new_booking, booking_confirmed, new_review, community_reply, price_alerts, promotions)",
+      "privacy_modal": "PASS - Opens with 3 toggle switches (profile_public, show_activity, show_portfolio)",
+      "download_data": "PASS - Button visible and clickable, triggers data export"
+    },
+    "frontend_mentor_dashboard": {
+      "page_loads": "PASS - Dashboard Mentor page loads with stats cards"
+    }
+  }
+}

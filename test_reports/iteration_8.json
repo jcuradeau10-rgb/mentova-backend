@@ -1,0 +1,163 @@
+{
+  "summary": "VIP APIs Backend Testing Complete - All 24 tests passed. Frontend VIP subscription page works at /vip but VIP Hub page at /vip/hub has routing issue (Unmatched Route error) due to Expo Router file/folder naming conflict.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "VIP Hub Page",
+        "issue": "/vip/hub route shows 'Unmatched Route' error. Expo Router conflict between vip.tsx file and vip/ folder.",
+        "selector": "N/A - routing issue",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "VIP Hub Access",
+        "issue": "Cannot navigate to /vip/hub page - route not matched. Need to restructure file layout.",
+        "affected_selectors": []
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_vip_apis_full.py",
+    "/app/test_reports/pytest/pytest_vip_full.xml"
+  ],
+  "action_items": [
+    "FIX ROUTING: Restructure vip.tsx and vip/ folder to resolve Expo Router conflict. Options: 1) Rename vip.tsx to vip/index.tsx and add _layout.tsx to vip folder, OR 2) Move hub.tsx content to a different route structure",
+    "After fixing routing, verify VIP Hub tabs: Smart Money, Alertes, Wallet, Académie, Copy Trading, Social, Gamification"
+  ],
+  "critical_code_review_comments": [
+    "Backend VIP APIs: All working correctly with proper VIP-only access control (403 for non-VIP users)",
+    "MOCKED DATA: Smart Money transactions, Copy Traders, and Achievement data are mocked in backend (as per requirements)",
+    "Frontend routing: File/folder naming conflict in Expo Router causes /vip/hub to fail"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_vip_apis_full.py"
+  ],
+  "success_rate": {
+    "backend": "100% (24/24 tests passed)",
+    "frontend": "50% (/vip works, /vip/hub fails due to routing)"
+  },
+  "test_credentials": {
+    "email": "jcuradeau.7@gmail.com",
+    "password": "JacksoN12.",
+    "role": "super_admin",
+    "is_vip": true
+  },
+  "seed_data_creation": "Created test non-VIP user: test_non_vip@example.com for paywall testing",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Backend VIP APIs all working. Frontend issue: /vip/hub route not accessible due to Expo Router naming conflict. Main agent needs to fix routing structure before VIP Hub can be tested.",
+  "tests_performed": [
+    {
+      "test_class": "TestVIPAuthentication",
+      "tests": [
+        {"name": "test_vip_login_success", "status": "PASSED"},
+        {"name": "test_vip_status_endpoint", "status": "PASSED"}
+      ]
+    },
+    {
+      "test_class": "TestSmartMoneyAPI",
+      "tests": [
+        {"name": "test_get_smart_money_transactions", "status": "PASSED", "note": "MOCKED DATA - Returns whale transactions"}
+      ]
+    },
+    {
+      "test_class": "TestAlertsAPI",
+      "tests": [
+        {"name": "test_get_alerts_list", "status": "PASSED"},
+        {"name": "test_create_alert", "status": "PASSED"},
+        {"name": "test_create_and_delete_alert", "status": "PASSED"}
+      ]
+    },
+    {
+      "test_class": "TestWalletAPI",
+      "tests": [
+        {"name": "test_get_wallet_portfolio", "status": "PASSED"},
+        {"name": "test_add_wallet_asset", "status": "PASSED"},
+        {"name": "test_add_and_remove_asset", "status": "PASSED"}
+      ]
+    },
+    {
+      "test_class": "TestAchievementsAPI",
+      "tests": [
+        {"name": "test_get_achievements", "status": "PASSED", "note": "MOCKED DATA"},
+        {"name": "test_get_gamification_stats", "status": "PASSED"}
+      ]
+    },
+    {
+      "test_class": "TestLeaderboardAPI",
+      "tests": [
+        {"name": "test_get_leaderboard", "status": "PASSED"}
+      ]
+    },
+    {
+      "test_class": "TestAcademyAPI",
+      "tests": [
+        {"name": "test_get_advanced_courses", "status": "PASSED"}
+      ]
+    },
+    {
+      "test_class": "TestCopyTradingAPI",
+      "tests": [
+        {"name": "test_get_copy_traders", "status": "PASSED", "note": "MOCKED DATA"},
+        {"name": "test_follow_and_unfollow_trader", "status": "PASSED"}
+      ]
+    },
+    {
+      "test_class": "TestSocialAPI",
+      "tests": [
+        {"name": "test_get_social_feed", "status": "PASSED"},
+        {"name": "test_create_and_like_post", "status": "PASSED"}
+      ]
+    },
+    {
+      "test_class": "TestPaywallNonVIP",
+      "tests": [
+        {"name": "test_smart_money_returns_403_for_non_vip", "status": "PASSED"},
+        {"name": "test_alerts_returns_403_for_non_vip", "status": "PASSED"},
+        {"name": "test_wallet_returns_403_for_non_vip", "status": "PASSED"},
+        {"name": "test_achievements_returns_403_for_non_vip", "status": "PASSED"},
+        {"name": "test_academy_returns_403_for_non_vip", "status": "PASSED"},
+        {"name": "test_copy_trading_returns_403_for_non_vip", "status": "PASSED"},
+        {"name": "test_social_returns_403_for_non_vip", "status": "PASSED"}
+      ]
+    },
+    {
+      "test_type": "Frontend",
+      "tests": [
+        {"name": "Login page", "status": "PASSED"},
+        {"name": "Dashboard/Home page", "status": "PASSED"},
+        {"name": "/vip subscription page", "status": "PASSED", "note": "Shows VIP features and $6.99/month pricing"},
+        {"name": "/vip/hub page", "status": "FAILED", "note": "Unmatched Route error - routing conflict"}
+      ]
+    }
+  ],
+  "api_endpoints_tested": [
+    {"endpoint": "POST /api/auth/login", "status": "200 OK"},
+    {"endpoint": "GET /api/vip/status", "status": "200 OK (VIP user)"},
+    {"endpoint": "GET /api/vip/features", "status": "200 OK (public)"},
+    {"endpoint": "GET /api/vip/smart-money", "status": "200 OK (VIP), 403 (non-VIP)"},
+    {"endpoint": "GET /api/vip/alerts", "status": "200 OK (VIP), 403 (non-VIP)"},
+    {"endpoint": "POST /api/vip/alerts", "status": "200 OK (VIP)"},
+    {"endpoint": "DELETE /api/vip/alerts/{id}", "status": "200 OK (VIP)"},
+    {"endpoint": "GET /api/vip/wallet", "status": "200 OK (VIP), 403 (non-VIP)"},
+    {"endpoint": "POST /api/vip/wallet", "status": "200 OK (VIP)"},
+    {"endpoint": "DELETE /api/vip/wallet/{id}", "status": "200 OK (VIP)"},
+    {"endpoint": "GET /api/vip/achievements", "status": "200 OK (VIP), 403 (non-VIP)"},
+    {"endpoint": "GET /api/vip/gamification/stats", "status": "200 OK (VIP)"},
+    {"endpoint": "GET /api/vip/leaderboard", "status": "200 OK (VIP)"},
+    {"endpoint": "GET /api/vip/academy", "status": "200 OK (VIP), 403 (non-VIP)"},
+    {"endpoint": "GET /api/vip/copy-trading/traders", "status": "200 OK (VIP), 403 (non-VIP)"},
+    {"endpoint": "POST /api/vip/copy-trading/follow/{id}", "status": "200 OK (VIP)"},
+    {"endpoint": "DELETE /api/vip/copy-trading/follow/{id}", "status": "200 OK (VIP)"},
+    {"endpoint": "GET /api/vip/social/feed", "status": "200 OK (VIP), 403 (non-VIP)"},
+    {"endpoint": "POST /api/vip/social/posts", "status": "200 OK (VIP)"},
+    {"endpoint": "POST /api/vip/social/posts/{id}/like", "status": "200 OK (VIP)"}
+  ],
+  "mocked_apis_note": "Smart Money transactions, Copy Traders list, and Achievement definitions use MOCKED backend data as per requirements"
+}

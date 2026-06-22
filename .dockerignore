@@ -1,0 +1,8 @@
+node_modules/
+.git/
+*.log
+.expo/
+dist/
+coverage/
+.metro-cache/
+web-build/

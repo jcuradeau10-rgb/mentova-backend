@@ -1,0 +1,39 @@
+# Netlify configuration for Mentova Academy website
+# Deploy the static-site/ folder to Netlify
+
+[[redirects]]
+  from = "/member"
+  to = "/member.html"
+  status = 200
+
+[[redirects]]
+  from = "/ambassadors"
+  to = "/ambassadors.html"
+  status = 200
+
+[[redirects]]
+  from = "/blog"
+  to = "/blog.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/fr/*"
+  to = "/fr/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/es/*"
+  to = "/es/:splat"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

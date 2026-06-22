@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2GLPG3JB9N"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-2GLPG3JB9N');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord | Mentova Academy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root { --bg:#06060F;--bg-card:#0D0D1F;--purple:#7C3AED;--purple-light:#A78BFA;--purple-dark:#5B21B6;--green:#00D9A5;--gold:#FFD700;--red:#FF4757;--text:#FFF;--text-muted:#8B8B9E;--text-dim:#6B6B7E;--border:rgba(124,58,237,0.15); }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+        a{color:var(--purple-light);text-decoration:none}
+        .container{max-width:700px;margin:0 auto;padding:0 24px}
+        nav{padding:20px 0;border-bottom:1px solid var(--border);text-align:center}
+        .logo{font-size:22px;font-weight:800}.logo span{color:var(--purple)}
+        .login-box,.dashboard,.reset-box{max-width:480px;margin:60px auto;padding:0 24px}
+        .login-box h2,.reset-box h2{font-size:24px;font-weight:800;margin-bottom:8px}
+        .login-box p,.reset-box p{color:var(--text-muted);font-size:14px;margin-bottom:28px}
+        .form-group{margin-bottom:16px;position:relative}
+        .form-group label{display:block;font-size:13px;color:var(--text-muted);margin-bottom:6px;font-weight:600}
+        .form-input{width:100%;padding:14px 16px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:15px;outline:none}
+        .form-input:focus{border-color:var(--purple)}
+        .password-wrap{position:relative}
+        .password-wrap input{padding-right:48px}
+        .toggle-pw{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;padding:4px}
+        .toggle-pw:hover{color:var(--text)}
+        .form-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--purple),var(--purple-dark));color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:all .3s}
+        .form-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(124,58,237,0.3)}
+        .form-link{text-align:center;margin-top:16px;font-size:13px}
+        .form-link a{color:var(--purple-light);cursor:pointer}
+        .form-link a:hover{text-decoration:underline}
+        .dashboard{display:none}
+        .reset-box{display:none}
+        .dash-header{text-align:center;padding:32px 0;border-bottom:1px solid var(--border);margin-bottom:32px}
+        .badge-perm{display:inline-block;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);color:var(--gold);padding:8px 20px;border-radius:100px;font-size:13px;font-weight:700;margin-bottom:12px}
+        .dash-header h2{font-size:22px;margin-bottom:4px}
+        .dash-header .status{font-size:14px;color:var(--text-muted)}
+        .dash-section{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px}
+        .dash-section h3{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+        .dash-section h3 i{color:var(--purple-light)}
+        .ref-link-box{background:rgba(124,58,237,0.08);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13px;word-break:break-all;color:var(--purple-light);margin-bottom:12px}
+        .ref-share{display:flex;gap:8px;margin-bottom:16px}
+        .ref-share button{flex:1;padding:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s}
+        .ref-share button:hover{background:var(--purple);border-color:var(--purple)}
+        .progress-track{height:8px;background:rgba(124,58,237,0.1);border-radius:8px;overflow:hidden;margin:12px 0}
+        .progress-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--green));border-radius:8px;transition:width .6s}
+        .info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(124,58,237,0.06);font-size:14px}
+        .info-row .label{color:var(--text-muted)}.info-row .val{font-weight:600}
+        .countdown{display:flex;gap:8px;justify-content:center;margin:16px 0}
+        .cd-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px;text-align:center;min-width:56px}
+        .cd-item .n{font-size:20px;font-weight:800;display:block}.cd-item .l{font-size:9px;color:var(--text-dim);text-transform:uppercase}
+        .price-warn{background:rgba(255,71,87,0.08);border:1px solid rgba(255,71,87,0.2);border-radius:12px;padding:14px;text-align:center;font-size:13px;color:var(--red);margin-top:12px}
+        .err-msg{color:var(--red);font-size:13px;margin-top:12px;display:none}
+        .success-msg{color:var(--green);font-size:13px;margin-top:12px;display:none}
+        .step-indicator{display:flex;gap:8px;margin-bottom:20px;justify-content:center}
+        .step{width:32px;height:4px;border-radius:2px;background:var(--border)}
+        .step.active{background:var(--purple)}
+        @media(max-width:480px){.ref-share{flex-wrap:wrap}.ref-share button{flex:1 1 45%}}
+        /* Admin Dashboard Styles */
+        .admin-panel{display:none;max-width:900px;margin:0 auto;padding:0 24px 40px}
+        .admin-panel h2{font-size:20px;font-weight:800;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+        .admin-panel h2 i{color:var(--purple-light)}
+        .admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+        .admin-stat{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+        .admin-stat .s-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+        .admin-stat .s-val{font-size:24px;font-weight:800;margin-top:2px}
+        .admin-stat .s-val.pending{color:#f59e0b}
+        .admin-stat .s-val.ok{color:var(--green)}
+        .admin-stat .s-val.no{color:var(--red)}
+        .admin-filters{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+        .af-btn{padding:7px 14px;background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);border-radius:8px;font-size:12px;cursor:pointer;transition:all .2s}
+        .af-btn:hover,.af-btn.on{background:var(--purple);color:#fff;border-color:var(--purple)}
+        .admin-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:12px}
+        .admin-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px}
+        .ac-name{font-size:15px;font-weight:700}
+        .ac-email{color:var(--text-muted);font-size:12px;margin-left:8px}
+        .ac-badges{display:flex;gap:4px}
+        .ac-badge{padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+        .ac-badge.mentor{background:rgba(124,58,237,.15);color:var(--purple-light)}
+        .ac-badge.ambassador{background:rgba(59,130,246,.15);color:#60a5fa}
+        .ac-badge.pending{background:rgba(245,158,11,.15);color:#fbbf24}
+        .ac-badge.approved{background:rgba(0,217,165,.15);color:var(--green)}
+        .ac-badge.rejected{background:rgba(255,71,87,.15);color:var(--red)}
+        .ac-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;margin-bottom:12px}
+        .ac-detail .dt{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px}
+        .ac-detail .dd{font-size:12px;color:var(--text-muted);margin-top:1px}
+        .ac-msg{background:var(--bg);border-radius:8px;padding:10px;margin-bottom:12px;font-size:12px;color:var(--text-muted);line-height:1.5}
+        .ac-msg .dt{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+        .ac-actions{display:flex;gap:6px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+        .ac-date{font-size:11px;color:var(--text-dim)}
+        .btn-ok{padding:8px 16px;background:var(--green);color:#000;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer}
+        .btn-no{padding:8px 16px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer}
+        .btn-ok:hover,.btn-no:hover{opacity:.85}
+        .ac-reviewed{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600}
+        .ac-reviewed.approved{background:rgba(0,217,165,.1);color:var(--green)}
+        .ac-reviewed.rejected{background:rgba(255,71,87,.1);color:var(--red)}
+        .admin-empty{text-align:center;padding:40px;color:var(--text-dim);font-size:14px}
+        /* Review Modal */
+        .rv-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:20px}
+        .rv-overlay.show{display:flex}
+        .rv-box{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:460px;width:100%}
+        .rv-box h3{font-size:17px;font-weight:700;margin-bottom:4px}
+        .rv-box .rv-sub{color:var(--text-muted);font-size:12px;margin-bottom:16px}
+        .rv-box textarea{width:100%;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;min-height:100px;resize:vertical;outline:none;margin-bottom:14px;font-family:inherit}
+        .rv-box textarea:focus{border-color:var(--purple)}
+        .rv-actions{display:flex;gap:8px;justify-content:flex-end}
+        .rv-cancel{padding:8px 16px;background:var(--bg);border:1px solid var(--border);color:var(--text-muted);border-radius:8px;font-size:12px;cursor:pointer}
+        .rv-send{padding:8px 16px;border:none;border-radius:8px;font-size:12px;font-weight:700;color:#fff;cursor:pointer}
+        .rv-send.ok{background:var(--green);color:#000}
+        .rv-send.no{background:var(--red)}
+        .rv-send:disabled{opacity:.5}
+        @media(max-width:600px){.admin-stats{grid-template-columns:1fr 1fr}.admin-panel{padding:0 16px 40px}}
+    </style>
+</head>
+<body>
+<nav><a href="/" class="logo">Mentova<span>.</span></a></nav>
+
+<!-- LOGIN -->
+<div class="login-box" id="loginBox">
+    <h2>Member Dashboard</h2>
+    <p>Log in with your email and password.</p>
+    <form id="loginForm">
+        <div class="form-group"><label>Email</label><input type="email" class="form-input" id="loginEmail" required placeholder="your@email.com"></div>
+        <div class="form-group"><label>Password</label>
+            <div class="password-wrap">
+                <input type="password" class="form-input" id="loginPassword" required placeholder="Your password">
+                <button type="button" class="toggle-pw" onclick="togglePassword('loginPassword', this)" data-testid="toggle-password"><i class="fas fa-eye"></i></button>
+            </div>
+        </div>
+        <button type="submit" class="form-btn" data-testid="login-btn">Access my dashboard</button>
+        <div class="err-msg" id="loginErr"></div>
+        <div class="form-link"><a onclick="showForgotPassword()" data-testid="forgot-password-link">Password oublie ?</a></div>
+    </form>
+</div>
+
+<!-- FORGOT PASSWORD -->
+<div class="reset-box" id="resetBox">
+    <h2>Reset password</h2>
+    <div class="step-indicator"><div class="step active" id="step1"></div><div class="step" id="step2"></div><div class="step" id="step3"></div></div>
+
+    <!-- Step 1: Email -->
+    <div id="resetStep1">
+        <p>Enter your email to receive a reset code.</p>
+        <div class="form-group"><label>Email</label><input type="email" class="form-input" id="resetEmail" required placeholder="your@email.com"></div>
+        <button class="form-btn" onclick="sendResetCode()" data-testid="send-reset-code">Send code</button>
+        <div class="err-msg" id="resetErr1"></div>
+        <div class="success-msg" id="resetOk1"></div>
+    </div>
+
+    <!-- Step 2: Code -->
+    <div id="resetStep2" style="display:none">
+        <p>Enter the 6-digit code received by email.</p>
+        <div class="form-group"><label>Verification code</label><input type="text" class="form-input" id="resetCode" maxlength="6" placeholder="000000" style="text-align:center;font-size:24px;letter-spacing:8px"></div>
+        <button class="form-btn" onclick="goToNewPassword()" data-testid="verify-code">Verify code</button>
+        <div class="err-msg" id="resetErr2"></div>
+    </div>
+
+    <!-- Step 3: New Password -->
+    <div id="resetStep3" style="display:none">
+        <p>Enter your new password.</p>
+        <div class="form-group"><label>New password</label>
+            <div class="password-wrap">
+                <input type="password" class="form-input" id="newPassword" required placeholder="New password">
+                <button type="button" class="toggle-pw" onclick="togglePassword('newPassword', this)"><i class="fas fa-eye"></i></button>
+            </div>
+        </div>
+        <div class="form-group"><label>Confirm password</label>
+            <div class="password-wrap">
+                <input type="password" class="form-input" id="confirmPassword" required placeholder="Confirm">
+                <button type="button" class="toggle-pw" onclick="togglePassword('confirmPassword', this)"><i class="fas fa-eye"></i></button>
+            </div>
+        </div>
+        <button class="form-btn" onclick="resetPassword()" data-testid="reset-password-btn">Reset password</button>
+        <div class="err-msg" id="resetErr3"></div>
+        <div class="success-msg" id="resetOk3"></div>
+    </div>
+
+    <div class="form-link" style="margin-top:20px"><a onclick="showLogin()"><i class="fas fa-arrow-left"></i> Back to login</a></div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard container" id="dashboard">
+    <div class="dash-header">
+        <div class="badge-perm">Founding Member | Yours forever</div>
+        <h2 id="dashWelcome">Welcome, Founder #---</h2>
+        <div class="status" id="dashStatus"></div>
+        <div class="countdown" id="dashCountdown"></div>
+        <div class="price-warn" id="dashPriceWarn" style="display:none"></div>
+    </div>
+    <div class="dash-section">
+        <h3><i class="fas fa-gift"></i> Refer friends. Earn free months.</h3>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">Your referral link:</p>
+        <div class="ref-link-box" id="refLink"></div>
+        <div class="ref-share">
+            <button onclick="copyRef()"><i class="fas fa-copy"></i> Copy</button>
+            <button onclick="shareRef('whatsapp')"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+            <button onclick="shareRef('x')"><i class="fab fa-x-twitter"></i> X</button>
+            <button onclick="shareRef('linkedin')"><i class="fab fa-linkedin"></i> LinkedIn</button>
+        </div>
+        <p style="font-size:14px;color:var(--text-muted)" id="refProgress"></p>
+        <div class="progress-track"><div class="progress-fill" id="refBar" style="width:0%"></div></div>
+        <p style="font-size:14px;color:var(--gold);font-weight:700;margin-top:8px" id="refEarned"></p>
+    </div>
+    <div class="dash-section">
+        <h3><i class="fas fa-user"></i> Founder Profile</h3>
+        <div id="profileInfo"></div>
+    </div>
+    <div class="dash-section">
+        <h3><i class="fas fa-road"></i> Roadmap</h3>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">As a founder, you influence what we build.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div style="flex:1;min-width:140px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px"><div style="font-size:11px;color:var(--green);font-weight:700;margin-bottom:4px">IN PROGRESS</div><div style="font-size:13px">Charts and Indicators</div></div>
+            <div style="flex:1;min-width:140px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px"><div style="font-size:11px;color:var(--purple-light);font-weight:700;margin-bottom:4px">PLANNED</div><div style="font-size:13px">Portfolio Tracker</div></div>
+            <div style="flex:1;min-width:140px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px"><div style="font-size:11px;color:var(--text-dim);font-weight:700;margin-bottom:4px">COMING SOON</div><div style="font-size:13px">Social Trading</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ADMIN PANEL (visible only for super_admin) -->
+<div class="admin-panel" id="adminPanel">
+  <h2><i class="fas fa-shield-halved"></i> Admin — Candidatures</h2>
+  <div class="admin-stats">
+    <div class="admin-stat"><div class="s-label">Total</div><div class="s-val" id="aTotal">-</div></div>
+    <div class="admin-stat"><div class="s-label">En attente</div><div class="s-val pending" id="aPending">-</div></div>
+    <div class="admin-stat"><div class="s-label">Approuves</div><div class="s-val ok" id="aOk">-</div></div>
+    <div class="admin-stat"><div class="s-label">Refuses</div><div class="s-val no" id="aNo">-</div></div>
+  </div>
+  <div class="admin-filters">
+    <button class="af-btn on" onclick="aFilter('all',this)">Tous</button>
+    <button class="af-btn" onclick="aFilter('mentor',this)">Mentors</button>
+    <button class="af-btn" onclick="aFilter('ambassador',this)">Ambassadeurs</button>
+    <button class="af-btn" onclick="aFilter('pending',this)">En attente</button>
+    <button class="af-btn" onclick="aFilter('approved',this)">Approuves</button>
+    <button class="af-btn" onclick="aFilter('rejected',this)">Refuses</button>
+  </div>
+  <div id="adminList"><div class="admin-empty">Chargement...</div></div>
+</div>
+
+<!-- Review Modal -->
+<div class="rv-overlay" id="rvModal">
+<div class="rv-box">
+  <h3 id="rvTitle">Approuver</h3>
+  <p class="rv-sub" id="rvSub">Un email sera envoye au candidat.</p>
+  <textarea id="rvMsg" placeholder="Message personnalise pour le candidat (optionnel)..."></textarea>
+  <div class="rv-actions">
+    <button class="rv-cancel" onclick="closeRv()">Annuler</button>
+    <button class="rv-send" id="rvBtn" onclick="sendRv()">Envoyer</button>
+  </div>
+</div>
+</div>
+
+<script>
+const API_URL = 'https://mentova-api.onrender.com';
+const LAUNCH = new Date('2026-08-10T00:00:00Z').getTime();
+
+function togglePassword(inputId, btn) {
+    var input = document.getElementById(inputId);
+    if (input.type === 'password') { input.type = 'text'; btn.innerHTML = '<i class="fas fa-eye-slash"></i>'; }
+    else { input.type = 'password'; btn.innerHTML = '<i class="fas fa-eye"></i>'; }
+}
+
+function showForgotPassword() {
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('resetBox').style.display = 'block';
+    document.getElementById('resetStep1').style.display = 'block';
+    document.getElementById('resetStep2').style.display = 'none';
+    document.getElementById('resetStep3').style.display = 'none';
+    document.getElementById('step1').classList.add('active');
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('step3').classList.remove('active');
+}
+
+function showLogin() {
+    document.getElementById('resetBox').style.display = 'none';
+    document.getElementById('loginBox').style.display = 'block';
+}
+
+async function sendResetCode() {
+    var email = document.getElementById('resetEmail').value.trim();
+    if (!email) { document.getElementById('resetErr1').textContent = 'Enter your email.'; document.getElementById('resetErr1').style.display = 'block'; return; }
+    document.getElementById('resetErr1').style.display = 'none';
+    try {
+        var r = await fetch(API_URL + '/api/auth/forgot-password', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email: email}) });
+        var d = await r.json();
+        document.getElementById('resetOk1').textContent = 'Code sent! Check your email.';
+        document.getElementById('resetOk1').style.display = 'block';
+        setTimeout(function() {
+            document.getElementById('resetStep1').style.display = 'none';
+            document.getElementById('resetStep2').style.display = 'block';
+            document.getElementById('step2').classList.add('active');
+        }, 1500);
+    } catch(e) { document.getElementById('resetErr1').textContent = 'Error. Try again.'; document.getElementById('resetErr1').style.display = 'block'; }
+}
+
+function goToNewPassword() {
+    var code = document.getElementById('resetCode').value.trim();
+    if (code.length !== 6) { document.getElementById('resetErr2').textContent = 'Code must be 6 digits.'; document.getElementById('resetErr2').style.display = 'block'; return; }
+    document.getElementById('resetStep2').style.display = 'none';
+    document.getElementById('resetStep3').style.display = 'block';
+    document.getElementById('step3').classList.add('active');
+}
+
+async function resetPassword() {
+    var email = document.getElementById('resetEmail').value.trim();
+    var code = document.getElementById('resetCode').value.trim();
+    var pw = document.getElementById('newPassword').value;
+    var pw2 = document.getElementById('confirmPassword').value;
+    if (pw.length < 6) { document.getElementById('resetErr3').textContent = 'Password must be at least 6 characters.'; document.getElementById('resetErr3').style.display = 'block'; return; }
+    if (pw !== pw2) { document.getElementById('resetErr3').textContent = 'Passwords do not match.'; document.getElementById('resetErr3').style.display = 'block'; return; }
+    document.getElementById('resetErr3').style.display = 'none';
+    try {
+        var r = await fetch(API_URL + '/api/auth/reset-password', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email:email, code:code, new_password:pw}) });
+        if (r.ok) {
+            document.getElementById('resetOk3').textContent = 'Password reinitialise ! Redirection...';
+            document.getElementById('resetOk3').style.display = 'block';
+            setTimeout(function() { showLogin(); }, 2000);
+        } else { var d = await r.json(); document.getElementById('resetErr3').textContent = d.detail || 'Invalid or expired code.'; document.getElementById('resetErr3').style.display = 'block'; }
+    } catch(e) { document.getElementById('resetErr3').textContent = 'Error. Try again.'; document.getElementById('resetErr3').style.display = 'block'; }
+}
+
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var email = document.getElementById('loginEmail').value.trim();
+    var password = document.getElementById('loginPassword').value;
+    document.getElementById('loginErr').style.display = 'none';
+    try {
+        var authRes = await fetch(API_URL + '/api/auth/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email:email, password:password}) });
+        if (!authRes.ok) { document.getElementById('loginErr').textContent = 'Email ou mot de passe invalide.'; document.getElementById('loginErr').style.display = 'block'; return; }
+        var authData = await authRes.json();
+        var token = authData.access_token;
+        var preReg = null;
+        try { var r = await fetch(API_URL + '/api/member/by-email', { method:'POST', headers: {'Content-Type':'application/json','Authorization':'Bearer ' + token}, body: JSON.stringify({email:email}) }); if (r.ok) preReg = await r.json(); } catch(e){}
+        showDashboard(preReg, authData.user, token);
+    } catch(err) { document.getElementById('loginErr').textContent = 'Connection error. Try again.'; document.getElementById('loginErr').style.display = 'block'; }
+});
+
+function showDashboard(preReg, user) {
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    window._adminToken = null;
+    var m = preReg || {};
+    var founderNum = m.founder_number || '—';
+    document.getElementById('dashWelcome').textContent = 'Welcome, Founder #' + founderNum;
+    var st = document.getElementById('dashStatus');
+    if (m.status === 'pre_registered') st.innerHTML = 'Status: Place reservee | Ton VIP s\'active dans l\'app au lancement.';
+    var cdDiv = document.getElementById('dashCountdown');
+    function updateCD() {
+        var diff = LAUNCH - Date.now();
+        if (diff <= 0) { cdDiv.innerHTML = '<div style="font-size:18px;font-weight:800">Mentova est LIVE</div>'; return; }
+        var d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000), mn = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+        cdDiv.innerHTML = '<div class="cd-item"><span class="n">'+d+'</span><span class="l">Days</span></div><div class="cd-item"><span class="n">'+h+'</span><span class="l">Hours</span></div><div class="cd-item"><span class="n">'+mn+'</span><span class="l">Min</span></div><div class="cd-item"><span class="n">'+s+'</span><span class="l">Sec</span></div>';
+    }
+    updateCD(); setInterval(updateCD, 1000);
+    var refLink = 'https://mentova-academy.com/?ref=' + (m.referral_code || '');
+    document.getElementById('refLink').textContent = refLink;
+    document.getElementById('refProgress').textContent = (m.referral_count || 0) + ' / 5 referrals to your next free month';
+    document.getElementById('refBar').style.width = ((m.referral_count || 0) / 5 * 100) + '%';
+    document.getElementById('refEarned').textContent = (m.free_months_earned || 0) + ' free month(s) earned';
+    var pi = document.getElementById('profileInfo');
+    var created = m.created_at ? new Date(m.created_at).toLocaleDateString('fr-CA') : '-';
+    pi.innerHTML = '<div class="info-row"><span class="label">Member</span><span class="val">#' + (m.founder_number||'—') + ' / 500</span></div><div class="info-row"><span class="label">Wave</span><span class="val">' + (m.wave||1) + '</span></div><div class="info-row"><span class="label">Language</span><span class="val">' + (m.language||'FR') + '</span></div><div class="info-row"><span class="label">Joined</span><span class="val">' + created + '</span></div><div class="info-row"><span class="label">Badge</span><span class="val" style="color:var(--gold)">Permanent</span></div><div class="info-row"><span class="label">Price locked</span><span class="val" style="color:var(--green)">9,99$/mois</span></div>';
+    window._refLink = refLink;
+
+    // Show admin panel if super_admin
+    if (user && (user.role === 'super_admin' || user.role === 'admin')) {
+        window._adminToken = arguments[2]; // token passed as 3rd arg
+        document.getElementById('adminPanel').style.display = 'block';
+        loadAdminApps();
+    }
+}
+
+function copyRef() { navigator.clipboard.writeText(window._refLink); event.target.textContent = 'Copied!'; setTimeout(function(){ event.target.innerHTML = '<i class="fas fa-copy"></i> Copy'; }, 2000); }
+function shareRef(p) {
+    var txt = encodeURIComponent('Join Mentova Academy and lock your founder price at 9,99$/mois ! ' + window._refLink);
+    if (p === 'whatsapp') window.open('https://wa.me/?text=' + txt);
+    else if (p === 'x') window.open('https://twitter.com/intent/tweet?text=' + txt);
+    else if (p === 'linkedin') window.open('https://linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(window._refLink));
+}
+
+// ========== ADMIN FUNCTIONS ==========
+var _allApps = [], _aFilter = 'all', _rvData = null;
+
+async function loadAdminApps() {
+    if (!window._adminToken) return;
+    try {
+        var r = await fetch(API_URL + '/api/admin/applications', { headers: {'Authorization':'Bearer ' + window._adminToken} });
+        if (!r.ok) { document.getElementById('adminList').innerHTML = '<div class="admin-empty">Erreur de chargement</div>'; return; }
+        var d = await r.json();
+        _allApps = d.applications || [];
+        updateAdminStats();
+        renderAdmin();
+    } catch(e) { document.getElementById('adminList').innerHTML = '<div class="admin-empty">Erreur réseau</div>'; }
+}
+
+function updateAdminStats() {
+    document.getElementById('aTotal').textContent = _allApps.length;
+    document.getElementById('aPending').textContent = _allApps.filter(function(a){return a.status==='pending'}).length;
+    document.getElementById('aOk').textContent = _allApps.filter(function(a){return a.status==='approved'}).length;
+    document.getElementById('aNo').textContent = _allApps.filter(function(a){return a.status==='rejected'}).length;
+}
+
+function aFilter(f, btn) {
+    _aFilter = f;
+    document.querySelectorAll('.af-btn').forEach(function(b){b.classList.remove('on')});
+    btn.classList.add('on');
+    renderAdmin();
+}
+
+function renderAdmin() {
+    var list = _allApps;
+    if (_aFilter === 'mentor') list = _allApps.filter(function(a){return a.type==='mentor'});
+    else if (_aFilter === 'ambassador') list = _allApps.filter(function(a){return a.type==='ambassador'});
+    else if (_aFilter === 'pending') list = _allApps.filter(function(a){return a.status==='pending'});
+    else if (_aFilter === 'approved') list = _allApps.filter(function(a){return a.status==='approved'});
+    else if (_aFilter === 'rejected') list = _allApps.filter(function(a){return a.status==='rejected'});
+
+    if (!list.length) { document.getElementById('adminList').innerHTML = '<div class="admin-empty">Aucune candidature</div>'; return; }
+
+    document.getElementById('adminList').innerHTML = list.map(function(a) {
+        var date = new Date(a.created_at).toLocaleDateString('fr-FR', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+        var tBadge = a.type === 'mentor' ? '<span class="ac-badge mentor">Mentor</span>' : '<span class="ac-badge ambassador">Ambassadeur</span>';
+        var sBadge = a.status === 'pending' ? '<span class="ac-badge pending">En attente</span>' : a.status === 'approved' ? '<span class="ac-badge approved">Approuve</span>' : '<span class="ac-badge rejected">Refuse</span>';
+
+        // Build ALL details for mentors
+        var details = '';
+        if (a.type === 'mentor') {
+            details = '<div class="ac-detail"><span class="dt">Email</span><span class="dd">'+(a.email||'-')+'</span></div>'
+                + '<div class="ac-detail"><span class="dt">Telephone</span><span class="dd">'+(a.phone||'-')+'</span></div>'
+                + '<div class="ac-detail"><span class="dt">Pays</span><span class="dd">'+(a.country||'-')+'</span></div>'
+                + '<div class="ac-detail"><span class="dt">Ville</span><span class="dd">'+(a.city||'-')+'</span></div>'
+                + '<div class="ac-detail"><span class="dt">Langue</span><span class="dd">'+(a.language||'-')+'</span></div>'
+                + '<div class="ac-detail"><span class="dt">Specialite</span><span class="dd">'+(a.specialty||'-')+'</span></div>'
+                + '<div class="ac-detail"><span class="dt">Experience</span><span class="dd">'+(a.years_experience||'-')+' ans</span></div>'
+                + '<div class="ac-detail"><span class="dt">Style de trading</span><span class="dd">'+(a.trading_style||'-')+'</span></div>'
+                + '<div class="ac-detail"><span class="dt">Certifications</span><span class="dd">'+(a.certifications||'-')+'</span></div>'
+                + '<div class="ac-detail"><span class="dt">Audience</span><span class="dd">'+(a.audience_size||'-')+'</span></div>';
+            // Social links
+            if (a.social_links) {
+                var sl = a.social_links;
+                var links = Object.keys(sl).filter(function(k){return sl[k]}).map(function(k){return '<span class="dd"><strong>'+k+':</strong> '+sl[k]+'</span>'}).join('<br>');
+                if (links) details += '<div class="ac-detail" style="grid-column:1/-1"><span class="dt">Reseaux sociaux</span>'+links+'</div>';
+            }
+        } else {
+            // Ambassador - ALL fields
+            details = '<div class="ac-detail"><span class="dt">Email</span><span class="dd">'+(a.email||'-')+'</span></div>'
+                + '<div class="ac-detail"><span class="dt">Plateforme</span><span class="dd">'+(a.platform||'-')+'</span></div>'
+                + '<div class="ac-detail"><span class="dt">Audience</span><span class="dd">'+(a.audience_size||'-')+'</span></div>'
+                + '<div class="ac-detail"><span class="dt">Langue</span><span class="dd">'+(a.language||'-')+'</span></div>'
+                + '<div class="ac-detail"><span class="dt">Pays</span><span class="dd">'+(a.country||'-')+'</span></div>'
+                + '<div class="ac-detail"><span class="dt">Niche</span><span class="dd">'+(a.niche||'-')+'</span></div>'
+                + '<div class="ac-detail"><span class="dt">Experience</span><span class="dd">'+(a.experience||'-')+'</span></div>';
+            if (a.promotion_strategy) details += '<div class="ac-detail" style="grid-column:1/-1"><span class="dt">Strategie de promotion</span><span class="dd">'+a.promotion_strategy+'</span></div>';
+            if (a.social_links) {
+                var sl2 = a.social_links;
+                var links2 = Object.keys(sl2).filter(function(k){return sl2[k]}).map(function(k){return '<span class="dd"><strong>'+k+':</strong> '+sl2[k]+'</span>'}).join('<br>');
+                if (links2) details += '<div class="ac-detail" style="grid-column:1/-1"><span class="dt">Reseaux sociaux</span>'+links2+'</div>';
+            }
+        }
+
+        // All text fields as message blocks
+        var blocks = '';
+        if (a.type === 'mentor') {
+            if (a.motivation) blocks += '<div class="ac-msg"><div class="dt">Motivation</div>'+a.motivation+'</div>';
+            if (a.teaching_experience) blocks += '<div class="ac-msg"><div class="dt">Experience enseignement</div>'+a.teaching_experience+'</div>';
+            if (a.content_plan) blocks += '<div class="ac-msg"><div class="dt">Plan de contenu</div>'+a.content_plan+'</div>';
+            if (a.differentiator) blocks += '<div class="ac-msg"><div class="dt">Ce qui le differencie</div>'+a.differentiator+'</div>';
+            if (a.sample_link) blocks += '<div class="ac-msg"><div class="dt">Lien exemple</div><a href="'+a.sample_link+'" target="_blank" style="color:#7C3AED">'+a.sample_link+'</a></div>';
+        } else {
+            if (a.message) blocks += '<div class="ac-msg"><div class="dt">Message</div>'+a.message+'</div>';
+        }
+
+        var rvMsg = a.review_message ? '<div class="ac-msg" style="border-left:3px solid #7C3AED"><div class="dt">Votre reponse</div>'+a.review_message+'</div>' : '';
+
+        var actions = '';
+        if (a.status === 'pending') {
+            var safeName = (a.name||'').replace(/'/g,"\\'");
+            actions = '<div><button class="btn-ok" onclick="openRv(\''+a._id+'\',\''+a.type+'\',\'approved\',\''+safeName+'\')"><i class="fas fa-check"></i> Approuver</button> <button class="btn-no" onclick="openRv(\''+a._id+'\',\''+a.type+'\',\'rejected\',\''+safeName+'\')"><i class="fas fa-times"></i> Refuser</button></div>';
+        } else {
+            var rvDate = a.reviewed_at ? ' le ' + new Date(a.reviewed_at).toLocaleDateString('fr-FR') : '';
+            actions = '<div class="ac-reviewed '+a.status+'">'+(a.status==='approved'?'Approuve':'Refuse')+rvDate+'</div>';
+        }
+
+        return '<div class="admin-card"><div class="admin-card-head"><div><span class="ac-name">'+a.name+'</span></div><div class="ac-badges">'+tBadge+sBadge+'</div></div><div class="ac-details">'+details+'</div>'+blocks+rvMsg+'<div class="ac-actions"><span class="ac-date">'+date+'</span>'+actions+'</div></div>';
+    }).join('');
+}
+
+function openRv(id, type, decision, name) {
+    _rvData = {id:id, type:type, decision:decision};
+    document.getElementById('rvMsg').value = '';
+    var btn = document.getElementById('rvBtn');
+    if (decision === 'approved') {
+        document.getElementById('rvTitle').textContent = 'Approuver ' + name;
+        document.getElementById('rvSub').textContent = 'Un email de confirmation sera envoye.';
+        btn.className = 'rv-send ok'; btn.textContent = 'Approuver et envoyer';
+    } else {
+        document.getElementById('rvTitle').textContent = 'Refuser ' + name;
+        document.getElementById('rvSub').textContent = 'Un email de notification sera envoye.';
+        btn.className = 'rv-send no'; btn.textContent = 'Refuser et envoyer';
+    }
+    document.getElementById('rvModal').classList.add('show');
+}
+
+function closeRv() { document.getElementById('rvModal').classList.remove('show'); _rvData = null; }
+
+async function sendRv() {
+    if (!_rvData) return;
+    var btn = document.getElementById('rvBtn');
+    btn.disabled = true; btn.textContent = 'Envoi...';
+    var msg = document.getElementById('rvMsg').value.trim();
+    try {
+        var r = await fetch(API_URL + '/api/admin/applications/' + _rvData.type + '/' + _rvData.id + '/review', {
+            method: 'POST', headers: {'Content-Type':'application/json','Authorization':'Bearer ' + window._adminToken},
+            body: JSON.stringify({decision: _rvData.decision, message: msg})
+        });
+        var d = await r.json();
+        if (d.success) { closeRv(); await loadAdminApps(); }
+        else { alert('Erreur: ' + (d.detail || 'Echec')); }
+    } catch(e) { alert('Erreur réseau'); }
+    btn.disabled = false;
+}
+</script>
+</body>
+</html>

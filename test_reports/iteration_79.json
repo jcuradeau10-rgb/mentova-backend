@@ -1,0 +1,41 @@
+{
+  "summary": "Tested Mentova VIP Stripe Checkout integration (backend + frontend). 6/6 pytest cases pass for /api/vip/checkout, /api/vip/checkout/status/{session_id} and /api/spots-remaining. Frontend VIP landing page renders Founder Price ($9.99), spots-remaining counter (493), progress bar (7/500) and the 'Become VIP Founder' CTA. CTA click successfully invokes the backend, receives a live Stripe checkout_url, and redirects the browser to checkout.stripe.com. /vip/success page mounts and polls /api/vip/checkout/status. Stripe sessions were created against the LIVE Stripe key — confirmed via backend logs (sk_live → cs_live_... session ids).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/vip/checkout (missing token)", "issue": "Returns 403 (FastAPI HTTPBearer default) instead of 401. Accepted by test as 401/403, but 401 would be more idiomatic for missing auth."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "VipHubScreen CTA", "issue": "data-testid='vip-subscribe-btn' is declared on TouchableOpacity but is NOT rendered on the underlying DOM element in React Native Web build. Tests must locate the button by visible text ('Become VIP Founder') instead of testid.", "selector": "[data-testid='vip-subscribe-btn']", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_vip_checkout_stripe.py",
+    "/app/test_reports/pytest/vip_checkout_results.xml"
+  ],
+  "action_items": [
+    "Optional: investigate why data-testid attributes are not propagated to DOM for TouchableOpacity in this Expo/RN-Web build (other testids on the same page also don't reach the DOM). Adding `accessibilityLabel` or wrapping in `<View testID>` alone is not enough — Expo SDK 50+ on web typically requires `accessibilityHint` or the `testID -> data-testid` web-build flag. Tests currently fall back to text selectors, which work but are less robust.",
+    "Optional: return 401 (not 403) from /api/vip/checkout when the Authorization header is missing for clearer API semantics."
+  ],
+  "critical_code_review_comments": [
+    "STRIPE_API_KEY in /app/backend/.env is a LIVE key (sk_live_...). Each /api/vip/checkout call creates a real Stripe session — be mindful in automated regression suites (only metadata + session created, no charge until card entered, so cost is $0, but session counts accumulate).",
+    "/api/vip/checkout swallows all exceptions into a 500 with the raw Stripe error string in the `detail` field. Consider mapping known Stripe errors (rate-limit, invalid key) to user-friendly messages and avoid leaking provider internals.",
+    "server.py is 13,303 lines — the VIP/Stripe logic (lines 1282-1507) should be extracted to a dedicated router module (similar to routes/preregister.py) for maintainability.",
+    "In /api/webhook/stripe the webhook does not verify the user is not already VIP before extending vip_expires_at — repeated webhook deliveries could keep pushing the expiry forward. Consider idempotency on session_id (already partially done via `transaction.get('payment_status') != 'paid'` check, good).",
+    "The success page (frontend/app/vip/success.tsx) polls /api/vip/checkout/status without a documented retry/back-off cap. 3 successive requests were observed in <6s — verify a stop condition exists for failed payments."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_vip_checkout_stripe.py (new)"
+  ],
+  "success_rate": {"backend": "100% (6/6)", "frontend": "100% (3/3 scenarios)"},
+  "test_credentials": "Super Admin (already VIP): jcuradeau.7@gmail.com / Crypto2026!  ;  Non-VIP: applereview@mentova.com / AppleReview2026!",
+  "seed_data_creation": "None. Tests use existing seeded users. Each /api/vip/checkout call inserts a real payment_transactions doc (status=pending) and a real Stripe session — no DB cleanup added (pending sessions are harmless).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Use text-based selectors for VIP CTA — data-testid does not bind to DOM in this RN-Web build. Backend pytest file: /app/backend/tests/test_vip_checkout_stripe.py. Frontend success page is at /vip/success?session_id=<id>. To reproduce checkout flow, login via /api/auth/login (applereview), set localStorage 'token' = access_token, navigate to /vip, click 'Become VIP Founder' — browser will redirect to checkout.stripe.com (intercept with page.route to avoid actually leaving).",
+  "rca_of_the_issue": "N/A — all features under review are working as specified."
+}

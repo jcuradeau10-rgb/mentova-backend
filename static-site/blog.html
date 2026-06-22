@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2GLPG3JB9N"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-2GLPG3JB9N');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Mentova Academy</title>
+    <meta name="description" content="Learn crypto. Trade smarter. Articles and guides from Mentova Academy.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root{--bg:#06060F;--bg-card:#0D0D1F;--bg-card-hover:#12122A;--purple:#7C3AED;--purple-light:#A78BFA;--purple-dark:#5B21B6;--green:#00D9A5;--gold:#FFD700;--text:#FFF;--text-muted:#8B8B9E;--text-dim:#6B6B7E;--border:rgba(124,58,237,0.15);--radius:16px}
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}a{color:var(--purple-light);text-decoration:none}.container{max-width:1100px;margin:0 auto;padding:0 24px}
+        nav{padding:20px 0;border-bottom:1px solid var(--border)}nav .container{display:flex;align-items:center;justify-content:space-between}.logo{font-size:22px;font-weight:800}.logo span{color:var(--purple)}.nav-links{display:flex;gap:28px;align-items:center}.nav-links a{color:var(--text-muted);font-size:14px;font-weight:500}.nav-links a:hover{color:var(--text)}.nav-cta{background:var(--purple);color:#fff!important;padding:10px 22px;border-radius:10px;font-weight:700;font-size:14px}
+        .blog-hero{padding:60px 0 40px;text-align:center;border-bottom:1px solid var(--border)}.blog-hero h1{font-size:36px;font-weight:800;margin-bottom:8px}.blog-hero p{color:var(--text-muted);font-size:16px}
+        .blog-layout{display:grid;grid-template-columns:1fr 320px;gap:40px;padding:48px 0}.blog-grid{display:flex;flex-direction:column;gap:24px}
+        .article-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all .3s;cursor:pointer}.article-card:hover{border-color:var(--purple);transform:translateY(-4px)}
+        .article-img{height:200px;background:linear-gradient(135deg,var(--purple-dark),#1a1a3e);display:flex;align-items:center;justify-content:center;font-size:48px}
+        .article-body{padding:24px}.article-tag{display:inline-block;background:rgba(124,58,237,0.12);color:var(--purple-light);font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;text-transform:uppercase;margin-bottom:10px}
+        .article-body h2{font-size:20px;font-weight:700;margin-bottom:8px;line-height:1.3}.article-body p{font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:12px}
+        .article-meta{font-size:12px;color:var(--text-dim)}.article-meta span{margin-right:16px}
+        .sidebar{position:sticky;top:80px}.sidebar-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px}
+        .sidebar-box h3{font-size:16px;font-weight:700;margin-bottom:12px}.sidebar-box p{font-size:13px;color:var(--text-muted);margin-bottom:16px}
+        .sidebar-input{width:100%;padding:12px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;outline:none;margin-bottom:8px}.sidebar-input:focus{border-color:var(--purple)}
+        .sidebar-select{width:100%;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;outline:none;margin-bottom:12px;appearance:none}
+        .sidebar-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--purple),var(--purple-dark));color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer}.sidebar-btn:hover{opacity:.9}
+        .sidebar-msg{font-size:13px;margin-top:8px;display:none}
+        .lang-switch{display:flex;gap:8px;margin-bottom:16px}.lang-switch a{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:600;border:1px solid var(--border);color:var(--text-muted)}.lang-switch a.active{background:var(--purple);border-color:var(--purple);color:#fff}
+        /* Article full view */
+        .article-full{display:none;padding:48px 0}.article-full .back-link{display:inline-flex;align-items:center;gap:6px;color:var(--text-muted);font-size:14px;margin-bottom:24px}.article-full .back-link:hover{color:var(--text)}
+        .article-full h1{font-size:32px;font-weight:800;margin-bottom:12px;line-height:1.2}.article-full .meta{font-size:13px;color:var(--text-dim);margin-bottom:32px}
+        .article-full .content{max-width:700px}.article-full .content p{font-size:16px;color:var(--text-muted);line-height:1.8;margin-bottom:20px}.article-full .content h2{font-size:22px;font-weight:700;margin:32px 0 12px;color:var(--text)}.article-full .content strong{color:var(--text)}
+        .article-full .content ul{margin:12px 0 20px 24px;color:var(--text-muted)}.article-full .content li{margin-bottom:8px;line-height:1.6}
+        .article-cta{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;text-align:center;margin-top:40px}.article-cta h3{font-size:18px;margin-bottom:8px}.article-cta p{color:var(--text-muted);font-size:14px;margin-bottom:16px}
+        .article-cta a{display:inline-block;background:linear-gradient(135deg,var(--purple),var(--purple-dark));color:#fff;padding:12px 28px;border-radius:12px;font-weight:700;font-size:14px}
+        footer{padding:32px 0;border-top:1px solid var(--border);text-align:center;font-size:12px;color:var(--text-dim)}
+        @media(max-width:768px){.blog-layout{grid-template-columns:1fr}.sidebar{position:static}.nav-links{display:none}}
+    </style>
+</head>
+<body>
+<nav><div class="container"><a href="/" class="logo">Mentova<span>.</span></a><div class="nav-links"><a href="/#features">Features</a><a href="/#pricing">Pricing</a><a href="/blog" style="color:var(--text)">Blog</a><a href="/member">Dashboard</a><a href="/#pre-register" class="nav-cta">Reserve My Spot</a></div></div></nav>
+
+<div class="blog-hero"><div class="container"><h1>Mentova Blog</h1><p>Learn crypto. Trade smarter.</p><div class="lang-switch" style="justify-content:center;margin-top:16px"><a href="/blog" class="active">EN</a><a href="/fr/blog">FR</a><a href="/es/blog">ES</a></div></div></div>
+
+<!-- ARTICLE LIST -->
+<div class="container" id="blogList">
+    <div class="blog-layout">
+        <div class="blog-grid">
+            <div class="article-card" onclick="showArticle('art1')">
+                <div class="article-img">📉</div>
+                <div class="article-body">
+                    <div class="article-tag">Education</div>
+                    <h2>Why 90% of Crypto Beginners Lose Money (And How to Avoid It)</h2>
+                    <p>The crypto market is exciting, but most beginners jump in without a plan. Here's why they fail, and how you can be different.</p>
+                    <div class="article-meta"><span><i class="far fa-clock"></i> 6 min read</span><span><i class="far fa-calendar"></i> June 2026</span></div>
+                </div>
+            </div>
+            <div class="article-card" onclick="showArticle('art2')">
+                <div class="article-img">🔐</div>
+                <div class="article-body">
+                    <div class="article-tag">Security</div>
+                    <h2>5 Essential Security Practices Every Crypto Holder Must Know</h2>
+                    <p>Your crypto is only as safe as your habits. Learn the non-negotiable security practices that protect your portfolio.</p>
+                    <div class="article-meta"><span><i class="far fa-clock"></i> 5 min read</span><span><i class="far fa-calendar"></i> June 2026</span></div>
+                </div>
+            </div>
+            <div class="article-card" onclick="showArticle('art3')">
+                <div class="article-img">📊</div>
+                <div class="article-body">
+                    <div class="article-tag">Trading</div>
+                    <h2>How to Build a Crypto Portfolio That Actually Survives Bear Markets</h2>
+                    <p>Bull markets make everyone feel like a genius. Bear markets reveal who actually has a strategy. Here's how to build one.</p>
+                    <div class="article-meta"><span><i class="far fa-clock"></i> 7 min read</span><span><i class="far fa-calendar"></i> June 2026</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="sidebar-box">
+                <h3>Newsletter</h3>
+                <p>Weekly crypto education, market insights, and Mentova updates.</p>
+                <input type="email" class="sidebar-input" id="nlEmail" placeholder="your@email.com">
+                <select class="sidebar-select" id="nlLang"><option value="EN">🇬🇧 English</option><option value="FR">🇫🇷 French</option><option value="ES">🇪🇸 Spanish</option></select>
+                <button class="sidebar-btn" onclick="subscribeBlog()">Subscribe</button>
+                <div class="sidebar-msg" id="nlMsg"></div>
+            </div>
+            <div class="sidebar-box">
+                <h3>Founding Member?</h3>
+                <p>Reserve your spot now and lock $9.99/mo for life.</p>
+                <a href="/#pre-register" class="sidebar-btn" style="display:block;text-align:center;text-decoration:none;color:#fff">Reserve My Spot →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ARTICLE 1 -->
+<div class="article-full container" id="art1">
+    <a href="#" class="back-link" onclick="hideArticle();return false"><i class="fas fa-arrow-left"></i> Back to blog</a>
+    <h1>Why 90% of Crypto Beginners Lose Money (And How to Avoid It)</h1>
+    <div class="meta"><i class="far fa-clock"></i> 6 min read &nbsp;|&nbsp; <i class="far fa-calendar"></i> June 2026 &nbsp;|&nbsp; Education</div>
+    <div class="content">
+        <p>The cryptocurrency market has created generational wealth for some, and devastating losses for others. Studies consistently show that <strong>roughly 90% of retail crypto traders lose money</strong>. But why? And more importantly, how can you be part of the 10% that doesn't?</p>
+        <h2>The Top 5 Mistakes Beginners Make</h2>
+        <p><strong>1. FOMO Buying at the Top</strong><br>When Bitcoin hits a new all-time high and everyone on social media is celebrating, beginners rush in. They buy at the peak, driven by fear of missing out. Then the inevitable correction comes, and they panic sell at a loss.</p>
+        <p><strong>2. No Risk Management</strong><br>Most beginners invest more than they can afford to lose. They go "all in" on a single asset, use excessive leverage, or skip setting stop-losses. When the market moves against them, the losses are catastrophic.</p>
+        <p><strong>3. Following Influencers Blindly</strong><br>Crypto Twitter and YouTube are full of self-proclaimed experts promoting coins they secretly hold. Beginners follow these "calls" without understanding the underlying technology or tokenomics, often buying into pump-and-dump schemes.</p>
+        <p><strong>4. Ignoring Security</strong><br>From phishing attacks to leaving funds on exchanges that get hacked, security failures cost beginners billions every year. If you don't control your private keys, you don't control your crypto.</p>
+        <p><strong>5. No Education Foundation</strong><br>Perhaps the most critical mistake: jumping into trading without understanding the basics. What is blockchain? How do smart contracts work? What drives token prices? Without this foundation, every decision is a gamble.</p>
+        <h2>How to Be Different</h2>
+        <p>The solution isn't to avoid crypto, it's to <strong>approach it with structure and education</strong>. Here's what the successful 10% do differently:</p>
+        <ul>
+            <li><strong>Learn before you earn.</strong> Complete a structured education program before risking real money. Understand blockchain fundamentals, market cycles, and risk management.</li>
+            <li><strong>Start small.</strong> Begin with an amount you can afford to lose entirely. Use paper trading to practice strategies without risk.</li>
+            <li><strong>Diversify intelligently.</strong> Don't put everything in one coin. Spread across established projects (BTC, ETH) and limit speculative positions to 10-20% of your portfolio.</li>
+            <li><strong>Have a plan.</strong> Define your entry and exit points before every trade. Set stop-losses. Take profits at predetermined targets. Emotion-free trading is profitable trading.</li>
+            <li><strong>Learn from verified mentors.</strong> Find educators with proven track records, not anonymous influencers promising 100x returns.</li>
+        </ul>
+        <p>This is exactly why we built <strong>Mentova Academy</strong>. A platform where verified mentors, structured courses, and professional tools come together to give beginners the foundation they need to succeed in French, English, and Spanish.</p>
+    </div>
+    <div class="article-cta"><h3>Ready to learn the right way?</h3><p>Join 500 founding members and lock your VIP price at $9.99/mo.</p><a href="/#pre-register">Reserve Your Founding Spot →</a></div>
+</div>
+
+<!-- ARTICLE 2 -->
+<div class="article-full container" id="art2">
+    <a href="#" class="back-link" onclick="hideArticle();return false"><i class="fas fa-arrow-left"></i> Back to blog</a>
+    <h1>5 Essential Security Practices Every Crypto Holder Must Know</h1>
+    <div class="meta"><i class="far fa-clock"></i> 5 min read &nbsp;|&nbsp; <i class="far fa-calendar"></i> June 2026 &nbsp;|&nbsp; Security</div>
+    <div class="content">
+        <p>In 2025 alone, over <strong>$2.3 billion</strong> was stolen from crypto users through hacks, phishing, and social engineering. Unlike traditional banking, crypto transactions are irreversible. once your funds are gone, they're gone. Here are the five security practices that separate the protected from the victims.</p>
+        <h2>1. Use a Hardware Wallet</h2>
+        <p>Your exchange is not a bank. If the exchange gets hacked, your funds disappear. A hardware wallet (like Ledger or Trezor) stores your private keys offline, making them virtually unhackable. <strong>Rule: If you hold more than $500 in crypto, get a hardware wallet.</strong></p>
+        <h2>2. Never Share Your Seed Phrase</h2>
+        <p>Your 12 or 24-word seed phrase is the master key to your crypto. <strong>No legitimate company will ever ask for it.</strong> Write it on paper (never digitally), store it in a fireproof safe, and consider using a metal backup plate. Never take a photo of it. Never store it in the cloud.</p>
+        <h2>3. Enable 2FA Everywhere</h2>
+        <p>Two-Factor Authentication adds a second layer of protection. Use an authenticator app (Google Authenticator, Authy). <strong>never SMS-based 2FA</strong>, which is vulnerable to SIM swapping attacks. Enable 2FA on every exchange, wallet, and email account connected to your crypto.</p>
+        <h2>4. Verify Every URL and Transaction</h2>
+        <p>Phishing sites look identical to real ones. Always bookmark official websites and access them directly. Before confirming any transaction, <strong>triple-check the recipient address</strong>. especially the first and last 6 characters. One wrong character means lost funds.</p>
+        <h2>5. Use Separate Email and Passwords</h2>
+        <p>Create a dedicated email address used only for crypto accounts. Use a password manager to generate unique, complex passwords for every service. If one account gets compromised, the others remain safe.</p>
+        <p><strong>Security isn't optional in crypto. it's survival.</strong> At Mentova Academy, our security module covers these practices and more, with step-by-step tutorials to protect your portfolio from day one.</p>
+    </div>
+    <div class="article-cta"><h3>Master crypto security</h3><p>Our VIP Academy includes a complete security module. Lock your founding price today.</p><a href="/#pre-register">Reserve Your Founding Spot →</a></div>
+</div>
+
+<!-- ARTICLE 3 -->
+<div class="article-full container" id="art3">
+    <a href="#" class="back-link" onclick="hideArticle();return false"><i class="fas fa-arrow-left"></i> Back to blog</a>
+    <h1>How to Build a Crypto Portfolio That Actually Survives Bear Markets</h1>
+    <div class="meta"><i class="far fa-clock"></i> 7 min read &nbsp;|&nbsp; <i class="far fa-calendar"></i> June 2026 &nbsp;|&nbsp; Trading</div>
+    <div class="content">
+        <p>When Bitcoin dropped 70% in the 2022 bear market, most retail investors panicked and sold at massive losses. But those with a solid portfolio strategy? They survived. and many came out ahead when the market recovered. Here's how to build a portfolio designed for any market condition.</p>
+        <h2>The Core-Satellite Strategy</h2>
+        <p>The most effective portfolio structure for crypto is the <strong>core-satellite approach</strong>:</p>
+        <ul>
+            <li><strong>Core (60-70%):</strong> Bitcoin and Ethereum. These are the blue chips of crypto. established, liquid, and most likely to recover from any bear market.</li>
+            <li><strong>Satellite (20-30%):</strong> Established altcoins with real utility (SOL, AVAX, LINK). Higher risk, higher potential reward.</li>
+            <li><strong>Speculative (5-10%):</strong> Small-cap tokens, new projects, memecoins. Only invest what you're willing to lose entirely.</li>
+        </ul>
+        <h2>Dollar-Cost Averaging (DCA)</h2>
+        <p>Instead of trying to time the market (which nobody can do consistently), invest a fixed amount at regular intervals. <strong>Weekly or monthly DCA into your core positions</strong> smooths out volatility and removes emotion from the equation.</p>
+        <h2>The Rebalancing Rule</h2>
+        <p>Once per quarter, rebalance your portfolio back to your target allocation. If Bitcoin pumped and now represents 80% of your portfolio instead of 65%, sell some and redistribute. This automatically locks in profits and maintains your risk level.</p>
+        <h2>Set Your Bear Market Plan NOW</h2>
+        <p>The time to plan for a bear market is during the bull. Define in advance:</p>
+        <ul>
+            <li>At what loss percentage will you reduce positions?</li>
+            <li>How much cash reserve will you keep for buying opportunities?</li>
+            <li>Which assets will you hold through any downturn?</li>
+        </ul>
+        <p>Writing this down and committing to it removes the emotional decision-making that destroys portfolios.</p>
+        <p><strong>At Mentova Academy</strong>, our Trading Basics and Advanced modules teach these strategies in depth. with interactive tools to simulate portfolio allocations before you risk real money.</p>
+    </div>
+    <div class="article-cta"><h3>Learn to build a bulletproof portfolio</h3><p>VIP members get full access to our trading modules and portfolio simulator.</p><a href="/#pre-register">Reserve Your Founding Spot →</a></div>
+</div>
+
+<footer><div class="container">&copy; 2026 Mentova Academy Inc.. Canada 🍁</div></footer>
+
+<script>
+const API_URL='https://mentova-api.onrender.com';
+function showArticle(id){document.getElementById('blogList').style.display='none';document.getElementById(id).style.display='block';window.scrollTo(0,0)}
+function hideArticle(){document.querySelectorAll('.article-full').forEach(a=>a.style.display='none');document.getElementById('blogList').style.display='block';window.scrollTo(0,0)}
+async function subscribeBlog(){const e=document.getElementById('nlEmail').value.trim();const l=document.getElementById('nlLang').value;const m=document.getElementById('nlMsg');if(!e){m.style.display='block';m.style.color='var(--red)';m.textContent='Please enter your email.';return}
+try{const r=await fetch(API_URL+'/api/blog/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,language:l})});const d=await r.json();m.style.display='block';m.style.color='var(--green)';m.textContent=d.message==='already_subscribed'?'Already subscribed!':'Subscribed successfully!';}catch(err){m.style.display='block';m.style.color='var(--red)';m.textContent='Error. Try again.'}}
+</script>
+</body>
+</html>

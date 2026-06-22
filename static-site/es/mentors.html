@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2GLPG3JB9N"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-2GLPG3JB9N');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ser Mentor | Mentova Academy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root{--bg:#06060F;--bg-card:#0D0D1F;--purple:#7C3AED;--purple-light:#A78BFA;--purple-dark:#5B21B6;--green:#00D9A5;--gold:#FFD700;--text:#FFF;--text-muted:#8B8B9E;--text-dim:#6B6B7E;--border:rgba(124,58,237,0.15);--radius:16px}
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}a{color:var(--purple-light);text-decoration:none}.container{max-width:800px;margin:0 auto;padding:0 24px}
+        nav{padding:20px 0;border-bottom:1px solid var(--border)}nav .container{display:flex;align-items:center;justify-content:space-between;max-width:1100px}.logo{font-size:22px;font-weight:800}.logo span{color:var(--purple)}.nav-links{display:flex;gap:24px;align-items:center}.nav-links a{color:var(--text-muted);font-size:14px;font-weight:500}.nav-cta{background:var(--purple);color:#fff!important;padding:10px 22px;border-radius:10px;font-weight:700;font-size:14px}
+        .hero{padding:60px 0 40px;text-align:center}.hero h1{font-size:clamp(28px,4vw,44px);font-weight:800;margin-bottom:14px;line-height:1.15}.hero h1 .grad{background:linear-gradient(135deg,var(--gold),#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.hero p{color:var(--text-muted);font-size:16px;max-width:540px;margin:0 auto}
+
+        .why-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:40px 0}.why-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:22px;text-align:center}.why-card i{font-size:28px;margin-bottom:10px}.why-card h3{font-size:14px;margin-bottom:4px}.why-card p{font-size:12px;color:var(--text-muted)}
+        .req-box{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;margin:40px 0}.req-box h2{font-size:18px;margin-bottom:16px}.req-list{display:grid;gap:8px}.req-item{display:flex;gap:10px;font-size:14px;color:var(--text-muted)}.req-item i{color:var(--green);margin-top:3px}
+
+        .section-title{font-size:24px;font-weight:800;text-align:center;margin-bottom:28px}
+        .form-box{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:32px;max-width:640px;margin:0 auto 48px}
+        .form-group{margin-bottom:14px}.form-group label{display:block;font-size:12px;color:var(--text-muted);margin-bottom:5px;font-weight:600}
+        .form-input,.form-select,.form-textarea{width:100%;padding:12px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;outline:none;font-family:inherit}.form-input:focus,.form-textarea:focus{border-color:var(--purple)}.form-select{background:var(--bg);appearance:none}.form-textarea{min-height:80px;resize:vertical}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .form-section{font-size:13px;font-weight:700;color:var(--purple-light);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px;padding-top:16px;border-top:1px solid var(--border)}
+        .form-checkbox{display:flex;align-items:flex-start;gap:10px;margin:12px 0}.form-checkbox input{margin-top:3px;accent-color:var(--purple);width:16px;height:16px}.form-checkbox label{font-size:13px;color:var(--text-muted);cursor:pointer}
+        .form-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),#FFA500);color:#000;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;transition:all .3s;margin-top:12px}.form-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,215,0,0.3)}
+        .form-msg{text-align:center;padding:20px;border-radius:14px;margin-top:16px;display:none}.form-msg.success{display:block;background:rgba(0,217,165,0.08);border:1px solid rgba(0,217,165,0.2);color:var(--green)}
+        .form-note{font-size:11px;color:var(--text-dim);text-align:center;margin-top:12px;line-height:1.5}
+        footer{padding:32px 0;border-top:1px solid var(--border);text-align:center;font-size:12px;color:var(--text-dim)}
+        @media(max-width:768px){.why-cards{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.nav-links{display:none}}
+    </style>
+</head>
+<body>
+<nav><div class="container" style="max-width:1100px"><a href="/" class="logo">Mentova<span>.</span></a><div class="nav-links"><a href="/es/#pricing">Precios</a><a href="/es/blog">Blog</a><a href="/es/embajadores">Embajadores</a><a href="/es/#pre-register" class="nav-cta">Reservar Mi Lugar</a></div></div></nav>
+
+<section class="hero"><div class="container">
+    <h1>Enseña lo que sabes.<br><span class="grad">Y gana por ello.</span></h1>
+    <p>Únete a Mentova como mentor verificado. Comparte tu experiencia con miles de traders aprendiendo crypto en francés, inglés y español.</p>
+</div></section>
+
+<div class="container">
+    <div class="why-cards">
+        <div class="why-card"><i class="fas fa-wallet" style="color:var(--green)"></i><h3>Monetiza tu conocimiento</h3><p>Vende cursos, sesiones y contenido premium directamente a estudiantes</p></div>
+        <div class="why-card"><i class="fas fa-users" style="color:var(--purple-light)"></i><h3>Audiencia integrada</h3><p>Accede a miles de aprendices motivados desde el primer día</p></div>
+        <div class="why-card"><i class="fas fa-globe" style="color:var(--gold)"></i><h3>3 mercados lingüísticos</h3><p>Alcanza traders francófonos, anglófonos e hispanohablantes de todo el mundo</p></div>
+    </div>
+
+    <div class="req-box">
+        <h2>Requisitos</h2>
+        <div class="req-list">
+            <div class="req-item"><i class="fas fa-check"></i><span>Mínimo 2 años de experiencia verificable en trading o crypto</span></div>
+            <div class="req-item"><i class="fas fa-check"></i><span>Presencia activa en redes sociales o portafolio educativo</span></div>
+            <div class="req-item"><i class="fas fa-check"></i><span>Capacidad para crear contenido educativo de alta calidad</span></div>
+            <div class="req-item"><i class="fas fa-check"></i><span>Historial limpio (sin scams, sin promociones pump-and-dump)</span></div>
+            <div class="req-item"><i class="fas fa-check"></i><span>Disposición para crear contenido regular y conectar con estudiantes</span></div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Aplica para ser mentor</h2>
+    <div class="form-box">
+        <form id="mentorForm" onsubmit="submitMentor(event)">
+            <div class="form-section" style="margin-top:0;border:none;padding:0">Información personal</div>
+            <div class="form-row">
+                <div class="form-group"><label>Nombre *</label><input type="text" class="form-input" id="mFirst" required></div>
+                <div class="form-group"><label>Apellido *</label><input type="text" class="form-input" id="mLast" required></div>
+            </div>
+            <div class="form-group"><label>Correo *</label><input type="email" class="form-input" id="mEmail" required></div>
+            <div class="form-row">
+                <div class="form-group"><label>País *</label><input type="text" class="form-input" id="mCountry" required></div>
+                <div class="form-group"><label>Ciudad</label><input type="text" class="form-input" id="mCiudad"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Teléfono (opcional)</label><input type="tel" class="form-input" id="mPhone" placeholder="+1 555-0100"></div>
+                <div class="form-group"><label>Idioma(s) de enseñanza *</label><select class="form-select" id="mLang"><option value="FR">French</option><option value="EN">English</option><option value="ES">Spanish</option><option value="FR,EN">French + English</option><option value="EN,ES">English + Spanish</option><option value="FR,EN,ES">All three</option></select></div>
+            </div>
+
+            <div class="form-section">Redes sociales y presencia en línea</div>
+            <div class="form-row">
+                <div class="form-group"><label><i class="fab fa-youtube" style="color:#FF0000"></i> YouTube</label><input type="url" class="form-input" id="mYoutube"></div>
+                <div class="form-group"><label><i class="fab fa-instagram" style="color:#E4405F"></i> Instagram</label><input type="url" class="form-input" id="mInsta"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label><i class="fab fa-tiktok"></i> TikTok</label><input type="url" class="form-input" id="mTiktok"></div>
+                <div class="form-group"><label><i class="fab fa-x-twitter"></i> X / Twitter</label><input type="url" class="form-input" id="mTwitter"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label><i class="fab fa-linkedin" style="color:#0A66C2"></i> LinkedIn</label><input type="url" class="form-input" id="mLinkedin"></div>
+                <div class="form-group"><label><i class="fas fa-globe"></i> Sitio web / Portafolio</label><input type="url" class="form-input" id="mWebsite"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label><i class="fab fa-discord" style="color:#5865F2"></i> Discord</label><input type="text" class="form-input" id="mDiscord"></div>
+                <div class="form-group"><label><i class="fab fa-telegram" style="color:#0088cc"></i> Telegram</label><input type="text" class="form-input" id="mTelegram"></div>
+            </div>
+
+            <div class="form-section">Experiencia y especialización</div>
+            <div class="form-row">
+                <div class="form-group"><label>Años en crypto *</label><select class="form-select" id="mYears"><option value="2-3">2-3 years</option><option value="3-5">3-5 years</option><option value="5-10">5-10 years</option><option value="10+">10+ years</option></select></div>
+                <div class="form-group"><label>Especialidad *</label><select class="form-select" id="mSpecialty"><option value="trading">Trading (Spot & Futures)</option><option value="technical-analysis">Technical Analysis</option><option value="defi">DeFi & Yield Farming</option><option value="nft">NFTs & Digital Assets</option><option value="blockchain-dev">Blockchain Development</option><option value="security">Security & Risk</option><option value="fundamentals">Crypto Fundamentals</option><option value="macro">Macro & Institutional</option><option value="other">Other</option></select></div>
+            </div>
+            <div class="form-group"><label>Estilo de trading (si aplica)</label><select class="form-select" id="mStyle"><option value="na">N/A</option><option value="day-trading">Day Trading</option><option value="swing">Swing Trading</option><option value="scalping">Scalping</option><option value="position">Position / Long-term</option><option value="algo">Algorithmic</option></select></div>
+            <div class="form-group"><label>Certificaciones o credenciales (opcional)</label><input type="text" class="form-input" id="mCerts" placeholder="CFA, CMT, university degrees, etc."></div>
+            <div class="form-group"><label>Audiencia total en todas las plataformas *</label><select class="form-select" id="mAudience"><option value="under-1k">Under 1K</option><option value="1k-10k">1K - 10K</option><option value="10k-50k">10K - 50K</option><option value="50k-100k">50K - 100K</option><option value="100k+">100K+</option></select></div>
+
+            <div class="form-section">Enseñanza y contenido</div>
+            <div class="form-group"><label>Experiencia de enseñanza *</label><textarea class="form-textarea" id="mTeaching" required placeholder="Describe tu experiencia enseñando: courses created, students taught, coaching sessions, etc."></textarea></div>
+            <div class="form-group"><label>¿Qué tipo de contenido crearías en Mentova? *</label><textarea class="form-textarea" id="mContent" required placeholder="Video courses, written modules, live sessions, 1-on-1 coaching, etc."></textarea></div>
+            <div class="form-group"><label>Enlace a contenido ejemplo (video, artículo, curso)</label><input type="url" class="form-input" id="mSample" placeholder="https://..."></div>
+
+            <div class="form-section">Motivation</div>
+            <div class="form-group"><label>¿Por qué quieres ser mentor de Mentova? *</label><textarea class="form-textarea" id="mWhy" required placeholder="¿Qué te motiva a enseñar? ¿Por qué Mentova?"></textarea></div>
+            <div class="form-group"><label>¿Qué te diferencia de otros educadores crypto?</label><textarea class="form-textarea" id="mDiff" placeholder="Tu propuesta de valor única, enfoque, resultados..."></textarea></div>
+
+            <div class="form-section">Compromiso</div>
+            <div class="form-checkbox"><input type="checkbox" id="mVerify" required><label for="mVerify">Confirmo que toda la información es precisa y verificable. Entiendo que Mentova revisará mi perfil.</label></div>
+            <div class="form-checkbox"><input type="checkbox" id="mTerms" required><label for="mTerms">Acepto los <a href="/terms.html">Términos de servicio</a> and <a href="/privacy.html">Política de privacidad</a>.</label></div>
+
+            <button type="submit" class="form-btn">Enviar solicitud de mentor</button>
+        </form>
+        <div class="form-msg" id="mentorMsg"></div>
+        <p class="form-note">Las solicitudes se revisan manualmente en 5 días hábiles. Recibirás un correo con nuestra decisión. Mentova se reserva el derecho de rechazar cualquier solicitud.</p>
+    </div>
+</div>
+
+<footer><div class="container">&copy; 2026 Mentova Academy Inc. | Canada 🍁</div></footer>
+
+<script>
+const API_URL='https://mentova-api.onrender.com';
+async function submitMentor(e){e.preventDefault();
+const data={type:'mentor',name:document.getElementById('mFirst').value+' '+document.getElementById('mLast').value,email:document.getElementById('mEmail').value,country:document.getElementById('mCountry').value,city:document.getElementById('mCiudad').value,phone:document.getElementById('mPhone').value,language:document.getElementById('mLang').value,years_experience:document.getElementById('mYears').value,specialty:document.getElementById('mSpecialty').value,trading_style:document.getElementById('mStyle').value,certifications:document.getElementById('mCerts').value,audience_size:document.getElementById('mAudience').value,social_links:{youtube:document.getElementById('mYoutube').value,instagram:document.getElementById('mInsta').value,tiktok:document.getElementById('mTiktok').value,twitter:document.getElementById('mTwitter').value,linkedin:document.getElementById('mLinkedin').value,website:document.getElementById('mWebsite').value,discord:document.getElementById('mDiscord').value,telegram:document.getElementById('mTelegram').value},teaching_experience:document.getElementById('mTeaching').value,content_plan:document.getElementById('mContent').value,sample_link:document.getElementById('mSample').value,motivation:document.getElementById('mWhy').value,differentiator:document.getElementById('mDiff').value};
+try{await fetch(API_URL+'/api/mentor/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});document.getElementById('mentorForm').style.display='none';const m=document.getElementById('mentorMsg');m.className='form-msg success';m.innerHTML='<strong>¡Solicitud enviada!</strong><br>Revisamos cada solicitud en 5 días hábiles.<br><br><div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:12px;margin-top:8px;color:#C2410C;font-size:13px;font-weight:600;">Si no ves nuestro correo, revisa tu carpeta de correo no deseado (spam).</div>';}catch(err){alert('Error. Please try again.')}}
+</script>
+</body>
+</html>

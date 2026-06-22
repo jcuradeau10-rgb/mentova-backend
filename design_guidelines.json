@@ -1,0 +1,178 @@
+{
+  "identity": "E1: The Anti-AI Designer",
+  "mission": "Create a VIP experience that feels like a secret society entrance - dark, mysterious, luxurious, and technologically advanced.",
+  "design_system": {
+    "colors": {
+      "background": {
+        "primary": "#050505",
+        "secondary": "#0A0A0F",
+        "tertiary": "#12121A",
+        "glass": "rgba(20, 20, 30, 0.6)"
+      },
+      "brand": {
+        "gold": "#FFD700",
+        "goldDim": "#C5A000",
+        "goldGlow": "rgba(255, 215, 0, 0.3)",
+        "cyan": "#00F0FF",
+        "cyanDim": "#00A0AA",
+        "purple": "#7C3AED",
+        "purpleGlow": "rgba(124, 58, 237, 0.4)",
+        "danger": "#FF3B30",
+        "success": "#34C759"
+      },
+      "text": {
+        "primary": "#FFFFFF",
+        "secondary": "#A1A1AA",
+        "tertiary": "#52525B",
+        "gold": "#FFE55C"
+      },
+      "border": {
+        "subtle": "rgba(255, 255, 255, 0.08)",
+        "highlight": "rgba(255, 255, 255, 0.15)",
+        "gold": "rgba(255, 215, 0, 0.3)"
+      }
+    },
+    "typography": {
+      "fontFamily": "System",
+      "weights": {
+        "thin": "100",
+        "light": "300",
+        "regular": "400",
+        "medium": "500",
+        "bold": "700",
+        "black": "900"
+      },
+      "sizes": {
+        "xs": 12,
+        "sm": 14,
+        "base": 16,
+        "lg": 18,
+        "xl": 20,
+        "2xl": 24,
+        "3xl": 30,
+        "4xl": 36,
+        "5xl": 48,
+        "hero": 64
+      }
+    },
+    "spacing": {
+      "xs": 4,
+      "sm": 8,
+      "md": 16,
+      "lg": 24,
+      "xl": 32,
+      "2xl": 48,
+      "3xl": 64
+    },
+    "borderRadius": {
+      "sm": 8,
+      "md": 12,
+      "lg": 16,
+      "xl": 24,
+      "pill": 9999
+    },
+    "shadows": {
+      "neonGold": {
+        "shadowColor": "#FFD700",
+        "shadowOffset": { "width": 0, "height": 0 },
+        "shadowOpacity": 0.5,
+        "shadowRadius": 10,
+        "elevation": 5
+      },
+      "neonCyan": {
+        "shadowColor": "#00F0FF",
+        "shadowOffset": { "width": 0, "height": 0 },
+        "shadowOpacity": 0.5,
+        "shadowRadius": 10,
+        "elevation": 5
+      },
+      "subtle": {
+        "shadowColor": "#000",
+        "shadowOffset": { "width": 0, "height": 4 },
+        "shadowOpacity": 0.2,
+        "shadowRadius": 8,
+        "elevation": 2
+      }
+    }
+  },
+  "layout_strategy": {
+    "vip_landing": {
+      "hero": {
+        "style": "Cinematic",
+        "description": "Full-screen dark gradient background with abstract geometric overlay. Center-aligned 'Exclusive' content. Floating 3D-style diamond/crown icon."
+      },
+      "pricing": {
+        "style": "Glassmorphism",
+        "description": "Cards with 'blur' background, thin gold borders, and glowing 'Subscribe' button."
+      },
+      "features": {
+        "style": "Grid",
+        "description": "2-column grid of feature cards. Each card has a subtle gradient background and a glowing icon."
+      }
+    },
+    "vip_hub": {
+      "layout": "Bento Grid",
+      "description": "A dense dashboard layout. Primary tool takes 2x2 space. Secondary stats take 1x1. Scrollable horizontal lists for 'Stories' and 'Marketplace'.",
+      "navigation": "Tab Bar with Neon Active State"
+    }
+  },
+  "components": {
+    "GradientBackground": {
+      "props": {
+        "colors": ["#050505", "#0F0F1A", "#050505"],
+        "start": { "x": 0, "y": 0 },
+        "end": { "x": 1, "y": 1 }
+      }
+    },
+    "GlassCard": {
+      "style": {
+        "backgroundColor": "rgba(20, 20, 30, 0.6)",
+        "borderColor": "rgba(255, 255, 255, 0.1)",
+        "borderWidth": 1,
+        "borderRadius": 20,
+        "overflow": "hidden"
+      },
+      "webStyle": {
+        "backdropFilter": "blur(20px)"
+      }
+    },
+    "NeonButton": {
+      "style": {
+        "backgroundColor": "transparent",
+        "borderWidth": 1,
+        "borderColor": "#FFD700",
+        "shadowColor": "#FFD700",
+        "shadowRadius": 10
+      },
+      "textStyle": {
+        "color": "#FFD700",
+        "fontWeight": "bold",
+        "textTransform": "uppercase",
+        "letterSpacing": 1
+      }
+    }
+  },
+  "image_urls": {
+    "hero_background": "https://images.unsplash.com/photo-1748525874503-7ed3db0ccccf",
+    "vip_gold_coin": "https://images.unsplash.com/photo-1642131449810-4960a9de20ce",
+    "abstract_network": "https://images.unsplash.com/photo-1642432556591-72cbc671b707",
+    "trading_hologram": "https://images.unsplash.com/photo-1745620984416-8b3b0eccce74"
+  },
+  "universal_guidelines": [
+    "Do not use generic gray backgrounds. Use tinted blacks (#0A0A10).",
+    "Typography must be readable but stylish. Use 'Light' weight for large headings.",
+    "Buttons must have a 'pressed' state animation (scale down to 0.98).",
+    "Lists must have staggered entrance animations.",
+    "Use 'expo-linear-gradient' for all primary backgrounds.",
+    "Use 'react-native-reanimated' for all animations.",
+    "Ensure 'data-testid' is present on all interactive elements.",
+    "For Web compatibility, ensure styles work on both Mobile and Web (avoid platform-specific properties without checks)."
+  ],
+  "instructions_to_main_agent": [
+    "Phase 1: Update 'vip/index.tsx' with the new 'Cinematic' design. Use the 'hero_background' image with an overlay.",
+    "Phase 2: Refactor 'vip/hub.tsx'. Break down the massive file into smaller components if possible, or organize sections clearly using the 'Bento Grid' layout strategy.",
+    "Phase 3: Apply the 'Glassmorphism' style to all cards in the Hub.",
+    "Phase 4: Add 'Reanimated' entrance animations to the Hub widgets.",
+    "Phase 5: Ensure the 'Gold' and 'Cyan' neon theme is consistent across both pages."
+  ]
+}

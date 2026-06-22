@@ -1,0 +1,1391 @@
+{
+  "pre_registrations": [
+    {
+      "_id": "6a3342a17a8f6d83506ad695",
+      "email": "test-founder@example.com",
+      "language": "FR",
+      "founder_number": 1,
+      "wave": 1,
+      "referral_code": "MNT-4D7A7",
+      "referred_by": null,
+      "referral_count": 0,
+      "free_months_earned": 0,
+      "free_months_applied": false,
+      "committed": true,
+      "status": "pre_registered",
+      "vip_price_locked": 9.99,
+      "vip_price_lock_expires_at": "2026-09-09T00:00:00+00:00",
+      "founding_member_badge": true,
+      "vip_activated_at": null,
+      "created_at": "2026-06-18T00:58:09.882763+00:00"
+    },
+    {
+      "_id": "6a3343fec4f98f799a02a8af",
+      "email": "newfounder@test.com",
+      "language": "EN",
+      "founder_number": 2,
+      "wave": 1,
+      "referral_code": "MNT-WUU23",
+      "referred_by": null,
+      "referral_count": 0,
+      "free_months_earned": 0,
+      "free_months_applied": false,
+      "committed": true,
+      "status": "pre_registered",
+      "vip_price_locked": 9.99,
+      "vip_price_lock_expires_at": "2026-09-09T00:00:00+00:00",
+      "founding_member_badge": true,
+      "vip_activated_at": null,
+      "created_at": "2026-06-18T01:03:58.458409+00:00"
+    },
+    {
+      "_id": "6a3348adc2c7f96704b50fee",
+      "email": "founder-test@example.com",
+      "language": "FR",
+      "founder_number": 3,
+      "wave": 1,
+      "referral_code": "MNT-L33VC",
+      "referred_by": null,
+      "referral_count": 0,
+      "free_months_earned": 0,
+      "free_months_applied": false,
+      "committed": true,
+      "status": "pre_registered",
+      "vip_price_locked": 9.99,
+      "vip_price_lock_expires_at": "2026-09-09T00:00:00+00:00",
+      "founding_member_badge": true,
+      "vip_activated_at": null,
+      "created_at": "2026-06-18T01:23:57.289867+00:00"
+    },
+    {
+      "_id": "6a334d2d31366ef0de401826",
+      "email": "test-email-verify@mentova-academy.com",
+      "language": "EN",
+      "founder_number": 4,
+      "wave": 1,
+      "referral_code": "MNT-QBRKQ",
+      "referred_by": null,
+      "referral_count": 0,
+      "free_months_earned": 0,
+      "free_months_applied": false,
+      "committed": true,
+      "status": "pre_registered",
+      "vip_price_locked": 9.99,
+      "vip_price_lock_expires_at": "2026-09-09T00:00:00+00:00",
+      "founding_member_badge": true,
+      "vip_activated_at": null,
+      "created_at": "2026-06-18T01:43:09.858690+00:00"
+    },
+    {
+      "_id": "6a33514b2f9317b9f63047af",
+      "email": "design-preview@mentova-academy.com",
+      "language": "EN",
+      "founder_number": 5,
+      "wave": 1,
+      "referral_code": "MNT-4EYNX",
+      "referred_by": null,
+      "referral_count": 0,
+      "free_months_earned": 0,
+      "free_months_applied": false,
+      "committed": true,
+      "status": "pre_registered",
+      "vip_price_locked": 9.99,
+      "vip_price_lock_expires_at": "2026-09-09T00:00:00+00:00",
+      "founding_member_badge": true,
+      "vip_activated_at": null,
+      "created_at": "2026-06-18T02:00:43.037263+00:00"
+    },
+    {
+      "_id": "6a3368ebd0f382036091995b",
+      "email": "justin.curadeau.qc@hotmail.com",
+      "language": "FR",
+      "founder_number": 6,
+      "wave": 1,
+      "referral_code": "MNT-M8SQF",
+      "referred_by": null,
+      "referral_count": 1,
+      "free_months_earned": 0,
+      "free_months_applied": false,
+      "committed": true,
+      "status": "pre_registered",
+      "vip_price_locked": 9.99,
+      "vip_price_lock_expires_at": "2026-09-09T00:00:00+00:00",
+      "founding_member_badge": true,
+      "vip_activated_at": null,
+      "created_at": "2026-06-18T03:41:31.121192+00:00"
+    },
+    {
+      "_id": "6a3384d7f6c1e0ecb1066135",
+      "email": "jcuradeau.7@hotmail.com",
+      "language": "FR",
+      "founder_number": 7,
+      "wave": 1,
+      "referral_code": "MNT-2B5OW",
+      "referred_by": "MNT-M8SQF",
+      "referral_count": 0,
+      "free_months_earned": 0,
+      "free_months_applied": false,
+      "committed": true,
+      "status": "pre_registered",
+      "vip_price_locked": 9.99,
+      "vip_price_lock_expires_at": "2026-09-09T00:00:00+00:00",
+      "founding_member_badge": true,
+      "vip_activated_at": null,
+      "created_at": "2026-06-18T05:40:39.195814+00:00"
+    }
+  ],
+  "users": [
+    {
+      "_id": "698b409550765eb235422641",
+      "id": "38883783-7ae6-43e9-a59d-c5a00dfe5d79",
+      "email": "test@cryptonai.com",
+      "name": "Lucas Martin",
+      "password_hash": "$2b$12$jHCsGjbXNpZeUbtPusR04ePmXvECb9CYD4Y92mOSYAd4dqyvfznny",
+      "created_at": "2026-02-10T14:28:37.387000",
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "is_vip": true
+    },
+    {
+      "_id": "698b411f50765eb235422642",
+      "id": "43109391-e71b-4118-acd3-dcf63088c939",
+      "email": "tester@cryptonai.com",
+      "name": "Alexandre Moreau",
+      "password_hash": "$2b$12$t3kyxC11YpcuqjVY0GU3FePiVkiqAKOotebEDQluLKNicaKl9F82a",
+      "created_at": "2026-02-10T14:30:55.527000",
+      "progress": {
+        "modules_completed": [
+          "intro-crypto"
+        ],
+        "current_level": "beginner",
+        "total_score": 85
+      },
+      "is_banned": false,
+      "is_vip": false
+    },
+    {
+      "_id": "698b422858aad5d8afc86b0a",
+      "id": "3d8ab8bb-7e9d-463d-bcb8-824b40a5ba32",
+      "email": "demo123@cryptonai.com",
+      "name": "Sarah Chen",
+      "password_hash": "$2b$12$qMmgfz2WKtSlQEr.2rgOl.fjyTe1MGcWEGGLnwwtKGBcOuAo27YsO",
+      "created_at": "2026-02-10T14:35:20.834000",
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "is_vip": true
+    },
+    {
+      "_id": "698b441658aad5d8afc86b0b",
+      "id": "3022d23d-11a1-4fbb-849a-0cddb379d65f",
+      "email": "jcuradeau.7@gmail.com",
+      "name": "Mike price",
+      "password_hash": "$2b$12$tu7z51MOvqBtRy6QyrGvNeKgplTAbru5SNGemL3xyLdAG1G8Brxou",
+      "created_at": "2026-02-10T14:43:34.821000",
+      "progress": {
+        "modules_completed": [
+          "intro-crypto",
+          "intro-crypto-what-is-crypto",
+          "intro-crypto-blockchain-basics",
+          "intro-crypto-bitcoin-intro",
+          "security-basics-scam-detection",
+          "security-basics-wallet-security",
+          "security-basics-common-mistakes",
+          "market-analysis-reading-charts",
+          "market-analysis-market-trends",
+          "market-analysis-project-analysis",
+          "investment-strategies-dca-strategy",
+          "investment-strategies-portfolio-diversification",
+          "investment-strategies-risk-management"
+        ],
+        "current_level": "advanced",
+        "total_score": 280
+      },
+      "community_score": 64,
+      "role": "super_admin",
+      "is_banned": false,
+      "gamification_points": 385,
+      "is_vip": true,
+      "vip_expires_at": null,
+      "smart_money_views": 27,
+      "vip_activated_at": "2026-02-22T02:06:55.919352+00:00",
+      "is_professional": true,
+      "pro_badge": "verified",
+      "password": "$2b$12$PQNC4fCZeYznWj8WsuM4J.LvhWzLgFvepmtiivWeKU.ca26V639gu",
+      "totp_backup_codes_pending": [
+        "A666190A",
+        "7ACDCB5C",
+        "274697FB",
+        "DD5245F3",
+        "5A00047C",
+        "3FAC9417",
+        "6B538A46",
+        "292F776F"
+      ],
+      "totp_secret_pending": "2U7USYZWVTLUPIVZWGHMIZFTKYWXDWOB",
+      "is_influencer": true,
+      "vip_permanent": true
+    },
+    {
+      "_id": "698b4714669861cd8d7e41cd",
+      "id": "5d49d4f5-1e8a-4a2a-85d5-69412394e542",
+      "email": "community_test@cryptonai.com",
+      "name": "Thomas Dubois",
+      "password_hash": "$2b$12$VtPPZMf0B24TTaSO/ERIWOKf1sTLZPGAGNc554cCcu2DlN.uq1y86",
+      "created_at": "2026-02-10T14:56:20.055000",
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "community_score": 17,
+      "is_banned": false,
+      "is_professional": false,
+      "is_vip": false
+    },
+    {
+      "_id": "698b47f56d91962b7d955eaf",
+      "id": "5c2fa816-9586-4074-b9ed-9c2ad1e65bb0",
+      "email": "testcommunity123@test.com",
+      "name": "Emma Rodriguez",
+      "password_hash": "$2b$12$t0ketJmX.7.tTcjOiy0xr.0kCwWPiCVU.vnvli4Zvld/uc9JRHDS2",
+      "created_at": "2026-02-10T15:00:05.366000",
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "is_banned": false,
+      "is_vip": false
+    },
+    {
+      "_id": "699924b91f7e13de1e035773",
+      "id": "eeab76cb-59a4-4642-82c1-694c348a5fe3",
+      "email": "admin@cryptonai.com",
+      "name": "Super Admin",
+      "password_hash": "$2b$12$De50NznYwzjtlny3FOLEi.86chqnIswtecfQ.TKnHmLQJMaphd/Uu",
+      "role": "super_admin",
+      "is_banned": false,
+      "community_score": 100,
+      "created_at": "2026-02-21T03:21:29.372000",
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "is_vip": true,
+      "vip_expires_at": "2027-02-22T02:46:11.144727+00:00",
+      "smart_money_views": 40,
+      "gamification_points": 335,
+      "is_professional": false,
+      "password_changed_at": "2026-03-09T02:28:36.141898+00:00",
+      "totp_backup_codes_pending": [
+        "E2F344E6",
+        "59DD34B8",
+        "2BBC170D",
+        "C6C062A4",
+        "32117B7E",
+        "D1F2AE57",
+        "E42CF579",
+        "100EEC13"
+      ],
+      "totp_secret_pending": "7UK74DKHHS7CER3VXC3RNMEXYPTQWB5V",
+      "biometric_enabled": true
+    },
+    {
+      "_id": "699925258f5c83187aaa7d00",
+      "id": "5b283023-b9e8-4ee7-8ce3-4e7141f536ed",
+      "email": "jcuradeau.10@hotmail.com",
+      "name": "mikeee",
+      "password_hash": "$2b$12$5m5loIj660ebMfBxvWa9CeAypnEv7/xe8w2RD14mq6TlMOfdAwpKu",
+      "created_at": "2026-02-21T03:23:17.940000",
+      "role": "admin",
+      "is_banned": false,
+      "community_score": 5,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "is_vip": false,
+      "vip_activated_at": "2026-03-09T04:12:22.976804+00:00",
+      "vip_expires_at": "2026-05-23T14:56:02.873813+00:00"
+    },
+    {
+      "_id": "6999bc1701655ebdab1aa2c2",
+      "id": "53f8f279-6a29-4921-9593-eb2a1cd0c2ae",
+      "email": "jadethauvette@gmail.com",
+      "name": "Jade Thauvette",
+      "password_hash": "$2b$12$6qkZyHVFMau9HEMF3D/wfO0Ex536SIkgygQ6Gj6sCVQ/vvHlZkdIy",
+      "created_at": "2026-02-21T14:07:19.948000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "699a650ed455be9306364725",
+      "id": "b99b6c70-cd1a-4e27-99c1-e45f6e40ff94",
+      "email": "test_non_vip@example.com",
+      "name": "Nathan Berger",
+      "password_hash": "$2b$12$c.GX9VARWkSF47I0eqA4CO1NAlVmLYyaJM5idFhVxverT6VICiefe",
+      "created_at": "2026-02-22T02:08:14.599000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "is_vip": false
+    },
+    {
+      "_id": "699ba2ef474f7a7b88acabdf",
+      "id": "b6618c86-3b2d-4dea-88d8-d50a7b0268b8",
+      "email": "test_notif_user@cryptonai.com",
+      "name": "TEST_Notification_User",
+      "password_hash": "$2b$12$sR5QV4XnDxf6OmnUIwXD8Ox6Z2t9zjK3SCSNoJaW4KNRjUhWG04Sa",
+      "created_at": "2026-02-23T00:44:31.547000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "is_vip": true,
+      "vip_expires_at": "2026-03-25T00:46:06.741522+00:00"
+    },
+    {
+      "_id": "69a0d75daa0e95f8f2169ece",
+      "id": "ae69ba1f-10a8-42d4-868f-4e3acd2e2bec",
+      "email": "betnet.ca@hotmail.com",
+      "name": "test",
+      "password_hash": "$2b$12$Oq/nPJ..JextSn2ev7YWYOqZbsoTwfWp0eHxEYITQJBfScMYDElvO",
+      "created_at": "2026-02-26T23:29:33.937000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 25,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a1f9f3357891d115618089",
+      "id": "e5e3431b-522e-4443-b32b-3080ff79aab6",
+      "email": "pro_test@cryptonai.com",
+      "name": "Pro Tester",
+      "password_hash": "$2b$12$Ijdk8CZ46c2r2.XG5UhSTut84p1h75BPFXepbFHlOTZV8bIvFne7K",
+      "created_at": "2026-02-27T20:09:23.734000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "is_professional": false
+    },
+    {
+      "_id": "69a1fb42a99cfa10f89573f0",
+      "id": "a71531ea-2dcf-40aa-aa42-da7e9b66ab23",
+      "email": "test_pro_apply_8d1912f5@cryptonai.com",
+      "name": "Test Pro Applicant",
+      "password_hash": "$2b$12$JLexTcvj3bHzrtjvxukIHu8hKty6voTidO7gLmD5CKJi9D448iWUK",
+      "created_at": "2026-02-27T20:14:58.098000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "is_professional": false
+    },
+    {
+      "_id": "69a1fee8adb7de23833fa7e6",
+      "id": "d9afa473-d897-4c91-9a0f-284216be8acc",
+      "email": "test@example.com",
+      "name": "Regular Test User",
+      "password_hash": "$2b$12$xj9K11ZaYxQO/cU6FnovE.TCA7SKytrX9NJ1fWB7wb6AkgeKvGgy.",
+      "created_at": "2026-02-27T20:30:32.508000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a20140a8acf97bf51b221a",
+      "id": "b2f47c47-1602-4de0-8f80-10334a46a108",
+      "email": "client_test@cryptonai.com",
+      "name": "Client Test",
+      "password_hash": "$2b$12$4WKnzGG7NMtSQd0pK/M6qe3WQm4uvyZBcMnZUWgaN4FhOaEqHCs6S",
+      "created_at": "2026-02-27T20:40:32.992000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "is_vip": true,
+      "vip_expires_at": "2026-03-29T21:12:45.221866+00:00",
+      "is_professional": false
+    },
+    {
+      "_id": "69a20f0948da1fe30bde7b70",
+      "id": "a889098e-6d27-4ac6-894f-bc686745efa7",
+      "email": "testpro@test.com",
+      "name": "Test Pro",
+      "password_hash": "$2b$12$eioxcEYWII.XTJ2HvhsfXe16cFIybJjxZmI3iFuQODBRgxrbNEtvi",
+      "created_at": "2026-02-27T21:39:21.333000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a20f1f48da1fe30bde7b72",
+      "id": "f479acef-844f-41b5-8e51-ba00d9850341",
+      "email": "testpro2@test.com",
+      "name": "Test Pro 2",
+      "password_hash": "$2b$12$.l6it5ohtUJ4jWEJB1y2D./qFiYTZVcCj70shTUx8czTjsg/8GoxS",
+      "created_at": "2026-02-27T21:39:43.886000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a21034526b3bb54267d6e8",
+      "id": "79383d78-adf2-4938-9f27-cc3c37efe4e0",
+      "email": "test_pro_apply_3740b297@test.com",
+      "name": "Test Pro Applicant",
+      "password_hash": "$2b$12$3LD5oh3tHo4fshMmgcHvLe.Pg7qS9egrCC4E1oWZPgX0ws8ZR7ef6",
+      "created_at": "2026-02-27T21:44:20.891000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a2106fe7442294c529e70c",
+      "id": "ac4f9fbf-cf54-4bc3-b6d9-5b5c168a0815",
+      "email": "uitest_50921@test.com",
+      "name": "UI Test Pro User",
+      "password_hash": "$2b$12$QqT7ytp010UPnlaKJYdA7e.dmOt4PloaJ48.kY6hwlDDZzokRXJrq",
+      "created_at": "2026-02-27T21:45:19.976000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a2108ae7442294c529e70d",
+      "id": "9bfbdc62-e6c1-4bf4-b54d-e370fa79c4f6",
+      "email": "protest_14963@test.com",
+      "name": "Pro Tester",
+      "password_hash": "$2b$12$KxNXpzPUzbrlywxx/58L1uxjmqlenhj1CR4fQi829ifWvseFrgoR.",
+      "created_at": "2026-02-27T21:45:46.847000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a210bfe7442294c529e70e",
+      "id": "99bbebec-e071-49d5-8db3-2113fbfa7cb1",
+      "email": "applytest_94002@test.com",
+      "name": "Apply Tester",
+      "password_hash": "$2b$12$FlNQXP5kFgYG/TUTR/SKD.YoiyxYMylk9Rggach7UQagHuuIYvm82",
+      "created_at": "2026-02-27T21:46:39.651000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a210eae7442294c529e70f",
+      "id": "b1d070b9-5cd5-425b-a911-4979dd8571f1",
+      "email": "fulltest_25014@test.com",
+      "name": "Full Test Pro",
+      "password_hash": "$2b$12$k0wejyBYvT/vuwMU6MXYl.jeTgIe475Qxmkx00nZiBJWj56M4rf3G",
+      "created_at": "2026-02-27T21:47:22.440000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "is_professional": false
+    },
+    {
+      "_id": "69a21632d38d0f9b814bd2ea",
+      "id": "430d7413-553e-4297-9c06-0a6d59b6b9a2",
+      "email": "testreport@test.com",
+      "name": "Test Report User",
+      "password_hash": "$2b$12$5E.I8CxZ.1ZEFaGav40LPeCPMvYnHpOusOhAGkSu3WylDz6j6Akem",
+      "created_at": "2026-02-27T22:09:54.014000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a21641d38d0f9b814bd2ed",
+      "id": "da185673-37aa-4e66-8bff-2e1a183859a3",
+      "email": "testemail@test.com",
+      "name": "Test Email User",
+      "password_hash": "$2b$12$JoCGk3wL/fMJRWc5x0yKruCGTuEjdVWJn0G2Zjy8.BEYd9mo6ykNi",
+      "created_at": "2026-02-27T22:10:09.763000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "is_professional": false
+    },
+    {
+      "_id": "69a21667971327ac21fc8f9d",
+      "id": "687cefcf-e4c7-4523-9641-8902b9b87b26",
+      "email": "testemail2@test.com",
+      "name": "Test Email User 2",
+      "password_hash": "$2b$12$yeiaH3GQQQTw.CHuiJ8Rqe4r5atWu61L8S1y2sOKVygiiCrxrUdNK",
+      "created_at": "2026-02-27T22:10:47.650000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "is_professional": false
+    },
+    {
+      "_id": "69a216bbcf7248f983a8550d",
+      "id": "a0fc005c-0751-4868-b828-0360210652d6",
+      "email": "test_reporter_dcbb65ac@test.com",
+      "name": "Test Reporter dcbb65ac",
+      "password_hash": "$2b$12$zu6GTJ1w6uiUuD0o170IzOq7vDZDCzwXPjJ1HN2OrCLnDaRjtLvKG",
+      "created_at": "2026-02-27T22:12:11.826000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a216bccf7248f983a8550e",
+      "id": "6eca5408-264f-4991-87a1-f183d37e7582",
+      "email": "test_target_7679ab03@test.com",
+      "name": "Test Target 7679ab03",
+      "password_hash": "$2b$12$gS6uRpACequc/3kVnBHzN.whH9HgjE5HKrNh4H3jNS4eMGzBfu5Ci",
+      "created_at": "2026-02-27T22:12:12.172000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a216bccf7248f983a85511",
+      "id": "43e91694-2c98-420e-94dc-7019eef618fa",
+      "email": "test_reporter_cbeb69c5@test.com",
+      "name": "Test Reporter cbeb69c5",
+      "password_hash": "$2b$12$QMVnxn0Sva92Ipte7dn4c.dN76atJacPtc7WxurVzvkSGO6Wgq5pu",
+      "created_at": "2026-02-27T22:12:12.619000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a216bccf7248f983a85512",
+      "id": "289463e2-e286-4e9c-9f7e-167f9ee1dc14",
+      "email": "test_target_59fdca1b@test.com",
+      "name": "Test Target 59fdca1b",
+      "password_hash": "$2b$12$wFIVMfcpO/hekNd6cCeGOuOJmR/8IsYLQkDzhuLidsRk6t0SDo/Ii",
+      "created_at": "2026-02-27T22:12:12.952000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a216bdcf7248f983a85513",
+      "id": "9737c22d-ddb0-4256-a51d-0b6765e9a297",
+      "email": "test_reporter_33b5405a@test.com",
+      "name": "Test Reporter 33b5405a",
+      "password_hash": "$2b$12$kC3VRmscpFs3jBFyFIBCLOoza/tGTTBaxNDCIA3/FmPqzPN0iyzpS",
+      "created_at": "2026-02-27T22:12:13.413000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a216becf7248f983a85514",
+      "id": "a729f2cf-f7be-4f19-b8b2-11f6ae0e36aa",
+      "email": "test_reporter_6f0b875c@test.com",
+      "name": "Test Reporter 6f0b875c",
+      "password_hash": "$2b$12$acP6DK2wxEfU6WfZqh5qGOkcSZvj0.M.e4mO/BsidGZCayezhOFzq",
+      "created_at": "2026-02-27T22:12:14.018000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a217d6cf7248f983a85517",
+      "id": "ff6a33aa-363b-489f-9cf6-482242ef8788",
+      "email": "reporter_test@test.com",
+      "name": "Test Reporter",
+      "password_hash": "$2b$12$5UsDyDt/A8n.bTnnpfZ0JOAj00AA9n.PgiLwNkw5dEENxIrhsO3ZO",
+      "created_at": "2026-02-27T22:16:54.579000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a21ada6d57a566579b5889",
+      "id": "f8492e86-62ac-4ae4-a685-dbc4c2f5dbd0",
+      "email": "test_reports_1cc9d0b8@test.com",
+      "name": "Test Reporter",
+      "password_hash": "$2b$12$L9yIzWK9zvCzOafsPxzcfej12eipldLaYLGq60I2/bhk7uc9OUOAG",
+      "created_at": "2026-02-27T22:29:46.529000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a21aeca1f4f1a6a26799db",
+      "id": "68aa8021-f68b-4e7b-9291-592e2ed9cbb6",
+      "email": "test_reports_d6c7ad72@test.com",
+      "name": "Test Reporter",
+      "password_hash": "$2b$12$3JYgQknU/iyz.66qAfIm0eHPTDk0T.BSueanYHVUdmctYqMhvjajO",
+      "created_at": "2026-02-27T22:30:04.194000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a21d9f45805563addd9749",
+      "id": "7785a6e5-8d3e-4dbe-b6b2-49222f49208c",
+      "email": "test_reports_5d8913d3@test.com",
+      "name": "Test Reporter",
+      "password_hash": "$2b$12$QYJpW92b06I/z9D2jjCMgeLv6Fe7O.bqUvB5eajJzSAt1yHMlBeHu",
+      "created_at": "2026-02-27T22:41:35.815000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a90eb1128eab9e412ab787",
+      "id": "ff2f4c46-328c-42d4-b69d-2a67e2ce9394",
+      "email": "regular.admin@test.com",
+      "name": "Regular Admin",
+      "password_hash": "$2b$12$LTZ/TiePBfJnNlP4thgfwuJXvXE3K07rKnCxyuIP0j7YMUNkdhU5m",
+      "created_at": "2026-03-05T05:03:45.890000",
+      "role": "admin",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a91a7390dc96f22583b377",
+      "id": "43a29b42-0859-4ce7-a7da-fc42a7ee2862",
+      "email": "test_pro_form@test.com",
+      "name": "Pro Form Test User",
+      "password_hash": "$2b$12$Q3N2PmJ7v2KLlRizc3Z1bOutKUDSXnsvzfr2PXGI.T9SDY9DdOHMy",
+      "created_at": "2026-03-05T05:53:55.679000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a91a8890dc96f22583b379",
+      "id": "05c46889-0e62-46fc-802f-5d7941331db8",
+      "email": "test_validation_flow@test.com",
+      "name": "Validation Test User",
+      "password_hash": "$2b$12$v5r5cW8dmRSL4WXAUxJ7wuSwNv7a3WPNocX.mLlswK5WDIdNUOora",
+      "created_at": "2026-03-05T05:54:16.895000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a91af990dc96f22583b37a",
+      "id": "331ebf6e-2469-47df-9bd5-136007677619",
+      "email": "validation_test_new@test.com",
+      "name": "",
+      "password_hash": "$2b$12$g4qkDWkD6AsPuw5k5zEc.O1OEGMNkuZE2SljwJea0DG9ggzIbDXLe",
+      "created_at": "2026-03-05T05:56:09.251000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a91c0229c78d749e387512",
+      "id": "2155170b-967c-449e-a9b1-40a4912e59b3",
+      "email": "test_pro_api_9c5d5f6d@test.com",
+      "name": "Pro API Test User",
+      "password_hash": "$2b$12$jY2RSmSBqIPxcwE2kfS.uOFSWX3mBsVKaqv9ZwtmexM.2vANr5UaS",
+      "created_at": "2026-03-05T06:00:34.074000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a91c0229c78d749e387513",
+      "id": "721f2b53-921a-4d95-aaf2-02c0404d406b",
+      "email": "test_pro_api_454c0ea5@test.com",
+      "name": "Pro API Test User",
+      "password_hash": "$2b$12$BA6LLsMqLNmJYCZEFcdw/..EmVejsBxbb/mW4LDdxGrVcErAVwcj.",
+      "created_at": "2026-03-05T06:00:34.502000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a91c0329c78d749e387515",
+      "id": "a2d9c7b1-b1ba-458f-a3e7-7410eda6ce40",
+      "email": "test_pro_api_b92e4cab@test.com",
+      "name": "Pro API Test User",
+      "password_hash": "$2b$12$O8zM6FcPeSp9ctD3gRigpO0MCzHBrdABOLJDd0LF8nV2vSx0G9swy",
+      "created_at": "2026-03-05T06:00:35.201000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a91c0329c78d749e387517",
+      "id": "70246c4f-abc0-469e-8d4b-f4f4c26dd3a2",
+      "email": "test_pro_api_697a4ce1@test.com",
+      "name": "Pro API Test User",
+      "password_hash": "$2b$12$Sa.zstNqefnnb2UxzxCJYuC2n7aHuCJRgQYCvDNIDYqqlbKD32SvO",
+      "created_at": "2026-03-05T06:00:35.958000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a91c0a29c78d749e387518",
+      "id": "60e1a680-3f85-483c-80cf-b2381dc94e6e",
+      "email": "test_pro_api_caecc899@test.com",
+      "name": "Pro API Test User",
+      "password_hash": "$2b$12$WLK.N/GXI06iEVRAROhHn.ZA3mRQAzxQ/VWfmZbrcPI8mf7q8sYRy",
+      "created_at": "2026-03-05T06:00:42.608000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a91c0b29c78d749e387519",
+      "id": "3ab2abcc-d7ad-4f7b-b977-54bac53c4e8d",
+      "email": "test_pro_api_913b3ca9@test.com",
+      "name": "Pro API Test User",
+      "password_hash": "$2b$12$dZ2OVDuneEuC3HXHnUK3o.v6EGv//AQSZevYyzcjG4SLEZmpAQL7q",
+      "created_at": "2026-03-05T06:00:43.042000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a91c0b29c78d749e38751b",
+      "id": "3c90d783-0e65-4bf4-8404-4046695757fb",
+      "email": "test_pro_api_a979f9a9@test.com",
+      "name": "Pro API Test User",
+      "password_hash": "$2b$12$lpbVIvgW8jXbSOB0lVmkfuLDhcsj85OBv4inkiKNsUoyPiEtxVAUy",
+      "created_at": "2026-03-05T06:00:43.910000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a91c0c29c78d749e38751d",
+      "id": "3763050e-ad88-4a62-9092-fce7d90b9e5d",
+      "email": "test_pro_api_1ce8c44f@test.com",
+      "name": "Pro API Test User",
+      "password_hash": "$2b$12$N7EnZxeq5L2X.GW9NODPwOzWiiCC6wgT.vURhTyqlfkzlXKMTCXUG",
+      "created_at": "2026-03-05T06:00:44.793000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69a91c5729c78d749e38751e",
+      "id": "d7181827-778f-4ffe-89de-dffb4ca10ff0",
+      "email": "proformtest@test.com",
+      "name": "Pro Form Test",
+      "password_hash": "$2b$12$vEMjsnHFhpJWPdjZXWn66.fKpQlUQejw281A0CgXmCvecPpvw9LEe",
+      "created_at": "2026-03-05T06:01:59.747000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69add20ac83df49ddb6a5c2e",
+      "id": "38b1127d-e0d2-475d-8c22-0a31f59e9a5a",
+      "email": "test@gmail.com",
+      "name": "test",
+      "password_hash": "$2b$12$nfAkxJXLyqB4dPb238hlIelDdLpWhImDBAKXE3MbcGj7uGTmK.yzG",
+      "created_at": "2026-03-08T19:46:18.453000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69adf22ce2713bea9a6e798b",
+      "id": "affab979-bbb0-42cd-b366-c136e8442ed3",
+      "email": "test1@gmail.com",
+      "name": "testtt",
+      "password_hash": "$2b$12$20x9P0To08LlS7JDMSNfduy/yRrplaDR59aeoHCO5J2hx.63zdjY6",
+      "created_at": "2026-03-08T22:03:24.140000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69ae10a375f8a96d85b0edff",
+      "id": "5de3a5d4-ec83-4910-b038-03cd09ee9815",
+      "email": "test.nonvip@test.com",
+      "name": "Test User",
+      "password_hash": "$2b$12$WFHrzohxg.espF9EyT8LCelptUGk08qxTGa6fFioZZrkfo.cHjeoy",
+      "created_at": "2026-03-09T00:13:23.959000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69ae2a502310b5fb94cc2451",
+      "id": "a784b76d-e3f8-449f-a87b-637736786b01",
+      "email": "testuser@example.com",
+      "name": "Test VIP User",
+      "password_hash": "$2b$12$kwzVKOWL2VwS5LooE7H40OTSN6iJRXT/IC6fgJN3nlW7wy.WiOVm.",
+      "created_at": "2026-03-09T02:02:56.845000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69b1e1bd5a8457cc5c808d3e",
+      "id": "a5831b3c-d0ea-43cb-8c4e-629dbd50f22a",
+      "email": "test_user_72509e82@example.com",
+      "name": "Test User",
+      "password_hash": "$2b$12$F65z.WnUsUu4k7FAAf3nAO9PGhWT11elGlnswHP0ll9ygVJJxiUFq",
+      "created_at": "2026-03-11T21:42:21.630000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69b585026cd055db669e3264",
+      "id": "1b4ff682-bb3c-47bc-93eb-050194049b1e",
+      "email": "test11@gmail.com",
+      "name": "test11",
+      "password_hash": "$2b$12$RlEAYYr8kwrT7Asfu1His.n6zJyDMj/.MkvPlTG67Myx/Youk20tK",
+      "created_at": "2026-03-14T15:55:46.893000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "69bc7f008d5d0346d2fd8416",
+      "id": "196b9625-da01-463f-a431-a74cb40189ee",
+      "email": "Applereview@mentova.com",
+      "name": "Apple Review Team",
+      "password_hash": "$2b$12$UdhV5WVYktAIs2eGMB5I2eKaHTrkZl0utpkyl8XuVCRQYA9CqcgS2",
+      "created_at": "2026-03-19T22:56:00.052117+00:00",
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "community_score": 0,
+      "role": "user",
+      "is_banned": false,
+      "gamification_points": 10,
+      "is_vip": true,
+      "vip_expires_at": "2027-03-19T22:56:00.052140+00:00",
+      "vip_activated_at": "2026-03-19T22:56:00.052149+00:00",
+      "is_professional": true,
+      "pro_badge": "verified",
+      "is_influencer": false,
+      "is_apple_review": true
+    },
+    {
+      "_id": "6a22c3d37bd275c3923acf6c",
+      "id": "31b685e2-e9a4-44c4-a065-336fd548ad6d",
+      "email": "dza3857@gmail.com",
+      "name": "Dza",
+      "password_hash": "$2b$12$EtbaduEQ2xyIlXNjeK/fteOL0j2k3YyQ4hogXRyeJ.CJbmATR3rJe",
+      "created_at": "2026-06-05T12:40:51.361000",
+      "role": "admin",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "is_vip": true,
+      "vip_expires_at": "2026-07-05T12:42:33.474411+00:00"
+    },
+    {
+      "_id": "6a22c6da7bd275c3923acf70",
+      "id": "b154b866-913f-4341-a84c-9f2186e052a0",
+      "email": "marie281703@gmail.comm",
+      "name": "Mariequeen",
+      "password_hash": "$2b$12$0Ku1w16aLPHRUVbU3aycF.SKP6WSfpKbMKJpGuJLAY2QtS2cYeHKO",
+      "created_at": "2026-06-05T12:53:46.263000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "6a22c6e67bd275c3923acf71",
+      "id": "06dc728c-1437-4c85-9068-85a57f7b8c37",
+      "email": "Curadeau.josee7@gmail.com",
+      "name": "Josee Curadeau",
+      "password_hash": "$2b$12$AEycj57IZy7/COquG71ZjefrDTNk2fIKuV4b0Jo.dAgV1h.PjnaSW",
+      "created_at": "2026-06-05T12:53:58.963000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "6a2ac816c5cababa8cc93da0",
+      "id": "484c81a8-5bc6-4c85-a8c2-bb8d29e70b55",
+      "email": "test.free@mentova.com",
+      "name": "Test Free",
+      "password_hash": "$2b$12$pY43cqNyFpWB1RnbxgDZCe0LBlLmBCS2t.jEz45uT5M49x3HitL2a",
+      "created_at": "2026-06-11T14:37:10.291000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "6a2be7074aef70a28a643f89",
+      "id": "ee1ba863-ece8-412a-8ac2-3e9b1d532747",
+      "email": "applereview@mentova.com",
+      "name": "Apple Reviewer",
+      "password_hash": "$2b$12$LIK8zzg5KGtUY/4nCoQ5yet7MVNot3rnJS79dPy9RPzHXAdUbMSEa",
+      "created_at": "2026-06-12T11:01:27.425000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      },
+      "is_apple_review": true
+    },
+    {
+      "_id": "6a3348adc2c7f96704b50fef",
+      "id": "67fea82f-b67f-4dc4-9acc-0de33f3e6575",
+      "email": "founder-test@example.com",
+      "name": "Test Founder",
+      "password_hash": "$2b$12$uLGqiON.v4Pp61FN894Ff.mSsjy9Ntp9flICsue9Lrte770w9SaiW",
+      "created_at": "2026-06-18T01:23:57.511000",
+      "role": "user",
+      "is_banned": false,
+      "is_vip": false,
+      "founding_member_badge": true,
+      "founder_number": 3,
+      "referral_code": "MNT-L33VC",
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "6a334d2e31366ef0de401827",
+      "id": "e7dedddc-621e-4916-8c2d-2815f5207cb6",
+      "email": "test-email-verify@mentova-academy.com",
+      "name": "Email Test",
+      "password_hash": "$2b$12$HpSY7AfGREa1rp6cI850XOnhoGnUd2dzAvxhA8oEvGWUk2Z.MXIzq",
+      "created_at": "2026-06-18T01:43:10.080000",
+      "role": "user",
+      "is_banned": false,
+      "is_vip": false,
+      "founding_member_badge": true,
+      "founder_number": 4,
+      "referral_code": "MNT-QBRKQ",
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "6a33514b2f9317b9f63047b0",
+      "id": "1fe31dfc-0c62-47fe-aef3-e8892f046e55",
+      "email": "design-preview@mentova-academy.com",
+      "name": "Design Preview",
+      "password_hash": "$2b$12$J2ZXOaPbgAJRyNo50mIqfeWxqNjFTya5TZ/EYKwRvphkkA9cofPG2",
+      "created_at": "2026-06-18T02:00:43.258000",
+      "role": "user",
+      "is_banned": false,
+      "is_vip": false,
+      "founding_member_badge": true,
+      "founder_number": 5,
+      "referral_code": "MNT-4EYNX",
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "6a335975084ccbf28fd8810f",
+      "id": "d35e3c58-c976-4a71-b85d-76d09f07eea5",
+      "email": "test@hotmail.com",
+      "name": "Mike ",
+      "password_hash": "$2b$12$zyubx05LD0ujhVkpYsXnEuYUzALB1QQMgtZumpG0fd7OzBs0dmsxe",
+      "created_at": "2026-06-18T02:35:33.477000",
+      "role": "user",
+      "is_banned": false,
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "6a3368ebd0f382036091995c",
+      "id": "92dd263d-7d7b-41ec-b8c3-2247e69a4a8b",
+      "email": "justin.curadeau.qc@hotmail.com",
+      "name": "Justin",
+      "password_hash": "$2b$12$GyocmyU9YAc5RD/sHIEtZuOFRZ3clb36gpSYNNUA.rul/P7yh3gYW",
+      "created_at": "2026-06-18T03:41:31.342000",
+      "role": "user",
+      "is_banned": false,
+      "is_vip": false,
+      "founding_member_badge": true,
+      "founder_number": 6,
+      "referral_code": "MNT-M8SQF",
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    },
+    {
+      "_id": "6a3384d7f6c1e0ecb1066136",
+      "id": "d0afe304-5605-4949-8e4d-6477f412b1f3",
+      "email": "jcuradeau.7@hotmail.com",
+      "name": "justin",
+      "password_hash": "$2b$12$8EoLJHw6dLY8lbJrwNulE.eYqNbtaapWQYkmTnZkYKVlpLuXRc2V.",
+      "created_at": "2026-06-18T05:40:39.439000",
+      "role": "user",
+      "is_banned": false,
+      "is_vip": false,
+      "founding_member_badge": true,
+      "founder_number": 7,
+      "referral_code": "MNT-2B5OW",
+      "community_score": 0,
+      "progress": {
+        "modules_completed": [],
+        "current_level": "beginner",
+        "total_score": 0
+      }
+    }
+  ],
+  "wave_config": [
+    {
+      "_id": "current",
+      "wave": 1,
+      "total_limit": 500,
+      "wave2_active": false,
+      "wave2_deadline": null
+    }
+  ],
+  "ambassador_applications": [
+    {
+      "_id": "6a3345706341a0c0ebe4a9ab",
+      "name": "Test User",
+      "email": "test@ambassador.com",
+      "language": "EN",
+      "audience_size": "10k-50k",
+      "platform": "YouTube \u2014 @testchannel",
+      "message": "I love crypto education",
+      "status": "pending",
+      "created_at": "2026-06-18T01:10:08.194814+00:00"
+    },
+    {
+      "_id": "6a334e3630adf7bdd991c886",
+      "name": "Email Test",
+      "email": "emailtest@test.com",
+      "language": "FR",
+      "audience_size": "1k-10k",
+      "platform": "Test",
+      "message": "Testing email delivery",
+      "status": "pending",
+      "created_at": "2026-06-18T01:47:34.031221+00:00"
+    },
+    {
+      "_id": "6a3351482f9317b9f63047ae",
+      "name": "Design Test",
+      "email": "designtest@test.com",
+      "language": "FR",
+      "audience_size": "50k-100k",
+      "platform": "YouTube \u2014 @cryptofr",
+      "message": "Je suis passionn\u00e9 de crypto et je veux aider les francophones \u00e0 apprendre.",
+      "status": "pending",
+      "created_at": "2026-06-18T02:00:40.664450+00:00"
+    }
+  ],
+  "mentor_applications": [
+    {
+      "_id": "6a338577f6c1e0ecb1066137",
+      "name": "test test",
+      "email": "jcuradeau.10@hotmail.com",
+      "country": "Canada",
+      "city": "Montreal",
+      "phone": "",
+      "language": "FR",
+      "years_experience": "2-3",
+      "specialty": "trading",
+      "trading_style": "swing",
+      "certifications": "",
+      "audience_size": "under-1k",
+      "social_links": {
+        "youtube": "",
+        "instagram": "",
+        "tiktok": "",
+        "twitter": "",
+        "linkedin": "",
+        "website": "",
+        "discord": "",
+        "telegram": ""
+      },
+      "teaching_experience": "test",
+      "content_plan": "test",
+      "sample_link": "",
+      "motivation": "test",
+      "differentiator": "test",
+      "status": "pending",
+      "created_at": "2026-06-18T05:43:19.904661+00:00"
+    }
+  ],
+  "blog_subscribers": [
+    {
+      "_id": "6a3345706341a0c0ebe4a9ac",
+      "email": "reader@test.com",
+      "language": "FR",
+      "created_at": "2026-06-18T01:10:08.342617+00:00"
+    }
+  ]
+}

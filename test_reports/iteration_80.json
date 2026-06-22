@@ -1,0 +1,48 @@
+{
+  "summary": "Backend glossary API fully tested and PASSING (5/5 tests). Frontend: welcome screen + send works, but GlossaryText highlighting is BROKEN - assistant response text containing Bitcoin/Blockchain/DeFi/Wallet/NFT/Staking is rendered as one flat <div> with no purple highlighted Text segments. Modal cannot be opened because no terms are clickable. Also discovered: data-testid attributes in RN code are not reaching the DOM (RN web requires testID), and /api/atlas/chat returns 500 (falls back to /simple).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/atlas/chat", "issue": "Returns HTTP 500 (SSE streaming). Frontend falls back to /api/atlas/chat/simple which works. Visible in browser console as 'Failed to load resource: 500' on every send."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "GlossaryText.tsx", "issue": "CRITICAL - Glossary terms (Bitcoin, Blockchain, DeFi, Wallet, NFT, Staking, etc.) are NOT highlighted in purple/underlined in assistant messages. Inspected bubble HTML shows a single flat <div> containing the entire response text without nested highlighted <Text> spans. The fetch /api/glossary/terms works (verified via direct fetch in browser returning 20 terms), but the component appears to render before terms state populates OR setTerms() does not trigger a re-render of msg content. Net result: feature completely non-functional in Atlas chat.", "selector": "(no data-testid reachable)", "priority": "CRITICAL"},
+      {"component": "GlossaryText modal", "issue": "Cannot be verified end-to-end because no highlighted term is clickable (see above). Modal logic itself was not exercised in UI.", "selector": "Modal", "priority": "HIGH"},
+      {"component": "learn.tsx & GlossaryText.tsx", "issue": "data-testid attributes are passed as JSX props to React Native components (TouchableOpacity/TextInput). React Native Web does NOT forward data-testid - it requires the testID prop which is then converted to data-testid in the DOM. As a result NONE of the testids (atlas-input, atlas-send-btn, atlas-quick-0..3, atlas-clear-btn, glossary-close-btn) exist in the rendered DOM, breaking automation/testability.", "selector": "[data-testid='atlas-send-btn']", "priority": "HIGH"}
+    ],
+    "integration_issues": [
+      {"flow": "Atlas chat -> glossary highlighting", "issue": "Assistant message renders as plain text only. Terms list fetched successfully (count=20) but component output never contains highlighted children.", "affected_selectors": ["GlossaryText", "Modal"]}
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_glossary_terms.py",
+    "/app/test_reports/pytest/pytest_glossary.xml"
+  ],
+  "action_items": [
+    "FIX GlossaryText: investigate why terms state is not segmenting the text. Likely candidates: (a) useEffect dependency on `language` runs but cachedTerms is shared module-level so the very first mount with language=undefined caches empty terms; (b) After streaming completes, msg.content updates but terms may already be empty array from a failed first render. Add console logs and verify setTerms is called.",
+    "REPLACE all `data-testid='...'` props in learn.tsx and GlossaryText.tsx with `testID='...'` so they survive React Native Web rendering. Affected: atlas-input, atlas-send-btn, atlas-quick-0..3, atlas-clear-btn, glossary-close-btn.",
+    "FIX /api/atlas/chat 500 error (SSE endpoint) or remove the SSE call if /simple is the intended path. Currently every chat triggers a noisy 500 in console.",
+    "After fix, re-test: send message in Atlas chat, verify purple underlined terms appear in assistant bubble, tap a term -> popup with definition + example, close via overlay AND via close button."
+  ],
+  "critical_code_review_comments": [
+    "GlossaryText.tsx line 41: silent catch hides fetch failures - add console.warn to aid debugging.",
+    "GlossaryText.tsx uses module-level `let cachedTerms = {}` mutable state - acceptable but means cache cannot be invalidated when API updates.",
+    "GlossaryText.tsx case-insensitive substring matching may produce false positives inside words (e.g. 'gas' inside 'gasoline'). Consider word boundary check.",
+    "learn.tsx onSubmitEditing on multiline TextInput does not fire on Enter (multiline swallows Enter). Send only works via button tap; the button has no testID.",
+    "SSE parser in learn.tsx line 41 concatenates `data: <text>` chunks without preserving line breaks; could merge tokens incorrectly depending on server framing.",
+    "/api/glossary/terms unknown lang fallback returns ENGLISH (good), but `lang` is not validated; trivially accepts any string."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_glossary_terms.py (new)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "30%"},
+  "test_credentials": "Not required for this feature; tested anonymously.",
+  "seed_data_creation": "None.",
+  "retest_needed": true,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "Backend pytest covers FR/EN/ES + default + unknown-lang fallback. The Atlas chat lives at https://academy-preview-11.preview.emergentagent.com/learn (route is /learn on web). To trigger glossary terms in response, send: 'I'm a beginner. Define Bitcoin and Blockchain and DeFi in 3 short sentences each, no questions.' The AI then returns a long answer containing multiple terms - currently NONE are highlighted. Check bubble innerHTML to verify nested <span>/<Text> presence with computed color rgb(124,58,237).",
+  "rca of the issue": "The bubble innerHTML observed during testing was a single flat <div class='css-text-146c3p1 ...'> containing the entire assistant text with no nested children, meaning the GlossaryText `segments.map` produced exactly one segment with term=null. Since a direct browser fetch confirmed /api/glossary/terms?lang=en returns 20 terms, the component fetch must either (a) not run for the right language, (b) fail silently (catch() => {}), or (c) succeed but setTerms triggers a re-render that does NOT re-flow inside the streaming message - possibly because React Native Web's <Text> component flattens nested Text into a single div when the parent re-renders mid-stream. Recommended first step: add logs in GlossaryText useEffect and segments useMemo to confirm terms.length at render time; if non-zero, the issue is RN Web Text flattening; if zero, the fetch never completed for that language."
+}

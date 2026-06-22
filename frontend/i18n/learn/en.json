@@ -1,0 +1,507 @@
+{
+  "modules": [
+    {
+      "id": "crypto-fundamentals",
+      "title": "Crypto Fundamentals",
+      "description": "Master the essential basics of cryptocurrencies and blockchain",
+      "icon": "school",
+      "color": "#7C3AED",
+      "level": "beginner",
+      "totalDuration": "25 min",
+      "lessons": [
+        {
+          "id": "intro-crypto",
+          "title": "Introduction to Cryptocurrencies",
+          "duration": "5 min",
+          "content": [
+            "🌐 WHAT IS A CRYPTOCURRENCY?",
+            "A cryptocurrency is a form of digital currency that uses cryptography to secure transactions. Unlike traditional currencies like the euro or dollar, cryptocurrencies operate on decentralized networks based on blockchain technology.",
+            "",
+            "📜 HISTORY AND ORIGIN",
+            "The idea of digital currency has existed since the 1980s, but it was in 2008 that a person (or group) under the pseudonym Satoshi Nakamoto published the Bitcoin whitepaper, presenting the first functional cryptocurrency.",
+            "",
+            "On January 3, 2009, the first Bitcoin block (called 'Genesis Block') was mined, marking the beginning of a financial revolution.",
+            "",
+            "🔑 FUNDAMENTAL CHARACTERISTICS",
+            "",
+            "1. DECENTRALIZATION - No central bank or government controls cryptocurrencies.",
+            "2. TRANSPARENCY - All transactions are recorded on a public ledger.",
+            "3. CRYPTOGRAPHIC SECURITY - Transactions are secured by mathematical algorithms.",
+            "4. PSEUDONYMITY - Users are identified by alphanumeric addresses.",
+            "5. IRREVERSIBILITY - Once confirmed, a transaction cannot be reversed."
+          ],
+          "keyPoints": [
+            "Cryptocurrencies are decentralized and don't depend on any central authority",
+            "The blockchain ensures transparency and security of transactions",
+            "Bitcoin was the first cryptocurrency, created in 2009",
+            "Each crypto has its own characteristics and use cases"
+          ],
+          "examples": [
+            "Send money internationally in minutes",
+            "Access financial services without a traditional bank account",
+            "Invest in digital assets"
+          ],
+          "warnings": [
+            "Cryptocurrencies are highly volatile",
+            "Only invest what you can afford to lose",
+            "Beware of scams and unverified projects"
+          ]
+        },
+        {
+          "id": "blockchain-explained",
+          "title": "Blockchain in Detail",
+          "duration": "6 min",
+          "content": [
+            "⛓️ WHAT IS BLOCKCHAIN?",
+            "Blockchain is a technology for storing and transmitting information that is transparent, secure, and operates without a central controlling body.",
+            "",
+            "📚 SIMPLE ANALOGY",
+            "Imagine a large ledger shared among thousands of people. Each transaction is recorded and verified by everyone.",
+            "",
+            "🔧 HOW IT WORKS",
+            "1. Transaction initiation",
+            "2. Network broadcast",
+            "3. Grouping into blocks",
+            "4. Validation (Mining/Staking)",
+            "5. Adding to the chain",
+            "",
+            "🔐 SECURITY",
+            "• Cryptographic hashing",
+            "• Decentralization",
+            "• Consensus mechanisms"
+          ],
+          "keyPoints": [
+            "Blockchain is a distributed, transparent, and immutable ledger",
+            "Each block is linked to the previous one by a cryptographic hash",
+            "Decentralization makes falsification nearly impossible",
+            "Proof of Work and Proof of Stake are the main consensus mechanisms"
+          ]
+        },
+        {
+          "id": "wallets-complete",
+          "title": "Crypto Wallets",
+          "duration": "7 min",
+          "content": [
+            "👛 WHAT IS A WALLET?",
+            "A wallet stores your keys that prove you own your cryptos.",
+            "",
+            "🔑 UNDERSTANDING KEYS",
+            "• Public Key (Address) - Like your IBAN",
+            "• Private Key - NEVER SHARE IT",
+            "• Seed Phrase - 12-24 recovery words",
+            "",
+            "📱 TYPES OF WALLETS",
+            "Hot Wallets (connected): MetaMask, Trust Wallet",
+            "Cold Wallets (offline): Ledger, Trezor"
+          ],
+          "keyPoints": [
+            "A wallet doesn't store your cryptos, but your keys",
+            "The private key must remain secret",
+            "The seed phrase allows you to recover your wallet",
+            "Cold wallets are more secure for long-term storage"
+          ],
+          "warnings": [
+            "Never share your private key",
+            "Store your seed phrase offline",
+            "Always verify addresses before sending"
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "What is a cryptocurrency?",
+          "options": [
+            "A currency issued by a central bank",
+            "A decentralized digital currency using cryptography",
+            "An online bank account",
+            "A virtual credit card"
+          ],
+          "correctIndex": 1,
+          "explanation": "A cryptocurrency is a decentralized digital currency that uses cryptography to secure transactions."
+        },
+        {
+          "question": "Who created Bitcoin?",
+          "options": [
+            "Elon Musk",
+            "Vitalik Buterin",
+            "Satoshi Nakamoto",
+            "Mark Zuckerberg"
+          ],
+          "correctIndex": 2,
+          "explanation": "Bitcoin was created by a person or group under the pseudonym Satoshi Nakamoto in 2008."
+        },
+        {
+          "question": "What is the main function of a crypto wallet?",
+          "options": [
+            "Store cryptocurrencies physically",
+            "Mine cryptocurrencies",
+            "Store your keys to access your cryptos",
+            "Convert cryptos to euros"
+          ],
+          "correctIndex": 2,
+          "explanation": "A wallet stores your keys (public and private) that allow you to access and manage your cryptocurrencies."
+        }
+      ],
+      "badge": {
+        "name": "Crypto Explorer",
+        "icon": "ribbon"
+      }
+    },
+    {
+      "id": "bitcoin-mastery",
+      "title": "Bitcoin Mastery",
+      "description": "Deepen your knowledge of the first cryptocurrency",
+      "icon": "logo-bitcoin",
+      "color": "#F7931A",
+      "level": "intermediate",
+      "totalDuration": "30 min",
+      "lessons": [
+        {
+          "id": "bitcoin-history",
+          "title": "Bitcoin History and Vision",
+          "duration": "8 min",
+          "content": [
+            "📜 THE BIRTH OF BITCOIN",
+            "On October 31, 2008, Satoshi Nakamoto published the whitepaper 'Bitcoin: A Peer-to-Peer Electronic Cash System'.",
+            "",
+            "🎯 THE ORIGINAL VISION",
+            "Bitcoin was designed to be a decentralized payment system, without intermediaries.",
+            "",
+            "📈 EVOLUTION",
+            "• 2009 - First block mined",
+            "• 2010 - First commercial transaction (2 pizzas for 10,000 BTC)",
+            "• 2017 - First major bull run",
+            "• 2021 - Institutional adoption"
+          ],
+          "keyPoints": [
+            "Bitcoin was born in response to the 2008 financial crisis",
+            "The original vision was a peer-to-peer payment system",
+            "Bitcoin is now considered 'digital gold'"
+          ]
+        },
+        {
+          "id": "bitcoin-mining",
+          "title": "Bitcoin Mining",
+          "duration": "10 min",
+          "content": [
+            "⛏️ WHAT IS MINING?",
+            "Mining is the process of validating transactions and creating new bitcoins.",
+            "",
+            "🔧 HOW IT WORKS",
+            "Miners solve complex cryptographic puzzles to validate blocks.",
+            "",
+            "💰 REWARDS",
+            "• Block reward: currently 6.25 BTC per block",
+            "• Halving every 4 years",
+            "• Transaction fees"
+          ],
+          "keyPoints": [
+            "Mining secures the Bitcoin network",
+            "The reward halves every 4 years (halving)",
+            "There will never be more than 21 million BTC"
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "What is the maximum number of bitcoins that will ever exist?",
+          "options": ["10 million", "21 million", "100 million", "Unlimited"],
+          "correctIndex": 1,
+          "explanation": "Bitcoin's maximum supply is capped at 21 million BTC, making it a deflationary asset."
+        },
+        {
+          "question": "What is Bitcoin halving?",
+          "options": [
+            "Dividing the price in half",
+            "Halving the mining reward",
+            "Doubling transactions",
+            "Merging two blockchains"
+          ],
+          "correctIndex": 1,
+          "explanation": "Halving reduces the miners' reward by half every 210,000 blocks (~4 years)."
+        }
+      ],
+      "badge": {
+        "name": "Bitcoin Expert",
+        "icon": "medal"
+      }
+    },
+    {
+      "id": "security-complete",
+      "title": "Advanced Crypto Security",
+      "description": "Protect your digital assets like a pro",
+      "icon": "shield-checkmark",
+      "color": "#10B981",
+      "level": "intermediate",
+      "totalDuration": "20 min",
+      "lessons": [
+        {
+          "id": "security-basics",
+          "title": "Security Basics",
+          "duration": "8 min",
+          "content": [
+            "🔒 FUNDAMENTAL PRINCIPLES",
+            "Crypto security relies on protecting your private keys.",
+            "",
+            "⚠️ COMMON THREATS",
+            "• Phishing - Fake sites that steal your credentials",
+            "• Malware - Malicious software",
+            "• Scams - Various frauds",
+            "• Social engineering - Psychological manipulation",
+            "",
+            "✅ BEST PRACTICES",
+            "• Use a password manager",
+            "• Enable 2FA everywhere",
+            "• Always verify URLs",
+            "• Never share your keys"
+          ],
+          "keyPoints": [
+            "Your keys = Your cryptos",
+            "Vigilance is your best defense",
+            "Always verify before acting"
+          ],
+          "warnings": [
+            "Never click on suspicious links",
+            "No official support will ask for your keys",
+            "If it's too good to be true, it's a scam"
+          ]
+        },
+        {
+          "id": "hardware-wallets",
+          "title": "Hardware Wallets",
+          "duration": "7 min",
+          "content": [
+            "🔐 WHY A HARDWARE WALLET?",
+            "Hardware wallets store your keys offline, safe from hackers.",
+            "",
+            "📱 POPULAR MODELS",
+            "• Ledger Nano S/X - Most popular",
+            "• Trezor Model T - Open source",
+            "• BitBox02 - Swiss made",
+            "",
+            "✅ SETUP",
+            "1. Buy directly from the manufacturer",
+            "2. Check package integrity",
+            "3. Generate a new seed phrase",
+            "4. Backup the seed in a safe place"
+          ],
+          "keyPoints": [
+            "Hardware wallets are the safest method",
+            "Always buy from the official manufacturer",
+            "Your seed phrase is your ultimate backup"
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "What is the best way to store your cryptos long-term?",
+          "options": [
+            "On an exchange",
+            "In a hardware wallet",
+            "In a text file",
+            "By email"
+          ],
+          "correctIndex": 1,
+          "explanation": "A hardware wallet stores your keys offline, providing the best protection against hackers."
+        },
+        {
+          "question": "What should you do if someone asks for your seed phrase?",
+          "options": [
+            "Give it if the person seems trustworthy",
+            "Never give it, it's definitely a scam",
+            "Give it only to customer support",
+            "Share it with close friends"
+          ],
+          "correctIndex": 1,
+          "explanation": "NOBODY should ever ask for your seed phrase. It's always a scam attempt."
+        }
+      ],
+      "badge": {
+        "name": "Crypto Guardian",
+        "icon": "shield"
+      }
+    },
+    {
+      "id": "ethereum-defi",
+      "title": "Ethereum and DeFi",
+      "description": "Discover decentralized finance",
+      "icon": "diamond",
+      "color": "#627EEA",
+      "level": "advanced",
+      "totalDuration": "35 min",
+      "lessons": [
+        {
+          "id": "ethereum-basics",
+          "title": "Introduction to Ethereum",
+          "duration": "10 min",
+          "content": [
+            "💎 WHAT IS ETHEREUM?",
+            "Ethereum is a blockchain platform that enables the execution of smart contracts.",
+            "",
+            "🔧 SMART CONTRACTS",
+            "Autonomous programs that execute automatically according to predefined conditions.",
+            "",
+            "⚡ ETH vs BTC",
+            "• Bitcoin = Digital gold, store of value",
+            "• Ethereum = World computer, application platform"
+          ],
+          "keyPoints": [
+            "Ethereum allows creating decentralized applications",
+            "Smart contracts automate agreements",
+            "ETH is used to pay transaction fees (gas)"
+          ]
+        },
+        {
+          "id": "defi-intro",
+          "title": "Introduction to DeFi",
+          "duration": "12 min",
+          "content": [
+            "🏦 WHAT IS DEFI?",
+            "Decentralized Finance (DeFi) recreates traditional financial services without intermediaries.",
+            "",
+            "📊 MAIN PROTOCOLS",
+            "• Uniswap - Decentralized exchange",
+            "• Aave - Loans and borrowing",
+            "• Compound - Interest rates",
+            "• MakerDAO - DAI stablecoin",
+            "",
+            "💰 YIELD FARMING",
+            "Earn rewards by providing liquidity to protocols."
+          ],
+          "keyPoints": [
+            "DeFi offers financial services open to everyone",
+            "Smart contracts eliminate intermediaries",
+            "Risks include bugs and volatility"
+          ],
+          "warnings": [
+            "DeFi carries high risks",
+            "Always do your own research (DYOR)",
+            "Start with small amounts"
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "What is a smart contract?",
+          "options": [
+            "A digitized legal contract",
+            "A self-executing program on the blockchain",
+            "An agreement between two exchanges",
+            "Crypto insurance"
+          ],
+          "correctIndex": 1,
+          "explanation": "A smart contract is an autonomous program that executes automatically when certain conditions are met."
+        },
+        {
+          "question": "What does DeFi mean?",
+          "options": [
+            "Digital Finance",
+            "Decentralized Finance",
+            "Defined Finance",
+            "Default Finance"
+          ],
+          "correctIndex": 1,
+          "explanation": "DeFi stands for Decentralized Finance."
+        }
+      ],
+      "badge": {
+        "name": "DeFi Expert",
+        "icon": "flash"
+      }
+    },
+    {
+      "id": "trading-basics",
+      "title": "Trading Basics",
+      "description": "Learn the fundamentals of crypto trading",
+      "icon": "trending-up",
+      "color": "#EF4444",
+      "level": "advanced",
+      "totalDuration": "40 min",
+      "lessons": [
+        {
+          "id": "trading-intro",
+          "title": "Introduction to Trading",
+          "duration": "10 min",
+          "content": [
+            "📈 WHAT IS TRADING?",
+            "Trading involves buying and selling assets to make profits.",
+            "",
+            "📊 ORDER TYPES",
+            "• Market Order - Immediate execution at current price",
+            "• Limit Order - Execution at a specific price",
+            "• Stop Loss - Automatic sell if price drops",
+            "• Take Profit - Automatic sell if price rises",
+            "",
+            "⏱️ TRADING STYLES",
+            "• Day Trading - Positions closed at end of day",
+            "• Swing Trading - Positions held for days to weeks",
+            "• HODLing - Long-term holding"
+          ],
+          "keyPoints": [
+            "Trading requires discipline and risk management",
+            "Always use stop-losses",
+            "Never trade with emotions"
+          ],
+          "warnings": [
+            "Trading carries risk of loss",
+            "90% of traders lose money",
+            "Only invest what you can lose"
+          ]
+        },
+        {
+          "id": "technical-analysis",
+          "title": "Technical Analysis",
+          "duration": "15 min",
+          "content": [
+            "📉 WHAT IS TECHNICAL ANALYSIS?",
+            "The study of charts and indicators to predict price movements.",
+            "",
+            "📊 KEY INDICATORS",
+            "• RSI (Relative Strength Index) - Overbought/oversold",
+            "• MACD - Trends and momentum",
+            "• Moving averages - Trend direction",
+            "• Volume - Movement strength",
+            "",
+            "🕯️ JAPANESE CANDLESTICKS",
+            "• Doji - Indecision",
+            "• Hammer - Bullish reversal",
+            "• Shooting Star - Bearish reversal"
+          ],
+          "keyPoints": [
+            "Technical analysis helps identify opportunities",
+            "No indicator is infallible",
+            "Combine multiple indicators for reliability"
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "What is a stop-loss?",
+          "options": [
+            "An automatic buy order",
+            "An automatic sell order to limit losses",
+            "A technical indicator",
+            "A type of cryptocurrency"
+          ],
+          "correctIndex": 1,
+          "explanation": "A stop-loss is an order that automatically sells your position if the price reaches a predefined loss level."
+        },
+        {
+          "question": "What does HODL mean?",
+          "options": [
+            "Hold On for Dear Life - Long-term holding",
+            "High Order Derivative Leverage",
+            "Hourly Online Data Log",
+            "Hybrid Optimized Digital Ledger"
+          ],
+          "correctIndex": 0,
+          "explanation": "HODL (Hold On for Dear Life) is a popular crypto term meaning to hold your cryptos long-term despite volatility."
+        }
+      ],
+      "badge": {
+        "name": "Trading Initiate",
+        "icon": "analytics"
+      }
+    }
+  ]
+}
