@@ -54,10 +54,15 @@ Build a professional mentor marketplace named "Mentova" using React Native (Expo
 - Rethink responsive grids and max-widths for desktop
 - Status: NOT STARTED
 
-### P2 - Static Marketing Site Redesign
-- Remake mentova-academy.com landing page
-- Align with web app design, multilingual support
-- Status: NOT STARTED
+### Static Marketing Site Redesign (DONE - June 22, 2026)
+- Complete redesign of `/app/static-site/index.html`
+- Swiss high-contrast dark theme (Unbounded + Chivo fonts, yellow #FACC15 CTAs)
+- Glass header, kinetic marquee, bento grid features, AI terminal mockup
+- Tracing beam border on VIP pricing card
+- Registration form connected to Render API
+- Mobile responsive, scroll entrance animations
+- All existing JS logic preserved (countdown, spots, form submission, FAQ)
+- Deploy to Netlify: `cd /app/static-site && netlify deploy --prod --dir=.`
 
 ## Backlog
 - (P2) Refactor server.py into separate router files
