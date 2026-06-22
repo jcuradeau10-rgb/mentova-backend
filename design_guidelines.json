@@ -1,178 +1,145 @@
 {
-  "identity": "E1: The Anti-AI Designer",
-  "mission": "Create a VIP experience that feels like a secret society entrance - dark, mysterious, luxurious, and technologically advanced.",
-  "design_system": {
-    "colors": {
-      "background": {
-        "primary": "#050505",
-        "secondary": "#0A0A0F",
-        "tertiary": "#12121A",
-        "glass": "rgba(20, 20, 30, 0.6)"
-      },
-      "brand": {
-        "gold": "#FFD700",
-        "goldDim": "#C5A000",
-        "goldGlow": "rgba(255, 215, 0, 0.3)",
-        "cyan": "#00F0FF",
-        "cyanDim": "#00A0AA",
-        "purple": "#7C3AED",
-        "purpleGlow": "rgba(124, 58, 237, 0.4)",
-        "danger": "#FF3B30",
-        "success": "#34C759"
-      },
-      "text": {
-        "primary": "#FFFFFF",
-        "secondary": "#A1A1AA",
-        "tertiary": "#52525B",
-        "gold": "#FFE55C"
-      },
-      "border": {
-        "subtle": "rgba(255, 255, 255, 0.08)",
-        "highlight": "rgba(255, 255, 255, 0.15)",
-        "gold": "rgba(255, 215, 0, 0.3)"
-      }
+  "theme": "Dark",
+  "archetype": "Archetype 4 (Swiss & High-Contrast)",
+  "emotional_tone": "Authoritative, cutting-edge, transparent, and high-energy trust.",
+  "typography": {
+    "headings": {
+      "family": "Unbounded",
+      "weights": ["font-medium", "font-bold", "font-black"],
+      "classes": "tracking-tighter uppercase",
+      "h1": "text-5xl sm:text-6xl lg:text-7xl leading-[0.9]",
+      "h2": "text-3xl sm:text-4xl lg:text-5xl",
+      "h3": "text-2xl sm:text-3xl",
+      "h4": "text-xl sm:text-2xl"
     },
-    "typography": {
-      "fontFamily": "System",
-      "weights": {
-        "thin": "100",
-        "light": "300",
-        "regular": "400",
-        "medium": "500",
-        "bold": "700",
-        "black": "900"
-      },
-      "sizes": {
-        "xs": 12,
-        "sm": 14,
-        "base": 16,
-        "lg": 18,
-        "xl": 20,
-        "2xl": 24,
-        "3xl": 30,
-        "4xl": 36,
-        "5xl": 48,
-        "hero": 64
-      }
+    "body": {
+      "family": "Chivo",
+      "weights": ["font-light", "font-normal"],
+      "classes": "leading-relaxed text-zinc-300"
     },
-    "spacing": {
-      "xs": 4,
-      "sm": 8,
-      "md": 16,
-      "lg": 24,
-      "xl": 32,
-      "2xl": 48,
-      "3xl": 64
-    },
-    "borderRadius": {
-      "sm": 8,
-      "md": 12,
-      "lg": 16,
-      "xl": 24,
-      "pill": 9999
-    },
-    "shadows": {
-      "neonGold": {
-        "shadowColor": "#FFD700",
-        "shadowOffset": { "width": 0, "height": 0 },
-        "shadowOpacity": 0.5,
-        "shadowRadius": 10,
-        "elevation": 5
-      },
-      "neonCyan": {
-        "shadowColor": "#00F0FF",
-        "shadowOffset": { "width": 0, "height": 0 },
-        "shadowOpacity": 0.5,
-        "shadowRadius": 10,
-        "elevation": 5
-      },
-      "subtle": {
-        "shadowColor": "#000",
-        "shadowOffset": { "width": 0, "height": 4 },
-        "shadowOpacity": 0.2,
-        "shadowRadius": 8,
-        "elevation": 2
-      }
+    "labels": {
+      "classes": "uppercase tracking-[0.2em] text-xs font-bold text-zinc-400"
     }
   },
-  "layout_strategy": {
-    "vip_landing": {
-      "hero": {
-        "style": "Cinematic",
-        "description": "Full-screen dark gradient background with abstract geometric overlay. Center-aligned 'Exclusive' content. Floating 3D-style diamond/crown icon."
-      },
-      "pricing": {
-        "style": "Glassmorphism",
-        "description": "Cards with 'blur' background, thin gold borders, and glowing 'Subscribe' button."
-      },
-      "features": {
-        "style": "Grid",
-        "description": "2-column grid of feature cards. Each card has a subtle gradient background and a glowing icon."
-      }
+  "colors": {
+    "background": {
+      "primary": "#050505",
+      "secondary": "#111111",
+      "surface": "#1A1A1A",
+      "glass": "bg-black/60 backdrop-blur-xl"
     },
-    "vip_hub": {
-      "layout": "Bento Grid",
-      "description": "A dense dashboard layout. Primary tool takes 2x2 space. Secondary stats take 1x1. Scrollable horizontal lists for 'Stories' and 'Marketplace'.",
-      "navigation": "Tab Bar with Neon Active State"
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#A1A1AA",
+      "muted": "#52525B"
+    },
+    "accent": {
+      "primary": "#FACC15",
+      "secondary": "#3B82F6",
+      "warning": "#EF4444",
+      "hover": "#EAB308"
+    },
+    "borders": {
+      "subtle": "border-zinc-800",
+      "active": "border-yellow-400/50"
     }
+  },
+  "layout_and_spacing": {
+    "generous_spacing": "py-24 md:py-32 lg:py-48",
+    "container": "px-6 md:px-12 lg:px-24 max-w-[1400px] mx-auto",
+    "bento_grid": "grid grid-cols-1 md:grid-cols-8 lg:grid-cols-12 gap-8 lg:gap-12",
+    "alignment": "Mobile-first, left-aligned text for paragraphs, asymmetrical tension in hero section."
+  },
+  "visual_enhancers": {
+    "glassmorphism": "Used strictly for the sticky header and floating navigational elements.",
+    "tracing_beam": "Apply to the VIP Pricing card to visually highlight it. A moving gradient line on the border.",
+    "marquee": "Massive outline text (text-[10vw]) 'MENTOVA ACADEMY' running slowly in the background for kinetic texture.",
+    "textures": "Subtle noise/grain overlay on the darkest backgrounds to prevent digital flatness."
   },
   "components": {
-    "GradientBackground": {
-      "props": {
-        "colors": ["#050505", "#0F0F1A", "#050505"],
-        "start": { "x": 0, "y": 0 },
-        "end": { "x": 1, "y": 1 }
-      }
+    "header": {
+      "description": "Sticky crystal glass header with Logo, Nav links, Language Switcher dropdown (EN/FR/ES), and Primary CTA. Z-index 50."
     },
-    "GlassCard": {
-      "style": {
-        "backgroundColor": "rgba(20, 20, 30, 0.6)",
-        "borderColor": "rgba(255, 255, 255, 0.1)",
-        "borderWidth": 1,
-        "borderRadius": 20,
-        "overflow": "hidden"
-      },
-      "webStyle": {
-        "backdropFilter": "blur(20px)"
-      }
+    "hero": {
+      "description": "Asymmetrical layout. Huge H1. Abstract 3D glowing network image as background with max bg-black/50 overlay. Clear CTA 'Download App' and a 'Founding Member' badge."
     },
-    "NeonButton": {
-      "style": {
-        "backgroundColor": "transparent",
-        "borderWidth": 1,
-        "borderColor": "#FFD700",
-        "shadowColor": "#FFD700",
-        "shadowRadius": 10
-      },
-      "textStyle": {
-        "color": "#FFD700",
-        "fontWeight": "bold",
-        "textTransform": "uppercase",
-        "letterSpacing": 1
-      }
+    "features_bento": {
+      "description": "Bento grid (Tetris Mode) for Atlas AI Mentor, Community, Interactive Charts, Verified Mentors. Use pure HTML/Tailwind to create overlapping grids."
+    },
+    "atlas_ai_demo": {
+      "description": "Terminal/Retro-Futurism look. Deep black background, monospace data points, neon yellow accents. Minimalist layout emphasizing the 'Adaptive Learning' AI brain."
+    },
+    "pricing_vip": {
+      "description": "Side-by-side cards. Free vs VIP. VIP card uses the Tracing Beam border effect, highlighted with yellow. Emphasize $9.99/mo founding price (vs $25.99 regular)."
+    },
+    "countdown_registration": {
+      "description": "Form section with strict Shadcn Inputs customized to flat dark mode. Includes a prominent countdown for 500 spots. Connected to backend API."
+    },
+    "app_carousel": {
+      "description": "Framer-motion or CSS-based horizontal scroll showcasing app screenshots. Images max-h-[80vh] to prevent viewport takeover on mobile."
+    },
+    "referral_program": {
+      "description": "Grid layout explaining the viral loop. Minimalist cards with Phosphor Icons."
+    },
+    "founder_story": {
+      "description": "Editorial layout style. A large bold quote alongside the founder's portrait."
+    },
+    "faq": {
+      "description": "Clean accordion list using Shadcn Accordion. High contrast typography."
+    },
+    "footer": {
+      "description": "Massive top/bottom padding (py-32). Darkest background. Huge 'Mentova' text at the bottom. Legal links aligned bottom-right."
     }
   },
-  "image_urls": {
-    "hero_background": "https://images.unsplash.com/photo-1748525874503-7ed3db0ccccf",
-    "vip_gold_coin": "https://images.unsplash.com/photo-1642131449810-4960a9de20ce",
-    "abstract_network": "https://images.unsplash.com/photo-1642432556591-72cbc671b707",
-    "trading_hologram": "https://images.unsplash.com/photo-1745620984416-8b3b0eccce74"
+  "motion": {
+    "scrolling": "Lenis for momentum scrolling.",
+    "animations": "Framer Motion for entrance staggering (y: 20, opacity: 0). Hover states: -translate-y-1, text color shift, and shadow adjustments."
   },
-  "universal_guidelines": [
-    "Do not use generic gray backgrounds. Use tinted blacks (#0A0A10).",
-    "Typography must be readable but stylish. Use 'Light' weight for large headings.",
-    "Buttons must have a 'pressed' state animation (scale down to 0.98).",
-    "Lists must have staggered entrance animations.",
-    "Use 'expo-linear-gradient' for all primary backgrounds.",
-    "Use 'react-native-reanimated' for all animations.",
-    "Ensure 'data-testid' is present on all interactive elements.",
-    "For Web compatibility, ensure styles work on both Mobile and Web (avoid platform-specific properties without checks)."
-  ],
+  "accessibility": {
+    "contrast": "Ensure all text meets APCA standards. Never use pure transparent backgrounds under text overlaying images.",
+    "testing": "All interactive elements MUST have data-testid attributes (e.g., data-testid='hero-cta-button')."
+  },
+  "media": {
+    "image_urls": [
+      {
+        "url": "https://images.unsplash.com/photo-1771015138422-819587ae7011?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHwzfHxhYnN0cmFjdCUyMDNkJTIwZ2xvd2luZyUyMG5ldHdvcmt8ZW58MHx8fHwxNzgyMDk1MjQ5fDA&ixlib=rb-4.1.0&q=85",
+        "category": "hero_background",
+        "description": "Abstract glowing nodes representing Atlas AI and the crypto network. Use with bg-black/50 overlay."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1780558246706-010cf55a2d50?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwyfHxjcnlwdG9jdXJyZW5jeSUyMHRyYWRpbmclMjBkYXJrfGVufDB8fHx8MTc4MjA5NTI0OXww&ixlib=rb-4.1.0&q=85",
+        "category": "feature_charts",
+        "description": "Dark mode crypto trading desk to illustrate the interactive charts feature."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1516031190212-da133013de50?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxjcnlwdG9jdXJyZW5jeSUyMHRyYWRpbmclMjBkYXJrfGVufDB8fHx8MTc4MjA5NTI0OXww&ixlib=rb-4.1.0&q=85",
+        "category": "app_mockups",
+        "description": "Computer screen showing charts, suitable for the carousel or app showcase."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBtZW50b3IlMjBwb3J0cmFpdHxlbnwwfHx8fDE3ODIwOTUyNTB8MA&ixlib=rb-4.1.0&q=85",
+        "category": "mentor_portrait_1",
+        "description": "Professional verified mentor (male) for the mentors section."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHwzfHxwcm9mZXNzaW9uYWwlMjBtZW50b3IlMjBwb3J0cmFpdHxlbnwwfHx8fDE3ODIwOTUyNTB8MA&ixlib=rb-4.1.0&q=85",
+        "category": "mentor_portrait_2",
+        "description": "Professional verified mentor (female) for the mentors section."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHw0fHxwcm9mZXNzaW9uYWwlMjBtZW50b3IlMjBwb3J0cmFpdHxlbnwwfHx8fDE3ODIwOTUyNTB8MA&ixlib=rb-4.1.0&q=85",
+        "category": "founder_portrait",
+        "description": "Mentova founder story portrait in dark suit."
+      }
+    ]
+  },
   "instructions_to_main_agent": [
-    "Phase 1: Update 'vip/index.tsx' with the new 'Cinematic' design. Use the 'hero_background' image with an overlay.",
-    "Phase 2: Refactor 'vip/hub.tsx'. Break down the massive file into smaller components if possible, or organize sections clearly using the 'Bento Grid' layout strategy.",
-    "Phase 3: Apply the 'Glassmorphism' style to all cards in the Hub.",
-    "Phase 4: Add 'Reanimated' entrance animations to the Hub widgets.",
-    "Phase 5: Ensure the 'Gold' and 'Cyan' neon theme is consistent across both pages."
+    "NOTE: Codebase uses .js files, NOT .tsx files. Use standard React JSX inside .js files.",
+    "Install required dependencies: yarn add @phosphor-icons/react framer-motion react-fast-marquee @studio-freight/lenis lucide-react",
+    "Configure Tailwind with 'Unbounded' (Headings) and 'Chivo' (Body). Add custom color '#FACC15' for CTA.",
+    "Replace existing Purple/Green palette with the Archetype 4 Dark Mode (Obsidian Base, White Text, Warning Yellow CTA). Do not use #7351B7 or #1B93A4.",
+    "For the Bento Layouts, rely on raw HTML/Tailwind classes (grid, col-span) rather than rigid Shadcn Card components to maintain design freedom and asymmetry.",
+    "Implement the Pre-registration form using customized Shadcn inputs and prepare a mocked API fetch call that handles standard submission states (loading, success).",
+    "Build a kinetic marquee background (text-8xl, text-transparent, stroke-zinc-800) for the pricing or feature section using react-fast-marquee."
   ]
 }
