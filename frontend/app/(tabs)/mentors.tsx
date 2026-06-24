@@ -143,9 +143,8 @@ const s = StyleSheet.create({
   statusPill: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     paddingHorizontal: 14, paddingVertical: 7,
-    borderRadius: 999, borderWidth: 1,
-    borderColor: 'rgba(245,158,11,0.3)',
-    backgroundColor: 'rgba(245,158,11,0.06)',
+    borderRadius: 999,
+    backgroundColor: 'rgba(245,158,11,0.08)',
     marginBottom: 20,
   },
   statusDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#F59E0B' },
@@ -153,7 +152,7 @@ const s = StyleSheet.create({
 
   heroCard: {
     width: '100%', borderRadius: 24, padding: 28, alignItems: 'center',
-    borderWidth: 1, borderColor: 'rgba(124,58,237,0.15)',
+    
   },
   heroIconWrap: { marginBottom: 16 },
   heroIcon: {
@@ -172,9 +171,8 @@ const s = StyleSheet.create({
   featGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12, marginBottom: 28 },
   featCard: {
     width: '48%',
-    backgroundColor: 'rgba(255,255,255,0.025)',
+    backgroundColor: 'rgba(255,255,255,0.04)',
     borderRadius: 20, padding: 20,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
   },
   featIconWrap: {
     width: 44, height: 44, borderRadius: 14,
@@ -199,9 +197,8 @@ const s = StyleSheet.create({
   // Info card
   infoCard: {
     flexDirection: 'row', gap: 12, alignItems: 'flex-start',
-    backgroundColor: 'rgba(124,58,237,0.06)',
+    backgroundColor: 'rgba(124,58,237,0.08)',
     borderRadius: 16, padding: 16,
-    borderWidth: 1, borderColor: 'rgba(124,58,237,0.12)',
   },
   infoText: { flex: 1, fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 20 },
 });

@@ -304,9 +304,8 @@ const s = StyleSheet.create({
   tag: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: 14, paddingVertical: 7,
-    borderRadius: 999, borderWidth: 1,
-    borderColor: 'rgba(0,217,165,0.25)',
-    backgroundColor: 'rgba(0,217,165,0.06)',
+    borderRadius: 999,
+    backgroundColor: 'rgba(0,217,165,0.08)',
   },
   tagDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#00D9A5', marginRight: 8 },
   tagText: { fontSize: 10, fontWeight: '800', color: '#00D9A5', letterSpacing: 2 },
@@ -324,8 +323,7 @@ const s = StyleSheet.create({
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 28, gap: 8 },
   statCard: {
     flex: 1, alignItems: 'center', paddingVertical: 16, paddingHorizontal: 8,
-    backgroundColor: 'rgba(255,255,255,0.025)', borderRadius: 20,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 20,
   },
   statIcon: { width: 32, height: 32, borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginBottom: 8 },
   statVal: { fontSize: 22, fontWeight: '900', letterSpacing: -0.5 },
@@ -335,9 +333,8 @@ const s = StyleSheet.create({
   featGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: 24, gap: 10 },
   featCard: {
     width: (width - 58) / 2,
-    backgroundColor: 'rgba(255,255,255,0.025)',
-    borderRadius: 22, borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 22,
     overflow: 'hidden',
   },
   featInner: { padding: 18, alignItems: 'center', position: 'relative' },
@@ -373,8 +370,7 @@ const s = StyleSheet.create({
   secondaryBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     paddingVertical: 16, borderRadius: 16,
-    backgroundColor: 'rgba(124,58,237,0.08)',
-    borderWidth: 1, borderColor: 'rgba(124,58,237,0.2)',
+    backgroundColor: 'rgba(124,58,237,0.1)',
   },
   secondaryText: { fontSize: 15, fontWeight: '700', color: 'rgba(255,255,255,0.7)' },
 
