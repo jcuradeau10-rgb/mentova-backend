@@ -191,7 +191,7 @@ function Lesson({ levelId, chapterId, chapterTitle, onBack, onQuiz, lang, token 
       try {
         const res = await fetch(`${API}/api/atlas/teach`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chapter_id: chapterId, level_id: levelId }),
+          body: JSON.stringify({ chapter_id: chapterId, level_id: levelId, lang }),
         });
         const reader = res.body?.getReader();
         if (!reader) throw new Error('No reader');
@@ -315,7 +315,7 @@ function Quiz({ levelId, chapterId, chapterTitle, onComplete, lang }: {
   useEffect(() => {
     fetch(`${API}/api/atlas/quiz/generate`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chapter_id: chapterId, level_id: levelId }),
+      body: JSON.stringify({ chapter_id: chapterId, level_id: levelId, lang }),
     }).then(r => r.json()).then(d => { setQuestions(d.questions || []); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
