@@ -51,13 +51,7 @@ export default function MentorsScreen() {
     <SafeAreaView style={s.safe}>
       <LinearGradient colors={['#06060F', '#0A0A1A', '#06060F']} style={StyleSheet.absoluteFill} />
 
-      {/* Glowing Orbs */}
-      {Platform.OS === 'web' && (
-        <>
-          <Animated.View style={[s.orb, s.orbPurple, { opacity: pulseAnim }]} />
-          <Animated.View style={[s.orb, s.orbCyan, { opacity: Animated.multiply(pulseAnim, 0.6) }]} />
-        </>
-      )}
+      {/* Clean background */}
 
       <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 
@@ -171,7 +165,6 @@ const s = StyleSheet.create({
   featGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12, marginBottom: 28 },
   featCard: {
     width: '48%',
-    backgroundColor: 'rgba(255,255,255,0.04)',
     borderRadius: 20, padding: 20,
   },
   featIconWrap: {

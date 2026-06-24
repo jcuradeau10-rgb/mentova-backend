@@ -113,13 +113,7 @@ export default function OnboardingPage() {
       {/* Deep Background */}
       <LinearGradient colors={['#06060F', '#0A0A1A', '#08061A', '#06060F']} locations={[0, 0.3, 0.7, 1]} style={StyleSheet.absoluteFill} />
 
-      {/* Glowing Orbs */}
-      {Platform.OS === 'web' && (
-        <>
-          <Animated.View style={[s.orb, s.orbPurple, { opacity: glowPulse }]} />
-          <Animated.View style={[s.orb, s.orbGreen, { opacity: Animated.multiply(glowPulse, 0.6) }]} />
-        </>
-      )}
+      {/* Clean background */}
 
       <SafeAreaView style={s.safe}>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
@@ -172,7 +166,7 @@ export default function OnboardingPage() {
               return (
                 <Animated.View key={i} style={[
                   s.featCard,
-                  isActive && { borderColor: `${f.color}50`, backgroundColor: `${f.color}08` },
+                  isActive && { backgroundColor: 'transparent' },
                   { opacity: featAnims[i], transform: [{ scale: featAnims[i].interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] }) }] },
                 ]}>
                   <TouchableOpacity
@@ -323,7 +317,7 @@ const s = StyleSheet.create({
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 28, gap: 8 },
   statCard: {
     flex: 1, alignItems: 'center', paddingVertical: 16, paddingHorizontal: 8,
-    backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 20,
+    borderRadius: 20,
   },
   statIcon: { width: 32, height: 32, borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginBottom: 8 },
   statVal: { fontSize: 22, fontWeight: '900', letterSpacing: -0.5 },
@@ -333,7 +327,6 @@ const s = StyleSheet.create({
   featGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: 24, gap: 10 },
   featCard: {
     width: (width - 58) / 2,
-    backgroundColor: 'rgba(255,255,255,0.04)',
     borderRadius: 22,
     overflow: 'hidden',
   },
