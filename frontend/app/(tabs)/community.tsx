@@ -502,20 +502,20 @@ const s = StyleSheet.create({
 
   // Header
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.06)' },
-  headerTitle: { fontSize: 24, fontWeight: '800', color: '#FFF' },
+  headerTitle: { fontSize: 22, fontWeight: '900', color: '#FFF', letterSpacing: -0.5 },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  headerBtn: { padding: 8, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.05)' },
+  headerBtn: { padding: 8, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },
   composeBtn: {},
   composeBtnGrad: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  searchBar: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 12, paddingHorizontal: 12, gap: 8, height: 42 },
+  searchBar: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 14, paddingHorizontal: 12, gap: 8, height: 42, borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },
   searchInput: { flex: 1, color: '#FFF', fontSize: 15 },
 
   // Filters
   filters: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10, gap: 8 },
-  filterBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.04)' },
-  filterActive: { backgroundColor: '#7C3AED' },
+  filterBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, paddingVertical: 7, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.03)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' },
+  filterActive: { backgroundColor: 'rgba(124,58,237,0.15)', borderColor: 'rgba(124,58,237,0.3)' },
   filterText: { color: '#888', fontSize: 13, fontWeight: '600' },
-  filterTextActive: { color: '#FFF' },
+  filterTextActive: { color: '#A78BFA' },
   langSpacer: { width: 1, height: 20, backgroundColor: 'rgba(255,255,255,0.1)', marginHorizontal: 4 },
   langBtn: { paddingHorizontal: 10, paddingVertical: 7, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.04)' },
   langBtnActive: { backgroundColor: '#3B82F6' },
@@ -530,18 +530,18 @@ const s = StyleSheet.create({
   tagBtnTextActive: { color: '#A78BFA' },
 
   // Post
-  post: { paddingHorizontal: 16, paddingVertical: 14 },
+  post: { paddingHorizontal: 16, paddingVertical: 14, marginHorizontal: 12, marginTop: 10, backgroundColor: 'rgba(255,255,255,0.025)', borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', overflow: 'hidden' },
   postHead: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
   avatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#7C3AED', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   avatarImg: { width: 40, height: 40, borderRadius: 20 },
   avatarLetter: { color: '#FFF', fontSize: 16, fontWeight: '700' },
-  vipDot: { position: 'absolute', bottom: -1, right: -1, backgroundColor: '#1a1a2e', borderRadius: 8, padding: 2 },
+  vipDot: { position: 'absolute', bottom: -1, right: -1, backgroundColor: '#06060F', borderRadius: 8, padding: 2 },
   postMeta: { flex: 1, marginLeft: 10 },
   nameRow: { flexDirection: 'row', alignItems: 'center' },
   authorName: { color: '#FFF', fontSize: 15, fontWeight: '700' },
   postTime: { color: '#555', fontSize: 12, marginTop: 1 },
   moreBtn: { padding: 4 },
-  postMenu: { position: 'absolute', top: 50, right: 16, backgroundColor: '#1A1A2E', borderRadius: 12, paddingVertical: 4, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', zIndex: 100, minWidth: 160 },
+  postMenu: { position: 'absolute', top: 50, right: 16, backgroundColor: 'rgba(12,12,24,0.95)', borderRadius: 16, paddingVertical: 6, borderWidth: 1, borderColor: 'rgba(124,58,237,0.15)', zIndex: 100, minWidth: 160 },
   menuItem: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 12 },
   menuText: { fontSize: 14, fontWeight: '600', color: '#888' },
   postContent: { color: '#E5E7EB', fontSize: 15, lineHeight: 22, marginBottom: 4 },
@@ -554,7 +554,7 @@ const s = StyleSheet.create({
   actions: { flexDirection: 'row', justifyContent: 'space-between', paddingTop: 6 },
   actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingVertical: 4, paddingHorizontal: 4 },
   actionCount: { color: '#666', fontSize: 13 },
-  separator: { height: 1, backgroundColor: 'rgba(255,255,255,0.04)', marginHorizontal: 16 },
+  separator: { height: 0 },
   empty: { alignItems: 'center', paddingTop: 80 },
   emptyText: { color: '#555', fontSize: 16, fontWeight: '600', marginTop: 12 },
   emptyHint: { color: '#444', fontSize: 13, marginTop: 4 },
@@ -572,7 +572,7 @@ const s = StyleSheet.create({
 
   // Comments
   comment: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10, gap: 10 },
-  commentAvatar: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#333', alignItems: 'center', justifyContent: 'center' },
+  commentAvatar: { width: 32, height: 32, borderRadius: 12, backgroundColor: 'rgba(124,58,237,0.2)', alignItems: 'center', justifyContent: 'center' },
   commentAvatarLetter: { color: '#FFF', fontSize: 13, fontWeight: '700' },
   commentBody: { flex: 1 },
   commentHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 2 },
@@ -583,7 +583,7 @@ const s = StyleSheet.create({
   emptyCommentsText: { color: '#555', fontSize: 14 },
   commentBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.06)', backgroundColor: '#06060F', gap: 8 },
   commentInput: { flex: 1, backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, color: '#FFF', fontSize: 14 },
-  commentSend: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#7C3AED', alignItems: 'center', justifyContent: 'center' },
+  commentSend: { width: 36, height: 36, borderRadius: 14, backgroundColor: '#7C3AED', alignItems: 'center', justifyContent: 'center' },
 
   // Compose
   composeHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.06)' },
