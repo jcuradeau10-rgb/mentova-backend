@@ -88,4 +88,3 @@ memory/test_credentials.md
 
 # Local Netlify folder
 .netlify
-backend/.env
