@@ -663,7 +663,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
+    backgroundColor: '#06060F',
   },
   scrollView: {
     flex: 1,
@@ -677,12 +677,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   profileCard: {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: 'rgba(255,255,255,0.03)',
     borderRadius: 20,
     padding: 24,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#2A2A4E',
+    borderColor: 'rgba(255,255,255,0.06)',
     position: 'relative',
   },
   editButton: {
@@ -732,7 +732,7 @@ const styles = StyleSheet.create({
   },
   userEmail: {
     fontSize: 14,
-    color: '#8B8B9E',
+    color: 'rgba(255,255,255,0.45)',
     marginTop: 4,
   },
   roleBadge: {
@@ -762,12 +762,12 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: 'row',
-    backgroundColor: '#1A1A2E',
+    backgroundColor: 'rgba(255,255,255,0.03)',
     borderRadius: 16,
     padding: 20,
     marginTop: 16,
     borderWidth: 1,
-    borderColor: '#2A2A4E',
+    borderColor: 'rgba(255,255,255,0.06)',
   },
   statItem: {
     flex: 1,
@@ -780,12 +780,12 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-    color: '#8B8B9E',
+    color: 'rgba(255,255,255,0.45)',
     marginTop: 4,
   },
   statDivider: {
     width: 1,
-    backgroundColor: '#2A2A4E',
+    backgroundColor: 'rgba(255,255,255,0.06)',
   },
   // VIP Banner Styles
   vipBanner: {
@@ -797,7 +797,7 @@ const styles = StyleSheet.create({
   vipBannerGradient: {
     backgroundColor: '#1A0A2E',
     borderWidth: 2,
-    borderColor: '#FFD700',
+    borderColor: 'rgba(255,215,0,0.3)',
     borderRadius: 16,
   },
   vipBannerContent: {
@@ -824,7 +824,7 @@ const styles = StyleSheet.create({
   },
   vipBannerSubtitle: {
     fontSize: 12,
-    color: '#8B8B9E',
+    color: 'rgba(255,255,255,0.45)',
     marginTop: 2,
   },
   vipPriceTag: {
@@ -851,12 +851,12 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1A1A2E',
+    backgroundColor: 'rgba(255,255,255,0.03)',
     borderRadius: 14,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#2A2A4E',
+    borderColor: 'rgba(255,255,255,0.06)',
   },
   menuIcon: {
     width: 44,
@@ -876,7 +876,7 @@ const styles = StyleSheet.create({
   },
   menuSubtitle: {
     fontSize: 12,
-    color: '#8B8B9E',
+    color: 'rgba(255,255,255,0.45)',
     marginTop: 2,
   },
   logoutButton: {
@@ -901,7 +901,7 @@ const styles = StyleSheet.create({
     marginTop: 32,
     paddingTop: 24,
     borderTopWidth: 1,
-    borderTopColor: '#1A1A2E',
+    borderTopColor: 'rgba(255,255,255,0.06)',
   },
   appLogoContainer: {
     width: 48,
@@ -919,12 +919,12 @@ const styles = StyleSheet.create({
   },
   appVersion: {
     fontSize: 13,
-    color: '#8B8B9E',
+    color: 'rgba(255,255,255,0.45)',
     marginTop: 4,
   },
   appDisclaimer: {
     fontSize: 11,
-    color: '#5A5A6E',
+    color: 'rgba(255,255,255,0.3)',
     textAlign: 'center',
     marginTop: 12,
     lineHeight: 16,
@@ -933,19 +933,19 @@ const styles = StyleSheet.create({
   // Modal Styles
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    backgroundColor: 'rgba(6, 6, 15, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
   modalContainer: {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: 'rgba(255,255,255,0.03)',
     borderRadius: 20,
     width: '100%',
     maxWidth: 400,
     maxHeight: '80%',
     borderWidth: 1,
-    borderColor: '#2A2A4E',
+    borderColor: 'rgba(255,255,255,0.06)',
   },
   modalHeader: {
     flexDirection: 'row',
@@ -953,7 +953,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#2A2A4E',
+    borderBottomColor: 'rgba(255,255,255,0.06)',
   },
   modalTitle: {
     fontSize: 20,
@@ -964,7 +964,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#2A2A4E',
+    backgroundColor: 'rgba(255,255,255,0.06)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -985,13 +985,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 14,
     borderRadius: 12,
-    backgroundColor: '#2A2A4E',
+    backgroundColor: 'rgba(255,255,255,0.06)',
     alignItems: 'center',
   },
   modalCancelText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#8B8B9E',
+    color: 'rgba(255,255,255,0.45)',
   },
   modalConfirmBtn: {
     flex: 1,
@@ -1019,7 +1019,7 @@ const styles = StyleSheet.create({
   },
   // Achievements Styles
   achievementCard: {
-    backgroundColor: '#2A2A4E',
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 16,
     padding: 20,
     alignItems: 'center',
@@ -1033,7 +1033,7 @@ const styles = StyleSheet.create({
   },
   achievementLabel: {
     fontSize: 14,
-    color: '#8B8B9E',
+    color: 'rgba(255,255,255,0.45)',
     marginTop: 4,
   },
   achievementTip: {
@@ -1055,7 +1055,7 @@ const styles = StyleSheet.create({
   checklistItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2A2A4E',
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 12,
     padding: 12,
     marginBottom: 8,
@@ -1100,7 +1100,7 @@ const styles = StyleSheet.create({
   },
   helpText: {
     fontSize: 14,
-    color: '#8B8B9E',
+    color: 'rgba(255,255,255,0.45)',
     lineHeight: 20,
   },
   // Edit Profile Styles
@@ -1116,7 +1116,7 @@ const styles = StyleSheet.create({
   },
   comingSoonText: {
     fontSize: 14,
-    color: '#8B8B9E',
+    color: 'rgba(255,255,255,0.45)',
     textAlign: 'center',
     marginTop: 8,
     lineHeight: 20,
@@ -1142,10 +1142,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#1A1A2E',
+    backgroundColor: 'rgba(255,255,255,0.03)',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#2A2A4E',
+    borderColor: 'rgba(255,255,255,0.06)',
     gap: 14,
   },
   languageItemActive: {
@@ -1168,7 +1168,7 @@ const styles = StyleSheet.create({
   },
   languageNameEn: {
     fontSize: 13,
-    color: '#8B8B9E',
+    color: 'rgba(255,255,255,0.45)',
     marginTop: 2,
   },
 });
