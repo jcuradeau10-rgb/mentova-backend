@@ -1003,7 +1003,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
+    backgroundColor: '#06060F',
   },
   loadingContainer: {
     flex: 1,
@@ -1034,16 +1034,11 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   heroContent: {
-    backgroundColor: 'rgba(26, 26, 46, 0.8)',
+    backgroundColor: 'rgba(255,255,255,0.025)',
     borderRadius: 24,
     padding: 24,
     borderWidth: 1,
-    borderColor: 'rgba(124, 58, 237, 0.2)',
-    shadowColor: '#7C3AED',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 24,
-    elevation: 8,
+    borderColor: 'rgba(124, 58, 237, 0.12)',
   },
   greetingRow: {
     flexDirection: 'row',
@@ -1115,7 +1110,7 @@ const styles = StyleSheet.create({
   progressMiniBar: {
     width: 100,
     height: 4,
-    backgroundColor: '#2A2A4E',
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 2,
     overflow: 'hidden',
   },
@@ -1134,13 +1129,13 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   quickStatCard: {
-    backgroundColor: 'rgba(26, 26, 46, 0.9)',
+    backgroundColor: 'rgba(255,255,255,0.03)',
     borderRadius: 20,
     padding: 18,
     minWidth: 140,
     marginRight: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255,255,255,0.06)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
@@ -1256,11 +1251,11 @@ const styles = StyleSheet.create({
   },
   menuCard: {
     width: (width - 52) / 2,
-    backgroundColor: 'rgba(20, 20, 40, 0.85)',
+    backgroundColor: 'rgba(255,255,255,0.03)',
     borderRadius: 18,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: 'rgba(255,255,255,0.05)',
     position: 'relative',
   },
   menuIconContainer: {
@@ -1323,9 +1318,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 24,
-    backgroundColor: 'rgba(26, 26, 46, 0.8)',
+    backgroundColor: 'rgba(255,255,255,0.025)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255,255,255,0.06)',
     marginRight: 10,
     gap: 6,
   },
@@ -1347,11 +1342,11 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   newsCard: {
-    backgroundColor: 'rgba(26, 26, 46, 0.9)',
+    backgroundColor: 'rgba(255,255,255,0.03)',
     borderRadius: 20,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
+    borderColor: 'rgba(255,255,255,0.06)',
     flexDirection: 'row',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -1362,7 +1357,7 @@ const styles = StyleSheet.create({
   newsImage: {
     width: 110,
     height: 130,
-    backgroundColor: '#1A1A2E',
+    backgroundColor: 'rgba(255,255,255,0.03)',
   },
   newsContent: {
     flex: 1,
@@ -1418,7 +1413,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   newsTag: {
-    backgroundColor: '#2A2A4E',
+    backgroundColor: 'rgba(255,255,255,0.06)',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -1441,7 +1436,7 @@ const styles = StyleSheet.create({
   },
   newsActionBtn: {
     padding: 6,
-    backgroundColor: '#2A2A4E',
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 6,
   },
   
@@ -1464,7 +1459,7 @@ const styles = StyleSheet.create({
 
   // Progress Card
   progressCard: {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: 'rgba(255,255,255,0.03)',
     borderRadius: 16,
     padding: 18,
     borderWidth: 1,
@@ -1512,7 +1507,7 @@ const styles = StyleSheet.create({
   },
   progressCardBar: {
     height: 6,
-    backgroundColor: '#2A2A4E',
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 3,
     overflow: 'hidden',
     marginBottom: 14,
@@ -1542,7 +1537,7 @@ const styles = StyleSheet.create({
   },
   quickActionCard: {
     flex: 1,
-    backgroundColor: '#1A1A2E',
+    backgroundColor: 'rgba(255,255,255,0.03)',
     borderRadius: 14,
     padding: 16,
     marginHorizontal: 5,
@@ -1572,7 +1567,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   newsModalContent: {
-    backgroundColor: '#0A0A1A',
+    backgroundColor: '#06060F',
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     maxHeight: '92%',
@@ -1592,7 +1587,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 14,
-    backgroundColor: '#1A1A2E',
+    backgroundColor: 'rgba(255,255,255,0.03)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1604,7 +1599,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 14,
-    backgroundColor: '#1A1A2E',
+    backgroundColor: 'rgba(255,255,255,0.03)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1615,7 +1610,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     borderRadius: 16,
-    backgroundColor: '#2A2A4E',
+    backgroundColor: 'rgba(255,255,255,0.06)',
     marginBottom: 16,
   },
   newsModalMeta: {
@@ -1721,7 +1716,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   newsModalTag: {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: 'rgba(255,255,255,0.03)',
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
@@ -2016,7 +2011,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     gap: 6,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
+    borderColor: 'rgba(255,255,255,0.06)',
   },
   vipMemberFeatureText: {
     fontSize: 11,
