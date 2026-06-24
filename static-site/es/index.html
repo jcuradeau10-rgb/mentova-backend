@@ -1493,7 +1493,17 @@ setInterval(fetchSpots, 30000);
 const urlRef = new URLSearchParams(window.location.search).get('ref');
 if (urlRef) document.getElementById('regRef').value = urlRef;
 
-// Form submit
+// Form & Stripe checkout
+var TEXTS = {
+    passwordMin: 'Contraseña mín. 6 caracteres.',
+    subscribing: 'Creando cuenta...',
+    redirecting: 'Redirigiendo al pago...',
+    listFull: 'Todos los lugares están tomados.',
+    invalidEmail: 'Correo inválido.',
+    error: 'Error. Inténtalo de nuevo.',
+    btnDefault: 'Crear Cuenta & Suscribirse <i class="fas fa-arrow-right"></i>'
+};
+
 document.getElementById('preregForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = document.getElementById('regBtn');
@@ -1505,13 +1515,14 @@ document.getElementById('preregForm').addEventListener('submit', async function(
     const committed = document.getElementById('regCommit').checked;
 
     if (!email || !name || !password || !committed) return;
-    if (password.length < 6) { document.getElementById('errorBox').textContent = 'Contraseña mín. 6 caracteres.'; document.getElementById('errorBox').style.display = 'block'; return; }
+    if (password.length < 6) { document.getElementById('errorBox').textContent = TEXTS.passwordMin; document.getElementById('errorBox').style.display = 'block'; return; }
 
     btn.disabled = true;
-    btn.textContent = 'Suscribiendo...';
+    btn.textContent = TEXTS.subscribing;
     document.getElementById('errorBox').style.display = 'none';
 
     try {
+        // Step 1: Pre-register (creates account)
         const r = await fetch(API_URL + '/api/pre-register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1520,29 +1531,73 @@ document.getElementById('preregForm').addEventListener('submit', async function(
         const data = await r.json();
 
         if (data.error === 'already_registered') {
-            document.getElementById('errorBox').innerHTML = '¡Ya registrado! <a href="https://app.mentova-academy.com/login" style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Iniciar sesión en la app</a>';
-            document.getElementById('errorBox').style.display = 'block';
+            // Already registered — try to login and go to checkout
+            btn.textContent = TEXTS.redirecting;
+            await loginAndCheckout(email, password, ref);
+            return;
         } else if (data.error === 'list_full') {
-            document.getElementById('errorBox').textContent = 'Todos los lugares están tomados.';
+            document.getElementById('errorBox').textContent = TEXTS.listFull;
             document.getElementById('errorBox').style.display = 'block';
         } else if (data.error === 'invalid_email') {
-            document.getElementById('errorBox').textContent = 'Correo inválido.';
+            document.getElementById('errorBox').textContent = TEXTS.invalidEmail;
             document.getElementById('errorBox').style.display = 'block';
         } else if (data.success) {
-            document.getElementById('preregForm').style.display = 'none';
-            document.getElementById('successTitle').textContent = 'Miembro Fundador #' + data.founder_number + '/' + (data.wave === 2 ? '1000' : '500');
-            document.getElementById('successMsg').innerHTML = 'Tu insignia de Miembro Fundador es tuya para siempre.<br><br>Revisa tu correo para tu enlace de referido.<br><br><strong>Enlace de referido:</strong><br><code style="background:rgba(124,58,237,0.1);padding:6px 12px;border-radius:6px;color:var(--purple-light);font-size:13px;">' + data.referral_link + '</code>';
-            document.getElementById('successBox').style.display = 'block';
-            fetchSpots();
+            // Step 2: Auto-login to get token
+            btn.textContent = TEXTS.redirecting;
+            await loginAndCheckout(email, password, ref);
+            return;
         }
     } catch(err) {
-        document.getElementById('errorBox').textContent = 'Error. Inténtalo de nuevo.';
+        document.getElementById('errorBox').textContent = TEXTS.error;
         document.getElementById('errorBox').style.display = 'block';
     }
 
     btn.disabled = false;
-    btn.innerHTML = 'Reserve My Spot | Free <i class="fas fa-arrow-right"></i>';
+    btn.innerHTML = TEXTS.btnDefault;
 });
+
+async function loginAndCheckout(email, password, refCode) {
+    try {
+        // Login
+        const loginRes = await fetch(API_URL + '/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        const loginData = await loginRes.json();
+
+        if (!loginData.access_token) {
+            // Login failed - redirect to app
+            window.location.href = 'https://app.mentova-academy.com/login';
+            return;
+        }
+
+        // Step 3: Create Stripe checkout session
+        const checkoutRes = await fetch(API_URL + '/api/vip/checkout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + loginData.access_token
+            },
+            body: JSON.stringify({
+                origin_url: 'https://app.mentova-academy.com',
+                ref_code: refCode || null
+            })
+        });
+        const checkoutData = await checkoutRes.json();
+
+        if (checkoutData.checkout_url) {
+            // Redirect to Stripe Checkout
+            window.location.href = checkoutData.checkout_url;
+        } else {
+            // If already VIP or error, redirect to app
+            window.location.href = 'https://app.mentova-academy.com';
+        }
+    } catch(err) {
+        // Fallback: redirect to app
+        window.location.href = 'https://app.mentova-academy.com/login';
+    }
+}
 
 // FAQ toggle
 function toggleFaq(el) {
