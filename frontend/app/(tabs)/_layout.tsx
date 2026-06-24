@@ -707,7 +707,6 @@ export default function TabLayout() {
             <View style={styles.moreGrid}>
               {[
                 { icon: 'chatbubble-ellipses', label: 'Messages', gradient: ['#7C3AED', '#A855F7'] as [string, string], path: '/messages', testId: 'more-messages' },
-                { icon: 'stats-chart', label: t('nav.market'), gradient: ['#059669', '#10B981'] as [string, string], path: '/(tabs)/market', testId: 'more-market' },
                 { icon: 'newspaper', label: t('nav.news'), gradient: ['#2563EB', '#3B82F6'] as [string, string], path: '/(tabs)/news', testId: 'more-news' },
                 { icon: 'chatbubbles', label: 'Forum', gradient: ['#DB2777', '#EC4899'] as [string, string], path: '/(tabs)/community', testId: 'more-forum' },
                 { icon: 'school', label: t('nav.learn'), gradient: ['#D97706', '#F59E0B'] as [string, string], path: '/(tabs)/learn', testId: 'more-learn' },

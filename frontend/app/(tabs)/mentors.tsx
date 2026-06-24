@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, Platform } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, Platform, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,69 +7,114 @@ import { useTranslation } from '../../store/languageStore';
 
 export default function MentorsScreen() {
   const { t } = useTranslation();
+  const fadeIn = useRef(new Animated.Value(0)).current;
+  const slideUp = useRef(new Animated.Value(30)).current;
+  const pulseAnim = useRef(new Animated.Value(0.5)).current;
+  const card0 = useRef(new Animated.Value(0)).current;
+  const card1 = useRef(new Animated.Value(0)).current;
+  const card2 = useRef(new Animated.Value(0)).current;
+  const card3 = useRef(new Animated.Value(0)).current;
+  const cardAnims = [card0, card1, card2, card3];
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeIn, { toValue: 1, duration: 600, useNativeDriver: true }),
+      Animated.spring(slideUp, { toValue: 0, friction: 10, useNativeDriver: true }),
+    ]).start();
+
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, { toValue: 0.9, duration: 1500, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 0.5, duration: 1500, useNativeDriver: true }),
+      ])
+    ).start();
+
+    Animated.stagger(100, cardAnims.map(a =>
+      Animated.spring(a, { toValue: 1, friction: 8, delay: 300, useNativeDriver: true })
+    )).start();
+  }, []);
 
   const openMentorApplication = () => {
     const url = 'https://mentova-academy.com/fr/mentors';
-    if (Platform.OS === 'web') {
-      window.open(url, '_blank');
-    } else {
-      Linking.openURL(url);
-    }
+    if (Platform.OS === 'web') { window.open(url, '_blank'); }
+    else { Linking.openURL(url); }
   };
 
   const features = [
-    { icon: 'school-outline', title: t('mentors.feat1_title'), desc: t('mentors.feat1_desc') },
-    { icon: 'videocam-outline', title: t('mentors.feat2_title'), desc: t('mentors.feat2_desc') },
-    { icon: 'cash-outline', title: t('mentors.feat3_title'), desc: t('mentors.feat3_desc') },
-    { icon: 'shield-checkmark-outline', title: t('mentors.feat4_title'), desc: t('mentors.feat4_desc') },
+    { icon: 'school', title: t('mentors.feat1_title'), desc: t('mentors.feat1_desc'), color: '#7C3AED', bg: 'rgba(124,58,237,0.1)' },
+    { icon: 'videocam', title: t('mentors.feat2_title'), desc: t('mentors.feat2_desc'), color: '#00D9A5', bg: 'rgba(0,217,165,0.1)' },
+    { icon: 'cash', title: t('mentors.feat3_title'), desc: t('mentors.feat3_desc'), color: '#06B6D4', bg: 'rgba(6,182,212,0.1)' },
+    { icon: 'shield-checkmark', title: t('mentors.feat4_title'), desc: t('mentors.feat4_desc'), color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
   ];
 
   return (
     <SafeAreaView style={s.safe}>
-      <ScrollView style={s.scroll} contentContainerStyle={s.content}>
-        <View style={s.header}>
-          <View style={s.iconWrap}>
-            <LinearGradient colors={['#7C3AED', '#A855F7']} style={s.iconBg}>
-              <Ionicons name="people" size={40} color="#FFF" />
-            </LinearGradient>
-          </View>
-          <Text style={s.title}>{t('mentors.title')}</Text>
-          <View style={s.badge}>
-            <Ionicons name="time-outline" size={14} color="#F59E0B" />
-            <Text style={s.badgeText}>{t('mentors.badge')}</Text>
-          </View>
-        </View>
+      <LinearGradient colors={['#06060F', '#0A0A1A', '#06060F']} style={StyleSheet.absoluteFill} />
 
-        <View style={s.card}>
-          <Text style={s.cardTitle}>{t('mentors.recruiting')}</Text>
-          <Text style={s.cardDesc}>{t('mentors.recruiting_desc')}</Text>
-          <View style={s.features}>
-            {features.map((item, i) => (
-              <View key={i} style={s.feature}>
-                <View style={s.featureIcon}>
-                  <Ionicons name={item.icon as any} size={20} color="#A855F7" />
-                </View>
-                <View style={s.featureText}>
-                  <Text style={s.featureTitle}>{item.title}</Text>
-                  <Text style={s.featureDesc}>{item.desc}</Text>
-                </View>
+      {/* Glowing Orbs */}
+      {Platform.OS === 'web' && (
+        <>
+          <Animated.View style={[s.orb, s.orbPurple, { opacity: pulseAnim }]} />
+          <Animated.View style={[s.orb, s.orbCyan, { opacity: Animated.multiply(pulseAnim, 0.6) }]} />
+        </>
+      )}
+
+      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
+
+        {/* Header */}
+        <Animated.View style={[s.heroSection, { opacity: fadeIn, transform: [{ translateY: slideUp }] }]}>
+          <View style={s.statusPill}>
+            <View style={s.statusDot} />
+            <Text style={s.statusText}>{t('mentors.badge') || 'COMING SOON'}</Text>
+          </View>
+
+          <LinearGradient colors={['rgba(124,58,237,0.1)', 'rgba(0,217,165,0.05)']} style={s.heroCard}>
+            <View style={s.heroIconWrap}>
+              <LinearGradient colors={['#7C3AED', '#5B21B6']} style={s.heroIcon}>
+                <Ionicons name="people" size={36} color="#FFF" />
+              </LinearGradient>
+            </View>
+            <Text style={s.heroTitle}>{t('mentors.title') || 'Mentor Marketplace'}</Text>
+            <Text style={s.heroDesc}>{t('mentors.recruiting_desc') || 'Connect with certified crypto mentors for personalized guidance.'}</Text>
+          </LinearGradient>
+        </Animated.View>
+
+        {/* Section Label */}
+        <Text style={s.sectionLabel}>{t('mentors.recruiting') || 'WHAT TO EXPECT'}</Text>
+
+        {/* Feature Cards - 2x2 Grid */}
+        <View style={s.featGrid}>
+          {features.map((f, i) => (
+            <Animated.View key={i} style={[s.featCard, {
+              opacity: cardAnims[i],
+              transform: [{ scale: cardAnims[i].interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] }) }],
+            }]}>
+              <View style={[s.featIconWrap, { backgroundColor: f.bg }]}>
+                <Ionicons name={f.icon as any} size={22} color={f.color} />
               </View>
-            ))}
-          </View>
+              <Text style={s.featTitle}>{f.title}</Text>
+              <Text style={s.featDesc}>{f.desc}</Text>
+            </Animated.View>
+          ))}
         </View>
 
+        {/* CTA */}
         <TouchableOpacity style={s.ctaWrap} onPress={openMentorApplication} activeOpacity={0.85} data-testid="apply-mentor-btn">
-          <LinearGradient colors={['#7C3AED', '#A855F7']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.cta}>
-            <Ionicons name="rocket-outline" size={20} color="#FFF" />
-            <Text style={s.ctaText}>{t('mentors.apply')}</Text>
-            <Ionicons name="arrow-forward" size={18} color="#FFF" />
+          <LinearGradient colors={['#7C3AED', '#5B21B6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.cta}>
+            <Ionicons name="rocket" size={20} color="#FFF" />
+            <Text style={s.ctaText}>{t('mentors.apply') || 'Apply as a Mentor'}</Text>
+            <View style={s.ctaArrow}>
+              <Ionicons name="arrow-forward" size={16} color="#FFF" />
+            </View>
           </LinearGradient>
         </TouchableOpacity>
 
+        {/* Info Note */}
         <View style={s.infoCard}>
-          <Ionicons name="calendar-outline" size={18} color="#7C3AED" />
-          <Text style={s.infoText}>{t('mentors.launch_note')}</Text>
+          <Ionicons name="calendar" size={18} color="#7C3AED" />
+          <Text style={s.infoText}>{t('mentors.launch_note') || 'Launching August 2026. Apply now to be a founding mentor.'}</Text>
         </View>
+
         <View style={{ height: 100 }} />
       </ScrollView>
     </SafeAreaView>
@@ -78,26 +123,85 @@ export default function MentorsScreen() {
 
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#06060F' },
-  scroll: { flex: 1 },
-  content: { padding: 20, alignItems: 'center' },
-  header: { alignItems: 'center', marginBottom: 24, marginTop: 20 },
-  iconWrap: { marginBottom: 16 },
-  iconBg: { width: 80, height: 80, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 28, fontWeight: '800', color: '#FFF', marginBottom: 8 },
-  badge: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(245,158,11,0.1)', borderWidth: 1, borderColor: 'rgba(245,158,11,0.3)', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 6 },
-  badgeText: { color: '#F59E0B', fontSize: 13, fontWeight: '700' },
-  card: { width: '100%', backgroundColor: 'rgba(124,58,237,0.06)', borderWidth: 1, borderColor: 'rgba(124,58,237,0.15)', borderRadius: 20, padding: 24, marginBottom: 20 },
-  cardTitle: { fontSize: 18, fontWeight: '700', color: '#FFF', marginBottom: 8 },
-  cardDesc: { fontSize: 14, color: '#9CA3AF', lineHeight: 22, marginBottom: 20 },
-  features: { gap: 16 },
-  feature: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  featureIcon: { width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(168,85,247,0.1)', alignItems: 'center', justifyContent: 'center' },
-  featureText: { flex: 1 },
-  featureTitle: { fontSize: 14, fontWeight: '700', color: '#FFF' },
-  featureDesc: { fontSize: 12, color: '#9CA3AF', marginTop: 2 },
-  ctaWrap: { width: '100%', marginBottom: 16 },
-  cta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, padding: 16, borderRadius: 16 },
+  scroll: { paddingHorizontal: 20, paddingTop: 16 },
+
+  // Orbs
+  orb: { position: 'absolute', borderRadius: 999 },
+  orbPurple: {
+    width: 300, height: 300, top: -80, right: -80,
+    backgroundColor: '#7C3AED',
+    ...(Platform.OS === 'web' ? { filter: 'blur(120px)' } : {}),
+  },
+  orbCyan: {
+    width: 240, height: 240, bottom: 150, left: -60,
+    backgroundColor: '#06B6D4',
+    ...(Platform.OS === 'web' ? { filter: 'blur(100px)' } : {}),
+  },
+
+  // Hero
+  heroSection: { alignItems: 'center', marginBottom: 32 },
+  statusPill: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    paddingHorizontal: 14, paddingVertical: 7,
+    borderRadius: 999, borderWidth: 1,
+    borderColor: 'rgba(245,158,11,0.3)',
+    backgroundColor: 'rgba(245,158,11,0.06)',
+    marginBottom: 20,
+  },
+  statusDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#F59E0B' },
+  statusText: { fontSize: 10, fontWeight: '800', color: '#F59E0B', letterSpacing: 2, textTransform: 'uppercase' },
+
+  heroCard: {
+    width: '100%', borderRadius: 24, padding: 28, alignItems: 'center',
+    borderWidth: 1, borderColor: 'rgba(124,58,237,0.15)',
+  },
+  heroIconWrap: { marginBottom: 16 },
+  heroIcon: {
+    width: 72, height: 72, borderRadius: 22, alignItems: 'center', justifyContent: 'center',
+  },
+  heroTitle: { fontSize: 24, fontWeight: '900', color: '#FFF', textAlign: 'center', marginBottom: 8, letterSpacing: -0.5 },
+  heroDesc: { fontSize: 14, color: 'rgba(255,255,255,0.5)', textAlign: 'center', lineHeight: 22, maxWidth: 300 },
+
+  // Section label
+  sectionLabel: {
+    fontSize: 11, fontWeight: '800', color: 'rgba(255,255,255,0.3)',
+    textTransform: 'uppercase', letterSpacing: 2, marginBottom: 16,
+  },
+
+  // Features grid
+  featGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12, marginBottom: 28 },
+  featCard: {
+    width: '48%',
+    backgroundColor: 'rgba(255,255,255,0.025)',
+    borderRadius: 20, padding: 20,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
+  },
+  featIconWrap: {
+    width: 44, height: 44, borderRadius: 14,
+    alignItems: 'center', justifyContent: 'center', marginBottom: 12,
+  },
+  featTitle: { fontSize: 14, fontWeight: '800', color: '#FFF', marginBottom: 4 },
+  featDesc: { fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 18 },
+
+  // CTA
+  ctaWrap: { borderRadius: 16, overflow: 'hidden', marginBottom: 16 },
+  cta: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
+    paddingVertical: 18, paddingHorizontal: 24,
+  },
   ctaText: { fontSize: 16, fontWeight: '800', color: '#FFF' },
-  infoCard: { width: '100%', flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: 'rgba(124,58,237,0.06)', borderRadius: 12, padding: 16 },
-  infoText: { flex: 1, fontSize: 13, color: '#9CA3AF', lineHeight: 20 },
+  ctaArrow: {
+    width: 28, height: 28, borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+
+  // Info card
+  infoCard: {
+    flexDirection: 'row', gap: 12, alignItems: 'flex-start',
+    backgroundColor: 'rgba(124,58,237,0.06)',
+    borderRadius: 16, padding: 16,
+    borderWidth: 1, borderColor: 'rgba(124,58,237,0.12)',
+  },
+  infoText: { flex: 1, fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 20 },
 });
