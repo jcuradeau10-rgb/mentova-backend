@@ -10,6 +10,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 import asyncio
+import time
 from pathlib import Path
 from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional, Dict, Any
@@ -123,6 +124,82 @@ FREE_AI_QUESTIONS_PER_DAY = 5  # Non-VIP limit
 # reCAPTCHA Configuration (test keys - replace with real keys in production)
 RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY', '6LejZ4csAAAAAKcjjyurS23lOeICBqIqAp4jZ9mQ')
 RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY', '6LejZ4csAAAAAOhuqKb2Xesso7dU0__VyTFC5bhC')
+
+# ==================== COINGECKO GLOBAL CACHE ====================
+COINGECKO_API_KEY = os.environ.get('COINGECKO_API_KEY', '')
+COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3"
+COINGECKO_CACHE_TTL = 40  # seconds between API calls
+
+_cg_cache = {
+    "prices": {"data": None, "last_fetch": 0},
+    "global": {"data": None, "last_fetch": 0},
+    "trending": {"data": None, "last_fetch": 0},
+}
+_cg_lock = asyncio.Lock()
+
+async def _fetch_coingecko(endpoint: str, params: dict = None) -> dict | None:
+    headers = {}
+    if COINGECKO_API_KEY:
+        headers["x-cg-demo-api-key"] = COINGECKO_API_KEY
+    try:
+        async with httpx.AsyncClient() as client_http:
+            resp = await client_http.get(
+                f"{COINGECKO_BASE_URL}/{endpoint}",
+                params=params or {},
+                headers=headers,
+                timeout=12.0,
+            )
+            if resp.status_code == 200:
+                return resp.json()
+            logger.warning(f"CoinGecko {endpoint} returned {resp.status_code}")
+    except Exception as e:
+        logger.error(f"CoinGecko fetch error ({endpoint}): {e}")
+    return None
+
+async def _refresh_cache():
+    now = time.time()
+    async with _cg_lock:
+        # Prices
+        if now - _cg_cache["prices"]["last_fetch"] >= COINGECKO_CACHE_TTL:
+            data = await _fetch_coingecko("coins/markets", {
+                "vs_currency": "usd",
+                "order": "market_cap_desc",
+                "per_page": 20,
+                "page": 1,
+                "sparkline": "false",
+                "price_change_percentage": "24h,7d",
+            })
+            if data:
+                _cg_cache["prices"]["data"] = data
+                _cg_cache["prices"]["last_fetch"] = now
+
+        # Global
+        if now - _cg_cache["global"]["last_fetch"] >= COINGECKO_CACHE_TTL:
+            data = await _fetch_coingecko("global")
+            if data:
+                _cg_cache["global"]["data"] = data.get("data", data)
+                _cg_cache["global"]["last_fetch"] = now
+
+        # Trending
+        if now - _cg_cache["trending"]["last_fetch"] >= COINGECKO_CACHE_TTL:
+            data = await _fetch_coingecko("search/trending")
+            if data:
+                _cg_cache["trending"]["data"] = data.get("coins", [])
+                _cg_cache["trending"]["last_fetch"] = now
+
+async def _coingecko_scheduler():
+    """Background task: refresh cache every 40 seconds"""
+    while True:
+        try:
+            await _refresh_cache()
+        except Exception as e:
+            logger.error(f"CoinGecko scheduler error: {e}")
+        await asyncio.sleep(COINGECKO_CACHE_TTL)
+
+if COINGECKO_API_KEY:
+    logger.info(f"CoinGecko API key loaded: {COINGECKO_API_KEY[:8]}...")
+else:
+    logger.warning("No CoinGecko API key — using mock data")
 
 async def verify_recaptcha(token: str) -> bool:
     if not token:
@@ -932,47 +1009,18 @@ async def toggle_biometric(
 
 @api_router.get("/crypto/prices")
 async def get_crypto_prices():
-    """Get real-time crypto prices from CoinGecko with mock fallback"""
-    # Mock data for when CoinGecko is unavailable
+    """Get real-time crypto prices from global cache (refreshed every 40s)"""
     MOCK_PRICES = [
         {"id": "bitcoin", "symbol": "btc", "name": "Bitcoin", "image": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png", "current_price": 67500, "market_cap": 1320000000000, "market_cap_rank": 1, "price_change_percentage_24h": 0.75, "price_change_percentage_7d_in_currency": 2.5},
         {"id": "ethereum", "symbol": "eth", "name": "Ethereum", "image": "https://assets.coingecko.com/coins/images/279/large/ethereum.png", "current_price": 1950, "market_cap": 234000000000, "market_cap_rank": 2, "price_change_percentage_24h": 0.52, "price_change_percentage_7d_in_currency": 1.8},
         {"id": "tether", "symbol": "usdt", "name": "Tether", "image": "https://assets.coingecko.com/coins/images/325/large/Tether.png", "current_price": 0.9997, "market_cap": 95000000000, "market_cap_rank": 3, "price_change_percentage_24h": 0.01, "price_change_percentage_7d_in_currency": 0.02},
-        {"id": "ripple", "symbol": "xrp", "name": "XRP", "image": "https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png", "current_price": 1.43, "market_cap": 82000000000, "market_cap_rank": 4, "price_change_percentage_24h": -0.78, "price_change_percentage_7d_in_currency": 3.2},
-        {"id": "binancecoin", "symbol": "bnb", "name": "BNB", "image": "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png", "current_price": 625, "market_cap": 93000000000, "market_cap_rank": 5, "price_change_percentage_24h": 3.25, "price_change_percentage_7d_in_currency": 5.1},
-        {"id": "usd-coin", "symbol": "usdc", "name": "USDC", "image": "https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png", "current_price": 0.9999, "market_cap": 43000000000, "market_cap_rank": 6, "price_change_percentage_24h": 0.00, "price_change_percentage_7d_in_currency": 0.01},
         {"id": "solana", "symbol": "sol", "name": "Solana", "image": "https://assets.coingecko.com/coins/images/4128/large/solana.png", "current_price": 185, "market_cap": 85000000000, "market_cap_rank": 7, "price_change_percentage_24h": 2.15, "price_change_percentage_7d_in_currency": 8.5},
-        {"id": "cardano", "symbol": "ada", "name": "Cardano", "image": "https://assets.coingecko.com/coins/images/975/large/cardano.png", "current_price": 0.65, "market_cap": 23000000000, "market_cap_rank": 8, "price_change_percentage_24h": -1.2, "price_change_percentage_7d_in_currency": -2.3},
-        {"id": "dogecoin", "symbol": "doge", "name": "Dogecoin", "image": "https://assets.coingecko.com/coins/images/5/large/dogecoin.png", "current_price": 0.32, "market_cap": 47000000000, "market_cap_rank": 9, "price_change_percentage_24h": 5.8, "price_change_percentage_7d_in_currency": 12.5},
-        {"id": "avalanche-2", "symbol": "avax", "name": "Avalanche", "image": "https://assets.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png", "current_price": 38, "market_cap": 15000000000, "market_cap_rank": 10, "price_change_percentage_24h": 1.8, "price_change_percentage_7d_in_currency": 4.2},
+        {"id": "binancecoin", "symbol": "bnb", "name": "BNB", "image": "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png", "current_price": 625, "market_cap": 93000000000, "market_cap_rank": 5, "price_change_percentage_24h": 3.25, "price_change_percentage_7d_in_currency": 5.1},
     ]
-    
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                "https://api.coingecko.com/api/v3/coins/markets",
-                params={
-                    "vs_currency": "usd",
-                    "order": "market_cap_desc",
-                    "per_page": 20,
-                    "page": 1,
-                    "sparkline": True,
-                    "price_change_percentage": "24h,7d"
-                },
-                timeout=10.0
-            )
-            if response.status_code == 200:
-                data = response.json()
-                return {
-                    "success": True,
-                    "data": data,
-                    "timestamp": datetime.utcnow().isoformat()
-                }
-            else:
-                return {"success": True, "data": MOCK_PRICES, "timestamp": datetime.utcnow().isoformat(), "mock": True}
-    except Exception as e:
-        logger.error(f"Error fetching crypto prices: {e}")
-        return {"success": True, "data": MOCK_PRICES, "timestamp": datetime.utcnow().isoformat(), "mock": True}
+    cached = _cg_cache["prices"]["data"]
+    if cached:
+        return {"success": True, "data": cached, "timestamp": datetime.now(timezone.utc).isoformat(), "cached": True}
+    return {"success": True, "data": MOCK_PRICES, "timestamp": datetime.now(timezone.utc).isoformat(), "mock": True}
 
 @api_router.get("/crypto/chart/{coin_id}")
 async def get_crypto_chart(coin_id: str, days: str = "7"):
@@ -1039,47 +1087,19 @@ def _generate_mock_chart(coin_id: str, days: int):
 
 @api_router.get("/crypto/trending")
 async def get_trending_cryptos():
-    """Get trending cryptocurrencies"""
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                "https://api.coingecko.com/api/v3/search/trending",
-                timeout=10.0
-            )
-            if response.status_code == 200:
-                data = response.json()
-                return {
-                    "success": True,
-                    "data": data.get("coins", []),
-                    "timestamp": datetime.utcnow().isoformat()
-                }
-            else:
-                return {"success": False, "error": "CoinGecko API error", "data": []}
-    except Exception as e:
-        logger.error(f"Error fetching trending: {e}")
-        return {"success": False, "error": str(e), "data": []}
+    """Get trending cryptocurrencies from global cache"""
+    cached = _cg_cache["trending"]["data"]
+    if cached:
+        return {"success": True, "data": cached, "timestamp": datetime.now(timezone.utc).isoformat()}
+    return {"success": False, "error": "Cache not ready", "data": []}
 
 @api_router.get("/crypto/global")
 async def get_global_stats():
-    """Get global crypto market stats"""
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                "https://api.coingecko.com/api/v3/global",
-                timeout=10.0
-            )
-            if response.status_code == 200:
-                data = response.json()
-                return {
-                    "success": True,
-                    "data": data.get("data", {}),
-                    "timestamp": datetime.utcnow().isoformat()
-                }
-            else:
-                return {"success": False, "error": "CoinGecko API error", "data": {}}
-    except Exception as e:
-        logger.error(f"Error fetching global stats: {e}")
-        return {"success": False, "error": str(e), "data": {}}
+    """Get global crypto market stats from global cache"""
+    cached = _cg_cache["global"]["data"]
+    if cached:
+        return {"success": True, "data": cached, "timestamp": datetime.now(timezone.utc).isoformat()}
+    return {"success": False, "error": "Cache not ready", "data": {}}
 
 # ==================== EDUCATIONAL CONTENT ROUTES ====================
 
@@ -13446,6 +13466,12 @@ async def migrate_seed_data():
 async def start_email_scheduler_task():
     """Start the background email scheduler for launch day + reminder emails"""
     start_email_scheduler()
+
+@app.on_event("startup")
+async def start_coingecko_cache():
+    """Start the CoinGecko global cache scheduler (1 call every 40s for all users)"""
+    asyncio.create_task(_coingecko_scheduler())
+    logger.info("CoinGecko cache scheduler started — refreshing every 40s")
 
 
 
