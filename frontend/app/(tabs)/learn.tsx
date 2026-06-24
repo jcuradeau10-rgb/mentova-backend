@@ -661,6 +661,20 @@ export default function LearnScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
+      {/* Atlas Header */}
+      <View style={s.atlasHeader}>
+        <View style={s.atlasHeaderLeft}>
+          <LinearGradient colors={['#7C3AED', '#5B21B6']} style={s.atlasLogo}>
+            <Ionicons name="planet" size={20} color="#FFF" />
+          </LinearGradient>
+          <View>
+            <Text style={s.atlasTitle}>Atlas</Text>
+            <Text style={s.atlasSubtitle}>{isVip ? 'VIP Unlimited' : `${msgRemaining} msg`}</Text>
+          </View>
+        </View>
+        {isVip && <View style={s.vipPill}><Ionicons name="diamond" size={12} color="#FFD700" /><Text style={s.vipPillText}>VIP</Text></View>}
+      </View>
+
       {/* Tab Switcher */}
       <View style={s.tabBar}>
         <TouchableOpacity style={[s.tabBtn, tab === 'parcours' && s.tabActive]} onPress={() => { setTab('parcours'); setViewMode('curriculum'); }} data-testid="tab-parcours">
@@ -698,11 +712,18 @@ export default function LearnScreen() {
 // ============ STYLES ============
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#06060F' },
-  tabBar: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.06)', paddingHorizontal: 16 },
-  tabBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 14, borderBottomWidth: 2, borderBottomColor: 'transparent' },
-  tabActive: { borderBottomColor: '#7C3AED' },
-  tabText: { fontSize: 14, fontWeight: '600', color: '#666' },
-  tabTextActive: { color: '#7C3AED' },
+  atlasHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12 },
+  atlasHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  atlasLogo: { width: 40, height: 40, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  atlasTitle: { fontSize: 20, fontWeight: '900', color: '#FFF', letterSpacing: -0.5 },
+  atlasSubtitle: { fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: '600' },
+  vipPill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20, backgroundColor: 'rgba(255,215,0,0.1)', borderWidth: 1, borderColor: 'rgba(255,215,0,0.2)' },
+  vipPillText: { fontSize: 11, fontWeight: '800', color: '#FFD700' },
+  tabBar: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, paddingVertical: 10, backgroundColor: 'rgba(255,255,255,0.02)' },
+  tabBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 12, borderRadius: 14, backgroundColor: 'transparent', borderWidth: 1, borderColor: 'transparent' },
+  tabActive: { backgroundColor: 'rgba(124,58,237,0.12)', borderColor: 'rgba(124,58,237,0.25)' },
+  tabText: { fontSize: 14, fontWeight: '700', color: 'rgba(255,255,255,0.35)' },
+  tabTextActive: { color: '#A78BFA' },
   msgRow: { flexDirection: 'row', marginBottom: 12, alignItems: 'flex-start', gap: 8 },
   msgRowUser: { justifyContent: 'flex-end' },
   msgAvatar: { width: 28, height: 28, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginTop: 2 },
