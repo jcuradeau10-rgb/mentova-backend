@@ -511,14 +511,14 @@ function AtlasChat({ lang, t }: { lang: string; t: (key: string) => string }) {
     const assistantId = `a-${Date.now()}`;
     setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: '' }]);
     try {
-      const res = await fetch(`${API}/api/atlas/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: userMsg.content, session_id: sessionId }) });
+      const res = await fetch(`${API}/api/atlas/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: userMsg.content, session_id: sessionId, lang }) });
       if (!res.ok) throw new Error('API error');
       const reader = res.body?.getReader(); if (!reader) throw new Error('No reader');
       const decoder = new TextDecoder(); let fullText = '';
       while (true) { const { done, value } = await reader.read(); if (done) break; const chunk = decoder.decode(value, { stream: true }); for (const line of chunk.split('\n')) { if (line.startsWith('data: ')) { const data = line.slice(6); if (data === '[DONE]') continue; fullText += data; setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: fullText } : m)); } } }
       const finalMsgs = [...newMessages, { id: assistantId, role: 'assistant' as const, content: fullText }]; setMessages(finalMsgs); saveHistory(finalMsgs);
     } catch {
-      try { const res = await fetch(`${API}/api/atlas/chat/simple`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: userMsg.content, session_id: sessionId }) }); const data = await res.json(); const finalMsgs = [...newMessages, { id: assistantId, role: 'assistant' as const, content: data.response || 'Erreur' }]; setMessages(finalMsgs); saveHistory(finalMsgs); } catch { setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: 'Erreur de connexion' } : m)); }
+      try { const res = await fetch(`${API}/api/atlas/chat/simple`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: userMsg.content, session_id: sessionId, lang }) }); const data = await res.json(); const finalMsgs = [...newMessages, { id: assistantId, role: 'assistant' as const, content: data.response || 'Erreur' }]; setMessages(finalMsgs); saveHistory(finalMsgs); } catch { setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: 'Erreur de connexion' } : m)); }
     }
     setLoading(false); setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
   }, [input, loading, messages, sessionId]);
