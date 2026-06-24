@@ -1625,224 +1625,30 @@ from newsdataapi import NewsDataApiClient
 NEWSDATA_API_KEY = os.environ.get('NEWSDATA_API_KEY')
 
 # Fallback mock data in case API fails
-MOCK_FINANCIAL_NEWS = [
-    {
-        "id": "news-1",
-        "title": "La Fed maintient ses taux : Impact sur Bitcoin et les marchés",
-        "summary": "La Réserve Fédérale américaine a décidé de maintenir ses taux directeurs inchangés, provoquant une hausse de 3% sur le Bitcoin.",
-        "source": "CryptoNews",
-        "category": "macro",
-        "impact": "bullish",
-        "impact_reason": "Regulation favorable",
-        "image_url": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400",
-        "published_at": "2025-02-21T10:30:00Z",
-        "tags": ["Fed", "Bitcoin", "Taux"]
-    },
-    {
-        "id": "news-2",
-        "title": "BlackRock augmente ses positions en ETF Bitcoin",
-        "summary": "Le géant de la gestion d'actifs BlackRock a acheté 5000 BTC supplémentaires pour son ETF, signal fort pour le marché.",
-        "source": "Bloomberg Crypto",
-        "category": "institutionnel",
-        "impact": "bullish",
-        "impact_reason": "Interet institutionnel",
-        "image_url": "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=400",
-        "published_at": "2025-02-21T09:15:00Z",
-        "tags": ["BlackRock", "ETF"]
-    },
-    {
-        "id": "news-3",
-        "title": "Ethereum 2.0 : La mise à jour Dencun booste le réseau",
-        "summary": "Les frais de transaction chutent de 90% suite à la mise à jour, rendant les Layer 2 encore plus attractifs.",
-        "source": "Ethereum Foundation",
-        "category": "technologie",
-        "impact": "bullish",
-        "impact_reason": "Amelioration technique",
-        "image_url": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400",
-        "published_at": "2025-02-21T08:00:00Z",
-        "tags": ["Ethereum", "Layer 2"]
-    },
-    {
-        "id": "news-4",
-        "title": "Solana dépasse les 200$ après un rally impressionnant",
-        "summary": "Solana connaît une hausse de 15% en 24h grâce à l'explosion de l'écosystème DeFi sur le réseau.",
-        "source": "CoinDesk",
-        "category": "analyse",
-        "impact": "bullish",
-        "impact_reason": "Hausse des prix",
-        "image_url": "https://images.unsplash.com/photo-1622630998477-20aa696ecb05?w=400",
-        "published_at": "2025-02-21T07:30:00Z",
-        "tags": ["Solana", "DeFi", "Rally"]
-    },
-    {
-        "id": "news-5",
-        "title": "L'UE finalise le cadre réglementaire MiCA pour les cryptomonnaies",
-        "summary": "Le nouveau cadre MiCA entre en vigueur, apportant clarté et sécurité juridique aux entreprises crypto européennes.",
-        "source": "EU Observer",
-        "category": "regulation",
-        "impact": "bullish",
-        "impact_reason": "Regulation favorable",
-        "image_url": "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400",
-        "published_at": "2025-02-21T06:45:00Z",
-        "tags": ["MiCA", "UE", "Régulation"]
-    },
-    {
-        "id": "news-6",
-        "title": "Le Salvador achète 200 BTC supplémentaires",
-        "summary": "Le président Bukele annonce un nouvel achat massif de Bitcoin, portant les réserves nationales à plus de 6000 BTC.",
-        "source": "Reuters Crypto",
-        "category": "adoption",
-        "impact": "bullish",
-        "impact_reason": "Adoption massive",
-        "image_url": "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=400",
-        "published_at": "2025-02-20T22:00:00Z",
-        "tags": ["Salvador", "Bitcoin", "Adoption"]
-    },
-    {
-        "id": "news-7",
-        "title": "Faille critique découverte dans un protocole DeFi majeur",
-        "summary": "Un bug dans le smart contract d'un protocole DeFi a été découvert, les fonds ont été sécurisés à temps grâce au bug bounty.",
-        "source": "The Block",
-        "category": "securite",
-        "impact": "bearish",
-        "impact_reason": "Probleme securite",
-        "image_url": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400",
-        "published_at": "2025-02-20T20:30:00Z",
-        "tags": ["DeFi", "Sécurité", "Bug"]
-    },
-    {
-        "id": "news-8",
-        "title": "Visa étend ses services de paiement en stablecoins",
-        "summary": "Visa annonce l'intégration de l'USDC sur 5 nouveaux réseaux blockchain pour les paiements commerciaux.",
-        "source": "Visa Blog",
-        "category": "adoption",
-        "impact": "bullish",
-        "impact_reason": "Adoption massive",
-        "image_url": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400",
-        "published_at": "2025-02-20T18:15:00Z",
-        "tags": ["Visa", "USDC", "Stablecoins"]
-    },
-    {
-        "id": "news-9",
-        "title": "Analyse technique : Bitcoin forme un triangle ascendant",
-        "summary": "Les analystes prévoient une cassure haussière du Bitcoin au-dessus de 100K$ si le pattern se confirme.",
-        "source": "TradingView",
-        "category": "analyse",
-        "impact": "bullish",
-        "impact_reason": "Signal d'achat",
-        "image_url": "https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=400",
-        "published_at": "2025-02-20T16:00:00Z",
-        "tags": ["Bitcoin", "Analyse", "100K"]
-    },
-    {
-        "id": "news-10",
-        "title": "La SEC approuve deux nouveaux ETF Ethereum spot",
-        "summary": "La Securities and Exchange Commission donne son feu vert à deux nouvelles demandes d'ETF Ethereum, ouvrant le marché aux institutionnels.",
-        "source": "SEC Filing",
-        "category": "regulation",
-        "impact": "bullish",
-        "impact_reason": "Regulation favorable",
-        "image_url": "https://images.unsplash.com/photo-1620321023374-d1a68fbc720d?w=400",
-        "published_at": "2025-02-20T14:30:00Z",
-        "tags": ["SEC", "ETF", "Ethereum"]
-    },
-    {
-        "id": "news-11",
-        "title": "Les mineurs Bitcoin rapportent des profits record au Q4",
-        "summary": "Les grandes entreprises de minage affichent des résultats exceptionnels grâce à la hausse du BTC et l'optimisation des coûts énergétiques.",
-        "source": "Mining Report",
-        "category": "general",
-        "impact": "bullish",
-        "impact_reason": "Etape historique",
-        "image_url": "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=400",
-        "published_at": "2025-02-20T12:00:00Z",
-        "tags": ["Mining", "Bitcoin", "Profits"]
-    },
-    {
-        "id": "news-12",
-        "title": "Cardano lance sa plus grande mise à jour depuis Vasil",
-        "summary": "La mise à jour Chang apporte la gouvernance on-chain complète à Cardano, un tournant pour la décentralisation du protocole.",
-        "source": "Cardano Foundation",
-        "category": "technologie",
-        "impact": "bullish",
-        "impact_reason": "Amelioration technique",
-        "image_url": "https://images.unsplash.com/photo-1639762681057-408e52192e55?w=400",
-        "published_at": "2025-02-20T10:00:00Z",
-        "tags": ["Cardano", "Mise à jour", "Gouvernance"]
-    },
-    {
-        "id": "news-13",
-        "title": "Le marché NFT montre des signes de reprise en 2025",
-        "summary": "Après une longue baisse, les volumes de trading NFT augmentent de 40% sur les principales places de marché.",
-        "source": "NFT Analytics",
-        "category": "general",
-        "impact": "bullish",
-        "impact_reason": "Hausse des prix",
-        "image_url": "https://images.unsplash.com/photo-1645378999013-95abebf5f3c1?w=400",
-        "published_at": "2025-02-20T08:30:00Z",
-        "tags": ["NFT", "Reprise", "Volume"]
-    },
-    {
-        "id": "news-14",
-        "title": "Chine : Nouvelles restrictions sur les exchanges offshore",
-        "summary": "Le régulateur chinois renforce les mesures contre l'accès aux plateformes d'échange crypto depuis le territoire.",
-        "source": "SCMP",
-        "category": "regulation",
-        "impact": "bearish",
-        "impact_reason": "Regulation negative",
-        "image_url": "https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=400",
-        "published_at": "2025-02-20T06:00:00Z",
-        "tags": ["Chine", "Restriction", "Exchange"]
-    },
-    {
-        "id": "news-15",
-        "title": "MicroStrategy détient désormais plus de 250 000 BTC",
-        "summary": "Michael Saylor poursuit sa stratégie d'accumulation agressive avec un nouvel achat de 10 000 BTC.",
-        "source": "MicroStrategy IR",
-        "category": "institutionnel",
-        "impact": "bullish",
-        "impact_reason": "Interet institutionnel",
-        "image_url": "https://images.unsplash.com/photo-1605792657660-596af9009e82?w=400",
-        "published_at": "2025-02-19T22:00:00Z",
-        "tags": ["MicroStrategy", "Saylor", "Bitcoin"]
-    },
-    {
-        "id": "news-16",
-        "title": "XRP : Ripple gagne son procès contre la SEC",
-        "summary": "La décision finale du tribunal confirme que le XRP n'est pas un titre financier, provoquant un rallye de 25%.",
-        "source": "CoinTelegraph",
-        "category": "regulation",
-        "impact": "bullish",
-        "impact_reason": "Regulation favorable",
-        "image_url": "https://images.unsplash.com/photo-1634704784915-aacf363b021f?w=400",
-        "published_at": "2025-02-19T20:00:00Z",
-        "tags": ["XRP", "Ripple", "SEC"]
-    },
-    {
-        "id": "news-17",
-        "title": "Le staking Ethereum atteint 40 millions d'ETH",
-        "summary": "Un nouveau record pour le staking ETH, renforçant la sécurité du réseau et réduisant l'offre en circulation.",
-        "source": "Etherscan",
-        "category": "technologie",
-        "impact": "bullish",
-        "impact_reason": "Etape historique",
-        "image_url": "https://images.unsplash.com/photo-1622790698141-94e30457ef12?w=400",
-        "published_at": "2025-02-19T18:00:00Z",
-        "tags": ["Ethereum", "Staking", "Record"]
-    },
-    {
-        "id": "news-18",
-        "title": "Avertissement : Nouvelle vague d'arnaques crypto sur Telegram",
-        "summary": "Les experts en cybersécurité mettent en garde contre des bots malveillants qui ciblent les investisseurs crypto.",
-        "source": "CyberSec Report",
-        "category": "securite",
-        "impact": "bearish",
-        "impact_reason": "Probleme securite",
-        "image_url": "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400",
-        "published_at": "2025-02-19T16:00:00Z",
-        "tags": ["Scam", "Telegram", "Sécurité"]
-    }
-]
+MOCK_FINANCIAL_NEWS = {
+    "fr": [
+        {"id": "news-fr-1", "title": "La Fed maintient ses taux : Impact sur Bitcoin", "summary": "La Fed a maintenu ses taux, provoquant une hausse de 3% sur le Bitcoin.", "source": "CryptoNews", "category": "macro", "impact": "bullish", "impact_reason": "Regulation favorable", "image_url": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400", "published_at": "2025-02-21T10:30:00Z", "tags": ["Fed", "Bitcoin"], "language": "fr"},
+        {"id": "news-fr-2", "title": "BlackRock augmente ses positions en ETF Bitcoin", "summary": "BlackRock a acheté 5000 BTC supplémentaires pour son ETF.", "source": "Bloomberg Crypto", "category": "institutionnel", "impact": "bullish", "impact_reason": "Interet institutionnel", "image_url": "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=400", "published_at": "2025-02-21T09:15:00Z", "tags": ["BlackRock", "ETF"], "language": "fr"},
+        {"id": "news-fr-3", "title": "Ethereum : La mise a jour Dencun reduit les frais de 90%", "summary": "Les frais chutent de 90% suite a la mise a jour Dencun.", "source": "Ethereum Foundation", "category": "technologie", "impact": "bullish", "impact_reason": "Amelioration technique", "image_url": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400", "published_at": "2025-02-21T08:00:00Z", "tags": ["Ethereum", "Layer 2"], "language": "fr"},
+        {"id": "news-fr-4", "title": "Solana depasse les 200$ apres un rally impressionnant", "summary": "Solana connait une hausse de 15% en 24h.", "source": "CoinDesk", "category": "analyse", "impact": "bullish", "impact_reason": "Hausse des prix", "image_url": "https://images.unsplash.com/photo-1622630998477-20aa696ecb05?w=400", "published_at": "2025-02-21T07:30:00Z", "tags": ["Solana", "DeFi"], "language": "fr"},
+        {"id": "news-fr-5", "title": "L UE finalise le cadre MiCA pour les cryptomonnaies", "summary": "Le cadre MiCA entre en vigueur pour les entreprises crypto.", "source": "Reuters", "category": "regulation", "impact": "bullish", "impact_reason": "Cadre juridique", "image_url": "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400", "published_at": "2025-02-21T06:00:00Z", "tags": ["MiCA", "Regulation"], "language": "fr"},
+    ],
+    "en": [
+        {"id": "news-en-1", "title": "Fed Holds Rates Steady: Bitcoin Rallies 3%", "summary": "The Federal Reserve kept rates unchanged, sparking a 3% Bitcoin rally.", "source": "CryptoNews", "category": "macro", "impact": "bullish", "impact_reason": "Favorable regulation", "image_url": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400", "published_at": "2025-02-21T10:30:00Z", "tags": ["Fed", "Bitcoin", "Rates"], "language": "en"},
+        {"id": "news-en-2", "title": "BlackRock Increases Bitcoin ETF Holdings", "summary": "BlackRock purchased 5,000 additional BTC for its spot ETF.", "source": "Bloomberg Crypto", "category": "institutional", "impact": "bullish", "impact_reason": "Institutional interest", "image_url": "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=400", "published_at": "2025-02-21T09:15:00Z", "tags": ["BlackRock", "ETF"], "language": "en"},
+        {"id": "news-en-3", "title": "Ethereum Dencun Upgrade Slashes Gas Fees by 90%", "summary": "Transaction costs drop dramatically with the Dencun upgrade.", "source": "Ethereum Foundation", "category": "technology", "impact": "bullish", "impact_reason": "Technical improvement", "image_url": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400", "published_at": "2025-02-21T08:00:00Z", "tags": ["Ethereum", "Layer 2"], "language": "en"},
+        {"id": "news-en-4", "title": "Solana Breaks $200 After Strong Rally", "summary": "Solana surges 15% in 24 hours fueled by DeFi growth.", "source": "CoinDesk", "category": "analysis", "impact": "bullish", "impact_reason": "Price surge", "image_url": "https://images.unsplash.com/photo-1622630998477-20aa696ecb05?w=400", "published_at": "2025-02-21T07:30:00Z", "tags": ["Solana", "DeFi"], "language": "en"},
+        {"id": "news-en-5", "title": "EU Finalizes MiCA Regulatory Framework", "summary": "The MiCA framework provides legal clarity for European crypto businesses.", "source": "Reuters", "category": "regulation", "impact": "bullish", "impact_reason": "Legal framework", "image_url": "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400", "published_at": "2025-02-21T06:00:00Z", "tags": ["MiCA", "Regulation"], "language": "en"},
+    ],
+    "es": [
+        {"id": "news-es-1", "title": "La Fed mantiene las tasas: Bitcoin sube un 3%", "summary": "La Reserva Federal mantuvo las tasas, provocando un rally del 3% en Bitcoin.", "source": "CryptoNews", "category": "macro", "impact": "bullish", "impact_reason": "Regulacion favorable", "image_url": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400", "published_at": "2025-02-21T10:30:00Z", "tags": ["Fed", "Bitcoin"], "language": "es"},
+        {"id": "news-es-2", "title": "BlackRock aumenta sus posiciones en ETF Bitcoin", "summary": "BlackRock compro 5,000 BTC adicionales para su ETF.", "source": "Bloomberg Crypto", "category": "institucional", "impact": "bullish", "impact_reason": "Interes institucional", "image_url": "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=400", "published_at": "2025-02-21T09:15:00Z", "tags": ["BlackRock", "ETF"], "language": "es"},
+        {"id": "news-es-3", "title": "Ethereum: Dencun reduce las tarifas un 90%", "summary": "Los costos de transaccion caen con la actualizacion Dencun.", "source": "Ethereum Foundation", "category": "tecnologia", "impact": "bullish", "impact_reason": "Mejora tecnica", "image_url": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400", "published_at": "2025-02-21T08:00:00Z", "tags": ["Ethereum", "Layer 2"], "language": "es"},
+        {"id": "news-es-4", "title": "Solana supera los $200 tras un rally impresionante", "summary": "Solana sube un 15% en 24 horas.", "source": "CoinDesk", "category": "analisis", "impact": "bullish", "impact_reason": "Subida de precios", "image_url": "https://images.unsplash.com/photo-1622630998477-20aa696ecb05?w=400", "published_at": "2025-02-21T07:30:00Z", "tags": ["Solana", "DeFi"], "language": "es"},
+        {"id": "news-es-5", "title": "La UE finaliza el marco MiCA para criptomonedas", "summary": "El marco MiCA brinda claridad legal a las empresas cripto.", "source": "Reuters", "category": "regulacion", "impact": "bullish", "impact_reason": "Marco legal", "image_url": "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400", "published_at": "2025-02-21T06:00:00Z", "tags": ["MiCA", "Regulacion"], "language": "es"},
+    ],
+}
+
 
 def determine_impact_with_reason(title: str, description: str = "") -> tuple:
     """Analyze title and description to determine impact and reason"""
@@ -2065,7 +1871,7 @@ async def get_financial_news(
     # Check if API key is configured
     if not NEWSDATA_API_KEY:
         logger.warning("NewsData.io API key not configured, using mock data")
-        news = MOCK_FINANCIAL_NEWS.copy()
+        news = MOCK_FINANCIAL_NEWS.get(lang if lang in MOCK_FINANCIAL_NEWS else "en", MOCK_FINANCIAL_NEWS["en"]).copy()
         if category:
             news = [n for n in news if n["category"] == category]
         paginated = news[skip:skip + limit]
@@ -2099,7 +1905,7 @@ async def get_financial_news(
             )
         except asyncio.TimeoutError:
             logger.warning("NewsData.io timeout, using mock data")
-            news = MOCK_FINANCIAL_NEWS.copy()
+            news = MOCK_FINANCIAL_NEWS.get(lang if lang in MOCK_FINANCIAL_NEWS else "en", MOCK_FINANCIAL_NEWS["en"]).copy()
             if category:
                 news = [n for n in news if n["category"] == category]
             paginated = news[skip:skip + limit]
@@ -2115,7 +1921,7 @@ async def get_financial_news(
         
         if response.get("status") != "success" or not response.get("results"):
             logger.warning("NewsData.io returned no results, using mock data")
-            news = MOCK_FINANCIAL_NEWS.copy()
+            news = MOCK_FINANCIAL_NEWS.get(lang if lang in MOCK_FINANCIAL_NEWS else "en", MOCK_FINANCIAL_NEWS["en"]).copy()
             if category:
                 news = [n for n in news if n["category"] == category]
             paginated = news[skip:skip + limit]
@@ -2135,7 +1941,7 @@ async def get_financial_news(
         
         # Supplement with mock data if we have fewer than requested
         live_ids = {n["id"] for n in transformed_news}
-        mock_supplement = [n for n in MOCK_FINANCIAL_NEWS if n["id"] not in live_ids]
+        mock_supplement = [n for n in MOCK_FINANCIAL_NEWS.get(lang if lang in MOCK_FINANCIAL_NEWS else "en", MOCK_FINANCIAL_NEWS["en"]) if n["id"] not in live_ids]
         combined_news = transformed_news + mock_supplement
         
         # Filter by category if provided
@@ -2163,7 +1969,7 @@ async def get_financial_news(
     except Exception as e:
         logger.error(f"Error fetching news from NewsData.io: {str(e)}")
         # Fallback to mock data
-        news = MOCK_FINANCIAL_NEWS.copy()
+        news = MOCK_FINANCIAL_NEWS.get(lang if lang in MOCK_FINANCIAL_NEWS else "en", MOCK_FINANCIAL_NEWS["en"]).copy()
         if category:
             news = [n for n in news if n["category"] == category]
         paginated = news[skip:skip + limit]
@@ -2242,7 +2048,7 @@ async def get_flash_news(lang: Optional[str] = None):
 @api_router.get("/news/{news_id}")
 async def get_news_detail(news_id: str):
     """Get detailed news article"""
-    for news in MOCK_FINANCIAL_NEWS:
+    for news in MOCK_FINANCIAL_NEWS.get("en", []):
         if news["id"] == news_id:
             return {"success": True, "data": news}
     raise HTTPException(status_code=404, detail="Article not found")
