@@ -1,145 +1,110 @@
 {
-  "theme": "Dark",
-  "archetype": "Archetype 4 (Swiss & High-Contrast)",
-  "emotional_tone": "Authoritative, cutting-edge, transparent, and high-energy trust.",
-  "typography": {
-    "headings": {
-      "family": "Unbounded",
-      "weights": ["font-medium", "font-bold", "font-black"],
-      "classes": "tracking-tighter uppercase",
-      "h1": "text-5xl sm:text-6xl lg:text-7xl leading-[0.9]",
-      "h2": "text-3xl sm:text-4xl lg:text-5xl",
-      "h3": "text-2xl sm:text-3xl",
-      "h4": "text-xl sm:text-2xl"
-    },
-    "body": {
-      "family": "Chivo",
-      "weights": ["font-light", "font-normal"],
-      "classes": "leading-relaxed text-zinc-300"
-    },
-    "labels": {
-      "classes": "uppercase tracking-[0.2em] text-xs font-bold text-zinc-400"
-    }
-  },
+  "theme": "DARK",
+  "archetype": "7 (Electric & Neon)",
+  "rationale": "Mentova is a crypto education app. The requested 'innovative, dynamic, modern' vibe aligns perfectly with Archetype 7, but we are grounding it using E1's 'Black-on-Black' protocol. Deep dark navy (#06060F) serves as the endless void. Purple (#7C3AED) and Green (#00D9A5) are treated as kinetic triggers—used only for active states, gradients, and critical actions. We avoid flat, lifeless interfaces by integrating floating particles, glowing orbs, and glassmorphic 'Crystal' cards with 1px tactile borders.",
   "colors": {
     "background": {
-      "primary": "#050505",
-      "secondary": "#111111",
-      "surface": "#1A1A1A",
-      "glass": "bg-black/60 backdrop-blur-xl"
+      "app": "#06060F",
+      "surface": "#0A0A1A",
+      "glass": "rgba(255, 255, 255, 0.02)"
+    },
+    "brand": {
+      "primary": "#7C3AED",
+      "primaryLight": "#A78BFA",
+      "accent": "#00D9A5"
     },
     "text": {
-      "primary": "#FFFFFF",
-      "secondary": "#A1A1AA",
-      "muted": "#52525B"
+      "heading": "#FFFFFF",
+      "body": "rgba(255, 255, 255, 0.7)",
+      "muted": "rgba(255, 255, 255, 0.4)"
     },
-    "accent": {
-      "primary": "#FACC15",
-      "secondary": "#3B82F6",
-      "warning": "#EF4444",
-      "hover": "#EAB308"
+    "border": {
+      "glass": "rgba(255, 255, 255, 0.08)",
+      "active": "rgba(124, 58, 237, 0.5)"
+    }
+  },
+  "typography": {
+    "guidelines": "Do NOT use generic Inter for headings. We demand high-tension typography. Since this is React Native and custom fonts might not be pre-loaded, assume system fallbacks if needed, but structure the styles as if a strong geometric display sans is used.",
+    "headings": {
+      "fontFamily": "'Unbounded', 'Space Grotesk', system-ui",
+      "fontWeight": "900",
+      "letterSpacing": -1
     },
-    "borders": {
-      "subtle": "border-zinc-800",
-      "active": "border-yellow-400/50"
+    "body": {
+      "fontFamily": "'Chivo', 'Roboto', system-ui",
+      "fontWeight": "400",
+      "letterSpacing": 0
+    },
+    "scale": {
+      "h1": 42,
+      "h2": 32,
+      "h3": 24,
+      "body": 16,
+      "caption": 13,
+      "overline": 10
     }
   },
   "layout_and_spacing": {
-    "generous_spacing": "py-24 md:py-32 lg:py-48",
-    "container": "px-6 md:px-12 lg:px-24 max-w-[1400px] mx-auto",
-    "bento_grid": "grid grid-cols-1 md:grid-cols-8 lg:grid-cols-12 gap-8 lg:gap-12",
-    "alignment": "Mobile-first, left-aligned text for paragraphs, asymmetrical tension in hero section."
-  },
-  "visual_enhancers": {
-    "glassmorphism": "Used strictly for the sticky header and floating navigational elements.",
-    "tracing_beam": "Apply to the VIP Pricing card to visually highlight it. A moving gradient line on the border.",
-    "marquee": "Massive outline text (text-[10vw]) 'MENTOVA ACADEMY' running slowly in the background for kinetic texture.",
-    "textures": "Subtle noise/grain overlay on the darkest backgrounds to prevent digital flatness."
-  },
-  "components": {
-    "header": {
-      "description": "Sticky crystal glass header with Logo, Nav links, Language Switcher dropdown (EN/FR/ES), and Primary CTA. Z-index 50."
+    "strategy": "Mobile-first, generous padding. Cards do not touch the screen edges.",
+    "padding": {
+      "screen": 24,
+      "card": 20,
+      "button": 16
     },
-    "hero": {
-      "description": "Asymmetrical layout. Huge H1. Abstract 3D glowing network image as background with max bg-black/50 overlay. Clear CTA 'Download App' and a 'Founding Member' badge."
+    "radii": {
+      "card": 24,
+      "button": 16,
+      "pill": 999
     },
-    "features_bento": {
-      "description": "Bento grid (Tetris Mode) for Atlas AI Mentor, Community, Interactive Charts, Verified Mentors. Use pure HTML/Tailwind to create overlapping grids."
-    },
-    "atlas_ai_demo": {
-      "description": "Terminal/Retro-Futurism look. Deep black background, monospace data points, neon yellow accents. Minimalist layout emphasizing the 'Adaptive Learning' AI brain."
-    },
-    "pricing_vip": {
-      "description": "Side-by-side cards. Free vs VIP. VIP card uses the Tracing Beam border effect, highlighted with yellow. Emphasize $9.99/mo founding price (vs $25.99 regular)."
-    },
-    "countdown_registration": {
-      "description": "Form section with strict Shadcn Inputs customized to flat dark mode. Includes a prominent countdown for 500 spots. Connected to backend API."
-    },
-    "app_carousel": {
-      "description": "Framer-motion or CSS-based horizontal scroll showcasing app screenshots. Images max-h-[80vh] to prevent viewport takeover on mobile."
-    },
-    "referral_program": {
-      "description": "Grid layout explaining the viral loop. Minimalist cards with Phosphor Icons."
-    },
-    "founder_story": {
-      "description": "Editorial layout style. A large bold quote alongside the founder's portrait."
-    },
-    "faq": {
-      "description": "Clean accordion list using Shadcn Accordion. High contrast typography."
-    },
-    "footer": {
-      "description": "Massive top/bottom padding (py-32). Darkest background. Huge 'Mentova' text at the bottom. Legal links aligned bottom-right."
+    "gap": {
+      "sm": 8,
+      "md": 16,
+      "lg": 24,
+      "xl": 32
     }
   },
-  "motion": {
-    "scrolling": "Lenis for momentum scrolling.",
-    "animations": "Framer Motion for entrance staggering (y: 20, opacity: 0). Hover states: -translate-y-1, text color shift, and shadow adjustments."
+  "components": {
+    "hero": {
+      "structure": "Animated M logo center-top, Tagline badge above the Title, H1 Title, Subtitle.",
+      "taglineBadge": "Tiny pill shape, border 1px solid rgba(0, 217, 165, 0.3), text #00D9A5. Uppercase, tracking wide.",
+      "title": "Massive text. Can use green or purple text-shadow or linear-gradient overlay if possible."
+    },
+    "statsBar": {
+      "structure": "Horizontal row of 3 small bento items. '9+ Pro Tools', '24/7 AI Active', '3 Languages'.",
+      "style": "Glass surface. Number/Icon highlighted in Primary/Accent color. Deep padding."
+    },
+    "featureCards": {
+      "structure": "4 cards (AI Trading, Pro Charts, Verified Mentors, Community). Auto-rotate carousel or stack.",
+      "style": "Crystal variant glassmorphism. Background rgba(255,255,255,0.03), 1px solid rgba(255,255,255,0.05). Internal glowing icon.",
+      "activeState": "Border becomes Purple, subtle drop shadow."
+    },
+    "buttons": {
+      "primary": "Solid #7C3AED background. Text #FFFFFF. Bold, large hit area. Subtext '→ register'.",
+      "secondary": "Transparent. Text rgba(255,255,255,0.7). No border or extremely subtle border. Subtext '→ login'.",
+      "trustBadges": "Muted text beneath the buttons (security, encryption). 12px."
+    }
   },
-  "accessibility": {
-    "contrast": "Ensure all text meets APCA standards. Never use pure transparent backgrounds under text overlaying images.",
-    "testing": "All interactive elements MUST have data-testid attributes (e.g., data-testid='hero-cta-button')."
+  "motion_and_interactions": {
+    "background": "Use expo-linear-gradient as absolute-positioned giant blurred orbs (width 300, height 300, borderRadius 150) in top-right (purple) and bottom-left (green) with low opacity (0.15) to simulate glowing space.",
+    "cards": "Use React Native Animated API for the auto-rotate functionality.",
+    "logo": "Pulsing or floating animation via Animated.loop and Animated.sequence on the Y-axis."
   },
   "media": {
     "image_urls": [
       {
-        "url": "https://images.unsplash.com/photo-1771015138422-819587ae7011?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHwzfHxhYnN0cmFjdCUyMDNkJTIwZ2xvd2luZyUyMG5ldHdvcmt8ZW58MHx8fHwxNzgyMDk1MjQ5fDA&ixlib=rb-4.1.0&q=85",
-        "category": "hero_background",
-        "description": "Abstract glowing nodes representing Atlas AI and the crypto network. Use with bg-black/50 overlay."
-      },
-      {
-        "url": "https://images.unsplash.com/photo-1780558246706-010cf55a2d50?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwyfHxjcnlwdG9jdXJyZW5jeSUyMHRyYWRpbmclMjBkYXJrfGVufDB8fHx8MTc4MjA5NTI0OXww&ixlib=rb-4.1.0&q=85",
-        "category": "feature_charts",
-        "description": "Dark mode crypto trading desk to illustrate the interactive charts feature."
-      },
-      {
-        "url": "https://images.unsplash.com/photo-1516031190212-da133013de50?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxjcnlwdG9jdXJyZW5jeSUyMHRyYWRpbmclMjBkYXJrfGVufDB8fHx8MTc4MjA5NTI0OXww&ixlib=rb-4.1.0&q=85",
-        "category": "app_mockups",
-        "description": "Computer screen showing charts, suitable for the carousel or app showcase."
-      },
-      {
-        "url": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBtZW50b3IlMjBwb3J0cmFpdHxlbnwwfHx8fDE3ODIwOTUyNTB8MA&ixlib=rb-4.1.0&q=85",
-        "category": "mentor_portrait_1",
-        "description": "Professional verified mentor (male) for the mentors section."
-      },
-      {
-        "url": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHwzfHxwcm9mZXNzaW9uYWwlMjBtZW50b3IlMjBwb3J0cmFpdHxlbnwwfHx8fDE3ODIwOTUyNTB8MA&ixlib=rb-4.1.0&q=85",
-        "category": "mentor_portrait_2",
-        "description": "Professional verified mentor (female) for the mentors section."
-      },
-      {
-        "url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHw0fHxwcm9mZXNzaW9uYWwlMjBtZW50b3IlMjBwb3J0cmFpdHxlbnwwfHx8fDE3ODIwOTUyNTB8MA&ixlib=rb-4.1.0&q=85",
-        "category": "founder_portrait",
-        "description": "Mentova founder story portrait in dark suit."
+        "url": "https://images.unsplash.com/photo-1672911640671-65d5dfa97d26?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGRhcmslMjAzZCUyMG5lb24lMjBjcnlwdG8lMjB3ZWIzfGVufDB8fHx8MTc4MjMzOTEyMHww&ixlib=rb-4.1.0&q=85",
+        "category": "abstract_crypto",
+        "description": "Abstract 3D crypto element for potential visual flair inside feature cards or as a subtle background header image."
       }
     ]
   },
   "instructions_to_main_agent": [
-    "NOTE: Codebase uses .js files, NOT .tsx files. Use standard React JSX inside .js files.",
-    "Install required dependencies: yarn add @phosphor-icons/react framer-motion react-fast-marquee @studio-freight/lenis lucide-react",
-    "Configure Tailwind with 'Unbounded' (Headings) and 'Chivo' (Body). Add custom color '#FACC15' for CTA.",
-    "Replace existing Purple/Green palette with the Archetype 4 Dark Mode (Obsidian Base, White Text, Warning Yellow CTA). Do not use #7351B7 or #1B93A4.",
-    "For the Bento Layouts, rely on raw HTML/Tailwind classes (grid, col-span) rather than rigid Shadcn Card components to maintain design freedom and asymmetry.",
-    "Implement the Pre-registration form using customized Shadcn inputs and prepare a mocked API fetch call that handles standard submission states (loading, success).",
-    "Build a kinetic marquee background (text-8xl, text-transparent, stroke-zinc-800) for the pricing or feature section using react-fast-marquee."
+    "CRITICAL: Use pure React Native components (View, Text, TouchableOpacity, StyleSheet, Animated) since this is an Expo export.",
+    "Do NOT use DOM elements like <div> or <span>.",
+    "All code must be in .js files (no .tsx).",
+    "Use expo-linear-gradient for background gradients and glowing orbs.",
+    "Use Ionicons from @expo/vector-icons (or react-native-vector-icons) for all UI iconography.",
+    "For Glassmorphism in React Native: use backgroundColor: 'rgba(255,255,255,0.03)' with a border. You cannot easily use backdrop-blur in pure RN without expo-blur, so simulate it with low-opacity dark/light fills.",
+    "MANDATORY: Add testID AND data-testid attributes to all interactive and key informational elements for automated testing (e.g., testID='hero-title' data-testid='hero-title')."
   ]
 }
