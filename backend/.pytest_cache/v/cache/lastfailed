@@ -1,0 +1,6 @@
+{
+  "tests/test_pro_apply.py::TestProApplicationFlow::test_06_cannot_submit_duplicate": true,
+  "tests/test_file_upload_websocket.py::TestWebSocketAvailability::test_socketio_endpoint_exists": true,
+  "tests/test_file_upload_websocket.py::TestWebSocketAvailability::test_socketio_polling_transport": true,
+  "tests/test_iteration48_features.py::TestSettingsFunctionality::test_get_settings_returns_defaults": true
+}

@@ -1,0 +1,15 @@
+[
+  "test_vip_tools_redesign.py::TestFearGreedStandalone::test_fear_greed_standalone_endpoint",
+  "test_vip_tools_redesign.py::TestHalvingStandalone::test_halving_standalone_endpoint",
+  "test_vip_tools_redesign.py::TestVIPToolsRedesign::test_altcoin_season_with_gainers_losers",
+  "test_vip_tools_redesign.py::TestVIPToolsRedesign::test_bitcoin_halving_countdown",
+  "test_vip_tools_redesign.py::TestVIPToolsRedesign::test_btc_eth_prices_with_change_24h",
+  "test_vip_tools_redesign.py::TestVIPToolsRedesign::test_data_sources_included",
+  "test_vip_tools_redesign.py::TestVIPToolsRedesign::test_eth_gas_tracker",
+  "test_vip_tools_redesign.py::TestVIPToolsRedesign::test_fear_greed_index_with_history",
+  "test_vip_tools_redesign.py::TestVIPToolsRedesign::test_liquidations_calculated",
+  "test_vip_tools_redesign.py::TestVIPToolsRedesign::test_rainbow_chart_with_bands",
+  "test_vip_tools_redesign.py::TestVIPToolsRedesign::test_unauthorized_access_returns_403",
+  "test_vip_tools_redesign.py::TestVIPToolsRedesign::test_vip_tools_all_endpoint_returns_200",
+  "test_vip_tools_redesign.py::TestVIPToolsRedesign::test_whale_alerts_etherscan"
+]
