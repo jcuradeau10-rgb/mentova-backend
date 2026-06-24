@@ -3336,7 +3336,7 @@ async def get_financial_news(
             response = await asyncio.wait_for(
                 asyncio.get_event_loop().run_in_executor(
                     None,
-                    lambda: news_client.crypto_api(q=search_query, language="en,fr")
+                    lambda: news_client.crypto_api(q=search_query, language=lang if lang in ("en", "fr", "es") else "en")
                 ),
                 timeout=5.0
             )
