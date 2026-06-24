@@ -758,7 +758,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   tabBar: {
-    backgroundColor: '#08081A',
+    backgroundColor: '#06060F',
     borderTopWidth: 0,
     height: Platform.OS === 'ios' ? 84 : 64,
     paddingTop: 0,
@@ -816,7 +816,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 3,
-    borderColor: '#08081A',
+    borderColor: '#06060F',
   },
 
   // More Menu - Premium Design
