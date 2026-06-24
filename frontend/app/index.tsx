@@ -89,10 +89,7 @@ export default function OnboardingPage() {
       <View style={s.loading}>
         <LinearGradient colors={['#06060F', '#0A0A1A', '#06060F']} style={StyleSheet.absoluteFill} />
         <View style={s.loadingInner}>
-          <LinearGradient colors={['#7C3AED', '#5B21B6']} style={s.loadingLogo}>
-            <Text style={s.loadingLogoText}>M</Text>
-          </LinearGradient>
-          <Text style={s.loadingBrand}>Mentova</Text>
+          <Text style={[s.brandLogo, { fontSize: 42 }]}>Mentova<Text style={[s.brandDot, { fontSize: 42 }]}>.</Text></Text>
         </View>
       </View>
     );
@@ -133,16 +130,10 @@ export default function OnboardingPage() {
           {/* ═══ HERO ═══ */}
           <Animated.View style={[s.hero, { opacity: fadeAnim, transform: [{ translateY: slideUp }] }]}>
 
-            {/* Logo */}
-            <Animated.View style={[s.logoWrap, { transform: [{ translateY: logoFloat }] }]}>
-              <Animated.View style={[s.logoGlow, { opacity: glowPulse }]} />
-              <LinearGradient colors={['#7C3AED', '#5B21B6']} style={s.logo}>
-                <Text style={s.logoLetter}>M</Text>
-              </LinearGradient>
-            </Animated.View>
-
             {/* Brand */}
-            <Text style={s.brand} testID="brand-name" data-testid="brand-name">Mentova</Text>
+            <Animated.View style={[s.logoWrap, { transform: [{ translateY: logoFloat }] }]}>
+              <Text style={s.brandLogo}>Mentova<Text style={s.brandDot}>.</Text></Text>
+            </Animated.View>
 
             {/* Tag */}
             <Animated.View style={[s.tagWrap, { opacity: tagFade }]}>
@@ -313,20 +304,12 @@ const s = StyleSheet.create({
   // ═══ HERO ═══
   hero: { alignItems: 'center', marginTop: 24 },
 
-  logoWrap: { position: 'relative', marginBottom: 16 },
-  logoGlow: {
-    position: 'absolute', width: 100, height: 100, borderRadius: 50,
-    backgroundColor: '#7C3AED', top: -5, left: -5,
-    ...(Platform.OS === 'web' ? { filter: 'blur(30px)' } : {}),
-    zIndex: -1,
+  logoWrap: { marginBottom: 8 },
+  brandLogo: {
+    fontSize: 48, fontWeight: '900', color: '#FFF', letterSpacing: -2,
+    fontStyle: 'italic',
   },
-  logo: {
-    width: 90, height: 90, borderRadius: 28, justifyContent: 'center', alignItems: 'center',
-    shadowColor: '#7C3AED', shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.5, shadowRadius: 24, elevation: 20,
-  },
-  logoLetter: { fontSize: 44, fontWeight: '900', color: '#FFF' },
-
-  brand: { fontSize: 34, fontWeight: '900', color: '#FFF', letterSpacing: -1.5 },
+  brandDot: { color: '#A78BFA', fontSize: 48 },
 
   tagWrap: { marginTop: 10, marginBottom: 24 },
   tag: {
