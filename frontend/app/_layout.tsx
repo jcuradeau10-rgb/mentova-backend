@@ -24,7 +24,7 @@ export default function RootLayout() {
   // Wait for language to be loaded before rendering
   if (!appReady) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#0A0A1A', justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, backgroundColor: '#06060F', justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#7C3AED" />
       </View>
     );
@@ -36,7 +36,7 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: '#0A0A1A' },
+          contentStyle: { backgroundColor: '#06060F' },
           animation: 'slide_from_right',
         }}
       >

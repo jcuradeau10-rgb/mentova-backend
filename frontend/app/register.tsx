@@ -165,7 +165,7 @@ export default function RegisterScreen() {
     <View style={styles.container}>
       {/* Background */}
       <LinearGradient
-        colors={['#050505', '#0A0A15', '#0F0F1A']}
+        colors={['#06060F', '#0A0A1A', '#08061A']}
         style={StyleSheet.absoluteFill}
       />
 
@@ -225,7 +225,7 @@ export default function RegisterScreen() {
             >
               <View style={styles.iconContainer}>
                 <LinearGradient
-                  colors={['#10B981', '#059669']}
+                  colors={['#00D9A5', '#059669']}
                   style={styles.iconGradient}
                 >
                   <Ionicons name="person-add" size={28} color="#FFF" />
@@ -396,7 +396,7 @@ export default function RegisterScreen() {
                   activeOpacity={0.9}
                 >
                   <LinearGradient
-                    colors={['#10B981', '#059669']}
+                    colors={['#00D9A5', '#059669']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={styles.registerButtonGradient}
@@ -442,7 +442,7 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050505',
+    backgroundColor: '#06060F',
   },
   safeArea: {
     flex: 1,
@@ -462,20 +462,20 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   orb1: {
-    width: 250,
-    height: 250,
-    top: -50,
-    left: -80,
-    backgroundColor: '#10B981',
-    ...(Platform.OS === 'web' ? { filter: 'blur(70px)', opacity: 0.12 } : { opacity: 0.04 }),
+    width: 300,
+    height: 300,
+    top: -80,
+    left: -100,
+    backgroundColor: '#00D9A5',
+    ...(Platform.OS === 'web' ? { filter: 'blur(120px)', opacity: 0.12 } : { opacity: 0.04 }),
   },
   orb2: {
-    width: 200,
-    height: 200,
-    bottom: 150,
-    right: -60,
+    width: 250,
+    height: 250,
+    bottom: 120,
+    right: -80,
     backgroundColor: '#7C3AED',
-    ...(Platform.OS === 'web' ? { filter: 'blur(60px)', opacity: 0.1 } : { opacity: 0.03 }),
+    ...(Platform.OS === 'web' ? { filter: 'blur(100px)', opacity: 0.1 } : { opacity: 0.03 }),
   },
 
   // Back Button
@@ -569,16 +569,16 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#12121A',
+    backgroundColor: 'rgba(255,255,255,0.03)',
     borderRadius: 14,
     paddingHorizontal: 16,
     height: 56,
-    borderWidth: 2,
-    borderColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
   },
   inputWrapperFocused: {
-    borderColor: '#10B981',
-    backgroundColor: 'rgba(16, 185, 129, 0.05)',
+    borderColor: 'rgba(0,217,165,0.5)',
+    backgroundColor: 'rgba(0,217,165,0.05)',
   },
   input: {
     flex: 1,
@@ -599,7 +599,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   termsLink: {
-    color: '#10B981',
+    color: '#00D9A5',
     fontWeight: '600',
   },
 

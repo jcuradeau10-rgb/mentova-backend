@@ -199,7 +199,7 @@ export default function LoginScreen() {
     <View style={styles.container}>
       {/* Background */}
       <LinearGradient
-        colors={['#050505', '#0A0A15', '#0F0F1A']}
+        colors={['#06060F', '#0A0A1A', '#08061A']}
         style={StyleSheet.absoluteFill}
       />
 
@@ -459,7 +459,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050505',
+    backgroundColor: '#06060F',
   },
   safeArea: {
     flex: 1,
@@ -479,20 +479,20 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   orb1: {
-    width: 250,
-    height: 250,
-    top: -50,
-    right: -80,
+    width: 300,
+    height: 300,
+    top: -80,
+    right: -100,
     backgroundColor: '#7C3AED',
-    ...(Platform.OS === 'web' ? { filter: 'blur(70px)', opacity: 0.12 } : { opacity: 0.04 }),
+    ...(Platform.OS === 'web' ? { filter: 'blur(120px)', opacity: 0.15 } : { opacity: 0.04 }),
   },
   orb2: {
-    width: 200,
-    height: 200,
-    bottom: 100,
-    left: -60,
-    backgroundColor: '#10B981',
-    ...(Platform.OS === 'web' ? { filter: 'blur(60px)', opacity: 0.1 } : { opacity: 0.03 }),
+    width: 250,
+    height: 250,
+    bottom: 80,
+    left: -80,
+    backgroundColor: '#00D9A5',
+    ...(Platform.OS === 'web' ? { filter: 'blur(100px)', opacity: 0.1 } : { opacity: 0.03 }),
   },
 
   // Back Button
@@ -602,16 +602,16 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#12121A',
+    backgroundColor: 'rgba(255,255,255,0.03)',
     borderRadius: 14,
     paddingHorizontal: 16,
     height: 56,
-    borderWidth: 2,
-    borderColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
   },
   inputWrapperFocused: {
-    borderColor: '#7C3AED',
-    backgroundColor: 'rgba(124, 58, 237, 0.05)',
+    borderColor: 'rgba(124,58,237,0.5)',
+    backgroundColor: 'rgba(124,58,237,0.05)',
   },
   input: {
     flex: 1,
