@@ -121,9 +121,6 @@ export default function OnboardingPage() {
         </>
       )}
 
-      {/* Grid Lines */}
-      {Platform.OS === 'web' && <View style={s.grid} />}
-
       <SafeAreaView style={s.safe}>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
 
@@ -288,15 +285,7 @@ const s = StyleSheet.create({
     ...(Platform.OS === 'web' ? { filter: 'blur(120px)' } : {}),
   },
 
-  // Grid
-  grid: {
-    ...StyleSheet.absoluteFillObject,
-    opacity: 0.015,
-    ...(Platform.OS === 'web' ? {
-      backgroundImage: 'linear-gradient(rgba(124,58,237,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.4) 1px, transparent 1px)',
-      backgroundSize: '48px 48px',
-    } : {}),
-  },
+  // Grid removed - was causing visual flicker
 
   safe: { flex: 1 },
   scroll: { paddingHorizontal: 24, paddingBottom: 48 },
