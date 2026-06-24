@@ -1003,6 +1003,12 @@
             opacity: 1;
             transform: translateY(0);
         }
+        @media (max-width: 1024px) {
+            .fade-up {
+                opacity: 1 !important;
+                transform: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1062,7 +1068,7 @@
             <p class="hero-desc">Aprendizaje adaptativo con IA, mentores verificados, herramientas pro y comunidad multilingüe. Mentova es la red social para principiantes en crypto.</p>
             <div class="hero-actions">
                 <a href="#pre-register" class="btn-primary" style="padding:16px 36px;font-size:15px;" data-testid="hero-cta-button">
-                    Lock My Founding Price <i class="fas fa-arrow-right"></i>
+                    Suscribirse a $9.99/mes <i class="fas fa-arrow-right"></i>
                 </a>
                 <a href="https://app.mentova-academy.com" class="btn-outline" style="padding:16px 36px;font-size:15px;" data-testid="hero-app-button">
                     Abrir App Web <i class="fas fa-external-link-alt"></i>
@@ -1083,7 +1089,7 @@
                 <div class="cd-item"><span class="num" id="cd-mins">--</span><span class="lbl">Min</span></div>
                 <div class="cd-item"><span class="num" id="cd-secs">--</span><span class="lbl">Sec</span></div>
             </div>
-            <div class="countdown-spots" id="heroSpots">$9.99/mo | First 500 members only</div>
+            <div class="countdown-spots" id="heroSpots">$9.99/mes | 500 lugares de fundador</div>
         </div>
     </div>
 </section>
@@ -1102,7 +1108,7 @@
 <section class="features-section" id="features" data-testid="features-section">
     <div class="container">
         <div class="section-label">¿Por qué Mentova?</div>
-        <h2 class="section-title">Todo lo que necesitas<br>para empezar <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">right</span>.</h2>
+        <h2 class="section-title">Todo lo que necesitas<br>para empezar <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">bien</span>.</h2>
         <p class="section-desc">La mayoría de principiantes pierden dinero antes de aprender lo básico. Mentova cambia eso con educación estructurada y herramientas reales.</p>
         <div class="bento-grid">
             <div class="bento-card bento-1 fade-up">
@@ -1198,10 +1204,10 @@
         <h2 class="section-title">Diseñada para <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">mobile</span>.</h2>
         <p class="section-desc">No solo herramientas. Una comunidad real con mentores, IA y todo lo que necesitas.</p>
         <div class="screenshots-scroll">
-            <div class="screenshot-mock"><img src="screenshots/app_screen_1.png" alt="Mentova News" loading="lazy"></div>
-            <div class="screenshot-mock"><img src="screenshots/app_screen_2.png" alt="Mentova Mentors" loading="lazy"></div>
-            <div class="screenshot-mock"><img src="screenshots/app_screen_3.png" alt="Mentova AI" loading="lazy"></div>
-            <div class="screenshot-mock"><img src="screenshots/app_screen_4.png" alt="Mentova Charts" loading="lazy"></div>
+            <div class="screenshot-mock"><img src="../screenshots/app_screen_1.png" alt="Mentova News" loading="lazy"></div>
+            <div class="screenshot-mock"><img src="../screenshots/app_screen_2.png" alt="Mentova Mentors" loading="lazy"></div>
+            <div class="screenshot-mock"><img src="../screenshots/app_screen_3.png" alt="Mentova AI" loading="lazy"></div>
+            <div class="screenshot-mock"><img src="../screenshots/app_screen_4.png" alt="Mentova Charts" loading="lazy"></div>
         </div>
     </div>
 </section>
@@ -1231,7 +1237,7 @@
             <div class="price-card vip" data-testid="price-vip">
                 <div class="price-badge">Precio Miembro Fundador</div>
                 <div class="price-label vip-label">VIP Ilimitado</div>
-                <div class="price-amount">$9.99<span>/mo USD</span></div>
+                <div class="price-amount">$9.99<span>/mes USD</span></div>
                 <div class="price-old">Precio regular: $25.99/mes después de 500 miembros</div>
                 <div class="price-spots normal" id="priceCounter">500 lugares disponibles</div>
                 <ul class="price-features">
@@ -1289,9 +1295,9 @@
                 <div class="form-group">
                     <label>Idioma</label>
                     <select class="form-select" id="regLang" data-testid="reg-lang">
-                        <option value="FR">French</option>
-                        <option value="EN">English</option>
-                        <option value="ES">Spanish</option>
+                        <option value="FR">Francés</option>
+                        <option value="EN">Inglés</option>
+                        <option value="ES">Español</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1308,7 +1314,7 @@
             <div class="success-box" id="successBox"><h3 id="successTitle"></h3><p id="successMsg"></p></div>
             <div class="error-box" id="errorBox"></div>
 
-            <p class="form-legal">Al suscribirte aceptas nuestros <a href="/terms.html">Términos</a> and <a href="/privacy.html">Política de Privacidad</a>.</p>
+            <p class="form-legal">Al suscribirte aceptas nuestros <a href="/terms.html">Términos</a> y <a href="/privacy.html">Política de Privacidad</a>.</p>
         </div>
     </div>
 </section>
@@ -1473,7 +1479,7 @@ function updateUI() {
         pc.textContent = 'Precio fundador cerrado';
         pc.className = 'price-spots hot';
     } else if (remaining < 50) {
-        pc.textContent = '¡Casi lleno! ' + remaining + ' spots left';
+        pc.textContent = '¡Casi lleno! ' + remaining + ' lugares disponibles';
         pc.className = 'price-spots hot';
     } else {
         pc.textContent = remaining + ' lugares restantes / ' + total;
