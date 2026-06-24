@@ -1,9 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Platform } from 'react-native';
 import { useAuthStore } from '../store/authStore';
 import { useLanguageStore } from '../store/languageStore';
+
+// Inject CSS keyframes for aurora animations (web only)
+if (Platform.OS === 'web' && typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes auroraMove1 {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(60px, 40px) scale(1.2); }
+    }
+    @keyframes auroraMove2 {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-50px, -30px) scale(1.1); }
+    }
+    @keyframes auroraMove3 {
+      0% { transform: translate(0, 0) scale(0.8); opacity: 0.06; }
+      100% { transform: translate(40px, -50px) scale(1.2); opacity: 0.1; }
+    }
+    @keyframes glowPulse {
+      0% { opacity: 0.15; transform: scaleX(1); }
+      50% { opacity: 0.35; transform: scaleX(1.3); }
+      100% { opacity: 0.15; transform: scaleX(1); }
+    }
+  `;
+  document.head.appendChild(style);
+}
 
 export default function RootLayout() {
   const { checkAuth } = useAuthStore();

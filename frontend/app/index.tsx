@@ -113,7 +113,14 @@ export default function OnboardingPage() {
       {/* Deep Background */}
       <LinearGradient colors={['#06060F', '#0A0A1A', '#08061A', '#06060F']} locations={[0, 0.3, 0.7, 1]} style={StyleSheet.absoluteFill} />
 
-      {/* Clean background */}
+      {/* Aurora Gradient Background */}
+      {Platform.OS === 'web' && (
+        <View style={s.auroraContainer}>
+          <View style={s.aurora1} />
+          <View style={s.aurora2} />
+          <View style={s.aurora3} />
+        </View>
+      )}
 
       <SafeAreaView style={s.safe}>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
@@ -121,8 +128,9 @@ export default function OnboardingPage() {
           {/* ═══ HERO ═══ */}
           <Animated.View style={[s.hero, { opacity: fadeAnim, transform: [{ translateY: slideUp }] }]}>
 
-            {/* Brand */}
+            {/* Brand with glow */}
             <Animated.View style={[s.logoWrap, { transform: [{ translateY: logoFloat }] }]}>
+              {Platform.OS === 'web' && <View style={s.logoGlow} />}
               <Text style={s.brandLogo}>Mentova<Text style={s.brandDot}>.</Text></Text>
             </Animated.View>
 
@@ -279,7 +287,51 @@ const s = StyleSheet.create({
     ...(Platform.OS === 'web' ? { filter: 'blur(120px)' } : {}),
   },
 
-  // Grid removed - was causing visual flicker
+  // Aurora
+  auroraContainer: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+    ...(Platform.OS === 'web' ? { pointerEvents: 'none' } : {}),
+  },
+  aurora1: {
+    position: 'absolute', width: 400, height: 400, borderRadius: 999,
+    top: -150, left: -100,
+    backgroundColor: '#7C3AED',
+    ...(Platform.OS === 'web' ? {
+      filter: 'blur(120px)', opacity: 0.12,
+      animationName: 'auroraMove1',
+      animationDuration: '8s',
+      animationIterationCount: 'infinite',
+      animationTimingFunction: 'ease-in-out',
+      animationDirection: 'alternate',
+    } : {}),
+  },
+  aurora2: {
+    position: 'absolute', width: 350, height: 350, borderRadius: 999,
+    bottom: 100, right: -80,
+    backgroundColor: '#00D9A5',
+    ...(Platform.OS === 'web' ? {
+      filter: 'blur(110px)', opacity: 0.08,
+      animationName: 'auroraMove2',
+      animationDuration: '10s',
+      animationIterationCount: 'infinite',
+      animationTimingFunction: 'ease-in-out',
+      animationDirection: 'alternate',
+    } : {}),
+  },
+  aurora3: {
+    position: 'absolute', width: 300, height: 300, borderRadius: 999,
+    top: '40%', left: '30%',
+    backgroundColor: '#5B21B6',
+    ...(Platform.OS === 'web' ? {
+      filter: 'blur(100px)', opacity: 0.06,
+      animationName: 'auroraMove3',
+      animationDuration: '12s',
+      animationIterationCount: 'infinite',
+      animationTimingFunction: 'ease-in-out',
+      animationDirection: 'alternate',
+    } : {}),
+  },
 
   safe: { flex: 1 },
   scroll: { paddingHorizontal: 24, paddingBottom: 48 },
@@ -287,7 +339,20 @@ const s = StyleSheet.create({
   // ═══ HERO ═══
   hero: { alignItems: 'center', marginTop: 24 },
 
-  logoWrap: { marginBottom: 8 },
+  logoWrap: { marginBottom: 8, position: 'relative', alignItems: 'center' },
+  logoGlow: {
+    position: 'absolute',
+    width: 200, height: 80, borderRadius: 999,
+    top: -10,
+    backgroundColor: '#7C3AED',
+    ...(Platform.OS === 'web' ? {
+      filter: 'blur(50px)',
+      animationName: 'glowPulse',
+      animationDuration: '3s',
+      animationIterationCount: 'infinite',
+      animationTimingFunction: 'ease-in-out',
+    } : { opacity: 0.3 }),
+  },
   brandLogo: {
     fontSize: 48, fontWeight: '900', color: '#FFF', letterSpacing: -2,
     fontStyle: 'italic',
