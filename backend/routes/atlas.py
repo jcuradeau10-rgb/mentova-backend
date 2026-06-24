@@ -433,6 +433,7 @@ class ChatMessage(BaseModel):
     message: str
     session_id: Optional[str] = None
     user_id: Optional[str] = None
+    lang: str = "en"
 
 class AssessmentAnswer(BaseModel):
     answers: Dict[str, str]  # {"q1": "yes", "q2": "no", ...}
@@ -757,6 +758,7 @@ class TeachChatRequest(BaseModel):
     level_id: str
     message: str
     session_id: Optional[str] = None
+    lang: str = "en"
 
 
 TEACH_CHAT_PROMPT = """You are Atlas, AI mentor of Mentova Academy. You are currently teaching a specific chapter.
@@ -952,7 +954,10 @@ async def atlas_chat(data: ChatMessage, credentials: HTTPAuthorizationCredential
         _increment_usage(effective_id)
 
     _add_to_session(session_id, "user", data.message)
-    messages = [{"role": "system", "content": ATLAS_SYSTEM_PROMPT}]
+    lang_map = {"fr": "French", "en": "English", "es": "Spanish"}
+    language = lang_map.get(data.lang or "en", "English")
+    system_prompt = ATLAS_SYSTEM_PROMPT.format(language=language)
+    messages = [{"role": "system", "content": system_prompt}]
     messages.extend(_get_session(session_id))
 
     async def stream():
@@ -974,7 +979,7 @@ async def atlas_chat(data: ChatMessage, credentials: HTTPAuthorizationCredential
             yield "data: [DONE]\n\n"
         except Exception as e:
             logger.error(f"Atlas chat error: {e}")
-            yield "data: Desole, une erreur s'est produite.\n\n"
+            yield "data: Sorry, an error occurred.\n\n"
             yield "data: [DONE]\n\n"
 
     return StreamingResponse(stream(), media_type="text/event-stream",
@@ -996,7 +1001,10 @@ async def atlas_chat_simple(data: ChatMessage, credentials: HTTPAuthorizationCre
         _increment_usage(effective_id)
 
     _add_to_session(session_id, "user", data.message)
-    messages = [{"role": "system", "content": ATLAS_SYSTEM_PROMPT}]
+    lang_map = {"fr": "French", "en": "English", "es": "Spanish"}
+    language = lang_map.get(data.lang or "en", "English")
+    system_prompt = ATLAS_SYSTEM_PROMPT.format(language=language)
+    messages = [{"role": "system", "content": system_prompt}]
     messages.extend(_get_session(session_id))
 
     try:
