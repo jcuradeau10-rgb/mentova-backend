@@ -565,7 +565,7 @@ export default function LearnScreen() {
   const { t, language } = useTranslation();
   const { user, token } = useAuthStore();
   const userId = user?.id || user?.user_id || 'anonymous';
-  const lang = language || 'fr';
+  const lang = language || 'en';
 
   const [tab, setTab] = useState<'parcours' | 'chat'>('parcours');
   const [curriculum, setCurriculum] = useState<Record<string, Level>>({});
