@@ -1624,6 +1624,99 @@ from newsdataapi import NewsDataApiClient
 # NewsData.io API configuration
 NEWSDATA_API_KEY = os.environ.get('NEWSDATA_API_KEY')
 
+# ============ RSS NEWS CACHE ============
+RSS_FEEDS = [
+    {"url": "https://www.coindesk.com/arc/outboundfeeds/rss/", "source": "CoinDesk"},
+    {"url": "https://cointelegraph.com/rss", "source": "CoinTelegraph"},
+    {"url": "https://decrypt.co/feed", "source": "Decrypt"},
+]
+RSS2JSON_BASE = "https://api.rss2json.com/v1/api.json"
+_rss_news_cache: Dict[str, Any] = {"articles": [], "fetched_at": 0}
+RSS_CACHE_TTL = 600  # 10 minutes
+
+async def _fetch_rss_news():
+    """Fetch real-time crypto news from RSS feeds via rss2json."""
+    all_articles = []
+    async with httpx.AsyncClient(timeout=10) as client:
+        for feed in RSS_FEEDS:
+            try:
+                resp = await client.get(RSS2JSON_BASE, params={"rss_url": feed["url"]})
+                if resp.status_code == 200:
+                    data = resp.json()
+                    for i, item in enumerate(data.get("items", [])):
+                        title = item.get("title", "")
+                        description = item.get("description", "")
+                        # Clean HTML from description
+                        import re
+                        clean_desc = re.sub(r'<[^>]+>', '', description)[:300]
+                        
+                        impact, impact_reason = determine_impact_with_reason(title, clean_desc)
+                        category = categorize_news(title, clean_desc)
+                        
+                        # Extract image from enclosure or thumbnail
+                        image_url = item.get("thumbnail", "") or item.get("enclosure", {}).get("link", "")
+                        if not image_url:
+                            image_url = "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400"
+                        
+                        all_articles.append({
+                            "id": f"rss-{feed['source'].lower().replace(' ','')}-{i}-{int(time.time())}",
+                            "title": title,
+                            "summary": clean_desc[:200] if clean_desc else title,
+                            "source": feed["source"],
+                            "category": category,
+                            "impact": impact,
+                            "impact_reason": impact_reason,
+                            "image_url": image_url,
+                            "published_at": item.get("pubDate", datetime.now(timezone.utc).isoformat()),
+                            "tags": _extract_tags(title),
+                            "language": "en",
+                            "link": item.get("link", ""),
+                        })
+                    logger.info(f"RSS: {feed['source']} → {len(data.get('items', []))} articles")
+            except Exception as e:
+                logger.warning(f"RSS fetch error ({feed['source']}): {e}")
+    
+    # Sort by date (newest first)
+    all_articles.sort(key=lambda x: x.get("published_at", ""), reverse=True)
+    return all_articles
+
+def _extract_tags(title: str) -> list:
+    """Extract relevant crypto tags from title."""
+    tags = []
+    title_lower = title.lower()
+    tag_map = {
+        "bitcoin": "Bitcoin", "btc": "Bitcoin", "ethereum": "Ethereum", "eth": "Ethereum",
+        "solana": "Solana", "sol": "Solana", "defi": "DeFi", "nft": "NFT",
+        "layer 2": "Layer 2", "l2": "Layer 2", "regulation": "Regulation",
+        "etf": "ETF", "sec": "SEC", "binance": "Binance", "coinbase": "Coinbase",
+        "stablecoin": "Stablecoin", "usdt": "USDT", "usdc": "USDC",
+        "cardano": "Cardano", "xrp": "XRP", "polygon": "Polygon",
+    }
+    for keyword, tag in tag_map.items():
+        if keyword in title_lower and tag not in tags:
+            tags.append(tag)
+    return tags[:5] if tags else ["Crypto"]
+
+async def _refresh_rss_cache():
+    """Background task to refresh RSS news cache."""
+    while True:
+        try:
+            articles = await _fetch_rss_news()
+            if articles:
+                _rss_news_cache["articles"] = articles
+                _rss_news_cache["fetched_at"] = time.time()
+                logger.info(f"RSS cache refreshed: {len(articles)} articles")
+        except Exception as e:
+            logger.error(f"RSS cache refresh error: {e}")
+        await asyncio.sleep(RSS_CACHE_TTL)
+
+def _get_cached_rss_news() -> list:
+    """Get cached RSS news, or empty list if cache is stale."""
+    if time.time() - _rss_news_cache["fetched_at"] < RSS_CACHE_TTL * 2:
+        return _rss_news_cache["articles"]
+    return []
+
+
 # Fallback mock data in case API fails
 MOCK_FINANCIAL_NEWS = {
     "fr": [
@@ -1866,9 +1959,27 @@ async def get_financial_news(
     since: Optional[str] = None,
     lang: Optional[str] = None
 ):
-    """Get real-time financial news from NewsData.io"""
+    """Get real-time financial news from RSS feeds (or NewsData.io fallback)"""
     
-    # Check if API key is configured
+    # Try RSS cache first (real-time news)
+    rss_articles = _get_cached_rss_news()
+    if rss_articles:
+        news = rss_articles.copy()
+        if category:
+            news = [n for n in news if n["category"] == category]
+        if query:
+            q_lower = query.lower()
+            news = [n for n in news if q_lower in n.get("title", "").lower() or q_lower in n.get("summary", "").lower()]
+        paginated = news[skip:skip + limit]
+        return {
+            "success": True,
+            "data": paginated,
+            "total": len(news),
+            "categories": list(set(n["category"] for n in rss_articles)),
+            "source": "rss_live"
+        }
+    
+    # Fallback: check if NewsData API key is configured
     if not NEWSDATA_API_KEY:
         logger.warning("NewsData.io API key not configured, using mock data")
         news = MOCK_FINANCIAL_NEWS.get(lang if lang in MOCK_FINANCIAL_NEWS else "en", MOCK_FINANCIAL_NEWS["en"]).copy()
@@ -12045,6 +12156,13 @@ async def start_coingecko_cache():
     """Start the CoinGecko global cache scheduler (1 call every 40s for all users)"""
     asyncio.create_task(_coingecko_scheduler())
     logger.info("CoinGecko cache scheduler started — refreshing every 40s")
+
+@app.on_event("startup")
+async def start_rss_news_cache():
+    """Start the RSS news cache scheduler (refresh every 10 min)"""
+    asyncio.create_task(_refresh_rss_cache())
+    logger.info("RSS news cache scheduler started — refreshing every 10 min")
+
 
 
 
