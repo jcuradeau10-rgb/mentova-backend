@@ -401,12 +401,12 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
   const [loading, setLoading] = useState(true);
   const [touchIdx, setTouchIdx] = useState<number | null>(null);
   const [dragging, setDragging] = useState(false);
-  const chartW = width - 32;
-  const chartH = 320;
+  const chartW = width - 16;
+  const chartH = 340;
   const padLeft = 0;
-  const padRight = 60;
+  const padRight = 4;
   const padTop = 8;
-  const padBot = 28;
+  const padBot = 32;
   const plotW = chartW - padLeft - padRight;
   const plotH = chartH - padTop - padBot;
 
@@ -462,7 +462,7 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
   };
 
   // Generate time samples for band rendering (including future to 2032)
-  const sampleCount = 120;
+  const sampleCount = 150;
   const timeSamples: number[] = [];
   for (let i = 0; i <= sampleCount; i++) {
     timeSamples.push(startTs + (tsRange * i) / sampleCount);
@@ -491,9 +491,12 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
     return `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)},${y.toFixed(1)}`;
   }).join(' ');
 
-  // Y-axis labels (log scale)
-  const yTicks = [1, 10, 100, 1000, 10000, 100000, 1000000];
-  const yLabels = yTicks.filter(v => Math.log10(v) >= logMin && Math.log10(v) <= logMax);
+  // Y-axis labels (log scale) — positioned on the RIGHT
+  const yTicks = [10, 100, 1000, 10000, 100000, 1000000];
+  const yLabels = yTicks.filter(v => {
+    const logV = Math.log10(v);
+    return logV >= logMin && logV <= logMax;
+  });
 
   // X-axis year labels
   const years = [];
@@ -559,47 +562,62 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
         {...(Platform.OS === 'web' ? { onMouseDown: handleTouch, onMouseMove: (e: any) => { if (dragging || e.buttons === 1) handleTouch(e); }, onMouseUp: endTouch, onMouseLeave: endTouch } : {})}
       >
         <Svg width={chartW} height={chartH}>
-          {/* White background */}
-          <Rect x={padLeft} y={padTop} width={plotW} height={plotH} fill="#FAFAFA" rx={4} />
+          {/* White chart background */}
+          <Rect x={padLeft} y={padTop} width={plotW} height={plotH} fill="#FFFFFF" />
 
-          {/* Y-axis grid lines + labels */}
+          {/* Faint horizontal grid lines */}
           {yLabels.map(v => {
             const y = toY(v);
-            const label = v >= 1000000 ? `$${v / 1000000}M` : v >= 1000 ? `$${(v / 1000).toFixed(0)}K` : `$${v}`;
+            return <Line key={`g-${v}`} x1={padLeft} y1={y} x2={padLeft + plotW} y2={y} stroke="#E8E8E8" strokeWidth={0.5} />;
+          })}
+
+          {/* Rainbow bands — fully opaque for vibrant color */}
+          {bandPaths.map((d, i) => (
+            <Path key={`rb-${i}`} d={d} fill={rainbowColors[i]} opacity={0.85} />
+          ))}
+
+          {/* Halving vertical lines + labels */}
+          {halvings.map((h, i) => {
+            const hx = toX(h.date);
             return (
-              <React.Fragment key={v}>
-                <Line x1={padLeft} y1={y} x2={padLeft + plotW} y2={y} stroke="#DDD" strokeWidth={0.5} />
-                <SvgText x={padLeft + plotW + 6} y={y + 4} fill="#888" fontSize={9} fontWeight="600">{label}</SvgText>
+              <React.Fragment key={`hv-${i}`}>
+                <Line x1={hx} y1={padTop} x2={hx} y2={padTop + plotH} stroke="#999" strokeWidth={0.5} strokeDasharray="4,4" />
+                <SvgText x={hx} y={padTop + plotH + 12} fill="#999" fontSize={7} textAnchor="middle" fontWeight="500">Halving</SvgText>
               </React.Fragment>
             );
           })}
 
-          {/* Halving vertical lines */}
-          {halvings.map((h, i) => (
-            <React.Fragment key={`h-${i}`}>
-              <Line x1={toX(h.date)} y1={padTop} x2={toX(h.date)} y2={padTop + plotH} stroke="#BBB" strokeWidth={0.5} />
-              <SvgText x={toX(h.date)} y={padTop + plotH - 4} fill="#AAA" fontSize={7} textAnchor="middle" fontWeight="500">Halving</SvgText>
-            </React.Fragment>
-          ))}
+          {/* BTC price line — bold black */}
+          <Path d={priceLine} stroke="#000000" strokeWidth={2.5} fill="none" strokeLinejoin="round" strokeLinecap="round" />
 
-          {/* Rainbow bands */}
-          {bandPaths.map((d, i) => (
-            <Path key={`rb-${i}`} d={d} fill={rainbowColors[i]} opacity={0.75} />
-          ))}
+          {/* Y-axis labels (right side) */}
+          {yLabels.map(v => {
+            const y = toY(v);
+            const label = v >= 1000000 ? '$1M' : v >= 100000 ? '$100K' : v >= 10000 ? '$10K' : v >= 1000 ? `$${(v/1000).toFixed(0)}K` : `$${v}`;
+            return <SvgText key={`yl-${v}`} x={plotW - 4} y={y - 3} fill="#666" fontSize={8} textAnchor="end" fontWeight="600">{label}</SvgText>;
+          })}
 
-          {/* BTC price line — black and bold */}
-          <Path d={priceLine} stroke="#000000" strokeWidth={2.2} fill="none" strokeLinejoin="round" strokeLinecap="round" />
+          {/* Band labels on right edge — inside the bands */}
+          {bandLabels.map((label, i) => {
+            const lastTs = timeSamples[timeSamples.length - 1];
+            const bds = calcBands(lastTs);
+            const midLog = (Math.log10(Math.max(1, bds[i].low)) + Math.log10(Math.max(1, bds[i].high))) / 2;
+            const yPos = padTop + plotH - ((midLog - logMin) / logRange) * plotH;
+            if (yPos < padTop + 4 || yPos > padTop + plotH - 4) return null;
+            return <SvgText key={`bl-${i}`} x={plotW - 6} y={yPos + 3} fill="#FFF" fontSize={6.5} textAnchor="end" fontWeight="700" opacity={0.9}>{label}</SvgText>;
+          })}
 
-          {/* Year labels */}
+          {/* Year labels (bottom) */}
           {years.map(yr => (
-            <SvgText key={yr.year} x={yr.x} y={chartH - 4} fill="#888" fontSize={9} textAnchor="middle" fontWeight="600">{yr.year}</SvgText>
+            <SvgText key={yr.year} x={yr.x} y={chartH - 4} fill="#888" fontSize={8} textAnchor="middle" fontWeight="600" transform={`rotate(-30, ${yr.x}, ${chartH - 4})`}>{yr.year}</SvgText>
           ))}
 
-          {/* Crosshair (VIP) */}
+          {/* Crosshair (VIP interactive) */}
           {touchIdx !== null && tp && (
             <>
               <Line x1={toX(tp.timestamp)} y1={padTop} x2={toX(tp.timestamp)} y2={padTop + plotH} stroke="#000" strokeWidth={0.8} strokeDasharray="3,3" opacity={0.6} />
-              <Circle cx={toX(tp.timestamp)} cy={toY(tp.price)} r={5} fill="#000" stroke="#FFF" strokeWidth={2} />
+              <Line x1={padLeft} y1={toY(tp.price)} x2={padLeft + plotW} y2={toY(tp.price)} stroke="#000" strokeWidth={0.4} strokeDasharray="2,4" opacity={0.3} />
+              <Circle cx={toX(tp.timestamp)} cy={toY(tp.price)} r={6} fill="#000" stroke="#FFF" strokeWidth={2.5} />
             </>
           )}
         </Svg>
@@ -608,17 +626,17 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
         {!isVip && (
           <View style={rbStyles.lockOverlay}>
             <Ionicons name="lock-closed" size={16} color="#FFD600" />
-            <Text style={rbStyles.lockText}>VIP: Glissez pour explorer</Text>
+            <Text style={rbStyles.lockText}>VIP : Glissez pour explorer</Text>
           </View>
         )}
       </View>
 
-      {/* Legend */}
+      {/* Legend — compact horizontal with colored dots */}
       <View style={rbStyles.legend}>
-        {bands.slice().reverse().map((b: any, i: number) => (
+        {bandLabels.slice().reverse().map((label, i) => (
           <View key={i} style={rbStyles.legendItem}>
             <View style={[rbStyles.legendDot, { backgroundColor: rainbowColors[8 - i] }]} />
-            <Text style={rbStyles.legendLabel} numberOfLines={1}>{b.label}</Text>
+            <Text style={rbStyles.legendLabel} numberOfLines={1}>{label}</Text>
           </View>
         ))}
       </View>
