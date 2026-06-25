@@ -485,6 +485,7 @@ class UserResponse(BaseModel):
     is_influencer: bool = False
     is_apple_review: bool = False
     pro_badge: Optional[str] = None
+    founding_member: bool = False
 
 class TokenResponse(BaseModel):
     access_token: str
@@ -711,7 +712,8 @@ async def login(credentials: UserLogin):
             is_professional=user.get("is_professional", False),
             is_influencer=user.get("is_influencer", False),
             is_apple_review=user.get("is_apple_review", False),
-            pro_badge=user.get("pro_badge")
+            pro_badge=user.get("pro_badge"),
+            founding_member=user.get("founding_member", False)
         )
     )
 
@@ -737,7 +739,8 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         is_professional=current_user.get("is_professional", False),
         is_influencer=current_user.get("is_influencer", False),
         is_apple_review=current_user.get("is_apple_review", False),
-        pro_badge=current_user.get("pro_badge")
+        pro_badge=current_user.get("pro_badge"),
+        founding_member=current_user.get("founding_member", False)
     )
 
 # ==================== PASSWORD RESET ROUTES ====================
@@ -1551,13 +1554,29 @@ async def get_checkout_status(
         # If paid, activate VIP
         if status.payment_status == "paid":
             vip_expires = datetime.now(timezone.utc) + timedelta(days=VIP_DURATION_DAYS)
+            now_iso = datetime.now(timezone.utc).isoformat()
+            
+            # Check if founder (wave1)
+            config = await db.wave_config.find_one({"_id": "current"})
+            is_founder = not (config or {}).get("wave2_active", False)
             
             await db.users.update_one(
                 {"id": current_user["id"]},
                 {"$set": {
                     "is_vip": True,
                     "vip_expires_at": vip_expires.isoformat(),
-                    "vip_activated_at": datetime.now(timezone.utc).isoformat()
+                    "vip_activated_at": now_iso,
+                    "founding_member": is_founder,
+                }}
+            )
+            
+            # Also update pre_registrations so spots counter works
+            await db.pre_registrations.update_one(
+                {"email": current_user["email"]},
+                {"$set": {
+                    "vip_activated_at": now_iso,
+                    "founding_member_badge": is_founder,
+                    "status": "vip_active",
                 }}
             )
             
@@ -1623,17 +1642,37 @@ async def stripe_webhook(request: Request):
                 
                 # Activate VIP
                 user_id = webhook_response.metadata.get("user_id")
+                user_email = webhook_response.metadata.get("user_email", "")
                 if user_id:
                     vip_expires = datetime.now(timezone.utc) + timedelta(days=VIP_DURATION_DAYS)
+                    now_iso = datetime.now(timezone.utc).isoformat()
+                    
+                    # Check if founder (wave1)
+                    wconfig = await db.wave_config.find_one({"_id": "current"})
+                    is_founder = not (wconfig or {}).get("wave2_active", False)
+                    
                     await db.users.update_one(
                         {"id": user_id},
                         {"$set": {
                             "is_vip": True,
                             "vip_expires_at": vip_expires.isoformat(),
-                            "vip_activated_at": datetime.now(timezone.utc).isoformat()
+                            "vip_activated_at": now_iso,
+                            "founding_member": is_founder,
                         }}
                     )
-                    logger.info(f"VIP activated via webhook for user {user_id}")
+                    
+                    # Also update pre_registrations so spots counter works + badge
+                    if user_email:
+                        await db.pre_registrations.update_one(
+                            {"email": user_email},
+                            {"$set": {
+                                "vip_activated_at": now_iso,
+                                "founding_member_badge": is_founder,
+                                "status": "vip_active",
+                            }}
+                        )
+                    
+                    logger.info(f"VIP activated via webhook for user {user_id} (founder={is_founder})")
                     
                     # Increment VIP subscriber count in wave_config
                     await db.wave_config.update_one(

@@ -115,6 +115,12 @@ export default function ProfileScreen() {
               </Text>
             </View>
           )}
+          {user?.founding_member && (
+            <View style={styles.founderBadge} data-testid="founding-member-badge">
+              <Ionicons name="star" size={12} color="#FFD700" />
+              <Text style={styles.founderBadgeText}>Founding Member</Text>
+            </View>
+          )}
           <View style={[styles.levelBadge, { backgroundColor: `${levelInfo.color}20` }]}>
             <Text style={[styles.levelBadgeText, { color: levelInfo.color }]}>
               {t('home.level')} {levelInfo.text}
@@ -749,6 +755,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: '#FF4757',
+  },
+  founderBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFD70020',
+    borderWidth: 1,
+    borderColor: '#FFD70040',
+    paddingHorizontal: 14,
+    paddingVertical: 5,
+    borderRadius: 14,
+    marginTop: 8,
+    gap: 6,
+  },
+  founderBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FFD700',
+    letterSpacing: 0.5,
   },
   levelBadge: {
     paddingHorizontal: 16,
