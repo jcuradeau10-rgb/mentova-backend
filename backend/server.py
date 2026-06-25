@@ -918,18 +918,29 @@ async def get_crypto_prices():
 
 @api_router.get("/crypto/chart/{coin_id}")
 async def get_crypto_chart(coin_id: str, days: str = "7"):
-    """Get historical chart data for a crypto (prices + volumes)"""
+    """Get historical chart data for a crypto (prices + volumes) using Pro API"""
     import random as rnd
     import math as mth
     
     valid_days = {"1": 1, "7": 7, "30": 30, "90": 90, "365": 365}
     num_days = valid_days.get(days, 7)
     
+    coingecko_key = os.environ.get("COINGECKO_API_KEY")
+    
     try:
         async with httpx.AsyncClient() as client:
+            # Use Pro API if key available, otherwise free API
+            if coingecko_key:
+                url = f"https://pro-api.coingecko.com/api/v3/coins/{coin_id}/market_chart"
+                headers = {"x-cg-pro-api-key": coingecko_key}
+            else:
+                url = f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart"
+                headers = {}
+            
             response = await client.get(
-                f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart",
+                url,
                 params={"vs_currency": "usd", "days": num_days},
+                headers=headers,
                 timeout=15.0
             )
             if response.status_code == 200:
@@ -937,7 +948,6 @@ async def get_crypto_chart(coin_id: str, days: str = "7"):
                 prices = [{"timestamp": p[0], "price": p[1]} for p in data.get("prices", [])]
                 volumes = [{"timestamp": v[0], "volume": v[1]} for v in data.get("total_volumes", [])]
                 
-                # Merge prices and volumes by closest timestamp
                 chart_data = []
                 for i, p in enumerate(prices):
                     vol = volumes[i]["volume"] if i < len(volumes) else 0
@@ -949,7 +959,7 @@ async def get_crypto_chart(coin_id: str, days: str = "7"):
                 
                 return {"success": True, "data": chart_data, "coin_id": coin_id, "days": num_days}
             else:
-                # Generate mock chart data
+                logger.warning(f"CoinGecko chart returned {response.status_code} for {coin_id}")
                 return {"success": True, "data": _generate_mock_chart(coin_id, num_days), "coin_id": coin_id, "days": num_days, "mock": True}
     except Exception as e:
         logger.error(f"Error fetching chart for {coin_id}: {e}")

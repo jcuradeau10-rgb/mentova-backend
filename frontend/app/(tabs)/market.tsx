@@ -78,7 +78,7 @@ const SimpleChart = ({ data, color, width: chartWidth, height: chartHeight }: {
   );
 };
 
-// Interactive Chart Component with touch crosshair
+// Interactive Chart Component with smooth pan gesture tracking
 const InteractiveChart = ({ coinId, initialData, color = '#00D9A5' }: { 
   coinId: string; initialData?: number[]; color?: string;
 }) => {
@@ -86,11 +86,13 @@ const InteractiveChart = ({ coinId, initialData, color = '#00D9A5' }: {
   const [selectedPeriod, setSelectedPeriod] = useState('7');
   const [isLoading, setIsLoading] = useState(true);
   const [touchIndex, setTouchIndex] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const chartW = width - 48;
-  const chartH = 220;
-  const volumeH = 40;
+  const chartH = 240;
+  const volumeH = 44;
   const totalH = chartH + volumeH + 10;
   const { t } = useTranslation();
+  const panRef = React.useRef<any>(null);
 
   useEffect(() => {
     loadChart(selectedPeriod);
@@ -101,9 +103,9 @@ const InteractiveChart = ({ coinId, initialData, color = '#00D9A5' }: {
     try {
       const res = await cryptoAPI.getChart(coinId, days);
       if (res.data.success && res.data.data?.length > 0) {
-        // Sample data to ~100 points max for smooth rendering
         const raw = res.data.data;
-        const step = Math.max(1, Math.floor(raw.length / 100));
+        // Keep up to 200 points for precision
+        const step = Math.max(1, Math.floor(raw.length / 200));
         const sampled = raw.filter((_: any, i: number) => i % step === 0 || i === raw.length - 1);
         setChartData(sampled);
       }
@@ -144,29 +146,52 @@ const InteractiveChart = ({ coinId, initialData, color = '#00D9A5' }: {
   const isPositive = pctChange >= 0;
   const lineColor = isPositive ? '#00D9A5' : '#FF4757';
 
-  // Build price line path
+  // Build price line path with more precision
   const pricePath = prices.map((p, i) => {
     const x = (i / (prices.length - 1)) * chartW;
-    const y = chartH - ((p - minPrice) / priceRange) * (chartH - 20);
-    return `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)},${y.toFixed(1)}`;
+    const y = chartH - ((p - minPrice) / priceRange) * (chartH - 24);
+    return `${i === 0 ? 'M' : 'L'} ${x.toFixed(2)},${y.toFixed(2)}`;
   }).join(' ');
 
-  // Area fill path
   const areaPath = `${pricePath} L ${chartW},${chartH} L 0,${chartH} Z`;
 
   // Y-axis labels (5 levels)
   const yLabels = [0, 0.25, 0.5, 0.75, 1].map(f => ({
     price: minPrice + f * priceRange,
-    y: chartH - f * (chartH - 20),
+    y: chartH - f * (chartH - 24),
   }));
 
+  // X-axis date labels (5 labels)
+  const xLabels = [0, 0.25, 0.5, 0.75, 1].map(f => {
+    const idx = Math.round(f * (chartData.length - 1));
+    return { 
+      x: f * chartW, 
+      timestamp: chartData[idx]?.timestamp,
+    };
+  });
+
   const formatChartPrice = (p: number) => {
-    if (p >= 1000) return `$${(p/1000).toFixed(1)}k`;
+    if (p >= 10000) return `$${(p/1000).toFixed(1)}k`;
+    if (p >= 1000) return `$${p.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
     if (p >= 1) return `$${p.toFixed(2)}`;
-    return `$${p.toFixed(4)}`;
+    if (p >= 0.01) return `$${p.toFixed(4)}`;
+    return `$${p.toFixed(6)}`;
+  };
+
+  const formatPrecisePrice = (p: number) => {
+    if (p >= 1000) return `$${p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (p >= 1) return `$${p.toFixed(2)}`;
+    return `$${p.toFixed(6)}`;
   };
 
   const formatDate = (ts: number) => {
+    const d = new Date(ts);
+    if (selectedPeriod === '1') return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (selectedPeriod === '7' || selectedPeriod === '30') return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    return d.toLocaleDateString([], { month: 'short', day: 'numeric', year: '2-digit' });
+  };
+
+  const formatShortDate = (ts: number) => {
     const d = new Date(ts);
     if (selectedPeriod === '1') return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
@@ -178,65 +203,97 @@ const InteractiveChart = ({ coinId, initialData, color = '#00D9A5' }: {
     return `${(v/1e3).toFixed(0)}K`;
   };
 
-  // Touch handling
-  const handleTouch = (evt: any) => {
-    const locationX = evt.nativeEvent?.locationX ?? evt.nativeEvent?.offsetX;
+  // Smooth touch handling — works for both touch (mobile) and mouse (web)
+  const handleInteraction = (evt: any) => {
+    const locationX = evt.nativeEvent?.locationX ?? evt.nativeEvent?.offsetX ?? evt.nativeEvent?.pageX;
     if (locationX !== undefined) {
-      const idx = Math.round((locationX / chartW) * (chartData.length - 1));
+      // Clamp to chart boundaries
+      const clampedX = Math.max(0, Math.min(locationX, chartW));
+      const idx = Math.round((clampedX / chartW) * (chartData.length - 1));
       const clampedIdx = Math.max(0, Math.min(idx, chartData.length - 1));
       setTouchIndex(clampedIdx);
+      setIsDragging(true);
     }
+  };
+
+  const endInteraction = () => {
+    // Keep the last touched point visible for 1.5s then fade
+    setTimeout(() => {
+      setTouchIndex(null);
+      setIsDragging(false);
+    }, 1500);
   };
 
   const touchPoint = touchIndex !== null ? chartData[touchIndex] : null;
   const touchX = touchIndex !== null ? (touchIndex / (chartData.length - 1)) * chartW : 0;
-  const touchY = touchPoint ? chartH - ((touchPoint.price - minPrice) / priceRange) * (chartH - 20) : 0;
+  const touchY = touchPoint ? chartH - ((touchPoint.price - minPrice) / priceRange) * (chartH - 24) : 0;
+  
+  // Calculate change from first price to touched point
+  const touchPctChange = touchPoint ? ((touchPoint.price - firstPrice) / firstPrice) * 100 : 0;
+  const touchIsPositive = touchPctChange >= 0;
 
   return (
     <View style={iChartStyles.container} data-testid="interactive-chart">
       {/* Period selector */}
       <View style={iChartStyles.periodBar}>
         {PERIODS.map(p => (
-          <Pressable key={p.key} style={[iChartStyles.periodBtn, selectedPeriod === p.key && iChartStyles.periodBtnActive]} onPress={() => { setSelectedPeriod(p.key); setTouchIndex(null); }} data-testid={`period-${p.key}`}>
+          <Pressable key={p.key} style={[iChartStyles.periodBtn, selectedPeriod === p.key && iChartStyles.periodBtnActive]} onPress={() => { setSelectedPeriod(p.key); setTouchIndex(null); setIsDragging(false); }} data-testid={`period-${p.key}`}>
             <Text style={[iChartStyles.periodText, selectedPeriod === p.key && iChartStyles.periodTextActive]}>{p.label}</Text>
           </Pressable>
         ))}
       </View>
 
-      {/* Price info */}
+      {/* Price info — updates in real-time during drag */}
       <View style={iChartStyles.priceInfo}>
         {touchPoint ? (
-          <>
-            <Text style={iChartStyles.touchPrice}>{formatChartPrice(touchPoint.price)}</Text>
-            <Text style={iChartStyles.touchDate}>{formatDate(touchPoint.timestamp)}</Text>
-            {touchPoint.volume > 0 && <Text style={iChartStyles.touchVol}>Vol: {formatVolume(touchPoint.volume)}</Text>}
-          </>
-        ) : (
-          <>
-            <Text style={iChartStyles.touchPrice}>{formatChartPrice(lastPrice)}</Text>
-            <View style={[iChartStyles.changePill, { backgroundColor: isPositive ? '#00D9A520' : '#FF475720' }]}>
-              <Ionicons name={isPositive ? 'trending-up' : 'trending-down'} size={14} color={lineColor} />
-              <Text style={[iChartStyles.changeText, { color: lineColor }]}>{pctChange.toFixed(2)}%</Text>
+          <View style={iChartStyles.touchInfoRow}>
+            <Text style={iChartStyles.touchPrice}>{formatPrecisePrice(touchPoint.price)}</Text>
+            <View style={iChartStyles.touchMeta}>
+              <Text style={iChartStyles.touchDate}>{formatDate(touchPoint.timestamp)}</Text>
+              <View style={[iChartStyles.touchChangePill, { backgroundColor: touchIsPositive ? '#00D9A518' : '#FF475718' }]}>
+                <Text style={[iChartStyles.touchChangeText, { color: touchIsPositive ? '#00D9A5' : '#FF4757' }]}>
+                  {touchIsPositive ? '+' : ''}{touchPctChange.toFixed(2)}%
+                </Text>
+              </View>
+              {touchPoint.volume > 0 && <Text style={iChartStyles.touchVol}>Vol: {formatVolume(touchPoint.volume)}</Text>}
             </View>
-          </>
+          </View>
+        ) : (
+          <View style={iChartStyles.touchInfoRow}>
+            <Text style={iChartStyles.touchPrice}>{formatPrecisePrice(lastPrice)}</Text>
+            <View style={iChartStyles.touchMeta}>
+              <View style={[iChartStyles.changePill, { backgroundColor: isPositive ? '#00D9A518' : '#FF475718' }]}>
+                <Ionicons name={isPositive ? 'trending-up' : 'trending-down'} size={14} color={lineColor} />
+                <Text style={[iChartStyles.changeText, { color: lineColor }]}>{isPositive ? '+' : ''}{pctChange.toFixed(2)}%</Text>
+              </View>
+            </View>
+          </View>
         )}
       </View>
 
-      {/* Interactive Chart */}
+      {/* Interactive Chart with drag */}
       <View
-        style={[iChartStyles.chartBox, { height: totalH }]}
-        onTouchMove={handleTouch}
-        onTouchStart={handleTouch}
-        onTouchEnd={() => setTouchIndex(null)}
+        style={[iChartStyles.chartBox, { height: totalH + 24 }]}
+        onTouchStart={handleInteraction}
+        onTouchMove={handleInteraction}
+        onTouchEnd={endInteraction}
         {...(Platform.OS === 'web' ? {
-          onMouseMove: handleTouch,
-          onMouseLeave: () => setTouchIndex(null),
+          onMouseDown: handleInteraction,
+          onMouseMove: (e: any) => { if (isDragging || e.buttons === 1) handleInteraction(e); },
+          onMouseUp: endInteraction,
+          onMouseLeave: endInteraction,
         } : {})}
       >
-        <Svg width={chartW} height={totalH}>
+        <Svg width={chartW} height={totalH + 24}>
           <Defs>
-            <SvgLinearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0%" stopColor={lineColor} stopOpacity="0.25" />
+            <SvgLinearGradient id="priceAreaGrad" x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0%" stopColor={lineColor} stopOpacity="0.20" />
+              <Stop offset="50%" stopColor={lineColor} stopOpacity="0.08" />
+              <Stop offset="100%" stopColor={lineColor} stopOpacity="0" />
+            </SvgLinearGradient>
+            <SvgLinearGradient id="crosshairGlow" x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0%" stopColor={lineColor} stopOpacity="0" />
+              <Stop offset="50%" stopColor={lineColor} stopOpacity="0.15" />
               <Stop offset="100%" stopColor={lineColor} stopOpacity="0" />
             </SvgLinearGradient>
           </Defs>
@@ -244,37 +301,66 @@ const InteractiveChart = ({ coinId, initialData, color = '#00D9A5' }: {
           {/* Y-axis grid lines */}
           {yLabels.map((yl, i) => (
             <React.Fragment key={i}>
-              <Line x1="0" y1={yl.y} x2={chartW} y2={yl.y} stroke="#1A1A35" strokeWidth={0.5} />
-              <SvgText x={chartW - 2} y={yl.y - 4} fill="#5A5A6E" fontSize={9} textAnchor="end">
+              <Line x1="0" y1={yl.y} x2={chartW} y2={yl.y} stroke="#1A1A35" strokeWidth={0.5} strokeDasharray="3,6" />
+              <SvgText x={chartW - 4} y={yl.y - 5} fill="#5A5A6E" fontSize={9} textAnchor="end" fontWeight="500">
                 {formatChartPrice(yl.price)}
               </SvgText>
             </React.Fragment>
           ))}
 
           {/* Area fill */}
-          <Path d={areaPath} fill="url(#priceGrad)" />
+          <Path d={areaPath} fill="url(#priceAreaGrad)" />
 
-          {/* Price line */}
-          <Path d={pricePath} stroke={lineColor} strokeWidth={2} fill="none" strokeLinejoin="round" />
+          {/* Price line with round joins for smoothness */}
+          <Path d={pricePath} stroke={lineColor} strokeWidth={2} fill="none" strokeLinejoin="round" strokeLinecap="round" />
 
           {/* Volume bars */}
           {volumes.map((v, i) => {
-            const bw = Math.max(1, chartW / volumes.length - 0.5);
-            const bh = (v / maxVolume) * volumeH;
+            const bw = Math.max(1.5, chartW / volumes.length - 0.5);
+            const bh = Math.max(1, (v / maxVolume) * volumeH);
             const bx = (i / (volumes.length - 1)) * chartW - bw / 2;
             const by = chartH + 10 + volumeH - bh;
+            const isHighlighted = touchIndex !== null && Math.abs(i - touchIndex) <= 1;
             return (
-              <Rect key={i} x={bx} y={by} width={bw} height={bh} fill={lineColor} opacity={touchIndex === i ? 0.6 : 0.15} rx={1} />
+              <Rect key={i} x={bx} y={by} width={bw} height={bh} fill={lineColor} opacity={isHighlighted ? 0.5 : 0.12} rx={1} />
             );
           })}
 
-          {/* Crosshair */}
+          {/* X-axis date labels */}
+          {xLabels.map((xl, i) => (
+            <SvgText key={`x-${i}`} x={xl.x} y={chartH + volumeH + 22} fill="#5A5A6E" fontSize={9} textAnchor={i === 0 ? 'start' : i === xLabels.length - 1 ? 'end' : 'middle'} fontWeight="500">
+              {xl.timestamp ? formatShortDate(xl.timestamp) : ''}
+            </SvgText>
+          ))}
+
+          {/* Crosshair with glow effect */}
           {touchIndex !== null && (
             <>
-              <Line x1={touchX} y1={0} x2={touchX} y2={chartH} stroke="#FFFFFF" strokeWidth={0.5} strokeDasharray="4,3" opacity={0.5} />
-              <Line x1={0} y1={touchY} x2={chartW} y2={touchY} stroke="#FFFFFF" strokeWidth={0.5} strokeDasharray="4,3" opacity={0.3} />
-              <Circle cx={touchX} cy={touchY} r={5} fill={lineColor} stroke="#FFFFFF" strokeWidth={2} />
-              <Circle cx={touchX} cy={touchY} r={8} fill={lineColor} opacity={0.2} />
+              {/* Vertical glow line */}
+              <Rect x={touchX - 12} y={0} width={24} height={chartH} fill="url(#crosshairGlow)" />
+              {/* Vertical dashed line */}
+              <Line x1={touchX} y1={0} x2={touchX} y2={chartH + volumeH} stroke={lineColor} strokeWidth={0.8} strokeDasharray="4,4" opacity={0.6} />
+              {/* Horizontal dashed line */}
+              <Line x1={0} y1={touchY} x2={chartW} y2={touchY} stroke="#FFFFFF" strokeWidth={0.5} strokeDasharray="3,5" opacity={0.2} />
+              
+              {/* Outer glow circle */}
+              <Circle cx={touchX} cy={touchY} r={12} fill={lineColor} opacity={0.12} />
+              {/* Middle circle */}
+              <Circle cx={touchX} cy={touchY} r={7} fill={lineColor} opacity={0.25} />
+              {/* Inner dot */}
+              <Circle cx={touchX} cy={touchY} r={4} fill="#FFFFFF" stroke={lineColor} strokeWidth={2.5} />
+              
+              {/* Price label on Y-axis */}
+              <Rect x={chartW - 60} y={touchY - 10} width={58} height={20} rx={4} fill={lineColor} opacity={0.9} />
+              <SvgText x={chartW - 31} y={touchY + 4} fill="#FFFFFF" fontSize={9} textAnchor="middle" fontWeight="700">
+                {formatChartPrice(touchPoint?.price || 0)}
+              </SvgText>
+              
+              {/* Date label on X-axis */}
+              <Rect x={Math.max(0, Math.min(touchX - 32, chartW - 64))} y={chartH + volumeH + 2} width={64} height={18} rx={4} fill="#2A2A4E" />
+              <SvgText x={Math.max(32, Math.min(touchX, chartW - 32))} y={chartH + volumeH + 14} fill="#FFFFFF" fontSize={9} textAnchor="middle" fontWeight="600">
+                {touchPoint ? formatShortDate(touchPoint.timestamp) : ''}
+              </SvgText>
             </>
           )}
         </Svg>
@@ -285,18 +371,22 @@ const InteractiveChart = ({ coinId, initialData, color = '#00D9A5' }: {
 
 const iChartStyles = StyleSheet.create({
   container: { marginBottom: 8 },
-  periodBar: { flexDirection: 'row', gap: 6, marginBottom: 12 },
-  periodBtn: { flex: 1, paddingVertical: 8, borderRadius: 10, alignItems: 'center', backgroundColor: '#111125' },
+  periodBar: { flexDirection: 'row', gap: 6, marginBottom: 14 },
+  periodBtn: { flex: 1, paddingVertical: 9, borderRadius: 10, alignItems: 'center', backgroundColor: '#111125' },
   periodBtnActive: { backgroundColor: '#7C3AED' },
   periodText: { fontSize: 13, fontWeight: '700', color: '#5A5A6E' },
   periodTextActive: { color: '#FFFFFF' },
-  priceInfo: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8, minHeight: 24 },
-  touchPrice: { fontSize: 20, fontWeight: '900', color: '#FFFFFF' },
-  touchDate: { fontSize: 12, color: '#8B8B9E', fontWeight: '600' },
+  priceInfo: { marginBottom: 10, minHeight: 48 },
+  touchInfoRow: { gap: 4 },
+  touchPrice: { fontSize: 22, fontWeight: '900', color: '#FFFFFF', letterSpacing: -0.5 },
+  touchMeta: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
+  touchDate: { fontSize: 13, color: '#8B8B9E', fontWeight: '600' },
+  touchChangePill: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  touchChangeText: { fontSize: 12, fontWeight: '800' },
   touchVol: { fontSize: 11, color: '#5A5A6E', fontWeight: '600' },
-  changePill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
+  changePill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
   changeText: { fontSize: 13, fontWeight: '800' },
-  chartBox: { borderRadius: 12, overflow: 'hidden', backgroundColor: '#0D0D20' },
+  chartBox: { borderRadius: 14, overflow: 'hidden', backgroundColor: '#0D0D20' },
 });
 
 export default function MarketScreen() {
