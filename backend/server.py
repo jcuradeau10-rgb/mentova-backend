@@ -150,6 +150,12 @@ async def _fetch_coingecko(endpoint: str, params: dict = None) -> dict | None:
                 headers=headers,
                 timeout=12.0,
             )
+            # Track CoinGecko API call for analytics
+            try:
+                from routes.analytics import track_coingecko_call
+                track_coingecko_call()
+            except Exception:
+                pass
             if resp.status_code == 200:
                 return resp.json()
             logger.warning(f"CoinGecko {endpoint} returned {resp.status_code}")
@@ -945,6 +951,7 @@ async def get_crypto_chart(coin_id: str, days: str = "7"):
                 headers = {}
             
             response = await client.get(url, params={"vs_currency": "usd", "days": num_days}, headers=headers, timeout=15.0)
+            track_coingecko_call()
             if response.status_code == 200:
                 data = response.json()
                 prices = [{"timestamp": p[0], "price": p[1]} for p in data.get("prices", [])]

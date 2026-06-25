@@ -186,26 +186,50 @@ async def get_realtime_analytics(admin: dict = Depends(_super_admin_auth)):
             db_stats["total_messages"] = await _db.messages.count_documents({}) if "messages" in await _db.list_collection_names() else 0
             db_stats["pre_registrations"] = await _db.pre_registrations.count_documents({})
             
-            # New users today/week/month
-            today_dt = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0)
+            # New users today/week/month — handle both string and datetime created_at
+            today_dt = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
             week_dt = datetime.now(timezone.utc) - timedelta(days=7)
             month_dt = datetime.now(timezone.utc) - timedelta(days=30)
+            today_str = today_dt.strftime("%Y-%m-%d")
+            week_str = week_dt.strftime("%Y-%m-%d")
+            month_str = month_dt.strftime("%Y-%m-%d")
             
-            db_stats["new_users_today"] = await _db.users.count_documents({"created_at": {"$gte": today_dt.isoformat()}})
-            db_stats["new_users_week"] = await _db.users.count_documents({"created_at": {"$gte": week_dt.isoformat()}})
-            db_stats["new_users_month"] = await _db.users.count_documents({"created_at": {"$gte": month_dt.isoformat()}})
+            # Try datetime comparison first, fallback to string
+            db_stats["new_users_today"] = await _db.users.count_documents({"$or": [
+                {"created_at": {"$gte": today_dt}},
+                {"created_at": {"$gte": today_str}},
+            ]})
+            db_stats["new_users_week"] = await _db.users.count_documents({"$or": [
+                {"created_at": {"$gte": week_dt}},
+                {"created_at": {"$gte": week_str}},
+            ]})
+            db_stats["new_users_month"] = await _db.users.count_documents({"$or": [
+                {"created_at": {"$gte": month_dt}},
+                {"created_at": {"$gte": month_str}},
+            ]})
             
-            # Posts today
-            db_stats["posts_today"] = await _db.community_posts.count_documents({"created_at": {"$gte": today_dt.isoformat()}})
-            db_stats["posts_week"] = await _db.community_posts.count_documents({"created_at": {"$gte": week_dt.isoformat()}})
+            # Posts today/week
+            db_stats["posts_today"] = await _db.community_posts.count_documents({"$or": [
+                {"created_at": {"$gte": today_dt}},
+                {"created_at": {"$gte": today_str}},
+            ]})
+            db_stats["posts_week"] = await _db.community_posts.count_documents({"$or": [
+                {"created_at": {"$gte": week_dt}},
+                {"created_at": {"$gte": week_str}},
+            ]})
             
             # Registration trend (last 30 days)
             reg_trend = []
             for i in range(30, 0, -1):
-                day_start = (datetime.now(timezone.utc) - timedelta(days=i)).replace(hour=0, minute=0, second=0)
-                day_end = (datetime.now(timezone.utc) - timedelta(days=i-1)).replace(hour=0, minute=0, second=0)
-                count = await _db.users.count_documents({"created_at": {"$gte": day_start.isoformat(), "$lt": day_end.isoformat()}})
-                reg_trend.append({"date": day_start.strftime("%d/%m"), "count": count})
+                ds = datetime.now(timezone.utc) - timedelta(days=i)
+                de = datetime.now(timezone.utc) - timedelta(days=i-1)
+                ds_str = ds.strftime("%Y-%m-%d")
+                de_str = de.strftime("%Y-%m-%d")
+                count = await _db.users.count_documents({"$or": [
+                    {"created_at": {"$gte": ds, "$lt": de}},
+                    {"created_at": {"$gte": ds_str, "$lt": de_str}},
+                ]})
+                reg_trend.append({"date": ds_str[5:], "count": count})
             db_stats["registration_trend"] = reg_trend
             
             # VIP conversion rate
@@ -214,12 +238,13 @@ async def get_realtime_analytics(admin: dict = Depends(_super_admin_auth)):
             
             # Top community contributors
             pipeline = [
+                {"$match": {"author_name": {"$ne": None}}},
                 {"$group": {"_id": "$author_name", "count": {"$sum": 1}}},
                 {"$sort": {"count": -1}},
                 {"$limit": 5}
             ]
             top_posters = await _db.community_posts.aggregate(pipeline).to_list(5)
-            db_stats["top_contributors"] = [{"name": p["_id"], "posts": p["count"]} for p in top_posters]
+            db_stats["top_contributors"] = [{"name": p["_id"] or "Anonyme", "posts": p["count"]} for p in top_posters]
             
         except Exception as e:
             logger.error(f"DB stats error: {e}")

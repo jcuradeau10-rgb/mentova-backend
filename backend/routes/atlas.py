@@ -946,6 +946,11 @@ async def atlas_chat(data: ChatMessage, credentials: HTTPAuthorizationCredential
     effective_id = uid or data.user_id or "anonymous"
     session_id = data.session_id or str(uuid.uuid4())
     logger.info(f"Atlas chat: lang={data.lang}, user={effective_id}, session={session_id[:16]}")
+    try:
+        from routes.analytics import track_atlas_call
+        track_atlas_call(effective_id, data.lang or "en")
+    except Exception:
+        pass
 
     # Rate limit check for non-VIP
     if not is_vip:
@@ -999,6 +1004,11 @@ async def atlas_chat_simple(data: ChatMessage, credentials: HTTPAuthorizationCre
     effective_id = uid or data.user_id or "anonymous"
     session_id = data.session_id or str(uuid.uuid4())
     logger.info(f"Atlas chat/simple: lang={data.lang}, user={effective_id}, session={session_id[:16]}")
+    try:
+        from routes.analytics import track_atlas_call
+        track_atlas_call(effective_id, data.lang or "en")
+    except Exception:
+        pass
 
     # Rate limit check for non-VIP
     if not is_vip:
