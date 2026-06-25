@@ -200,6 +200,24 @@ export default function AdminScreen() {
     }
   }, [shouldRedirect]);
 
+  // Analytics auto-refresh (must be before any early return)
+  useEffect(() => {
+    if (activeTab === 'analytics') {
+      const doFetch = async () => {
+        try {
+          setAnalyticsLoading(true);
+          const res = await adminAPI.getAnalytics();
+          setAnalyticsData(res.data);
+        } catch (e: any) { console.error('Analytics error:', e); }
+        finally { setAnalyticsLoading(false); }
+      };
+      doFetch();
+      analyticsInterval.current = setInterval(doFetch, 30000);
+    }
+    return () => { if (analyticsInterval.current) clearInterval(analyticsInterval.current); };
+  }, [activeTab]);
+
+
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -469,23 +487,6 @@ export default function AdminScreen() {
 
   // ==================== ANALYTICS LIVE DASHBOARD ====================
 
-  const fetchAnalytics = async () => {
-    try {
-      setAnalyticsLoading(true);
-      const res = await adminAPI.getAnalytics();
-      setAnalyticsData(res.data);
-    } catch (e: any) { console.error('Analytics error:', e); }
-    finally { setAnalyticsLoading(false); }
-  };
-
-  useEffect(() => {
-    if (activeTab === 'analytics') {
-      fetchAnalytics();
-      analyticsInterval.current = setInterval(fetchAnalytics, 30000); // auto-refresh 30s
-    }
-    return () => { if (analyticsInterval.current) clearInterval(analyticsInterval.current); };
-  }, [activeTab]);
-
   const StatBox = ({ label, value, icon, color = '#7C3AED', sub }: { label: string; value: string | number; icon: string; color?: string; sub?: string }) => (
     <View style={{ flex: 1, minWidth: 140, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
@@ -536,7 +537,7 @@ export default function AdminScreen() {
             <Text style={{ fontSize: 22, fontWeight: '900', color: '#FFF' }}>Analytics Live</Text>
             <Text style={{ fontSize: 11, color: '#5A5A6E' }}>Auto-refresh: 30s | {new Date(d.timestamp).toLocaleTimeString()}</Text>
           </View>
-          <TouchableOpacity onPress={fetchAnalytics} style={{ padding: 8, backgroundColor: 'rgba(124,58,237,0.15)', borderRadius: 10 }}>
+          <TouchableOpacity onPress={async () => { try { setAnalyticsLoading(true); const res = await adminAPI.getAnalytics(); setAnalyticsData(res.data); } catch {} finally { setAnalyticsLoading(false); } }} style={{ padding: 8, backgroundColor: 'rgba(124,58,237,0.15)', borderRadius: 10 }}>
             <Ionicons name="refresh" size={18} color="#7C3AED" />
           </TouchableOpacity>
         </View>
