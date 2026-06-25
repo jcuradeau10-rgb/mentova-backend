@@ -356,6 +356,7 @@ async def get_realtime_analytics(admin: dict = Depends(_super_admin_auth)):
             "python_version": platform.python_version(),
             "total_tracked_events": len(_api_calls_log),
             "persisted": True,
+            "debug_user_ids": list(set(c["user_id"] for c in _api_calls_log[-50:]))[:10],
         },
     }
 
