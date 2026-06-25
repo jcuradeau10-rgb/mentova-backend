@@ -8,6 +8,7 @@ import { useRouter, usePathname } from 'expo-router';
 import { useTranslation } from '../../store/languageStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
+import InstallPWAPrompt from '../../components/InstallPWAPrompt';
 
 interface TabIconProps {
   color: string;
@@ -570,6 +571,7 @@ export default function TabLayout() {
 
   return (
     <View style={styles.container}>
+      <InstallPWAPrompt />
       <Tabs
         key={`tabs-${language}`}
         screenOptions={{
