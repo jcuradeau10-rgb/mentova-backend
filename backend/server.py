@@ -12051,9 +12051,14 @@ set_admin_deps(db)
 app.include_router(admin_router, prefix="/api")
 
 # Analytics router
-from routes.analytics import router as analytics_router, set_analytics_db, track_api_call, track_coingecko_call, track_atlas_call
+from routes.analytics import router as analytics_router, set_analytics_db, track_api_call, track_coingecko_call, track_atlas_call, _flush_loop
 set_analytics_db(db)
 app.include_router(analytics_router, prefix="/api")
+
+@app.on_event("startup")
+async def start_analytics_flush():
+    asyncio.create_task(_flush_loop())
+    logger.info("Analytics flush loop started — persisting to MongoDB every 30s")
 
 
 
