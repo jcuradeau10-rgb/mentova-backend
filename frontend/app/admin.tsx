@@ -97,6 +97,10 @@ export default function AdminScreen() {
   const router = useRouter();
   const { user, isAdmin, isSuperAdmin, isLoading: authLoading } = useAuthStore();
   const { t } = useTranslation();
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const analyticsInterval = useRef<any>(null);
+
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -464,9 +468,6 @@ export default function AdminScreen() {
 
 
   // ==================== ANALYTICS LIVE DASHBOARD ====================
-  const [analyticsData, setAnalyticsData] = useState<any>(null);
-  const [analyticsLoading, setAnalyticsLoading] = useState(false);
-  const analyticsInterval = useRef<any>(null);
 
   const fetchAnalytics = async () => {
     try {

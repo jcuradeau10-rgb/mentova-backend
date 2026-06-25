@@ -445,7 +445,7 @@ async def get_admin_stats(admin_user: dict = Depends(_admin_auth)):
     total_comments = await _db().community_comments.count_documents({})
     
     # Calculate votes
-    posts_cursor = db.community_posts.find({}, {"votes": 1})
+    posts_cursor = _db().community_posts.find({}, {"votes": 1})
     total_votes = 0
     async for post in posts_cursor:
         total_votes += post.get("votes", 0)
