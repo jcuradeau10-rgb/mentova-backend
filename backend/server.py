@@ -129,7 +129,7 @@ RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY', '6LejZ4csAAAAAOhuqKb2X
 # ==================== COINGECKO GLOBAL CACHE ====================
 COINGECKO_API_KEY = os.environ.get('COINGECKO_API_KEY', '')
 COINGECKO_BASE_URL = "https://pro-api.coingecko.com/api/v3" if COINGECKO_API_KEY else "https://api.coingecko.com/api/v3"
-COINGECKO_CACHE_TTL = 40  # seconds between API calls
+COINGECKO_CACHE_TTL = 120  # 2 minutes between cache refreshes (~64,800 calls/month for 3 endpoints)
 
 _cg_cache = {
     "prices": {"data": None, "last_fetch": 0},
@@ -916,20 +916,27 @@ async def get_crypto_prices():
         return {"success": True, "data": cached, "timestamp": datetime.now(timezone.utc).isoformat(), "cached": True}
     return {"success": True, "data": MOCK_PRICES, "timestamp": datetime.now(timezone.utc).isoformat(), "mock": True}
 
+_chart_cache: Dict[str, Any] = {}
+
 @api_router.get("/crypto/chart/{coin_id}")
 async def get_crypto_chart(coin_id: str, days: str = "7"):
-    """Get historical chart data for a crypto (prices + volumes) using Pro API"""
+    """Get historical chart data for a crypto (prices + volumes) using Pro API with cache"""
     import random as rnd
     import math as mth
     
     valid_days = {"1": 1, "7": 7, "30": 30, "90": 90, "365": 365}
     num_days = valid_days.get(days, 7)
     
+    # Chart cache: 5 min for 1d, 15 min for 7d+
+    cache_key = f"{coin_id}:{num_days}"
+    cache_ttl = 300 if num_days <= 1 else 900
+    if cache_key in _chart_cache and time.time() - _chart_cache[cache_key]["ts"] < cache_ttl:
+        return _chart_cache[cache_key]["data"]
+    
     coingecko_key = os.environ.get("COINGECKO_API_KEY")
     
     try:
         async with httpx.AsyncClient() as client:
-            # Use Pro API if key available, otherwise free API
             if coingecko_key:
                 url = f"https://pro-api.coingecko.com/api/v3/coins/{coin_id}/market_chart"
                 headers = {"x-cg-pro-api-key": coingecko_key}
@@ -937,12 +944,7 @@ async def get_crypto_chart(coin_id: str, days: str = "7"):
                 url = f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart"
                 headers = {}
             
-            response = await client.get(
-                url,
-                params={"vs_currency": "usd", "days": num_days},
-                headers=headers,
-                timeout=15.0
-            )
+            response = await client.get(url, params={"vs_currency": "usd", "days": num_days}, headers=headers, timeout=15.0)
             if response.status_code == 200:
                 data = response.json()
                 prices = [{"timestamp": p[0], "price": p[1]} for p in data.get("prices", [])]
@@ -957,7 +959,9 @@ async def get_crypto_chart(coin_id: str, days: str = "7"):
                         "volume": round(vol, 0),
                     })
                 
-                return {"success": True, "data": chart_data, "coin_id": coin_id, "days": num_days}
+                result = {"success": True, "data": chart_data, "coin_id": coin_id, "days": num_days}
+                _chart_cache[cache_key] = {"data": result, "ts": time.time()}
+                return result
             else:
                 logger.warning(f"CoinGecko chart returned {response.status_code} for {coin_id}")
                 return {"success": True, "data": _generate_mock_chart(coin_id, num_days), "coin_id": coin_id, "days": num_days, "mock": True}
@@ -12329,7 +12333,7 @@ async def start_email_scheduler_task():
 async def start_coingecko_cache():
     """Start the CoinGecko global cache scheduler (1 call every 40s for all users)"""
     asyncio.create_task(_coingecko_scheduler())
-    logger.info("CoinGecko cache scheduler started — refreshing every 40s")
+    logger.info(f"CoinGecko cache scheduler started — refreshing every {COINGECKO_CACHE_TTL}s")
 
 @app.on_event("startup")
 async def start_rss_news_cache():
