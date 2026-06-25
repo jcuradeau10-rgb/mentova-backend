@@ -1063,7 +1063,7 @@
     <div class="hero-gradient"></div>
     <div class="container">
         <div class="hero-content">
-            <div class="hero-tag"><i class="fas fa-bolt"></i> Founding Price — Limited to 500 Members</div>
+            <div class="hero-tag"><i class="fas fa-bolt"></i> Founding Price | Limited to 500 Members</div>
             <h1>Learn Crypto.<br><span class="accent" style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Your Way.</span></h1>
             <p class="hero-desc">AI-powered adaptive learning, verified mentors, pro trading tools, and a multilingual community. Mentova is the social network for crypto beginners.</p>
             <div class="hero-actions">
@@ -1090,11 +1090,9 @@
                 <div class="cd-item"><span class="num" id="cd-secs">--</span><span class="lbl">Sec</span></div>
             </div>
             <div class="countdown-spots" id="heroSpots" style="min-height:20px;"></div>
-        </div>
             <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:6px;overflow:hidden;">
                 <div id="spotsBar" style="height:100%;background:linear-gradient(90deg,var(--purple),var(--green));border-radius:6px;width:0%;transition:width 1s ease;"></div>
             </div>
-            <div class="countdown-spots" id="heroSpots" style="margin-top:12px;min-height:20px;"></div>
         </div>
 </section>
 
@@ -1245,10 +1243,10 @@
                 <div class="price-old">Regular price: $25.99/mo after 500 members</div>
                 <div class="price-spots normal" id="priceCounter"></div>
                 <ul class="price-features">
-                    <li><i class="fas fa-check"></i> Daily AI Briefing — market summary by Atlas AI, adapted to your portfolio</li>
-                    <li><i class="fas fa-check"></i> Unlimited Atlas & AI — no message limits, all chapters unlocked</li>
-                    <li><i class="fas fa-check"></i> VIP Badge — visible status, highlighted in discussions</li>
-                    <li><i class="fas fa-check"></i> Direct messages to mentors — private contact with certified mentors</li>
+                    <li><i class="fas fa-check"></i> Daily AI Briefing : market summary by Atlas AI, adapted to your portfolio</li>
+                    <li><i class="fas fa-check"></i> Unlimited Atlas & AI : no message limits, all chapters unlocked</li>
+                    <li><i class="fas fa-check"></i> VIP Badge : visible status, highlighted in discussions</li>
+                    <li><i class="fas fa-check"></i> Direct messages to mentors : private contact with certified mentors</li>
                 </ul>
                 <div class="price-note">Subscribe now at the founding price of $9.99/mo. This exclusive rate is only for the first 500 members. After that, it goes to $25.99/mo. Founding Member badge included forever.</div>
                 <a href="#pre-register" class="btn-primary" style="width:100%;justify-content:center;padding:16px;" data-testid="vip-cta">Subscribe at $9.99/mo <i class="fas fa-arrow-right"></i></a>
@@ -1378,7 +1376,7 @@
     <div class="container">
         <h2>Your first step<br>costs <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">nothing</span>.</h2>
         <p>Subscribe at the founding price. $9.99/mo instead of $25.99. Founding Member badge forever.</p>
-        <a href="#pre-register" class="btn-primary" style="padding:18px 44px;font-size:16px;" data-testid="final-cta-button">Subscribe Now — $9.99/mo <i class="fas fa-arrow-right"></i></a>
+        <a href="#pre-register" class="btn-primary" style="padding:18px 44px;font-size:16px;" data-testid="final-cta-button">Subscribe Now | $9.99/mo <i class="fas fa-arrow-right"></i></a>
     </div>
 </div>
 
@@ -1543,7 +1541,7 @@ document.getElementById('preregForm').addEventListener('submit', async function(
         const data = await r.json();
 
         if (data.error === 'already_registered') {
-            // Already registered — try to login and go to checkout
+            // Already registered : try to login and go to checkout
             btn.textContent = TEXTS.redirecting;
             await loginAndCheckout(email, password, ref);
             return;

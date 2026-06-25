@@ -1063,7 +1063,7 @@
     <div class="hero-gradient"></div>
     <div class="container">
         <div class="hero-content">
-            <div class="hero-tag"><i class="fas fa-bolt"></i> Prix Fondateur — Limité à 500 Membres</div>
+            <div class="hero-tag"><i class="fas fa-bolt"></i> Prix Fondateur | Limité à 500 Membres</div>
             <h1>Apprends la Crypto.<br><span class="accent" style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">À ton rythme.</span></h1>
             <p class="hero-desc">Apprentissage adaptatif par IA, mentors vérifiés, outils de trading pro et communauté multilingue. Mentova est le réseau social pour les débutants en crypto.</p>
             <div class="hero-actions">
@@ -1090,11 +1090,9 @@
                 <div class="cd-item"><span class="num" id="cd-secs">--</span><span class="lbl">Sec</span></div>
             </div>
             <div class="countdown-spots" id="heroSpots" style="min-height:20px;"></div>
-        </div>
             <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:6px;overflow:hidden;">
                 <div id="spotsBar" style="height:100%;background:linear-gradient(90deg,var(--purple),var(--green));border-radius:6px;width:0%;transition:width 1s ease;"></div>
             </div>
-            <div class="countdown-spots" id="heroSpots" style="margin-top:12px;min-height:20px;"></div>
         </div>
 </section>
 
@@ -1245,10 +1243,10 @@
                 <div class="price-old">Prix régulier : 25,99$/mois après 500 membres</div>
                 <div class="price-spots normal" id="priceCounter"></div>
                 <ul class="price-features">
-                    <li><i class="fas fa-check"></i> Briefing IA Quotidien — résumé du marché par Atlas IA, adapté à ton portfolio</li>
-                    <li><i class="fas fa-check"></i> Atlas & IA Illimités — aucune limite de messages, tous les chapitres débloqués</li>
-                    <li><i class="fas fa-check"></i> Badge VIP — statut visible, mis en avant dans les discussions</li>
-                    <li><i class="fas fa-check"></i> Messages directs aux mentors — contact privé avec les mentors certifiés</li>
+                    <li><i class="fas fa-check"></i> Briefing IA Quotidien : résumé du marché par Atlas IA, adapté à ton portfolio</li>
+                    <li><i class="fas fa-check"></i> Atlas & IA Illimités : aucune limite de messages, tous les chapitres débloqués</li>
+                    <li><i class="fas fa-check"></i> Badge VIP : statut visible, mis en avant dans les discussions</li>
+                    <li><i class="fas fa-check"></i> Messages directs aux mentors : contact privé avec les mentors certifiés</li>
                 </ul>
                 <div class="price-note">Abonne-toi maintenant au prix fondateur de 9,99$/mois. Ce tarif exclusif est réservé aux 500 premiers membres. Après, ça passe à 25,99$/mois. Badge Membre Fondateur inclus à vie.</div>
                 <a href="#pre-register" class="btn-primary" style="width:100%;justify-content:center;padding:16px;" data-testid="vip-cta">S'abonner à 9,99$/mois <i class="fas fa-arrow-right"></i></a>
@@ -1378,7 +1376,7 @@
     <div class="container">
         <h2>Ton premier pas<br>ne coûte <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">rien</span>.</h2>
         <p>Abonne-toi au prix fondateur. 9,99$/mois au lieu de 25,99$. Badge Membre Fondateur à vie.</p>
-        <a href="#pre-register" class="btn-primary" style="padding:18px 44px;font-size:16px;" data-testid="final-cta-button">S'abonner — 9,99$/mois <i class="fas fa-arrow-right"></i></a>
+        <a href="#pre-register" class="btn-primary" style="padding:18px 44px;font-size:16px;" data-testid="final-cta-button">S'abonner | 9,99$/mois <i class="fas fa-arrow-right"></i></a>
     </div>
 </div>
 
@@ -1543,7 +1541,7 @@ document.getElementById('preregForm').addEventListener('submit', async function(
         const data = await r.json();
 
         if (data.error === 'already_registered') {
-            // Already registered — try to login and go to checkout
+            // Already registered : try to login and go to checkout
             btn.textContent = TEXTS.redirecting;
             await loginAndCheckout(email, password, ref);
             return;
