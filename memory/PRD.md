@@ -62,6 +62,13 @@ Build a professional mentor marketplace named "Mentova" using React Native (Expo
   - Frontend: Language switcher pill (EN/FR/ES) added to Learn tab bar - cycles languages on tap
 - **Testing**: 8/8 backend tests pass, frontend verified via testing agent
 
+### Interactive Charts Upgrade (DONE - June 25, 2026)
+- Backend uses CoinGecko Pro API for chart data (200+ data points, real prices)
+- Smooth drag interaction with crosshair, glow effect, floating price/date labels
+- X-axis and Y-axis labels, volume bars with highlight on hover
+- Period selector (24H, 7J, 30J, 90J, 1A)
+- Precise price formatting ($X,XXX.XX for large, $X.XXXXXX for small)
+
 ## Pending Tasks
 
 ### P2 - Web App Desktop Responsiveness
