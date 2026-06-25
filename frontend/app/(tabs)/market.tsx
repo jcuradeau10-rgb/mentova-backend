@@ -389,14 +389,20 @@ const iChartStyles = StyleSheet.create({
   chartBox: { borderRadius: 14, overflow: 'hidden', backgroundColor: '#0D0D20' },
 });
 
-// Rainbow BTC Chart Component (freemium: static for all, interactive for VIP)
+// Rainbow BTC Chart Component — faithful recreation of the classic blockchaincenter.net style
 const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [touchIdx, setTouchIdx] = useState<number | null>(null);
   const [dragging, setDragging] = useState(false);
-  const chartW = width - 48;
-  const chartH = 280;
+  const chartW = width - 32;
+  const chartH = 320;
+  const padLeft = 0;
+  const padRight = 60;
+  const padTop = 8;
+  const padBot = 28;
+  const plotW = chartW - padLeft - padRight;
+  const plotH = chartH - padTop - padBot;
 
   useEffect(() => { loadRainbow(); }, []);
 
@@ -410,10 +416,7 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
 
   if (loading || !data) return (
     <View style={rbStyles.container}>
-      <View style={rbStyles.header}>
-        <Text style={rbStyles.title}>Rainbow Chart</Text>
-        <Text style={rbStyles.subtitle}>Bitcoin Log Regression</Text>
-      </View>
+      <View style={rbStyles.header}><Text style={rbStyles.title}>Rainbow Chart BTC</Text></View>
       <View style={[rbStyles.chartBox, { height: chartH, justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="small" color="#FFD600" />
       </View>
@@ -424,61 +427,109 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
   const bands = data.bands || [];
   if (prices.length < 2) return null;
 
-  // Use log scale for Y axis
-  const allLows = prices.map((p: any) => p.band_low).filter((v: number) => v > 0);
-  const allHighs = prices.map((p: any) => p.band_high).filter((v: number) => v > 0);
-  const allPrices = prices.map((p: any) => p.price).filter((v: number) => v > 0);
-  const minLog = Math.log10(Math.max(0.01, Math.min(...allLows, ...allPrices)));
-  const maxLog = Math.log10(Math.max(...allHighs, ...allPrices));
-  const logRange = maxLog - minLog || 1;
+  // Time range: start from first data point, extend to 2032
+  const BTC_GENESIS = 1230940800;
+  const startTs = prices[0].timestamp;
+  const endTs = new Date(2033, 0, 1).getTime(); // extend to 2033
+  const tsRange = endTs - startTs;
 
-  const toY = (price: number) => chartH - ((Math.log10(Math.max(0.01, price)) - minLog) / logRange) * (chartH - 16);
-  const toX = (idx: number) => (idx / (prices.length - 1)) * chartW;
+  // Log Y range: $1 to $2,000,000
+  const logMin = 0; // log10(1) = 0
+  const logMax = 6.3; // log10(2,000,000) ≈ 6.3
+  const logRange = logMax - logMin;
 
-  // Build price line
-  const priceLine = prices.map((p: any, i: number) => `${i === 0 ? 'M' : 'L'} ${toX(i).toFixed(1)},${toY(p.price).toFixed(1)}`).join(' ');
+  const toX = (ts: number) => padLeft + ((ts - startTs) / tsRange) * plotW;
+  const toY = (price: number) => padTop + plotH - ((Math.log10(Math.max(1, price)) - logMin) / logRange) * plotH;
 
-  // Build rainbow band areas (9 bands)
-  const bandPaths = bands.map((_: any, bandIdx: number) => {
-    const topPoints = prices.map((p: any, i: number) => {
-      const bds = _calcBands(p.timestamp);
-      return { x: toX(i), y: toY(bds[bandIdx]?.high || 1) };
+  // Band calc (must match backend)
+  const calcBands = (ts: number) => {
+    const days = Math.max(1, (ts / 1000 - BTC_GENESIS) / 86400);
+    const logDays = Math.log10(days);
+    const base = 5.84 * logDays - 17.01;
+    const bw = 0.35;
+    const offset = 4.5 * bw;
+    const result: { low: number; high: number }[] = [];
+    for (let i = 0; i < 9; i++) {
+      result.push({ low: Math.pow(10, base - offset + i * bw), high: Math.pow(10, base - offset + (i + 1) * bw) });
+    }
+    return result;
+  };
+
+  // Generate time samples for band rendering (including future to 2032)
+  const sampleCount = 120;
+  const timeSamples: number[] = [];
+  for (let i = 0; i <= sampleCount; i++) {
+    timeSamples.push(startTs + (tsRange * i) / sampleCount);
+  }
+
+  // Classic rainbow colors (bottom to top): dark blue → purple → blue → teal → green → yellow → orange → dark orange → red
+  const rainbowColors = ['#4A148C', '#6A1B9A', '#1565C0', '#00838F', '#2E7D32', '#9E9D24', '#FF8F00', '#E65100', '#B71C1C'];
+
+  // Build band paths
+  const bandPaths = rainbowColors.map((_, bandIdx) => {
+    const topPts = timeSamples.map(ts => {
+      const b = calcBands(ts);
+      return `${toX(ts).toFixed(1)},${toY(b[bandIdx].high).toFixed(1)}`;
     });
-    const botPoints = prices.map((p: any, i: number) => {
-      const bds = _calcBands(p.timestamp);
-      return { x: toX(i), y: toY(bds[bandIdx]?.low || 0.01) };
+    const botPts = [...timeSamples].reverse().map(ts => {
+      const b = calcBands(ts);
+      return `${toX(ts).toFixed(1)},${toY(b[bandIdx].low).toFixed(1)}`;
     });
-    const topPath = topPoints.map((pt, i) => `${i === 0 ? 'M' : 'L'} ${pt.x.toFixed(1)},${pt.y.toFixed(1)}`).join(' ');
-    const botPath = botPoints.reverse().map((pt, i) => `${i === 0 ? 'L' : 'L'} ${pt.x.toFixed(1)},${pt.y.toFixed(1)}`).join(' ');
-    return `${topPath} ${botPath} Z`;
+    return `M ${topPts.join(' L ')} L ${botPts.join(' L ')} Z`;
   });
 
-  // Touch handling (VIP only for drag, static indicator for all)
+  // BTC price line (black, thick)
+  const priceLine = prices.map((p: any, i: number) => {
+    const x = toX(p.timestamp);
+    const y = toY(p.price);
+    return `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+
+  // Y-axis labels (log scale)
+  const yTicks = [1, 10, 100, 1000, 10000, 100000, 1000000];
+  const yLabels = yTicks.filter(v => Math.log10(v) >= logMin && Math.log10(v) <= logMax);
+
+  // X-axis year labels
+  const years = [];
+  for (let y = 2012; y <= 2032; y += 2) {
+    const ts = new Date(y, 0, 1).getTime();
+    if (ts >= startTs && ts <= endTs) years.push({ year: y, x: toX(ts) });
+  }
+
+  // Halving dates
+  const halvings = [
+    { date: new Date(2012, 10, 28).getTime(), label: 'Halving' },
+    { date: new Date(2016, 6, 9).getTime(), label: 'Halving' },
+    { date: new Date(2020, 4, 11).getTime(), label: 'Halving' },
+    { date: new Date(2024, 3, 20).getTime(), label: 'Halving' },
+    { date: new Date(2028, 3, 1).getTime(), label: 'Halving' },
+  ].filter(h => h.date >= startTs && h.date <= endTs);
+
+  // Touch (VIP only)
   const handleTouch = (evt: any) => {
     if (!isVip) return;
     const locX = evt.nativeEvent?.locationX ?? evt.nativeEvent?.offsetX;
     if (locX !== undefined) {
-      const idx = Math.round((Math.max(0, Math.min(locX, chartW)) / chartW) * (prices.length - 1));
-      setTouchIdx(Math.max(0, Math.min(idx, prices.length - 1)));
+      const ts = startTs + ((Math.max(0, Math.min(locX - padLeft, plotW)) / plotW) * tsRange);
+      let closest = 0;
+      let minDist = Infinity;
+      prices.forEach((p: any, i: number) => { const d = Math.abs(p.timestamp - ts); if (d < minDist) { minDist = d; closest = i; } });
+      setTouchIdx(closest);
       setDragging(true);
     }
   };
-  const endTouch = () => { setTimeout(() => { setTouchIdx(null); setDragging(false); }, 1500); };
+  const endTouch = () => { setTimeout(() => { setTouchIdx(null); setDragging(false); }, 2000); };
 
   const tp = touchIdx !== null ? prices[touchIdx] : null;
-  const tpBand = tp ? bands[tp.band_index] : null;
-
-  // Current "You are here" point
-  const lastP = prices[prices.length - 1];
-  const hereX = toX(prices.length - 1);
-  const hereY = toY(lastP.price);
+  const tpBands = tp ? calcBands(tp.timestamp) : null;
+  const tpBandIdx = tp && tpBands ? (() => { for (let i = 0; i < tpBands.length; i++) if (tp.price < tpBands[i].high) return i; return 8; })() : 0;
 
   return (
     <View style={rbStyles.container}>
       <View style={rbStyles.header}>
         <View>
           <Text style={rbStyles.title}>Rainbow Chart BTC</Text>
-          <Text style={rbStyles.subtitle}>2010 — {new Date().getFullYear()}</Text>
+          <Text style={rbStyles.subtitle}>Logarithmic Regression 2010 — 2032</Text>
         </View>
         <View style={[rbStyles.currentBandPill, { backgroundColor: data.current_band_color + '25', borderColor: data.current_band_color + '50' }]}>
           <View style={[rbStyles.bandDot, { backgroundColor: data.current_band_color }]} />
@@ -487,56 +538,80 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
       </View>
 
       {/* Touch info */}
-      {tp && tpBand && (
+      {tp && (
         <View style={rbStyles.touchInfo}>
           <Text style={rbStyles.touchPrice}>${tp.price.toLocaleString('en-US', { maximumFractionDigits: 0 })}</Text>
-          <Text style={[rbStyles.touchBand, { color: tpBand.color }]}>{tpBand.label}</Text>
+          <Text style={[rbStyles.touchBand, { color: rainbowColors[tpBandIdx] }]}>{bands[tpBandIdx]?.label}</Text>
           <Text style={rbStyles.touchDate}>{new Date(tp.timestamp).toLocaleDateString([], { year: 'numeric', month: 'short' })}</Text>
         </View>
       )}
 
+      {/* Chart with white background */}
       <View
         style={[rbStyles.chartBox, { height: chartH }]}
         onTouchStart={handleTouch} onTouchMove={handleTouch} onTouchEnd={endTouch}
         {...(Platform.OS === 'web' ? { onMouseDown: handleTouch, onMouseMove: (e: any) => { if (dragging || e.buttons === 1) handleTouch(e); }, onMouseUp: endTouch, onMouseLeave: endTouch } : {})}
       >
         <Svg width={chartW} height={chartH}>
-          {/* Rainbow bands */}
-          {bandPaths.map((d: string, i: number) => (
-            <Path key={`band-${i}`} d={d} fill={bands[i]?.color || '#333'} opacity={0.35} />
+          {/* White background */}
+          <Rect x={padLeft} y={padTop} width={plotW} height={plotH} fill="#FAFAFA" rx={4} />
+
+          {/* Y-axis grid lines + labels */}
+          {yLabels.map(v => {
+            const y = toY(v);
+            const label = v >= 1000000 ? `$${v / 1000000}M` : v >= 1000 ? `$${(v / 1000).toFixed(0)}K` : `$${v}`;
+            return (
+              <React.Fragment key={v}>
+                <Line x1={padLeft} y1={y} x2={padLeft + plotW} y2={y} stroke="#DDD" strokeWidth={0.5} />
+                <SvgText x={padLeft + plotW + 6} y={y + 4} fill="#888" fontSize={9} fontWeight="600">{label}</SvgText>
+              </React.Fragment>
+            );
+          })}
+
+          {/* Halving vertical lines */}
+          {halvings.map((h, i) => (
+            <React.Fragment key={`h-${i}`}>
+              <Line x1={toX(h.date)} y1={padTop} x2={toX(h.date)} y2={padTop + plotH} stroke="#BBB" strokeWidth={0.5} />
+              <SvgText x={toX(h.date)} y={padTop + plotH - 4} fill="#AAA" fontSize={7} textAnchor="middle" fontWeight="500">Halving</SvgText>
+            </React.Fragment>
           ))}
 
-          {/* Price line */}
-          <Path d={priceLine} stroke="#FFFFFF" strokeWidth={2} fill="none" strokeLinejoin="round" strokeLinecap="round" />
+          {/* Rainbow bands */}
+          {bandPaths.map((d, i) => (
+            <Path key={`rb-${i}`} d={d} fill={rainbowColors[i]} opacity={0.75} />
+          ))}
 
-          {/* "You are here" indicator */}
-          <Circle cx={hereX} cy={hereY} r={8} fill={data.current_band_color} opacity={0.25} />
-          <Circle cx={hereX} cy={hereY} r={4.5} fill="#FFFFFF" stroke={data.current_band_color} strokeWidth={2} />
+          {/* BTC price line — black and bold */}
+          <Path d={priceLine} stroke="#000000" strokeWidth={2.2} fill="none" strokeLinejoin="round" strokeLinecap="round" />
+
+          {/* Year labels */}
+          {years.map(yr => (
+            <SvgText key={yr.year} x={yr.x} y={chartH - 4} fill="#888" fontSize={9} textAnchor="middle" fontWeight="600">{yr.year}</SvgText>
+          ))}
 
           {/* Crosshair (VIP) */}
           {touchIdx !== null && tp && (
             <>
-              <Line x1={toX(touchIdx)} y1={0} x2={toX(touchIdx)} y2={chartH} stroke="#FFF" strokeWidth={0.6} strokeDasharray="3,4" opacity={0.5} />
-              <Circle cx={toX(touchIdx)} cy={toY(tp.price)} r={6} fill={tpBand?.color || '#FFF'} opacity={0.3} />
-              <Circle cx={toX(touchIdx)} cy={toY(tp.price)} r={3.5} fill="#FFF" stroke={tpBand?.color || '#FFF'} strokeWidth={2} />
+              <Line x1={toX(tp.timestamp)} y1={padTop} x2={toX(tp.timestamp)} y2={padTop + plotH} stroke="#000" strokeWidth={0.8} strokeDasharray="3,3" opacity={0.6} />
+              <Circle cx={toX(tp.timestamp)} cy={toY(tp.price)} r={5} fill="#000" stroke="#FFF" strokeWidth={2} />
             </>
           )}
         </Svg>
 
-        {/* VIP Lock Overlay */}
+        {/* VIP Lock */}
         {!isVip && (
           <View style={rbStyles.lockOverlay}>
-            <Ionicons name="lock-closed" size={20} color="#FFD600" />
-            <Text style={rbStyles.lockText}>VIP: Interaction</Text>
+            <Ionicons name="lock-closed" size={16} color="#FFD600" />
+            <Text style={rbStyles.lockText}>VIP: Glissez pour explorer</Text>
           </View>
         )}
       </View>
 
       {/* Legend */}
       <View style={rbStyles.legend}>
-        {bands.map((b: any, i: number) => (
+        {bands.slice().reverse().map((b: any, i: number) => (
           <View key={i} style={rbStyles.legendItem}>
-            <View style={[rbStyles.legendDot, { backgroundColor: b.color }]} />
+            <View style={[rbStyles.legendDot, { backgroundColor: rainbowColors[8 - i] }]} />
             <Text style={rbStyles.legendLabel} numberOfLines={1}>{b.label}</Text>
           </View>
         ))}
@@ -545,37 +620,22 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
   );
 };
 
-// Helper: calculate band prices at a given timestamp (must match backend logic)
-function _calcBands(timestampMs: number) {
-  const BTC_GENESIS = 1230940800;
-  const days = Math.max(1, (timestampMs / 1000 - BTC_GENESIS) / 86400);
-  const logDays = Math.log10(days);
-  const base = 5.84 * logDays - 17.01;
-  const bw = 0.35;
-  const offset = 4.5 * bw;
-  const result: any[] = [];
-  for (let i = 0; i < 9; i++) {
-    result.push({ low: Math.pow(10, base - offset + i * bw), high: Math.pow(10, base - offset + (i + 1) * bw) });
-  }
-  return result;
-}
-
 const rbStyles = StyleSheet.create({
   container: { marginBottom: 20 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 },
   title: { fontSize: 18, fontWeight: '800', color: '#FFF', letterSpacing: -0.3 },
-  subtitle: { fontSize: 12, color: '#8B8B9E', marginTop: 2 },
-  currentBandPill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12, borderWidth: 1 },
+  subtitle: { fontSize: 11, color: '#8B8B9E', marginTop: 2 },
+  currentBandPill: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12, borderWidth: 1 },
   bandDot: { width: 8, height: 8, borderRadius: 4 },
   bandPillText: { fontSize: 11, fontWeight: '800' },
-  touchInfo: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 },
-  touchPrice: { fontSize: 18, fontWeight: '900', color: '#FFF' },
+  touchInfo: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 6 },
+  touchPrice: { fontSize: 17, fontWeight: '900', color: '#FFF' },
   touchBand: { fontSize: 12, fontWeight: '700' },
   touchDate: { fontSize: 11, color: '#8B8B9E' },
-  chartBox: { borderRadius: 14, overflow: 'hidden', backgroundColor: '#0D0D20', position: 'relative' as any },
-  lockOverlay: { position: 'absolute' as any, bottom: 10, right: 10, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10, backgroundColor: 'rgba(0,0,0,0.7)' },
-  lockText: { fontSize: 11, fontWeight: '700', color: '#FFD600' },
-  legend: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 10 },
+  chartBox: { borderRadius: 12, overflow: 'hidden', backgroundColor: '#FAFAFA', position: 'relative' as any, borderWidth: 1, borderColor: '#2A2A4E' },
+  lockOverlay: { position: 'absolute' as any, bottom: 32, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 6, backgroundColor: 'rgba(0,0,0,0.65)' },
+  lockText: { fontSize: 12, fontWeight: '700', color: '#FFD600' },
+  legend: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 8 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 6, paddingVertical: 3, borderRadius: 6, backgroundColor: 'rgba(255,255,255,0.04)' },
   legendDot: { width: 6, height: 6, borderRadius: 3 },
   legendLabel: { fontSize: 9, color: '#8B8B9E', fontWeight: '600' },
