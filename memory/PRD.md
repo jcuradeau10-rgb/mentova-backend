@@ -11,11 +11,12 @@ Build a professional mentor marketplace named "Mentova" using React Native (Expo
 
 ## Architecture
 - **Frontend**: React Native (Expo) with web export
-- **Backend**: FastAPI (monolith server.py ~12k lines, partially refactored into routes/)
+- **Backend**: FastAPI (monolith server.py, partially refactored into routes/)
 - **Database**: MongoDB Atlas (user's personal cluster)
 - **Hosting**: Netlify (web app), Render (backend), EAS (mobile OTA)
 - **AI**: LiteLLM via Emergent proxy for GPT-4o streaming
 - **Payments**: Stripe Checkout (STRIPE_SK env var)
+- **Crypto Data**: CoinGecko Pro API (ZERO user-call architecture)
 
 ## What's Been Implemented
 
@@ -34,40 +35,41 @@ Build a professional mentor marketplace named "Mentova" using React Native (Expo
 ### Notification System (DONE - June 22, 2026)
 - E2E notification flow: Action -> Backend storage -> Frontend display
 - Triggers: likes, comments, messages, reports, follows
-- Backend: send_notification_to_user() stores in MongoDB + Expo Push + WebSocket
-- Frontend: NotificationCenter with bell icon badge, modal, filters
 
 ### UI Modernization (DONE - June 24, 2026)
 - Glassmorphism design, CSS aurora background animations
-- Redesigned Home, Login, Register, Dashboard, Learn, Community, Profile
 
-### CoinGecko Global Cache (DONE - June 24, 2026)
-- apscheduler refreshes crypto prices every 40s globally
-- Avoids 100k/month API rate limit
+### CoinGecko Zero-User-Call Architecture (DONE - June 25, 2026)
+- **ALL CoinGecko API calls happen exclusively in background scheduler**
+- **User endpoints are 100% read-from-cache — ZERO API calls triggered by users**
+- Architecture:
+  - 1 global call every 120s: `coins/markets?sparkline=true` → prices + 24H/7D charts for ALL 20 coins
+  - Global stats refresh every 300s (1 call)
+  - Trending refresh every 600s (1 call)
+  - Hourly pre-fetch: 30D/90D/365D charts for all 20 coins (~60 calls/hour)
+  - Hourly Rainbow BTC chart pre-fetch (1 call)
+- Estimated budget: ~78k calls/month (well under 100k Pro limit)
+- Cold-start handling: endpoints return `success=False` + loading message until cache is warm (~90s)
+- Testing: 28/28 backend tests passed, frontend verified
 
 ### Backend Architecture Phase 1 & 2 (DONE - June 24, 2026)
 - Created deps.py for shared dependency injection
 - Extracted routes/community.py and routes/admin.py from server.py
 
 ### Atlas AI Language Bug Fix (DONE - June 25, 2026)
-- **Root cause**: ATLAS_SYSTEM_PROMPT used {language} placeholder but some endpoints didn't format it correctly. CORRECT_PROMPT.format() was missing the language parameter entirely (would cause KeyError). Frontend Lesson teach/chat and quiz correction didn't send lang parameter.
-- **Fixes applied**:
-  - Backend: All atlas endpoints (chat, chat/simple, teach, teach/chat, quiz/generate, quiz/correct) now properly inject language from lang parameter
-  - Backend: QuizAnswer model now has lang field
-  - Backend: Rate-limit messages localized (FR/EN/ES)
-  - Backend: Debug logging added (Atlas chat: lang=X, user=Y)
-  - Frontend: teach/chat and quiz/correct now send lang parameter
-  - Frontend: Error messages localized in AtlasChat
-  - Frontend: lang added to useCallback deps in sendMessage
-  - Frontend: Language switcher pill (EN/FR/ES) added to Learn tab bar - cycles languages on tap
-- **Testing**: 8/8 backend tests pass, frontend verified via testing agent
+- All atlas endpoints properly inject language parameter
 
 ### Interactive Charts Upgrade (DONE - June 25, 2026)
-- Backend uses CoinGecko Pro API for chart data (200+ data points, real prices)
 - Smooth drag interaction with crosshair, glow effect, floating price/date labels
-- X-axis and Y-axis labels, volume bars with highlight on hover
 - Period selector (24H, 7J, 30J, 90J, 1A)
-- Precise price formatting ($X,XXX.XX for large, $X.XXXXXX for small)
+
+### Rainbow BTC Chart (DONE - June 25, 2026)
+- 10-band classic log-regression chart with VIP-only interactivity
+- Collapsible UI, calibrated regression ($60K BTC = "Basically a Fire Sale" band)
+
+### Super Admin Analytics (DONE - June 25, 2026)
+- Live dashboard tracking active users, CoinGecko API budget, endpoints
+- MongoDB persistence to survive Render reboots
 
 ## Pending Tasks
 
@@ -86,17 +88,14 @@ Build a professional mentor marketplace named "Mentova" using React Native (Expo
 ## Backlog
 - (P3) reCAPTCHA on auth forms
 - (P3) Split translations.ts by feature
-- (P3) Localize notification template strings (currently French-only titles/bodies)
+- (P3) Localize notification template strings
 
 ## Key API Endpoints
 - POST /api/auth/login -> {access_token, user}
-- POST /api/atlas/chat -> streaming chat with lang support
-- POST /api/atlas/chat/simple -> non-streaming chat with lang support
-- POST /api/atlas/teach -> streaming lesson with lang support
-- POST /api/atlas/teach/chat -> lesson Q&A with lang support
-- POST /api/atlas/quiz/generate -> quiz generation with lang support
-- POST /api/atlas/quiz/correct -> quiz correction with lang support
-- GET /api/atlas/curriculum?lang=X -> curriculum in specified language
-- GET /api/crypto/prices -> cached crypto prices
-- GET /api/notifications/history -> notification list
-- POST /api/community/posts/{id}/like -> triggers notification
+- GET /api/crypto/prices -> cached prices (20 coins, refreshed every 120s)
+- GET /api/crypto/chart/{coin_id}?days={1,7,30,90,365} -> read-only from cache
+- GET /api/crypto/rainbow -> read-only from cache (pre-fetched hourly)
+- GET /api/crypto/global -> cached global stats
+- GET /api/crypto/trending -> cached trending coins
+- GET /api/admin/analytics/realtime -> live dashboard data
+- GET /api/news -> translated live RSS

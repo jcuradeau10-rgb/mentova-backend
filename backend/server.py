@@ -1103,10 +1103,9 @@ async def get_crypto_chart(coin_id: str, days: str = "7"):
     valid_days = {"1": 1, "7": 7, "30": 30, "90": 90, "365": 365}
     num_days = valid_days.get(days, 7)
     cache_key = f"{coin_id}:{num_days}"
-    if cache_key in _chart_cache:
+    if cache_key in _chart_cache and _chart_cache[cache_key]["data"].get("data"):
         return _chart_cache[cache_key]["data"]
-    # Cache not ready yet (scheduler hasn't run for this combo)
-    return {"success": True, "data": [], "coin_id": coin_id, "days": num_days, "cache_pending": True}
+    return {"success": False, "error": "Chart loading — please retry in a moment", "data": [], "coin_id": coin_id, "days": num_days}
 
 # ==================== RAINBOW BTC CHART ====================
 import math
