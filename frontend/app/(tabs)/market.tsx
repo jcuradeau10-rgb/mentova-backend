@@ -408,12 +408,12 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
   const [loading, setLoading] = useState(true);
   const [touchIdx, setTouchIdx] = useState<number | null>(null);
   const [dragging, setDragging] = useState(false);
-  const chartW = width - 16;
-  const chartH = 340;
-  const padLeft = 0;
-  const padRight = 4;
-  const padTop = 8;
-  const padBot = 32;
+  const chartW = width - 12;
+  const chartH = 360;
+  const padLeft = 2;
+  const padRight = 2;
+  const padTop = 6;
+  const padBot = 26;
   const plotW = chartW - padLeft - padRight;
   const plotH = chartH - padTop - padBot;
 
@@ -449,9 +449,9 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
   const endTs = new Date(2033, 0, 1).getTime(); // extend to 2033
   const tsRange = endTs - startTs;
 
-  // Log Y range: $1 to $2,000,000
-  const logMin = 0; // log10(1) = 0
-  const logMax = 6.3; // log10(2,000,000) ≈ 6.3
+  // Log Y range: $10 to $10,000,000 for full rainbow visibility
+  const logMin = 1; // log10(10)
+  const logMax = 7; // log10(10,000,000)
   const logRange = logMax - logMin;
 
   const toX = (ts: number) => padLeft + ((ts - startTs) / tsRange) * plotW;
@@ -478,9 +478,9 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
     timeSamples.push(startTs + (tsRange * i) / sampleCount);
   }
 
-  // Classic rainbow colors (bottom to top): dark blue → purple → blue → teal → green → yellow → orange → dark orange → red
-  const rainbowColors = ['#6A1B9A', '#283593', '#0277BD', '#00838F', '#2E7D32', '#F9A825', '#FF8F00', '#D84315', '#B71C1C'];
-  const bandLabels = ['Fire Sale', 'BUY!', 'Accumulate', 'Still Cheap', 'HODL!', 'Is this a bubble?', 'FOMO intensifies', 'Sell. Seriously, SELL!', 'Maximum Bubble'];
+  // Classic rainbow colors matching reference exactly (bottom to top)
+  const rainbowColors = ['#311B92', '#1A237E', '#0D47A1', '#006064', '#1B5E20', '#F57F17', '#E65100', '#BF360C', '#B71C1C'];
+  const bandLabels = ['Basically a Fire Sale', 'BUY!', 'Accumulate', 'Still Cheap', 'HODL!', 'Is this a bubble?', 'FOMO intensifies', 'Sell. Seriously, SELL!', 'Maximum Bubble Territory'];
 
   // Build band paths
   const bandPaths = rainbowColors.map((_, bandIdx) => {
@@ -576,15 +576,22 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
           {/* White chart background */}
           <Rect x={padLeft} y={padTop} width={plotW} height={plotH} fill="#FFFFFF" />
 
-          {/* Faint horizontal grid lines */}
+          {/* Faint horizontal grid lines + Y-axis labels with background pill */}
           {yLabels.map(v => {
             const y = toY(v);
-            return <Line key={`g-${v}`} x1={padLeft} y1={y} x2={padLeft + plotW} y2={y} stroke="#E8E8E8" strokeWidth={0.5} />;
+            const label = v >= 1000000 ? '$1M' : v >= 100000 ? '$100K' : v >= 10000 ? '$10K' : v >= 1000 ? `$${(v/1000).toFixed(0)}K` : `$${v}`;
+            return (
+              <React.Fragment key={`g-${v}`}>
+                <Line x1={padLeft} y1={y} x2={padLeft + plotW} y2={y} stroke="#D0D0D0" strokeWidth={0.4} />
+                <Rect x={plotW - 42} y={y - 8} width={40} height={15} rx={3} fill="rgba(255,255,255,0.85)" />
+                <SvgText x={plotW - 22} y={y + 3} fill="#555" fontSize={9} textAnchor="middle" fontWeight="700">{label}</SvgText>
+              </React.Fragment>
+            );
           })}
 
-          {/* Rainbow bands — fully opaque for vibrant color */}
+          {/* Rainbow bands — full opacity, vibrant */}
           {bandPaths.map((d, i) => (
-            <Path key={`rb-${i}`} d={d} fill={rainbowColors[i]} opacity={0.85} />
+            <Path key={`rb-${i}`} d={d} fill={rainbowColors[i]} opacity={0.9} />
           ))}
 
           {/* Halving vertical lines + labels */}
@@ -592,43 +599,62 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
             const hx = toX(h.date);
             return (
               <React.Fragment key={`hv-${i}`}>
-                <Line x1={hx} y1={padTop} x2={hx} y2={padTop + plotH} stroke="#999" strokeWidth={0.5} strokeDasharray="4,4" />
-                <SvgText x={hx} y={padTop + plotH + 12} fill="#999" fontSize={7} textAnchor="middle" fontWeight="500">Halving</SvgText>
+                <Line x1={hx} y1={padTop} x2={hx} y2={padTop + plotH} stroke="rgba(0,0,0,0.25)" strokeWidth={1} strokeDasharray="6,4" />
+                <Rect x={hx - 20} y={padTop + plotH - 18} width={40} height={14} rx={2} fill="rgba(255,255,255,0.8)" />
+                <SvgText x={hx} y={padTop + plotH - 8} fill="#555" fontSize={8} textAnchor="middle" fontWeight="600">Halving</SvgText>
               </React.Fragment>
             );
           })}
 
-          {/* BTC price line — bold black */}
+          {/* BTC price line — bold black with slight shadow effect */}
+          <Path d={priceLine} stroke="rgba(0,0,0,0.2)" strokeWidth={4} fill="none" strokeLinejoin="round" strokeLinecap="round" />
           <Path d={priceLine} stroke="#000000" strokeWidth={2.5} fill="none" strokeLinejoin="round" strokeLinecap="round" />
 
-          {/* Y-axis labels (right side) */}
-          {yLabels.map(v => {
-            const y = toY(v);
-            const label = v >= 1000000 ? '$1M' : v >= 100000 ? '$100K' : v >= 10000 ? '$10K' : v >= 1000 ? `$${(v/1000).toFixed(0)}K` : `$${v}`;
-            return <SvgText key={`yl-${v}`} x={plotW - 4} y={y - 3} fill="#666" fontSize={8} textAnchor="end" fontWeight="600">{label}</SvgText>;
-          })}
-
-          {/* Band labels on right edge — inside the bands */}
+          {/* Band labels — inside the bands at the right edge, with background */}
           {bandLabels.map((label, i) => {
             const lastTs = timeSamples[timeSamples.length - 1];
             const bds = calcBands(lastTs);
-            const midLog = (Math.log10(Math.max(1, bds[i].low)) + Math.log10(Math.max(1, bds[i].high))) / 2;
+            const midLog = (Math.log10(Math.max(10, bds[i].low)) + Math.log10(Math.max(10, bds[i].high))) / 2;
             const yPos = padTop + plotH - ((midLog - logMin) / logRange) * plotH;
-            if (yPos < padTop + 4 || yPos > padTop + plotH - 4) return null;
-            return <SvgText key={`bl-${i}`} x={plotW - 6} y={yPos + 3} fill="#FFF" fontSize={6.5} textAnchor="end" fontWeight="700" opacity={0.9}>{label}</SvgText>;
+            if (yPos < padTop + 6 || yPos > padTop + plotH - 6) return null;
+            const textW = label.length * 4.5 + 8;
+            return (
+              <React.Fragment key={`bl-${i}`}>
+                <Rect x={plotW - textW - 4} y={yPos - 6} width={textW} height={12} rx={2} fill="rgba(0,0,0,0.35)" />
+                <SvgText x={plotW - 8} y={yPos + 3} fill="#FFFFFF" fontSize={7} textAnchor="end" fontWeight="700">{label}</SvgText>
+              </React.Fragment>
+            );
           })}
 
-          {/* Year labels (bottom) */}
+          {/* "YOU ARE HERE" marker — arrow pointing to current price */}
+          {(() => {
+            const lastP = prices[prices.length - 1];
+            const hereX = toX(lastP.timestamp);
+            const hereY = toY(lastP.price);
+            return (
+              <>
+                <Circle cx={hereX} cy={hereY} r={8} fill="rgba(255,255,255,0.6)" />
+                <Circle cx={hereX} cy={hereY} r={5} fill="#FFFFFF" stroke="#000" strokeWidth={2.5} />
+                <Rect x={hereX - 45} y={hereY - 22} width={90} height={16} rx={4} fill="rgba(0,0,0,0.75)" />
+                <SvgText x={hereX} y={hereY - 10} fill="#FFD600" fontSize={8} textAnchor="middle" fontWeight="800">YOU ARE HERE</SvgText>
+              </>
+            );
+          })()}
+
+          {/* Year labels (bottom, angled) */}
           {years.map(yr => (
-            <SvgText key={yr.year} x={yr.x} y={chartH - 4} fill="#888" fontSize={8} textAnchor="middle" fontWeight="600" transform={`rotate(-30, ${yr.x}, ${chartH - 4})`}>{yr.year}</SvgText>
+            <SvgText key={yr.year} x={yr.x} y={chartH - 3} fill="#777" fontSize={9} textAnchor="middle" fontWeight="700" transform={`rotate(-25, ${yr.x}, ${chartH - 3})`}>{yr.year}</SvgText>
           ))}
 
           {/* Crosshair (VIP interactive) */}
           {touchIdx !== null && tp && (
             <>
-              <Line x1={toX(tp.timestamp)} y1={padTop} x2={toX(tp.timestamp)} y2={padTop + plotH} stroke="#000" strokeWidth={0.8} strokeDasharray="3,3" opacity={0.6} />
-              <Line x1={padLeft} y1={toY(tp.price)} x2={padLeft + plotW} y2={toY(tp.price)} stroke="#000" strokeWidth={0.4} strokeDasharray="2,4" opacity={0.3} />
-              <Circle cx={toX(tp.timestamp)} cy={toY(tp.price)} r={6} fill="#000" stroke="#FFF" strokeWidth={2.5} />
+              <Line x1={toX(tp.timestamp)} y1={padTop} x2={toX(tp.timestamp)} y2={padTop + plotH} stroke="#000" strokeWidth={1} strokeDasharray="4,3" opacity={0.5} />
+              <Line x1={padLeft} y1={toY(tp.price)} x2={padLeft + plotW} y2={toY(tp.price)} stroke="#000" strokeWidth={0.5} strokeDasharray="3,4" opacity={0.3} />
+              <Circle cx={toX(tp.timestamp)} cy={toY(tp.price)} r={7} fill={rainbowColors[tpBandIdx]} opacity={0.3} />
+              <Circle cx={toX(tp.timestamp)} cy={toY(tp.price)} r={4.5} fill="#FFF" stroke="#000" strokeWidth={2.5} />
+              <Rect x={toX(tp.timestamp) - 35} y={toY(tp.price) - 22} width={70} height={16} rx={4} fill="rgba(0,0,0,0.8)" />
+              <SvgText x={toX(tp.timestamp)} y={toY(tp.price) - 10} fill="#FFF" fontSize={8} textAnchor="middle" fontWeight="700">${tp.price >= 1000 ? `${(tp.price/1000).toFixed(1)}K` : tp.price.toFixed(0)}</SvgText>
             </>
           )}
         </Svg>
