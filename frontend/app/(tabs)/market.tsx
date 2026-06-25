@@ -479,8 +479,8 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
   }
 
   // Classic rainbow colors matching reference exactly (bottom to top)
-  const rainbowColors = ['#311B92', '#1A237E', '#0D47A1', '#006064', '#1B5E20', '#F57F17', '#E65100', '#BF360C', '#B71C1C'];
-  const bandLabels = ['Basically a Fire Sale', 'BUY!', 'Accumulate', 'Still Cheap', 'HODL!', 'Is this a bubble?', 'FOMO intensifies', 'Sell. Seriously, SELL!', 'Maximum Bubble Territory'];
+  const rainbowColors = ['#4A148C', '#311B92', '#1A237E', '#0D47A1', '#00695C', '#2E7D32', '#F9A825', '#FF8F00', '#E65100', '#B71C1C'];
+  const bandLabels = ['Bitcoin is Dead', 'Basically a Fire Sale', 'BUY!', 'Accumulate', 'Still Cheap', 'HODL!', 'Is this a bubble?', 'FOMO intensifies', 'Sell. Seriously, SELL!', 'Maximum Bubble Territory'];
 
   // Build band paths
   const bandPaths = rainbowColors.map((_, bandIdx) => {
@@ -672,7 +672,7 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
       <View style={rbStyles.legend}>
         {bandLabels.slice().reverse().map((label, i) => (
           <View key={i} style={rbStyles.legendItem}>
-            <View style={[rbStyles.legendDot, { backgroundColor: rainbowColors[8 - i] }]} />
+            <View style={[rbStyles.legendDot, { backgroundColor: rainbowColors[9 - i] }]} />
             <Text style={rbStyles.legendLabel} numberOfLines={1}>{label}</Text>
           </View>
         ))}

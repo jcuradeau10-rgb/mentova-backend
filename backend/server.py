@@ -1001,34 +1001,34 @@ import math
 
 # Rainbow band definitions (bottom to top)
 RAINBOW_BANDS = [
-    {"label": "Fire Sale", "color": "#4A0080"},
-    {"label": "BUY!", "color": "#6236FF"},
-    {"label": "Accumulate", "color": "#3D85C6"},
-    {"label": "Still Cheap", "color": "#00BCD4"},
-    {"label": "HODL!", "color": "#4CAF50"},
-    {"label": "Is this a bubble?", "color": "#8BC34A"},
-    {"label": "FOMO Intensifies", "color": "#FFD600"},
-    {"label": "Sell. Seriously, SELL!", "color": "#FF9800"},
-    {"label": "Maximum Bubble", "color": "#F44336"},
+    {"label": "Bitcoin is Dead", "color": "#4A148C"},
+    {"label": "Basically a Fire Sale", "color": "#311B92"},
+    {"label": "BUY!", "color": "#1A237E"},
+    {"label": "Accumulate", "color": "#0D47A1"},
+    {"label": "Still Cheap", "color": "#00695C"},
+    {"label": "HODL!", "color": "#2E7D32"},
+    {"label": "Is this a bubble?", "color": "#F9A825"},
+    {"label": "FOMO Intensifies", "color": "#FF8F00"},
+    {"label": "Sell. Seriously, SELL!", "color": "#E65100"},
+    {"label": "Maximum Bubble Territory", "color": "#B71C1C"},
 ]
 
 # Bitcoin genesis block: Jan 3, 2009
 BTC_GENESIS_TS = 1230940800  # epoch seconds
 
 def _rainbow_band_prices(timestamp_ms: int) -> list:
-    """Calculate the rainbow band price boundaries at a given timestamp using log regression."""
+    """Calculate the rainbow band price boundaries using calibrated log regression."""
     days_since_genesis = max(1, (timestamp_ms / 1000 - BTC_GENESIS_TS) / 86400)
     log_days = math.log10(days_since_genesis)
     
-    # Power-law regression: log10(price) = a * log10(days) + b
-    a = 5.84
-    b = -17.01
+    # Calibrated: BTC $60K in 2026 = band 1 "Fire Sale", $20K 2017 peak = band 8 "Sell"
+    a = 5.353
+    b = -14.972
     base_log_price = a * log_days + b
     
-    # Each band spans 0.35 in log10 space (factor of ~2.24x between bands)
-    # Center the 9 bands around the regression line
-    band_width = 0.35
-    center_offset = 4.5 * band_width  # shift so regression is center of band 4-5
+    # 10 bands, each 0.18 in log10 space
+    band_width = 0.18
+    center_offset = 5.0 * band_width  # center for 10 bands
     
     bands = []
     for i in range(len(RAINBOW_BANDS)):
