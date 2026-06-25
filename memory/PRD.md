@@ -59,6 +59,7 @@ Build a professional mentor marketplace named "Mentova" using React Native (Expo
   - Frontend: teach/chat and quiz/correct now send lang parameter
   - Frontend: Error messages localized in AtlasChat
   - Frontend: lang added to useCallback deps in sendMessage
+  - Frontend: Language switcher pill (EN/FR/ES) added to Learn tab bar - cycles languages on tap
 - **Testing**: 8/8 backend tests pass, frontend verified via testing agent
 
 ## Pending Tasks

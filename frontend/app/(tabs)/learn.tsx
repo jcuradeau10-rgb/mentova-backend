@@ -562,7 +562,7 @@ function AtlasChat({ lang, t }: { lang: string; t: (key: string) => string }) {
 
 // ============ MAIN LEARN SCREEN ============
 export default function LearnScreen() {
-  const { t, language } = useTranslation();
+  const { t, language, setLanguage } = useTranslation();
   const { user, token } = useAuthStore();
   const userId = user?.id || user?.user_id || 'anonymous';
   const lang = language || 'en';
@@ -659,31 +659,32 @@ export default function LearnScreen() {
   const parcoursLabel = lang === 'fr' ? 'Mon Parcours' : lang === 'es' ? 'Mi Camino' : 'My Path';
   const chatLabel = lang === 'fr' ? 'Chat Atlas' : 'Atlas Chat';
 
+  const langFlags: Record<string, string> = { fr: 'FR', en: 'EN', es: 'ES' };
+  const langColors: Record<string, string> = { fr: '#3B82F6', en: '#10B981', es: '#F59E0B' };
+  const langCycle = ['en', 'fr', 'es'] as const;
+  const cycleLang = () => {
+    const idx = langCycle.indexOf(lang as any);
+    const next = langCycle[(idx + 1) % langCycle.length];
+    setLanguage(next);
+  };
+
   return (
     <SafeAreaView style={s.safe}>
-      {/* Atlas Header */}
-      <View style={s.atlasHeader}>
-        <View style={s.atlasHeaderLeft}>
-          <LinearGradient colors={['#7C3AED', '#5B21B6']} style={s.atlasLogo}>
-            <Ionicons name="planet" size={20} color="#FFF" />
-          </LinearGradient>
-          <View>
-            <Text style={s.atlasTitle}>Atlas</Text>
-            <Text style={s.atlasSubtitle}>{isVip ? 'VIP Unlimited' : `${msgRemaining} msg`}</Text>
-          </View>
-        </View>
-        {isVip && <View style={s.vipPill}><Ionicons name="diamond" size={12} color="#FFD700" /><Text style={s.vipPillText}>VIP</Text></View>}
-      </View>
-
-      {/* Tab Switcher */}
+      {/* Tab Switcher with Language Indicator */}
       <View style={s.tabBar}>
-        <TouchableOpacity style={[s.tabBtn, tab === 'parcours' && s.tabActive]} onPress={() => { setTab('parcours'); setViewMode('curriculum'); }} data-testid="tab-parcours">
-          <Ionicons name="map" size={18} color={tab === 'parcours' ? '#7C3AED' : '#666'} />
-          <Text style={[s.tabText, tab === 'parcours' && s.tabTextActive]}>{parcoursLabel}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[s.tabBtn, tab === 'chat' && s.tabActive]} onPress={() => setTab('chat')} data-testid="tab-chat">
-          <Ionicons name="chatbubbles" size={18} color={tab === 'chat' ? '#7C3AED' : '#666'} />
-          <Text style={[s.tabText, tab === 'chat' && s.tabTextActive]}>{chatLabel}</Text>
+        <View style={s.tabBtnGroup}>
+          <TouchableOpacity style={[s.tabBtn, tab === 'parcours' && s.tabActive]} onPress={() => { setTab('parcours'); setViewMode('curriculum'); }} data-testid="tab-parcours">
+            <Ionicons name="map" size={18} color={tab === 'parcours' ? '#7C3AED' : '#666'} />
+            <Text style={[s.tabText, tab === 'parcours' && s.tabTextActive]}>{parcoursLabel}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[s.tabBtn, tab === 'chat' && s.tabActive]} onPress={() => setTab('chat')} data-testid="tab-chat">
+            <Ionicons name="chatbubbles" size={18} color={tab === 'chat' ? '#7C3AED' : '#666'} />
+            <Text style={[s.tabText, tab === 'chat' && s.tabTextActive]}>{chatLabel}</Text>
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity style={[s.langPill, { backgroundColor: (langColors[lang] || '#10B981') + '18', borderColor: (langColors[lang] || '#10B981') + '50' }]} onPress={cycleLang} data-testid="atlas-lang-switcher">
+          <Ionicons name="globe-outline" size={15} color={langColors[lang] || '#10B981'} />
+          <Text style={[s.langPillText, { color: langColors[lang] || '#10B981' }]}>{langFlags[lang] || 'EN'}</Text>
         </TouchableOpacity>
       </View>
 
@@ -717,9 +718,10 @@ const s = StyleSheet.create({
   atlasLogo: { width: 40, height: 40, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   atlasTitle: { fontSize: 20, fontWeight: '900', color: '#FFF', letterSpacing: -0.5 },
   atlasSubtitle: { fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: '600' },
-  vipPill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20, backgroundColor: 'rgba(255,215,0,0.1)', borderWidth: 1, borderColor: 'rgba(255,215,0,0.2)' },
-  vipPillText: { fontSize: 11, fontWeight: '800', color: '#FFD700' },
-  tabBar: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, paddingVertical: 10, backgroundColor: 'rgba(255,255,255,0.02)' },
+  langPill: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 1 },
+  langPillText: { fontSize: 14, fontWeight: '800', letterSpacing: 0.5 },
+  tabBar: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 10, backgroundColor: 'rgba(255,255,255,0.02)' },
+  tabBtnGroup: { flex: 1, flexDirection: 'row', gap: 8 },
   tabBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 12, borderRadius: 14, backgroundColor: 'transparent', borderWidth: 1, borderColor: 'transparent' },
   tabActive: { backgroundColor: 'rgba(124,58,237,0.12)', borderColor: 'rgba(124,58,237,0.25)' },
   tabText: { fontSize: 14, fontWeight: '700', color: 'rgba(255,255,255,0.35)' },
