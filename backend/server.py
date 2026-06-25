@@ -1971,6 +1971,9 @@ async def get_financial_news(
             q_lower = query.lower()
             news = [n for n in news if q_lower in n.get("title", "").lower() or q_lower in n.get("summary", "").lower()]
         paginated = news[skip:skip + limit]
+        # Translate if needed
+        if lang and lang != "en":
+            paginated = await translate_news_articles(paginated, lang)
         return {
             "success": True,
             "data": paginated,
