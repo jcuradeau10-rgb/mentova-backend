@@ -11,7 +11,7 @@ Build a professional mentor marketplace named "Mentova" using React Native (Expo
 
 ## Architecture
 - **Frontend**: React Native (Expo) with web export
-- **Backend**: FastAPI (monolith server.py ~13k lines)
+- **Backend**: FastAPI (monolith server.py ~12k lines, partially refactored into routes/)
 - **Database**: MongoDB Atlas (user's personal cluster)
 - **Hosting**: Netlify (web app), Render (backend), EAS (mobile OTA)
 - **AI**: LiteLLM via Emergent proxy for GPT-4o streaming
@@ -32,52 +32,63 @@ Build a professional mentor marketplace named "Mentova" using React Native (Expo
 - Price alerts and crypto tools
 
 ### Notification System (DONE - June 22, 2026)
-- **End-to-end notification flow**: Action -> Backend storage -> Frontend display
-- **Triggers implemented**:
-  - Community post likes -> notify post author (type: post_like)
-  - Community post comments -> notify post author (type: post_comment)
-  - Direct messages -> notify recipient (type: new_message)
-  - Post reports -> notify all admins (type: admin_report)
-  - User follows -> notify followed user (type: follow)
-  - VIP social likes/comments -> already existed
-  - Story reactions -> already existed
-  - Booking events -> already existed
-  - Pro application approval/rejection -> already existed
-  - Price alerts -> already existed
-- **Backend**: `send_notification_to_user()` stores in MongoDB + sends via Expo Push + WebSocket
-- **Frontend**: NotificationCenter component with bell icon badge, modal, filters (All, Unread, Messages, Alerts, Social, Likes, Badges), mark all read
-- **Removed duplicate/broken endpoints**: Cleaned up conflicting `/notifications` and `/notifications/read` endpoints that used wrong field name (`read` vs `is_read`)
+- E2E notification flow: Action -> Backend storage -> Frontend display
+- Triggers: likes, comments, messages, reports, follows
+- Backend: send_notification_to_user() stores in MongoDB + Expo Push + WebSocket
+- Frontend: NotificationCenter with bell icon badge, modal, filters
+
+### UI Modernization (DONE - June 24, 2026)
+- Glassmorphism design, CSS aurora background animations
+- Redesigned Home, Login, Register, Dashboard, Learn, Community, Profile
+
+### CoinGecko Global Cache (DONE - June 24, 2026)
+- apscheduler refreshes crypto prices every 40s globally
+- Avoids 100k/month API rate limit
+
+### Backend Architecture Phase 1 & 2 (DONE - June 24, 2026)
+- Created deps.py for shared dependency injection
+- Extracted routes/community.py and routes/admin.py from server.py
+
+### Atlas AI Language Bug Fix (DONE - June 25, 2026)
+- **Root cause**: ATLAS_SYSTEM_PROMPT used {language} placeholder but some endpoints didn't format it correctly. CORRECT_PROMPT.format() was missing the language parameter entirely (would cause KeyError). Frontend Lesson teach/chat and quiz correction didn't send lang parameter.
+- **Fixes applied**:
+  - Backend: All atlas endpoints (chat, chat/simple, teach, teach/chat, quiz/generate, quiz/correct) now properly inject language from lang parameter
+  - Backend: QuizAnswer model now has lang field
+  - Backend: Rate-limit messages localized (FR/EN/ES)
+  - Backend: Debug logging added (Atlas chat: lang=X, user=Y)
+  - Frontend: teach/chat and quiz/correct now send lang parameter
+  - Frontend: Error messages localized in AtlasChat
+  - Frontend: lang added to useCallback deps in sendMessage
+- **Testing**: 8/8 backend tests pass, frontend verified via testing agent
 
 ## Pending Tasks
 
 ### P2 - Web App Desktop Responsiveness
 - Rethink responsive grids and max-widths for desktop
+- Status: NOT STARTED (recurring issue)
+
+### P2 - Refactor server.py
+- Remaining routes to extract: Auth, Pro Dashboard, VIP, Crypto, Messages
+- Status: IN PROGRESS (community.py and admin.py done)
+
+### P2 - Technical Indicators for VIP Crypto Charts
+- Add RSI, Bollinger Bands to interactive charts
 - Status: NOT STARTED
 
-### Static Marketing Site Redesign (DONE - June 22, 2026)
-- Complete redesign of `/app/static-site/index.html`
-- Swiss high-contrast dark theme (Unbounded + Chivo fonts, yellow #FACC15 CTAs)
-- Glass header, kinetic marquee, bento grid features, AI terminal mockup
-- Tracing beam border on VIP pricing card
-- Registration form connected to Render API
-- Mobile responsive, scroll entrance animations
-- All existing JS logic preserved (countdown, spots, form submission, FAQ)
-- Deploy to Netlify: `cd /app/static-site && netlify deploy --prod --dir=.`
-
 ## Backlog
-- (P2) Refactor server.py into separate router files
-- (P2) Technical indicators (RSI, Bollinger) for VIP crypto charts
 - (P3) reCAPTCHA on auth forms
 - (P3) Split translations.ts by feature
 - (P3) Localize notification template strings (currently French-only titles/bodies)
-- (P3) Convert data-testid to testID for React Native Web compatibility
 
 ## Key API Endpoints
 - POST /api/auth/login -> {access_token, user}
-- GET /api/notifications/history -> {success, data: [...]}
-- POST /api/notifications/mark-read -> marks all or specific as read
-- POST /api/community/posts/{id}/like -> triggers post_like notification
-- POST /api/community/posts/{id}/comments -> triggers post_comment notification
-- POST /api/messages/{user_id} -> triggers new_message notification
-- POST /api/community/posts/{id}/report -> triggers admin_report notification
-- POST /api/users/{user_id}/follow -> toggle follow, triggers follow notification
+- POST /api/atlas/chat -> streaming chat with lang support
+- POST /api/atlas/chat/simple -> non-streaming chat with lang support
+- POST /api/atlas/teach -> streaming lesson with lang support
+- POST /api/atlas/teach/chat -> lesson Q&A with lang support
+- POST /api/atlas/quiz/generate -> quiz generation with lang support
+- POST /api/atlas/quiz/correct -> quiz correction with lang support
+- GET /api/atlas/curriculum?lang=X -> curriculum in specified language
+- GET /api/crypto/prices -> cached crypto prices
+- GET /api/notifications/history -> notification list
+- POST /api/community/posts/{id}/like -> triggers notification
