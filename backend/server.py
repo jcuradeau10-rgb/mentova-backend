@@ -126,19 +126,37 @@ FREE_AI_QUESTIONS_PER_DAY = 5  # Non-VIP limit
 RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY', '6LejZ4csAAAAAKcjjyurS23lOeICBqIqAp4jZ9mQ')
 RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY', '6LejZ4csAAAAAOhuqKb2Xesso7dU0__VyTFC5bhC')
 
-# ==================== COINGECKO GLOBAL CACHE ====================
+# ==================== COINGECKO GLOBAL CACHE (ZERO USER CALLS) ====================
+# ALL CoinGecko calls happen ONLY in the background scheduler.
+# User endpoints are 100% read-from-cache. No user action ever triggers an API call.
 COINGECKO_API_KEY = os.environ.get('COINGECKO_API_KEY', '')
 COINGECKO_BASE_URL = "https://pro-api.coingecko.com/api/v3" if COINGECKO_API_KEY else "https://api.coingecko.com/api/v3"
-COINGECKO_CACHE_TTL = 120  # 2 minutes between cache refreshes (~64,800 calls/month for 3 endpoints)
+
+# TTLs — controls how often the scheduler refreshes each data type
+PRICES_SPARKLINE_TTL = 120   # 2 min  — 1 call gets prices + 7-day sparklines for ALL coins
+GLOBAL_TTL = 300             # 5 min
+TRENDING_TTL = 600           # 10 min
+LONG_CHART_TTL = 3600        # 1 hour — for 30D, 90D, 365D detailed charts
+RAINBOW_TTL = 3600           # 1 hour
 
 _cg_cache = {
-    "prices": {"data": None, "last_fetch": 0},
+    "prices": {"data": None, "sparklines": {}, "last_fetch": 0},
     "global": {"data": None, "last_fetch": 0},
     "trending": {"data": None, "last_fetch": 0},
 }
 _cg_lock = asyncio.Lock()
 
+# Pre-fetched detailed chart cache: {"coin_id:days" -> {"data": {...}, "ts": float}}
+_chart_cache: Dict[str, Any] = {}
+
+# Rainbow cache
+_rainbow_cache: Dict[str, Any] = {"data": None, "fetched_at": 0}
+
+# Periods to pre-fetch (these need individual API calls per coin)
+PREFETCH_LONG_PERIODS = [30, 90, 365]
+
 async def _fetch_coingecko(endpoint: str, params: dict = None) -> dict | None:
+    """Single CoinGecko API call — only called by the scheduler, never by user endpoints."""
     headers = {}
     if COINGECKO_API_KEY:
         headers["x-cg-pro-api-key"] = COINGECKO_API_KEY
@@ -148,9 +166,8 @@ async def _fetch_coingecko(endpoint: str, params: dict = None) -> dict | None:
                 f"{COINGECKO_BASE_URL}/{endpoint}",
                 params=params or {},
                 headers=headers,
-                timeout=12.0,
+                timeout=15.0,
             )
-            # Track CoinGecko API call for analytics
             track_coingecko_call()
             if resp.status_code == 200:
                 return resp.json()
@@ -159,45 +176,207 @@ async def _fetch_coingecko(endpoint: str, params: dict = None) -> dict | None:
         logger.error(f"CoinGecko fetch error ({endpoint}): {e}")
     return None
 
-async def _refresh_cache():
+def _sparkline_to_chart(sparkline_prices: list, days: int) -> list:
+    """Convert sparkline price array (168 hourly points over 7 days) into chart data."""
+    total = len(sparkline_prices)
+    if total == 0:
+        return []
+    now_ms = int(time.time() * 1000)
+    interval_ms = (7 * 24 * 3600 * 1000) // total  # ~1 hour per point
+    if days <= 1:
+        points_24h = max(1, total // 7)  # ~24 points
+        subset = sparkline_prices[-points_24h:]
+        start_ms = now_ms - len(subset) * interval_ms
+    else:
+        subset = sparkline_prices
+        start_ms = now_ms - total * interval_ms
+    return [
+        {
+            "timestamp": start_ms + i * interval_ms,
+            "price": round(p, 2) if p >= 1 else round(p, 6),
+            "volume": 0,
+        }
+        for i, p in enumerate(subset)
+    ]
+
+async def _refresh_prices_and_sparklines():
+    """ONE call → prices + 7-day sparklines for all top 20 coins."""
     now = time.time()
+    if now - _cg_cache["prices"]["last_fetch"] < PRICES_SPARKLINE_TTL:
+        return
+    data = await _fetch_coingecko("coins/markets", {
+        "vs_currency": "usd",
+        "order": "market_cap_desc",
+        "per_page": 20,
+        "page": 1,
+        "sparkline": "true",
+        "price_change_percentage": "24h,7d",
+    })
+    if not data:
+        return
+    sparklines = {}
+    for coin in data:
+        cid = coin.get("id")
+        sl = coin.get("sparkline_in_7d", {}).get("price", [])
+        if sl and cid:
+            sparklines[cid] = sl
+        coin.pop("sparkline_in_7d", None)  # keep price payload clean
     async with _cg_lock:
-        # Prices
-        if now - _cg_cache["prices"]["last_fetch"] >= COINGECKO_CACHE_TTL:
-            data = await _fetch_coingecko("coins/markets", {
-                "vs_currency": "usd",
-                "order": "market_cap_desc",
-                "per_page": 20,
-                "page": 1,
-                "sparkline": "false",
-                "price_change_percentage": "24h,7d",
+        _cg_cache["prices"]["data"] = data
+        _cg_cache["prices"]["sparklines"] = sparklines
+        _cg_cache["prices"]["last_fetch"] = now
+    # Pre-build 1d and 7d chart cache from sparklines
+    for cid, sl in sparklines.items():
+        for d in (1, 7):
+            key = f"{cid}:{d}"
+            chart_data = _sparkline_to_chart(sl, d)
+            if chart_data:
+                _chart_cache[key] = {
+                    "data": {"success": True, "data": chart_data, "coin_id": cid, "days": d},
+                    "ts": now,
+                }
+    logger.info(f"Global cache refreshed: {len(data)} coins, {len(sparklines)} sparklines → 24H/7D charts built")
+
+async def _refresh_global():
+    now = time.time()
+    if now - _cg_cache["global"]["last_fetch"] < GLOBAL_TTL:
+        return
+    data = await _fetch_coingecko("global")
+    if data:
+        async with _cg_lock:
+            _cg_cache["global"]["data"] = data.get("data", data)
+            _cg_cache["global"]["last_fetch"] = now
+
+async def _refresh_trending():
+    now = time.time()
+    if now - _cg_cache["trending"]["last_fetch"] < TRENDING_TTL:
+        return
+    data = await _fetch_coingecko("search/trending")
+    if data:
+        async with _cg_lock:
+            _cg_cache["trending"]["data"] = data.get("coins", [])
+            _cg_cache["trending"]["last_fetch"] = now
+
+async def _prefetch_long_charts():
+    """Pre-fetch 30D/90D/365D charts for ALL coins in cache. Scheduler-only, runs hourly."""
+    coin_ids = []
+    if _cg_cache["prices"]["data"]:
+        coin_ids = [c["id"] for c in _cg_cache["prices"]["data"]]
+    if not coin_ids:
+        coin_ids = ["bitcoin", "ethereum", "tether", "solana", "binancecoin"]
+    for cid in coin_ids:
+        for num_days in PREFETCH_LONG_PERIODS:
+            key = f"{cid}:{num_days}"
+            if key in _chart_cache and time.time() - _chart_cache[key]["ts"] < LONG_CHART_TTL:
+                continue
+            raw = await _fetch_coingecko(f"coins/{cid}/market_chart", {"vs_currency": "usd", "days": num_days})
+            if raw:
+                prices = raw.get("prices", [])
+                volumes = raw.get("total_volumes", [])
+                chart_data = []
+                for i, p in enumerate(prices):
+                    vol = volumes[i][1] if i < len(volumes) else 0
+                    chart_data.append({
+                        "timestamp": p[0],
+                        "price": round(p[1], 2) if p[1] >= 1 else round(p[1], 6),
+                        "volume": round(vol, 0),
+                    })
+                _chart_cache[key] = {
+                    "data": {"success": True, "data": chart_data, "coin_id": cid, "days": num_days},
+                    "ts": time.time(),
+                }
+            await asyncio.sleep(1.2)  # gentle rate limiting between calls
+    logger.info(f"Long-period charts pre-fetched for {len(coin_ids)} coins")
+
+async def _prefetch_rainbow():
+    """Pre-fetch Rainbow BTC chart. Scheduler-only, runs hourly."""
+    if _rainbow_cache["data"] and time.time() - _rainbow_cache["fetched_at"] < RAINBOW_TTL:
+        return
+    btc_historical = [
+        (1280620800000, 0.06), (1283299200000, 0.07), (1285891200000, 0.06),
+        (1296518400000, 0.30), (1304208000000, 3.00), (1309478400000, 17.50),
+        (1314835200000, 8.00), (1325376000000, 5.00), (1335830400000, 5.30),
+        (1341100800000, 6.70), (1346457600000, 10.50), (1351728000000, 11.00),
+        (1356998400000, 13.50), (1362268800000, 33.00), (1367366400000, 135.00),
+        (1372636800000, 97.00), (1380585600000, 135.00), (1385856000000, 1100.00),
+        (1388534400000, 770.00), (1393632000000, 560.00), (1401580800000, 630.00),
+        (1409529600000, 480.00), (1417392000000, 375.00), (1420070400000, 315.00),
+        (1427846400000, 245.00), (1435708800000, 260.00), (1443657600000, 237.00),
+        (1451606400000, 430.00), (1459468800000, 416.00), (1467331200000, 670.00),
+        (1475280000000, 610.00), (1480550400000, 740.00), (1483228800000, 960.00),
+        (1488326400000, 1190.00), (1496275200000, 2500.00), (1504224000000, 4700.00),
+        (1509494400000, 6400.00), (1512086400000, 10800.00), (1514764800000, 13900.00),
+        (1519862400000, 10200.00), (1527811200000, 7500.00), (1535760000000, 7000.00),
+        (1543622400000, 4000.00), (1548979200000, 3400.00), (1556668800000, 5300.00),
+        (1564617600000, 10100.00), (1572566400000, 9200.00), (1577836800000, 7200.00),
+        (1580515200000, 9400.00), (1588377600000, 8700.00), (1596326400000, 11400.00),
+        (1604188800000, 13800.00), (1609459200000, 29000.00), (1612137600000, 45000.00),
+        (1619827200000, 57000.00), (1625097600000, 35000.00), (1632960000000, 43800.00),
+        (1635638400000, 61300.00), (1640995200000, 46200.00), (1648771200000, 45500.00),
+        (1656633600000, 19800.00), (1664582400000, 19400.00), (1672444800000, 16500.00),
+        (1677628800000, 23100.00), (1685577600000, 27200.00), (1693440000000, 26100.00),
+        (1698710400000, 34500.00), (1704067200000, 42500.00), (1709251200000, 62000.00),
+        (1714521600000, 60600.00), (1717200000000, 67500.00),
+    ]
+    try:
+        raw = await _fetch_coingecko("coins/bitcoin/market_chart", {"vs_currency": "usd", "days": 730})
+        if not raw:
+            return
+        raw_prices = raw.get("prices", [])
+        real_start_ts = raw_prices[0][0] if raw_prices else float('inf')
+        merged = [(ts, p) for ts, p in btc_historical if ts < real_start_ts]
+        step = max(1, len(raw_prices) // 300)
+        for i in range(0, len(raw_prices), step):
+            merged.append((raw_prices[i][0], raw_prices[i][1]))
+        if raw_prices and (raw_prices[-1][0], raw_prices[-1][1]) not in merged:
+            merged.append((raw_prices[-1][0], raw_prices[-1][1]))
+        merged.sort(key=lambda x: x[0])
+        chart_points = []
+        for ts_ms, price in merged:
+            bands = _rainbow_band_prices(ts_ms)
+            band_idx = _get_current_band(price, bands)
+            chart_points.append({
+                "timestamp": ts_ms, "price": round(price, 2),
+                "band_index": band_idx,
+                "band_low": bands[0]["low"], "band_high": bands[-1]["high"],
             })
-            if data:
-                _cg_cache["prices"]["data"] = data
-                _cg_cache["prices"]["last_fetch"] = now
-
-        # Global
-        if now - _cg_cache["global"]["last_fetch"] >= COINGECKO_CACHE_TTL:
-            data = await _fetch_coingecko("global")
-            if data:
-                _cg_cache["global"]["data"] = data.get("data", data)
-                _cg_cache["global"]["last_fetch"] = now
-
-        # Trending
-        if now - _cg_cache["trending"]["last_fetch"] >= COINGECKO_CACHE_TTL:
-            data = await _fetch_coingecko("search/trending")
-            if data:
-                _cg_cache["trending"]["data"] = data.get("coins", [])
-                _cg_cache["trending"]["last_fetch"] = now
+        last_ts, last_price = merged[-1]
+        current_bands = _rainbow_band_prices(last_ts)
+        current_band_idx = _get_current_band(last_price, current_bands)
+        result = {
+            "success": True,
+            "prices": chart_points,
+            "bands": [{"label": b["label"], "color": b["color"]} for b in RAINBOW_BANDS],
+            "current_price": round(last_price, 2),
+            "current_band": current_band_idx,
+            "current_band_label": RAINBOW_BANDS[current_band_idx]["label"],
+            "current_band_color": RAINBOW_BANDS[current_band_idx]["color"],
+            "current_bands_prices": current_bands,
+            "total_points": len(chart_points),
+        }
+        _rainbow_cache["data"] = result
+        _rainbow_cache["fetched_at"] = time.time()
+        logger.info(f"Rainbow pre-fetched: {len(chart_points)} pts, band: {RAINBOW_BANDS[current_band_idx]['label']}")
+    except Exception as e:
+        logger.error(f"Rainbow pre-fetch error: {e}")
 
 async def _coingecko_scheduler():
-    """Background task: refresh cache every 40 seconds"""
+    """Master scheduler — all CoinGecko calls happen here. Zero user-triggered calls."""
+    logger.info("CoinGecko scheduler started (zero-user-call mode)")
+    _last_long_fetch = 0
     while True:
         try:
-            await _refresh_cache()
+            await _refresh_prices_and_sparklines()  # 1 call / 120s
+            await _refresh_global()                 # 1 call / 300s
+            await _refresh_trending()               # 1 call / 600s
+            now = time.time()
+            if now - _last_long_fetch >= LONG_CHART_TTL:
+                await _prefetch_long_charts()       # ~30 calls / hour
+                await _prefetch_rainbow()           # 1 call / hour
+                _last_long_fetch = now
         except Exception as e:
             logger.error(f"CoinGecko scheduler error: {e}")
-        await asyncio.sleep(COINGECKO_CACHE_TTL)
+        await asyncio.sleep(60)  # check every 60s what needs refreshing
 
 if COINGECKO_API_KEY:
     logger.info(f"CoinGecko API key loaded: {COINGECKO_API_KEY[:8]}...")
@@ -918,83 +1097,16 @@ async def get_crypto_prices():
         return {"success": True, "data": cached, "timestamp": datetime.now(timezone.utc).isoformat(), "cached": True}
     return {"success": True, "data": MOCK_PRICES, "timestamp": datetime.now(timezone.utc).isoformat(), "mock": True}
 
-_chart_cache: Dict[str, Any] = {}
-
 @api_router.get("/crypto/chart/{coin_id}")
 async def get_crypto_chart(coin_id: str, days: str = "7"):
-    """Get historical chart data for a crypto (prices + volumes) using Pro API with cache"""
-    import random as rnd
-    import math as mth
-    
+    """READ-ONLY from pre-fetched cache. Zero CoinGecko calls from users."""
     valid_days = {"1": 1, "7": 7, "30": 30, "90": 90, "365": 365}
     num_days = valid_days.get(days, 7)
-    
-    # Chart cache: 5 min for 1d, 15 min for 7d+
     cache_key = f"{coin_id}:{num_days}"
-    cache_ttl = 300 if num_days <= 1 else 900
-    if cache_key in _chart_cache and time.time() - _chart_cache[cache_key]["ts"] < cache_ttl:
+    if cache_key in _chart_cache:
         return _chart_cache[cache_key]["data"]
-    
-    coingecko_key = os.environ.get("COINGECKO_API_KEY")
-    
-    try:
-        async with httpx.AsyncClient() as client:
-            if coingecko_key:
-                url = f"https://pro-api.coingecko.com/api/v3/coins/{coin_id}/market_chart"
-                headers = {"x-cg-pro-api-key": coingecko_key}
-            else:
-                url = f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart"
-                headers = {}
-            
-            response = await client.get(url, params={"vs_currency": "usd", "days": num_days}, headers=headers, timeout=15.0)
-            track_coingecko_call()
-            if response.status_code == 200:
-                data = response.json()
-                prices = [{"timestamp": p[0], "price": p[1]} for p in data.get("prices", [])]
-                volumes = [{"timestamp": v[0], "volume": v[1]} for v in data.get("total_volumes", [])]
-                
-                chart_data = []
-                for i, p in enumerate(prices):
-                    vol = volumes[i]["volume"] if i < len(volumes) else 0
-                    chart_data.append({
-                        "timestamp": p["timestamp"],
-                        "price": round(p["price"], 2) if p["price"] >= 1 else round(p["price"], 6),
-                        "volume": round(vol, 0),
-                    })
-                
-                result = {"success": True, "data": chart_data, "coin_id": coin_id, "days": num_days}
-                _chart_cache[cache_key] = {"data": result, "ts": time.time()}
-                return result
-            else:
-                logger.warning(f"CoinGecko chart returned {response.status_code} for {coin_id}")
-                return {"success": True, "data": _generate_mock_chart(coin_id, num_days), "coin_id": coin_id, "days": num_days, "mock": True}
-    except Exception as e:
-        logger.error(f"Error fetching chart for {coin_id}: {e}")
-        return {"success": True, "data": _generate_mock_chart(coin_id, num_days), "coin_id": coin_id, "days": num_days, "mock": True}
-
-def _generate_mock_chart(coin_id: str, days: int):
-    """Generate realistic mock chart data"""
-    import random as rnd
-    import math as mth
-    
-    base_prices = {"bitcoin": 67500, "ethereum": 1950, "solana": 185, "binancecoin": 625, "ripple": 1.43, "cardano": 0.65, "dogecoin": 0.32, "avalanche-2": 38}
-    base = base_prices.get(coin_id, 100)
-    
-    points = min(days * 24, 365)
-    interval_ms = (days * 86400000) // points
-    now = int(datetime.utcnow().timestamp() * 1000)
-    
-    data = []
-    price = base * 0.95
-    for i in range(points):
-        ts = now - (points - i) * interval_ms
-        trend = (i / points) * 0.05 * base
-        noise = rnd.gauss(0, base * 0.008)
-        wave = mth.sin(i * 0.1) * base * 0.01
-        price = max(price + trend / points + noise + wave, base * 0.7)
-        vol = rnd.uniform(0.5, 1.5) * base * 1000000
-        data.append({"timestamp": ts, "price": round(price, 2 if price >= 1 else 6), "volume": round(vol, 0)})
-    return data
+    # Cache not ready yet (scheduler hasn't run for this combo)
+    return {"success": True, "data": [], "coin_id": coin_id, "days": num_days, "cache_pending": True}
 
 # ==================== RAINBOW BTC CHART ====================
 import math
@@ -1044,116 +1156,12 @@ def _get_current_band(price: float, bands: list) -> int:
             return i
     return len(bands) - 1
 
-_rainbow_cache: Dict[str, Any] = {"data": None, "fetched_at": 0}
-
 @api_router.get("/crypto/rainbow")
 async def get_rainbow_chart():
-    """Get Bitcoin Rainbow Chart data: historical prices + band boundaries."""
-    # Cache for 1 hour
-    if _rainbow_cache["data"] and time.time() - _rainbow_cache["fetched_at"] < 3600:
+    """READ-ONLY from pre-fetched cache. Zero CoinGecko calls from users."""
+    if _rainbow_cache["data"]:
         return _rainbow_cache["data"]
-    
-    coingecko_key = os.environ.get("COINGECKO_API_KEY")
-    
-    # Pre-computed BTC monthly prices (2010-2024) for full rainbow history
-    # These are approximate monthly close prices
-    btc_historical = [
-        (1280620800000, 0.06), (1283299200000, 0.07), (1285891200000, 0.06),  # 2010
-        (1296518400000, 0.30), (1304208000000, 3.00), (1309478400000, 17.50),  # 2011
-        (1314835200000, 8.00), (1325376000000, 5.00), (1335830400000, 5.30),   # 2011-2012
-        (1341100800000, 6.70), (1346457600000, 10.50), (1351728000000, 11.00), # 2012
-        (1356998400000, 13.50), (1362268800000, 33.00), (1367366400000, 135.00),# 2013
-        (1372636800000, 97.00), (1380585600000, 135.00), (1385856000000, 1100.00),# 2013
-        (1388534400000, 770.00), (1393632000000, 560.00), (1401580800000, 630.00),# 2014
-        (1409529600000, 480.00), (1417392000000, 375.00), (1420070400000, 315.00),# 2014-2015
-        (1427846400000, 245.00), (1435708800000, 260.00), (1443657600000, 237.00),# 2015
-        (1451606400000, 430.00), (1459468800000, 416.00), (1467331200000, 670.00),# 2015-2016
-        (1475280000000, 610.00), (1480550400000, 740.00), (1483228800000, 960.00),# 2016
-        (1488326400000, 1190.00), (1496275200000, 2500.00), (1504224000000, 4700.00),# 2017
-        (1509494400000, 6400.00), (1512086400000, 10800.00), (1514764800000, 13900.00),# 2017
-        (1519862400000, 10200.00), (1527811200000, 7500.00), (1535760000000, 7000.00),# 2018
-        (1543622400000, 4000.00), (1548979200000, 3400.00), (1556668800000, 5300.00),# 2018-2019
-        (1564617600000, 10100.00), (1572566400000, 9200.00), (1577836800000, 7200.00),# 2019
-        (1580515200000, 9400.00), (1588377600000, 8700.00), (1596326400000, 11400.00),# 2020
-        (1604188800000, 13800.00), (1609459200000, 29000.00), (1612137600000, 45000.00),# 2020-2021
-        (1619827200000, 57000.00), (1625097600000, 35000.00), (1632960000000, 43800.00),# 2021
-        (1635638400000, 61300.00), (1640995200000, 46200.00), (1648771200000, 45500.00),# 2021-2022
-        (1656633600000, 19800.00), (1664582400000, 19400.00), (1672444800000, 16500.00),# 2022
-        (1677628800000, 23100.00), (1685577600000, 27200.00), (1693440000000, 26100.00),# 2023
-        (1698710400000, 34500.00), (1704067200000, 42500.00), (1709251200000, 62000.00),# 2023-2024
-        (1714521600000, 60600.00), (1717200000000, 67500.00),  # 2024 Q2
-    ]
-    
-    try:
-        async with httpx.AsyncClient() as client:
-            if coingecko_key:
-                url = "https://pro-api.coingecko.com/api/v3/coins/bitcoin/market_chart"
-                headers = {"x-cg-pro-api-key": coingecko_key}
-            else:
-                url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
-                headers = {}
-            
-            # Get 2 years of real data (max for Basic plan)
-            response = await client.get(url, params={"vs_currency": "usd", "days": 730}, headers=headers, timeout=30.0)
-            
-            if response.status_code == 200:
-                data = response.json()
-                raw_prices = data.get("prices", [])
-                
-                # Merge historical + real data
-                real_start_ts = raw_prices[0][0] if raw_prices else float('inf')
-                merged = [(ts, p) for ts, p in btc_historical if ts < real_start_ts]
-                
-                # Sample real data to ~300 points
-                step = max(1, len(raw_prices) // 300)
-                for i in range(0, len(raw_prices), step):
-                    merged.append((raw_prices[i][0], raw_prices[i][1]))
-                if raw_prices and raw_prices[-1] not in [(t, p) for t, p in merged]:
-                    merged.append((raw_prices[-1][0], raw_prices[-1][1]))
-                
-                merged.sort(key=lambda x: x[0])
-                
-                chart_points = []
-                for ts_ms, price in merged:
-                    bands = _rainbow_band_prices(ts_ms)
-                    band_idx = _get_current_band(price, bands)
-                    chart_points.append({
-                        "timestamp": ts_ms,
-                        "price": round(price, 2),
-                        "band_index": band_idx,
-                        "band_low": bands[0]["low"],
-                        "band_high": bands[-1]["high"],
-                    })
-                
-                # Current price band info
-                last_ts, last_price = merged[-1]
-                current_bands = _rainbow_band_prices(last_ts)
-                current_band_idx = _get_current_band(last_price, current_bands)
-                
-                result = {
-                    "success": True,
-                    "prices": chart_points,
-                    "bands": [{"label": b["label"], "color": b["color"]} for b in RAINBOW_BANDS],
-                    "current_price": round(last_price, 2),
-                    "current_band": current_band_idx,
-                    "current_band_label": RAINBOW_BANDS[current_band_idx]["label"],
-                    "current_band_color": RAINBOW_BANDS[current_band_idx]["color"],
-                    "current_bands_prices": current_bands,
-                    "total_points": len(chart_points),
-                }
-                
-                _rainbow_cache["data"] = result
-                _rainbow_cache["fetched_at"] = time.time()
-                logger.info(f"Rainbow chart cached: {len(chart_points)} points, current band: {RAINBOW_BANDS[current_band_idx]['label']}")
-                return result
-            else:
-                logger.warning(f"Rainbow chart API returned {response.status_code}")
-                raise HTTPException(status_code=502, detail="Failed to fetch BTC data")
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Rainbow chart error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+    return {"success": False, "error": "Rainbow chart loading — please retry in a moment", "prices": [], "bands": []}
 
 
 
@@ -12373,9 +12381,9 @@ async def start_email_scheduler_task():
 
 @app.on_event("startup")
 async def start_coingecko_cache():
-    """Start the CoinGecko global cache scheduler (1 call every 40s for all users)"""
+    """Start the CoinGecko zero-user-call scheduler"""
     asyncio.create_task(_coingecko_scheduler())
-    logger.info(f"CoinGecko cache scheduler started — refreshing every {COINGECKO_CACHE_TTL}s")
+    logger.info("CoinGecko scheduler started (zero-user-call mode) — prices every 120s, long charts hourly")
 
 @app.on_event("startup")
 async def start_rss_news_cache():

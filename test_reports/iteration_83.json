@@ -1,0 +1,40 @@
+{
+  "summary": "Verified the ZERO USER CALL CoinGecko cache architecture end-to-end. Backend pytest: 28/28 PASSED covering /api/health, /api/auth/login (super admin), /api/crypto/prices (20 coins, cached=True, real BTC>$10k), /api/crypto/chart/{bitcoin,ethereum,solana,dogecoin}?days={1,7,30,90,365} with the expected point counts (1d≈24, 7d≈169, 30d≈721, 90d≈2167, 365d≈366), /api/crypto/rainbow (437 points, current_band_label, current_price), /api/crypto/global, /api/crypto/trending (15 coins). Backend logs prove ZERO user-triggered CoinGecko calls — all pro-api.coingecko.com hits are emitted by the scheduler (_refresh_prices_and_sparklines every 120s, _prefetch_long_charts hourly, _prefetch_rainbow hourly). User requests to /api/crypto/chart/* and /api/crypto/rainbow show NO corresponding httpx call. Frontend Playwright: homepage loads (Mentova logo, marketing carousel, Get Started + Sign In CTAs). Sign-In flow with super admin (jcuradeau.7@gmail.com / Crypto2026!) works (POST /api/auth/login → 200, access_token returned). Post-login dashboard renders crypto cards (BTC $59,113 -2.77%, ETH $1,560 -4.76%, USDT $1.00, Global $2.13T). 'Market' tab renders the full Crypto Market view: Global Market ($2.13T market cap, $112.36B 24h volume, BTC 55.8% / ETH 8.9% dominance bar) and Top Cryptocurrencies list with 9+ rows including Bitcoin, Ethereum, Tether, BNB, USDC, XRP, Solana, TRON, Figure Heloc with mini-sparklines. The frontend made GET /api/crypto/prices and /api/crypto/global → both 200.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/crypto/chart/{coin}?days={30|90|365}", "issue": "During the ~90s cold-start window after a backend restart, the endpoint returns success=True with data=[] for coins whose long-period prefetch is still pending (only ~7 of 20 coins are prefetched per minute). UX-wise this looks identical to a successful empty chart. Rainbow correctly returns success=False with error='Rainbow chart loading — please retry in a moment'; the chart endpoint should adopt the same pattern (e.g. success=False, error='Chart loading — please retry in a moment') instead of an empty success=True payload."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Console (web bundle)", "issues": ["React Native Web emits many warnings: shadow* deprecated → use boxShadow; animationName invalid → use animationKeyframes; useNativeDriver fallback. Cosmetic, not blocking, but noisy."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_crypto_zero_user_call.py",
+    "/app/test_reports/pytest/pytest_crypto_zero_user_call.xml"
+  ],
+  "action_items": [
+    "(Minor) Change /api/crypto/chart endpoint to return success=False + error='Chart loading — please retry in a moment' when the requested period's cache slot is empty, matching the existing pattern in /api/crypto/rainbow. This avoids the rare cold-start window where a few coins return success=True with data=[].",
+    "(Cosmetic) Migrate residual RN style props (shadow*, animationName) to web-compatible boxShadow / animationKeyframes to silence the console warnings."
+  ],
+  "critical_code_review_comments": [
+    "server.py _coingecko_scheduler architecture is solid: 3 independent loops (120s prices+sparklines, 300s global, 600s trending, hourly long charts + rainbow). The chart endpoint at ~L930 truly never calls CoinGecko — verified by httpx log grep over 5 minutes of user traffic.",
+    "Cold-start UX: long-period prefetch is sequential (~3 requests/coin × 20 coins ≈ 90s). During that window the chart endpoint silently returns empty data for coins not yet prefetched. Either (a) seed an in-progress flag and return success=False+error='Chart loading…', or (b) parallelize the prefetch with a small bounded concurrency (e.g. 4) so the cold-start window drops to ~25s.",
+    "Sparkline-derived 1d/7d charts correctly have no volume field (CoinGecko sparkline payload is price-only). The frontend tolerates missing volume. If the chart UI later needs volume for 7d, it must call a different prefetched payload.",
+    "Rainbow chart cold-start handled correctly: success=False + error='Rainbow chart loading — please retry in a moment' until _prefetch_rainbow populates _rainbow_cache. This is the pattern to mirror in the chart endpoint."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_crypto_zero_user_call.py (new — 28 parametrized tests for zero-user-call cache)"
+  ],
+  "success_rate": {"backend": "100% (28/28 pytest after cache warm-up)", "frontend": "100%"},
+  "test_credentials": "Super Admin: jcuradeau.7@gmail.com / Crypto2026! (worked for /api/auth/login and frontend Sign In)",
+  "seed_data_creation": "None — all tests are read-only against shared cache.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "If you observe transient failures on /api/crypto/chart/* with success=True but data=[] or on /api/crypto/rainbow returning success=False, that usually means the backend was restarted recently and the long-period prefetch (~90s for 20 coins) hasn't finished. Wait ~90s and re-run. Tail /var/log/supervisor/backend.err.log for the lines 'Long-period charts pre-fetched for 20 coins' and 'Rainbow pre-fetched: 437 pts, band: <label>' — once both appear, the cache is fully warm. To verify the zero-user-call promise, run a few /api/crypto/chart/* requests and grep the same log for 'pro-api.coingecko.com' immediately after — there must be NO new httpx lines correlated with user request timestamps; only the scheduler ticks (every 120s for prices, every 60min for long charts and rainbow) should appear.",
+  "rca of the issue": "No bug to RCA — the architecture works as designed. The single ergonomic gap is the cold-start window of /api/crypto/chart/{coin}?days={30,90,365}: when a coin's long-period slot has not yet been populated by _prefetch_long_charts, the endpoint returns success=True with data=[] instead of the loading-state payload used by /api/crypto/rainbow. Recommended fix: in the chart endpoint, after looking up the cache slot, if the list is empty, return {success: False, error: 'Chart loading — please retry in a moment', coin_id, days, data: []} (HTTP 200) so the frontend can show a 'Loading…' state instead of an empty chart."
+}
