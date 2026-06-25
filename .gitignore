@@ -88,3 +88,8 @@ memory/test_credentials.md
 
 # Local Netlify folder
 .netlify
+.env
+.env.*
+credentials.json
+*.key
+.credentials
