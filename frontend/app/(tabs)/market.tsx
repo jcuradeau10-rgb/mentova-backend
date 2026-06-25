@@ -79,8 +79,8 @@ const SimpleChart = ({ data, color, width: chartWidth, height: chartHeight }: {
 };
 
 // Interactive Chart Component with smooth pan gesture tracking
-const InteractiveChart = ({ coinId, initialData, color = '#00D9A5' }: { 
-  coinId: string; initialData?: number[]; color?: string;
+const InteractiveChart = ({ coinId, initialData, color = '#00D9A5', currentPrice }: { 
+  coinId: string; initialData?: number[]; color?: string; currentPrice?: number;
 }) => {
   const [chartData, setChartData] = useState<any[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState('7');
@@ -228,9 +228,15 @@ const InteractiveChart = ({ coinId, initialData, color = '#00D9A5' }: {
   const touchX = touchIndex !== null ? (touchIndex / (chartData.length - 1)) * chartW : 0;
   const touchY = touchPoint ? chartH - ((touchPoint.price - minPrice) / priceRange) * (chartH - 24) : 0;
   
+  // Use currentPrice from props as the "real" price, fallback to chart data
+  const displayPrice = currentPrice || lastPrice;
+
   // Calculate change from first price to touched point
   const touchPctChange = touchPoint ? ((touchPoint.price - firstPrice) / firstPrice) * 100 : 0;
   const touchIsPositive = touchPctChange >= 0;
+
+  // Period labels for clarity
+  const periodLabels: Record<string, string> = { '1': '24h', '7': '7j', '30': '30j', '90': '90j', '365': '1a' };
 
   return (
     <View style={iChartStyles.container} data-testid="interactive-chart">
@@ -260,11 +266,11 @@ const InteractiveChart = ({ coinId, initialData, color = '#00D9A5' }: {
           </View>
         ) : (
           <View style={iChartStyles.touchInfoRow}>
-            <Text style={iChartStyles.touchPrice}>{formatPrecisePrice(lastPrice)}</Text>
+            <Text style={iChartStyles.touchPrice}>{formatPrecisePrice(displayPrice)}</Text>
             <View style={iChartStyles.touchMeta}>
               <View style={[iChartStyles.changePill, { backgroundColor: isPositive ? '#00D9A518' : '#FF475718' }]}>
                 <Ionicons name={isPositive ? 'trending-up' : 'trending-down'} size={14} color={lineColor} />
-                <Text style={[iChartStyles.changeText, { color: lineColor }]}>{isPositive ? '+' : ''}{pctChange.toFixed(2)}%</Text>
+                <Text style={[iChartStyles.changeText, { color: lineColor }]}>{isPositive ? '+' : ''}{pctChange.toFixed(2)}% ({periodLabels[selectedPeriod] || selectedPeriod})</Text>
               </View>
             </View>
           </View>
@@ -940,6 +946,7 @@ export default function MarketScreen() {
                 <View style={styles.chartContainer}>
                   <InteractiveChart 
                     coinId={selectedCrypto.id}
+                    currentPrice={selectedCrypto.current_price}
                     color={(selectedCrypto.price_change_percentage_24h || 0) >= 0 ? '#00D9A5' : '#FF4757'}
                   />
                 </View>

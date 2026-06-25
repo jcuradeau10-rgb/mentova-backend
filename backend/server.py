@@ -128,7 +128,7 @@ RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY', '6LejZ4csAAAAAOhuqKb2X
 
 # ==================== COINGECKO GLOBAL CACHE ====================
 COINGECKO_API_KEY = os.environ.get('COINGECKO_API_KEY', '')
-COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3"
+COINGECKO_BASE_URL = "https://pro-api.coingecko.com/api/v3" if COINGECKO_API_KEY else "https://api.coingecko.com/api/v3"
 COINGECKO_CACHE_TTL = 40  # seconds between API calls
 
 _cg_cache = {
@@ -141,7 +141,7 @@ _cg_lock = asyncio.Lock()
 async def _fetch_coingecko(endpoint: str, params: dict = None) -> dict | None:
     headers = {}
     if COINGECKO_API_KEY:
-        headers["x-cg-demo-api-key"] = COINGECKO_API_KEY
+        headers["x-cg-pro-api-key"] = COINGECKO_API_KEY
     try:
         async with httpx.AsyncClient() as client_http:
             resp = await client_http.get(
