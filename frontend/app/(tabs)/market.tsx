@@ -420,20 +420,23 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
 
   const loadRainbow = async () => {
     try {
-      const res = await cryptoAPI.getRainbow();
+      const timeout = new Promise((_, reject) => setTimeout(() => reject('timeout'), 10000));
+      const res: any = await Promise.race([cryptoAPI.getRainbow(), timeout]);
       if (res.data.success) setData(res.data);
     } catch (e) { console.error('Rainbow load error:', e); }
     finally { setLoading(false); }
   };
 
-  if (loading || !data) return (
+  if (loading) return (
     <View style={rbStyles.container}>
       <View style={rbStyles.header}><Text style={rbStyles.title}>Rainbow Chart BTC</Text></View>
-      <View style={[rbStyles.chartBox, { height: chartH, justifyContent: 'center', alignItems: 'center' }]}>
+      <View style={[rbStyles.chartBox, { height: 80, justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="small" color="#FFD600" />
       </View>
     </View>
   );
+
+  if (!data) return null;
 
   const prices = data.prices || [];
   const bands = data.bands || [];
@@ -961,11 +964,6 @@ export default function MarketScreen() {
                   </View>
                 </View>
 
-                {/* Rainbow Chart (Bitcoin only) */}
-                {selectedCrypto.id === 'bitcoin' && (
-                  <RainbowBTCChart isVip={false} />
-                )}
-
                 {/* Interactive Chart */}
                 <View style={styles.chartContainer}>
                   <InteractiveChart 
@@ -974,6 +972,11 @@ export default function MarketScreen() {
                     color={(selectedCrypto.price_change_percentage_24h || 0) >= 0 ? '#00D9A5' : '#FF4757'}
                   />
                 </View>
+
+                {/* Rainbow Chart (Bitcoin only — below main chart) */}
+                {selectedCrypto.id === 'bitcoin' && (
+                  <RainbowBTCChart isVip={false} />
+                )}
 
                 {/* Stats Grid */}
                 <View style={styles.statsGrid}>
