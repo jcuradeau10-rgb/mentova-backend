@@ -478,7 +478,8 @@ const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
   }
 
   // Classic rainbow colors (bottom to top): dark blue → purple → blue → teal → green → yellow → orange → dark orange → red
-  const rainbowColors = ['#4A148C', '#6A1B9A', '#1565C0', '#00838F', '#2E7D32', '#9E9D24', '#FF8F00', '#E65100', '#B71C1C'];
+  const rainbowColors = ['#6A1B9A', '#283593', '#0277BD', '#00838F', '#2E7D32', '#F9A825', '#FF8F00', '#D84315', '#B71C1C'];
+  const bandLabels = ['Fire Sale', 'BUY!', 'Accumulate', 'Still Cheap', 'HODL!', 'Is this a bubble?', 'FOMO intensifies', 'Sell. Seriously, SELL!', 'Maximum Bubble'];
 
   // Build band paths
   const bandPaths = rainbowColors.map((_, bandIdx) => {
