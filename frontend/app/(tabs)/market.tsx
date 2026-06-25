@@ -95,6 +95,9 @@ const InteractiveChart = ({ coinId, initialData, color = '#00D9A5', currentPrice
   const panRef = React.useRef<any>(null);
 
   useEffect(() => {
+    setChartData([]);
+    setTouchIndex(null);
+    setIsDragging(false);
     loadChart(selectedPeriod);
   }, [coinId, selectedPeriod]);
 
@@ -102,15 +105,18 @@ const InteractiveChart = ({ coinId, initialData, color = '#00D9A5', currentPrice
     setIsLoading(true);
     try {
       const res = await cryptoAPI.getChart(coinId, days);
-      if (res.data.success && res.data.data?.length > 0) {
+      if (res.data.success && res.data.data?.length > 0 && !res.data.mock) {
         const raw = res.data.data;
-        // Keep up to 200 points for precision
         const step = Math.max(1, Math.floor(raw.length / 200));
         const sampled = raw.filter((_: any, i: number) => i % step === 0 || i === raw.length - 1);
         setChartData(sampled);
+      } else if (res.data.mock) {
+        console.warn('Chart returned mock data — CoinGecko API may be down');
+        setChartData([]);
       }
     } catch (e) {
       console.error('Chart load error:', e);
+      setChartData([]);
     } finally {
       setIsLoading(false);
     }
@@ -231,6 +237,10 @@ const InteractiveChart = ({ coinId, initialData, color = '#00D9A5', currentPrice
   // Use currentPrice from props as the "real" price, fallback to chart data
   const displayPrice = currentPrice || lastPrice;
 
+  // Period change = first to last point of the chart (NOT current price)  
+  const periodChange = ((lastPrice - firstPrice) / firstPrice) * 100;
+  const periodIsPositive = periodChange >= 0;
+
   // Calculate change from first price to touched point
   const touchPctChange = touchPoint ? ((touchPoint.price - firstPrice) / firstPrice) * 100 : 0;
   const touchIsPositive = touchPctChange >= 0;
@@ -249,7 +259,7 @@ const InteractiveChart = ({ coinId, initialData, color = '#00D9A5', currentPrice
         ))}
       </View>
 
-      {/* Price info — updates in real-time during drag */}
+      {/* Price info — always shows CURRENT real-time price when not touching */}
       <View style={iChartStyles.priceInfo}>
         {touchPoint ? (
           <View style={iChartStyles.touchInfoRow}>
@@ -268,9 +278,9 @@ const InteractiveChart = ({ coinId, initialData, color = '#00D9A5', currentPrice
           <View style={iChartStyles.touchInfoRow}>
             <Text style={iChartStyles.touchPrice}>{formatPrecisePrice(displayPrice)}</Text>
             <View style={iChartStyles.touchMeta}>
-              <View style={[iChartStyles.changePill, { backgroundColor: isPositive ? '#00D9A518' : '#FF475718' }]}>
-                <Ionicons name={isPositive ? 'trending-up' : 'trending-down'} size={14} color={lineColor} />
-                <Text style={[iChartStyles.changeText, { color: lineColor }]}>{isPositive ? '+' : ''}{pctChange.toFixed(2)}% ({periodLabels[selectedPeriod] || selectedPeriod})</Text>
+              <View style={[iChartStyles.changePill, { backgroundColor: periodIsPositive ? '#00D9A518' : '#FF475718' }]}>
+                <Ionicons name={periodIsPositive ? 'trending-up' : 'trending-down'} size={14} color={periodIsPositive ? '#00D9A5' : '#FF4757'} />
+                <Text style={[iChartStyles.changeText, { color: periodIsPositive ? '#00D9A5' : '#FF4757' }]}>{periodIsPositive ? '+' : ''}{periodChange.toFixed(2)}% ({periodLabels[selectedPeriod] || selectedPeriod})</Text>
               </View>
             </View>
           </View>
