@@ -64,7 +64,8 @@ async def get_wave_config():
     return config
 
 async def get_registration_count():
-    return await db.pre_registrations.count_documents({})
+    """Count only confirmed paid members (vip_activated_at is set)"""
+    return await db.pre_registrations.count_documents({"vip_activated_at": {"$ne": None}})
 
 # --- Models ---
 
