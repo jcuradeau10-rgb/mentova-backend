@@ -12062,19 +12062,22 @@ from starlette.requests import Request as StarletteRequest
 
 class AnalyticsMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: StarletteRequest, call_next):
-        start = time.time()
         response = await call_next(request)
-        # Track API call
         path = request.url.path
         if path.startswith("/api/"):
             user_id = "anonymous"
+            # Try JWT first
             auth = request.headers.get("authorization", "")
             if auth.startswith("Bearer "):
                 try:
                     payload = jwt.decode(auth[7:], os.environ.get("JWT_SECRET", "mentova-secret-key-2024"), algorithms=["HS256"])
-                    user_id = payload.get("email", "anonymous")
+                    user_id = payload.get("user_id", payload.get("email", "anonymous"))
                 except Exception:
                     pass
+            # Fallback: use IP as session identifier
+            if user_id == "anonymous":
+                ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "unknown")
+                user_id = f"ip:{ip.split(',')[0].strip()}"
             track_api_call(path, request.method, user_id, response.status_code)
         return response
 

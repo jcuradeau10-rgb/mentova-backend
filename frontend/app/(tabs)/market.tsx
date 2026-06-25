@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { cryptoAPI } from '../../utils/api';
 import { useTranslation } from '../../store/languageStore';
+import { useAuthStore } from '../../store/authStore';
 import Svg, { Path, Line, Text as SvgText, Circle, Defs, LinearGradient as SvgLinearGradient, Stop, Rect } from 'react-native-svg';
 
 const { width } = Dimensions.get('window');
@@ -677,6 +678,8 @@ const rbStyles = StyleSheet.create({
 
 export default function MarketScreen() {
   const { t } = useTranslation();
+  const { user } = useAuthStore();
+  const userIsVip = user?.is_vip === true;
   const [cryptoPrices, setCryptoPrices] = useState<CryptoData[]>([]);
   const [globalStats, setGlobalStats] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -976,7 +979,7 @@ export default function MarketScreen() {
 
                 {/* Rainbow Chart (Bitcoin only — below main chart) */}
                 {selectedCrypto.id === 'bitcoin' && (
-                  <RainbowBTCChart isVip={false} />
+                  <RainbowBTCChart isVip={userIsVip} />
                 )}
 
                 {/* Stats Grid */}
