@@ -56,7 +56,7 @@ interface AdminLog {
   timestamp: string;
 }
 
-type TabType = 'dashboard' | 'users' | 'posts' | 'pro' | 'revenue' | 'reports' | 'stats' | 'logs' | 'feedback' | 'affiliates';
+type TabType = 'dashboard' | 'users' | 'posts' | 'pro' | 'revenue' | 'reports' | 'stats' | 'logs' | 'feedback' | 'affiliates' | 'analytics';
 
 interface AdminStats {
   overview: {
@@ -461,6 +461,261 @@ export default function AdminScreen() {
       </View>
     );
   }
+
+
+  // ==================== ANALYTICS LIVE DASHBOARD ====================
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const analyticsInterval = useRef<any>(null);
+
+  const fetchAnalytics = async () => {
+    try {
+      setAnalyticsLoading(true);
+      const res = await adminAPI.getAnalytics();
+      setAnalyticsData(res.data);
+    } catch (e: any) { console.error('Analytics error:', e); }
+    finally { setAnalyticsLoading(false); }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'analytics') {
+      fetchAnalytics();
+      analyticsInterval.current = setInterval(fetchAnalytics, 30000); // auto-refresh 30s
+    }
+    return () => { if (analyticsInterval.current) clearInterval(analyticsInterval.current); };
+  }, [activeTab]);
+
+  const StatBox = ({ label, value, icon, color = '#7C3AED', sub }: { label: string; value: string | number; icon: string; color?: string; sub?: string }) => (
+    <View style={{ flex: 1, minWidth: 140, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+        <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: color + '18', alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name={icon as any} size={14} color={color} />
+        </View>
+        <Text style={{ fontSize: 10, color: '#8B8B9E', fontWeight: '600', flex: 1 }} numberOfLines={1}>{label}</Text>
+      </View>
+      <Text style={{ fontSize: 20, fontWeight: '900', color: '#FFF', letterSpacing: -0.5 }}>{value}</Text>
+      {sub && <Text style={{ fontSize: 10, color: '#5A5A6E', marginTop: 2 }}>{sub}</Text>}
+    </View>
+  );
+
+  const ProgressBar = ({ value, max, color = '#7C3AED', label }: { value: number; max: number; color?: string; label?: string }) => (
+    <View style={{ marginVertical: 6 }}>
+      {label && <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+        <Text style={{ fontSize: 10, color: '#8B8B9E' }}>{label}</Text>
+        <Text style={{ fontSize: 10, color: color, fontWeight: '700' }}>{value}/{max}</Text>
+      </View>}
+      <View style={{ height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.05)' }}>
+        <View style={{ height: 6, borderRadius: 3, backgroundColor: color, width: `${Math.min(100, (value / max) * 100)}%` }} />
+      </View>
+    </View>
+  );
+
+  const renderAnalytics = () => {
+    const d = analyticsData;
+    if (!d) return (
+      <View style={{ padding: 40, alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#7C3AED" />
+        <Text style={{ color: '#8B8B9E', marginTop: 12, fontSize: 13 }}>Chargement Analytics...</Text>
+      </View>
+    );
+
+    const live = d.live || {};
+    const api = d.api || {};
+    const db = d.database || {};
+    const cg = d.coingecko || {};
+    const atlas = d.atlas || {};
+    const eng = d.engagement || {};
+    const sys = d.system || {};
+
+    return (
+      <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+        {/* Header */}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <View>
+            <Text style={{ fontSize: 22, fontWeight: '900', color: '#FFF' }}>Analytics Live</Text>
+            <Text style={{ fontSize: 11, color: '#5A5A6E' }}>Auto-refresh: 30s | {new Date(d.timestamp).toLocaleTimeString()}</Text>
+          </View>
+          <TouchableOpacity onPress={fetchAnalytics} style={{ padding: 8, backgroundColor: 'rgba(124,58,237,0.15)', borderRadius: 10 }}>
+            <Ionicons name="refresh" size={18} color="#7C3AED" />
+          </TouchableOpacity>
+        </View>
+
+        {/* LIVE USERS */}
+        <Text style={{ fontSize: 14, fontWeight: '800', color: '#00D9A5', marginBottom: 8 }}>UTILISATEURS EN DIRECT</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+          <StatBox label="En ligne maintenant" value={live.active_now || 0} icon="radio" color="#00D9A5" sub="Derniere minute" />
+          <StatBox label="Actifs (5 min)" value={live.active_5min || 0} icon="people" color="#10B981" />
+          <StatBox label="Actifs (15 min)" value={live.active_15min || 0} icon="people-circle" color="#3B82F6" />
+          <StatBox label="Actifs (1h)" value={live.active_1h || 0} icon="time" color="#6366F1" />
+          <StatBox label="Sessions totales" value={live.total_sessions || 0} icon="globe" color="#8B5CF6" sub="Depuis le dernier redemarrage" />
+          <StatBox label="Utilisateurs uniques" value={eng.unique_users_today || 0} icon="person" color="#EC4899" sub="Aujourd'hui" />
+        </View>
+
+        {/* API PERFORMANCE */}
+        <Text style={{ fontSize: 14, fontWeight: '800', color: '#3B82F6', marginBottom: 8 }}>PERFORMANCE API</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+          <StatBox label="Requetes/min" value={api.calls_per_minute || 0} icon="flash" color="#F59E0B" />
+          <StatBox label="Requetes (5 min)" value={api.calls_5min || 0} icon="trending-up" color="#3B82F6" />
+          <StatBox label="Requetes (1h)" value={api.calls_1h || 0} icon="bar-chart" color="#6366F1" />
+          <StatBox label="Requetes aujourd'hui" value={api.calls_today || 0} icon="stats-chart" color="#8B5CF6" />
+          <StatBox label="Taux d'erreur (1h)" value={`${api.error_rate_1h || 0}%`} icon="warning" color={(api.error_rate_1h || 0) > 5 ? '#EF4444' : '#10B981'} />
+        </View>
+        {/* Status Distribution */}
+        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
+          {Object.entries(api.status_distribution || {}).map(([code, count]) => (
+            <View key={code} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, backgroundColor: code === '2xx' ? '#10B98118' : code === '4xx' ? '#F59E0B18' : '#EF444418' }}>
+              <Text style={{ fontSize: 11, fontWeight: '800', color: code === '2xx' ? '#10B981' : code === '4xx' ? '#F59E0B' : '#EF4444' }}>{code}: {count as number}</Text>
+            </View>
+          ))}
+        </View>
+        {/* Top Endpoints */}
+        {api.top_endpoints?.length > 0 && (
+          <View style={{ backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: 12, padding: 12, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}>
+            <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFF', marginBottom: 8 }}>Top Endpoints (1h)</Text>
+            {api.top_endpoints.slice(0, 8).map((ep: any, i: number) => (
+              <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4, borderBottomWidth: i < 7 ? 1 : 0, borderBottomColor: 'rgba(255,255,255,0.03)' }}>
+                <Text style={{ fontSize: 10, color: '#8B8B9E', flex: 1 }} numberOfLines={1}>{ep.endpoint}</Text>
+                <Text style={{ fontSize: 10, color: '#7C3AED', fontWeight: '800', minWidth: 30, textAlign: 'right' }}>{ep.count}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* DATABASE */}
+        <Text style={{ fontSize: 14, fontWeight: '800', color: '#EC4899', marginBottom: 8 }}>BASE DE DONNEES</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+          <StatBox label="Utilisateurs" value={db.total_users || 0} icon="people" color="#7C3AED" />
+          <StatBox label="VIP" value={db.vip_users || 0} icon="diamond" color="#FFD600" sub={`${db.vip_conversion_rate || 0}% conversion`} />
+          <StatBox label="Bannis" value={db.banned_users || 0} icon="ban" color="#EF4444" />
+          <StatBox label="Pre-inscriptions" value={db.pre_registrations || 0} icon="mail" color="#3B82F6" />
+          <StatBox label="Posts" value={db.total_posts || 0} icon="chatbubbles" color="#10B981" />
+          <StatBox label="Commentaires" value={db.total_comments || 0} icon="chatbox" color="#6366F1" />
+          <StatBox label="Notifications" value={db.total_notifications || 0} icon="notifications" color="#F59E0B" />
+          <StatBox label="Messages" value={db.total_messages || 0} icon="mail-open" color="#EC4899" />
+        </View>
+        {/* New Users */}
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+          <StatBox label="Nouveaux (Aujourd'hui)" value={db.new_users_today || 0} icon="person-add" color="#00D9A5" />
+          <StatBox label="Nouveaux (7j)" value={db.new_users_week || 0} icon="trending-up" color="#3B82F6" />
+          <StatBox label="Nouveaux (30j)" value={db.new_users_month || 0} icon="calendar" color="#8B5CF6" />
+          <StatBox label="Posts (Aujourd'hui)" value={db.posts_today || 0} icon="create" color="#10B981" />
+          <StatBox label="Posts (7j)" value={db.posts_week || 0} icon="document-text" color="#6366F1" />
+        </View>
+        {/* Top Contributors */}
+        {db.top_contributors?.length > 0 && (
+          <View style={{ backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: 12, padding: 12, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}>
+            <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFF', marginBottom: 8 }}>Top Contributeurs</Text>
+            {db.top_contributors.map((c: any, i: number) => (
+              <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 }}>
+                <Text style={{ fontSize: 11, color: '#8B8B9E' }}>{i + 1}. {c.name}</Text>
+                <Text style={{ fontSize: 11, color: '#7C3AED', fontWeight: '800' }}>{c.posts} posts</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* ATLAS AI */}
+        <Text style={{ fontSize: 14, fontWeight: '800', color: '#8B5CF6', marginBottom: 8 }}>ATLAS AI</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+          <StatBox label="Appels aujourd'hui" value={atlas.calls_today || 0} icon="planet" color="#8B5CF6" />
+          <StatBox label="Appels (7j)" value={atlas.calls_week || 0} icon="chatbubble" color="#6366F1" />
+        </View>
+        {Object.keys(atlas.language_distribution || {}).length > 0 && (
+          <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
+            {Object.entries(atlas.language_distribution).map(([lang, count]) => (
+              <View key={lang} style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, backgroundColor: 'rgba(139,92,246,0.12)' }}>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: '#8B5CF6' }}>{lang.toUpperCase()}: {count as number}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* COINGECKO API BUDGET */}
+        <Text style={{ fontSize: 14, fontWeight: '800', color: '#F59E0B', marginBottom: 8 }}>BUDGET API COINGECKO</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+          <StatBox label="Appels aujourd'hui" value={cg.calls_today || 0} icon="flash" color="#F59E0B" />
+          <StatBox label="Appels/heure" value={cg.calls_per_hour || 0} icon="time" color="#FF8F00" />
+          <StatBox label="Ce mois" value={cg.calls_this_month || 0} icon="calendar" color="#EF4444" sub={`/ ${(cg.monthly_limit || 100000).toLocaleString()}`} />
+        </View>
+        <ProgressBar value={cg.calls_this_month || 0} max={cg.monthly_limit || 100000} color={(cg.usage_percent || 0) > 80 ? '#EF4444' : '#F59E0B'} label={`Usage mensuel: ${cg.usage_percent || 0}%`} />
+        <View style={{ height: 16 }} />
+
+        {/* SYSTEM */}
+        <Text style={{ fontSize: 14, fontWeight: '800', color: '#6366F1', marginBottom: 8 }}>SYSTEME</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+          <StatBox label="Uptime" value={`${sys.uptime_hours || 0}h`} icon="server" color="#6366F1" />
+          <StatBox label="Python" value={sys.python_version || '?'} icon="code-slash" color="#3B82F6" />
+          <StatBox label="Events suivis" value={sys.total_tracked_events || 0} icon="analytics" color="#10B981" />
+        </View>
+
+        {/* Hourly Activity Chart */}
+        {eng.hourly_chart?.length > 0 && (
+          <View style={{ backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: 12, padding: 12, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}>
+            <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFF', marginBottom: 8 }}>Activite par heure (24h)</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-end', height: 60, gap: 1 }}>
+              {eng.hourly_chart.map((h: any, i: number) => {
+                const maxCalls = Math.max(...eng.hourly_chart.map((x: any) => x.calls), 1);
+                const barH = Math.max(2, (h.calls / maxCalls) * 56);
+                return (
+                  <View key={i} style={{ flex: 1, alignItems: 'center' }}>
+                    <View style={{ width: '80%', height: barH, backgroundColor: h.calls > 0 ? '#7C3AED' : '#1A1A35', borderRadius: 2 }} />
+                  </View>
+                );
+              })}
+            </View>
+            <View style={{ flexDirection: 'row', marginTop: 4 }}>
+              {[0, 6, 12, 18, 23].map(i => (
+                <Text key={i} style={{ flex: 1, fontSize: 7, color: '#5A5A6E', textAlign: i === 0 ? 'left' : i === 23 ? 'right' : 'center' }}>{eng.hourly_chart[i]?.hour}</Text>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* Request Rate Chart */}
+        {api.rate_chart?.length > 0 && (
+          <View style={{ backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: 12, padding: 12, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}>
+            <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFF', marginBottom: 8 }}>Requetes/min (10 dernieres min)</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-end', height: 50, gap: 2 }}>
+              {api.rate_chart.map((r: any, i: number) => {
+                const maxReqs = Math.max(...api.rate_chart.map((x: any) => x.requests), 1);
+                const barH = Math.max(2, (r.requests / maxReqs) * 46);
+                return (
+                  <View key={i} style={{ flex: 1, alignItems: 'center' }}>
+                    <Text style={{ fontSize: 7, color: '#5A5A6E', marginBottom: 2 }}>{r.requests}</Text>
+                    <View style={{ width: '80%', height: barH, backgroundColor: '#3B82F6', borderRadius: 2 }} />
+                    <Text style={{ fontSize: 7, color: '#5A5A6E', marginTop: 2 }}>{r.minute}</Text>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        )}
+
+        {/* Registration Trend */}
+        {db.registration_trend?.length > 0 && (
+          <View style={{ backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: 12, padding: 12, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}>
+            <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFF', marginBottom: 8 }}>Inscriptions (30 jours)</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-end', height: 50, gap: 1 }}>
+              {db.registration_trend.map((r: any, i: number) => {
+                const maxCount = Math.max(...db.registration_trend.map((x: any) => x.count), 1);
+                const barH = Math.max(1, (r.count / maxCount) * 46);
+                return (
+                  <View key={i} style={{ flex: 1, alignItems: 'center' }}>
+                    <View style={{ width: '80%', height: barH, backgroundColor: r.count > 0 ? '#10B981' : '#1A1A35', borderRadius: 1 }} />
+                  </View>
+                );
+              })}
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
+              <Text style={{ fontSize: 7, color: '#5A5A6E' }}>{db.registration_trend[0]?.date}</Text>
+              <Text style={{ fontSize: 7, color: '#5A5A6E' }}>{db.registration_trend[db.registration_trend.length - 1]?.date}</Text>
+            </View>
+          </View>
+        )}
+      </Animated.View>
+    );
+  };
+
 
   const renderDashboard = () => (
     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
@@ -1927,6 +2182,7 @@ export default function AdminScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabsScroll}>
           <View style={styles.tabsContainer}>
             {([
+              { key: 'analytics', icon: 'pulse', label: 'Analytics Live', superAdminOnly: true },
               { key: 'dashboard', icon: 'grid', label: 'Tableau de bord', superAdminOnly: false },
               { key: 'users', icon: 'people', label: `Utilisateurs (${users.length})`, superAdminOnly: false },
               { key: 'posts', icon: 'chatbubbles', label: `Publications (${posts.length})`, superAdminOnly: false },
@@ -1986,6 +2242,7 @@ export default function AdminScreen() {
             />
           }
         >
+          {activeTab === 'analytics' && isSuperAdmin && renderAnalytics()}
           {activeTab === 'dashboard' && renderDashboard()}
           {activeTab === 'users' && renderUsers()}
           {activeTab === 'posts' && renderPosts()}

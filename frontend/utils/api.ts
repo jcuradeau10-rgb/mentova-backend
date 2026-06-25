@@ -125,6 +125,10 @@ export const adminAPI = {
   // Stats
   getStats: () => api.get('/admin/stats'),
   
+  // Analytics (super admin)
+  getAnalytics: () => api.get('/admin/analytics/realtime'),
+  trackEvent: (data: { page: string; user_id?: string }) => api.post('/admin/analytics/track', data),
+  
   // Users
   getUsers: (params?: { search?: string; role_filter?: string; banned_only?: boolean; limit?: number; skip?: number }) =>
     api.get('/admin/users', { params }),

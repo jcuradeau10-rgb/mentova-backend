@@ -12047,7 +12047,38 @@ from routes.admin import router as admin_router, set_admin_deps
 set_admin_deps(db)
 app.include_router(admin_router, prefix="/api")
 
+# Analytics router
+from routes.analytics import router as analytics_router, set_analytics_db, track_api_call, track_coingecko_call, track_atlas_call
+set_analytics_db(db)
+app.include_router(analytics_router, prefix="/api")
 
+
+
+
+
+# Analytics tracking middleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request as StarletteRequest
+
+class AnalyticsMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: StarletteRequest, call_next):
+        start = time.time()
+        response = await call_next(request)
+        # Track API call
+        path = request.url.path
+        if path.startswith("/api/"):
+            user_id = "anonymous"
+            auth = request.headers.get("authorization", "")
+            if auth.startswith("Bearer "):
+                try:
+                    payload = jwt.decode(auth[7:], os.environ.get("JWT_SECRET", "mentova-secret-key-2024"), algorithms=["HS256"])
+                    user_id = payload.get("email", "anonymous")
+                except Exception:
+                    pass
+            track_api_call(path, request.method, user_id, response.status_code)
+        return response
+
+app.add_middleware(AnalyticsMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
