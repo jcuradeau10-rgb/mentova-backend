@@ -40,6 +40,7 @@ export const cryptoAPI = {
   getTrending: () => api.get('/crypto/trending'),
   getGlobalStats: () => api.get('/crypto/global'),
   getChart: (coinId: string, days: string = '7') => api.get(`/crypto/chart/${coinId}`, { params: { days } }),
+  getRainbow: () => api.get('/crypto/rainbow'),
 };
 
 // Education APIs

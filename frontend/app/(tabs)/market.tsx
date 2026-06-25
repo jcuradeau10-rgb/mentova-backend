@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -389,6 +389,198 @@ const iChartStyles = StyleSheet.create({
   chartBox: { borderRadius: 14, overflow: 'hidden', backgroundColor: '#0D0D20' },
 });
 
+// Rainbow BTC Chart Component (freemium: static for all, interactive for VIP)
+const RainbowBTCChart = ({ isVip = false }: { isVip?: boolean }) => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [touchIdx, setTouchIdx] = useState<number | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const chartW = width - 48;
+  const chartH = 280;
+
+  useEffect(() => { loadRainbow(); }, []);
+
+  const loadRainbow = async () => {
+    try {
+      const res = await cryptoAPI.getRainbow();
+      if (res.data.success) setData(res.data);
+    } catch (e) { console.error('Rainbow load error:', e); }
+    finally { setLoading(false); }
+  };
+
+  if (loading || !data) return (
+    <View style={rbStyles.container}>
+      <View style={rbStyles.header}>
+        <Text style={rbStyles.title}>Rainbow Chart</Text>
+        <Text style={rbStyles.subtitle}>Bitcoin Log Regression</Text>
+      </View>
+      <View style={[rbStyles.chartBox, { height: chartH, justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="small" color="#FFD600" />
+      </View>
+    </View>
+  );
+
+  const prices = data.prices || [];
+  const bands = data.bands || [];
+  if (prices.length < 2) return null;
+
+  // Use log scale for Y axis
+  const allLows = prices.map((p: any) => p.band_low).filter((v: number) => v > 0);
+  const allHighs = prices.map((p: any) => p.band_high).filter((v: number) => v > 0);
+  const allPrices = prices.map((p: any) => p.price).filter((v: number) => v > 0);
+  const minLog = Math.log10(Math.max(0.01, Math.min(...allLows, ...allPrices)));
+  const maxLog = Math.log10(Math.max(...allHighs, ...allPrices));
+  const logRange = maxLog - minLog || 1;
+
+  const toY = (price: number) => chartH - ((Math.log10(Math.max(0.01, price)) - minLog) / logRange) * (chartH - 16);
+  const toX = (idx: number) => (idx / (prices.length - 1)) * chartW;
+
+  // Build price line
+  const priceLine = prices.map((p: any, i: number) => `${i === 0 ? 'M' : 'L'} ${toX(i).toFixed(1)},${toY(p.price).toFixed(1)}`).join(' ');
+
+  // Build rainbow band areas (9 bands)
+  const bandPaths = bands.map((_: any, bandIdx: number) => {
+    const topPoints = prices.map((p: any, i: number) => {
+      const bds = _calcBands(p.timestamp);
+      return { x: toX(i), y: toY(bds[bandIdx]?.high || 1) };
+    });
+    const botPoints = prices.map((p: any, i: number) => {
+      const bds = _calcBands(p.timestamp);
+      return { x: toX(i), y: toY(bds[bandIdx]?.low || 0.01) };
+    });
+    const topPath = topPoints.map((pt, i) => `${i === 0 ? 'M' : 'L'} ${pt.x.toFixed(1)},${pt.y.toFixed(1)}`).join(' ');
+    const botPath = botPoints.reverse().map((pt, i) => `${i === 0 ? 'L' : 'L'} ${pt.x.toFixed(1)},${pt.y.toFixed(1)}`).join(' ');
+    return `${topPath} ${botPath} Z`;
+  });
+
+  // Touch handling (VIP only for drag, static indicator for all)
+  const handleTouch = (evt: any) => {
+    if (!isVip) return;
+    const locX = evt.nativeEvent?.locationX ?? evt.nativeEvent?.offsetX;
+    if (locX !== undefined) {
+      const idx = Math.round((Math.max(0, Math.min(locX, chartW)) / chartW) * (prices.length - 1));
+      setTouchIdx(Math.max(0, Math.min(idx, prices.length - 1)));
+      setDragging(true);
+    }
+  };
+  const endTouch = () => { setTimeout(() => { setTouchIdx(null); setDragging(false); }, 1500); };
+
+  const tp = touchIdx !== null ? prices[touchIdx] : null;
+  const tpBand = tp ? bands[tp.band_index] : null;
+
+  // Current "You are here" point
+  const lastP = prices[prices.length - 1];
+  const hereX = toX(prices.length - 1);
+  const hereY = toY(lastP.price);
+
+  return (
+    <View style={rbStyles.container}>
+      <View style={rbStyles.header}>
+        <View>
+          <Text style={rbStyles.title}>Rainbow Chart BTC</Text>
+          <Text style={rbStyles.subtitle}>2010 — {new Date().getFullYear()}</Text>
+        </View>
+        <View style={[rbStyles.currentBandPill, { backgroundColor: data.current_band_color + '25', borderColor: data.current_band_color + '50' }]}>
+          <View style={[rbStyles.bandDot, { backgroundColor: data.current_band_color }]} />
+          <Text style={[rbStyles.bandPillText, { color: data.current_band_color }]}>{data.current_band_label}</Text>
+        </View>
+      </View>
+
+      {/* Touch info */}
+      {tp && tpBand && (
+        <View style={rbStyles.touchInfo}>
+          <Text style={rbStyles.touchPrice}>${tp.price.toLocaleString('en-US', { maximumFractionDigits: 0 })}</Text>
+          <Text style={[rbStyles.touchBand, { color: tpBand.color }]}>{tpBand.label}</Text>
+          <Text style={rbStyles.touchDate}>{new Date(tp.timestamp).toLocaleDateString([], { year: 'numeric', month: 'short' })}</Text>
+        </View>
+      )}
+
+      <View
+        style={[rbStyles.chartBox, { height: chartH }]}
+        onTouchStart={handleTouch} onTouchMove={handleTouch} onTouchEnd={endTouch}
+        {...(Platform.OS === 'web' ? { onMouseDown: handleTouch, onMouseMove: (e: any) => { if (dragging || e.buttons === 1) handleTouch(e); }, onMouseUp: endTouch, onMouseLeave: endTouch } : {})}
+      >
+        <Svg width={chartW} height={chartH}>
+          {/* Rainbow bands */}
+          {bandPaths.map((d: string, i: number) => (
+            <Path key={`band-${i}`} d={d} fill={bands[i]?.color || '#333'} opacity={0.35} />
+          ))}
+
+          {/* Price line */}
+          <Path d={priceLine} stroke="#FFFFFF" strokeWidth={2} fill="none" strokeLinejoin="round" strokeLinecap="round" />
+
+          {/* "You are here" indicator */}
+          <Circle cx={hereX} cy={hereY} r={8} fill={data.current_band_color} opacity={0.25} />
+          <Circle cx={hereX} cy={hereY} r={4.5} fill="#FFFFFF" stroke={data.current_band_color} strokeWidth={2} />
+
+          {/* Crosshair (VIP) */}
+          {touchIdx !== null && tp && (
+            <>
+              <Line x1={toX(touchIdx)} y1={0} x2={toX(touchIdx)} y2={chartH} stroke="#FFF" strokeWidth={0.6} strokeDasharray="3,4" opacity={0.5} />
+              <Circle cx={toX(touchIdx)} cy={toY(tp.price)} r={6} fill={tpBand?.color || '#FFF'} opacity={0.3} />
+              <Circle cx={toX(touchIdx)} cy={toY(tp.price)} r={3.5} fill="#FFF" stroke={tpBand?.color || '#FFF'} strokeWidth={2} />
+            </>
+          )}
+        </Svg>
+
+        {/* VIP Lock Overlay */}
+        {!isVip && (
+          <View style={rbStyles.lockOverlay}>
+            <Ionicons name="lock-closed" size={20} color="#FFD600" />
+            <Text style={rbStyles.lockText}>VIP: Interaction</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Legend */}
+      <View style={rbStyles.legend}>
+        {bands.map((b: any, i: number) => (
+          <View key={i} style={rbStyles.legendItem}>
+            <View style={[rbStyles.legendDot, { backgroundColor: b.color }]} />
+            <Text style={rbStyles.legendLabel} numberOfLines={1}>{b.label}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+};
+
+// Helper: calculate band prices at a given timestamp (must match backend logic)
+function _calcBands(timestampMs: number) {
+  const BTC_GENESIS = 1230940800;
+  const days = Math.max(1, (timestampMs / 1000 - BTC_GENESIS) / 86400);
+  const logDays = Math.log10(days);
+  const base = 5.84 * logDays - 17.01;
+  const bw = 0.35;
+  const offset = 4.5 * bw;
+  const result: any[] = [];
+  for (let i = 0; i < 9; i++) {
+    result.push({ low: Math.pow(10, base - offset + i * bw), high: Math.pow(10, base - offset + (i + 1) * bw) });
+  }
+  return result;
+}
+
+const rbStyles = StyleSheet.create({
+  container: { marginBottom: 20 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 },
+  title: { fontSize: 18, fontWeight: '800', color: '#FFF', letterSpacing: -0.3 },
+  subtitle: { fontSize: 12, color: '#8B8B9E', marginTop: 2 },
+  currentBandPill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12, borderWidth: 1 },
+  bandDot: { width: 8, height: 8, borderRadius: 4 },
+  bandPillText: { fontSize: 11, fontWeight: '800' },
+  touchInfo: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 },
+  touchPrice: { fontSize: 18, fontWeight: '900', color: '#FFF' },
+  touchBand: { fontSize: 12, fontWeight: '700' },
+  touchDate: { fontSize: 11, color: '#8B8B9E' },
+  chartBox: { borderRadius: 14, overflow: 'hidden', backgroundColor: '#0D0D20', position: 'relative' as any },
+  lockOverlay: { position: 'absolute' as any, bottom: 10, right: 10, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10, backgroundColor: 'rgba(0,0,0,0.7)' },
+  lockText: { fontSize: 11, fontWeight: '700', color: '#FFD600' },
+  legend: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 10 },
+  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 6, paddingVertical: 3, borderRadius: 6, backgroundColor: 'rgba(255,255,255,0.04)' },
+  legendDot: { width: 6, height: 6, borderRadius: 3 },
+  legendLabel: { fontSize: 9, color: '#8B8B9E', fontWeight: '600' },
+});
+
 export default function MarketScreen() {
   const { t } = useTranslation();
   const [cryptoPrices, setCryptoPrices] = useState<CryptoData[]>([]);
@@ -678,6 +870,11 @@ export default function MarketScreen() {
                     </Text>
                   </View>
                 </View>
+
+                {/* Rainbow Chart (Bitcoin only) */}
+                {selectedCrypto.id === 'bitcoin' && (
+                  <RainbowBTCChart isVip={false} />
+                )}
 
                 {/* Interactive Chart */}
                 <View style={styles.chartContainer}>

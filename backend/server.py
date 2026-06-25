@@ -989,6 +989,167 @@ def _generate_mock_chart(coin_id: str, days: int):
         data.append({"timestamp": ts, "price": round(price, 2 if price >= 1 else 6), "volume": round(vol, 0)})
     return data
 
+# ==================== RAINBOW BTC CHART ====================
+import math
+
+# Rainbow band definitions (bottom to top)
+RAINBOW_BANDS = [
+    {"label": "Fire Sale", "color": "#4A0080"},
+    {"label": "BUY!", "color": "#6236FF"},
+    {"label": "Accumulate", "color": "#3D85C6"},
+    {"label": "Still Cheap", "color": "#00BCD4"},
+    {"label": "HODL!", "color": "#4CAF50"},
+    {"label": "Is this a bubble?", "color": "#8BC34A"},
+    {"label": "FOMO Intensifies", "color": "#FFD600"},
+    {"label": "Sell. Seriously, SELL!", "color": "#FF9800"},
+    {"label": "Maximum Bubble", "color": "#F44336"},
+]
+
+# Bitcoin genesis block: Jan 3, 2009
+BTC_GENESIS_TS = 1230940800  # epoch seconds
+
+def _rainbow_band_prices(timestamp_ms: int) -> list:
+    """Calculate the rainbow band price boundaries at a given timestamp using log regression."""
+    days_since_genesis = max(1, (timestamp_ms / 1000 - BTC_GENESIS_TS) / 86400)
+    log_days = math.log10(days_since_genesis)
+    
+    # Power-law regression: log10(price) = a * log10(days) + b
+    a = 5.84
+    b = -17.01
+    base_log_price = a * log_days + b
+    
+    # Each band spans 0.35 in log10 space (factor of ~2.24x between bands)
+    # Center the 9 bands around the regression line
+    band_width = 0.35
+    center_offset = 4.5 * band_width  # shift so regression is center of band 4-5
+    
+    bands = []
+    for i in range(len(RAINBOW_BANDS)):
+        low = 10 ** (base_log_price - center_offset + i * band_width)
+        high = 10 ** (base_log_price - center_offset + (i + 1) * band_width)
+        bands.append({"low": round(low, 2), "high": round(high, 2)})
+    return bands
+
+def _get_current_band(price: float, bands: list) -> int:
+    """Return the index of the band the price falls into (-1 if below all)."""
+    for i, band in enumerate(bands):
+        if price < band["high"]:
+            return i
+    return len(bands) - 1
+
+_rainbow_cache: Dict[str, Any] = {"data": None, "fetched_at": 0}
+
+@api_router.get("/crypto/rainbow")
+async def get_rainbow_chart():
+    """Get Bitcoin Rainbow Chart data: historical prices + band boundaries."""
+    # Cache for 1 hour
+    if _rainbow_cache["data"] and time.time() - _rainbow_cache["fetched_at"] < 3600:
+        return _rainbow_cache["data"]
+    
+    coingecko_key = os.environ.get("COINGECKO_API_KEY")
+    
+    # Pre-computed BTC monthly prices (2010-2024) for full rainbow history
+    # These are approximate monthly close prices
+    btc_historical = [
+        (1280620800000, 0.06), (1283299200000, 0.07), (1285891200000, 0.06),  # 2010
+        (1296518400000, 0.30), (1304208000000, 3.00), (1309478400000, 17.50),  # 2011
+        (1314835200000, 8.00), (1325376000000, 5.00), (1335830400000, 5.30),   # 2011-2012
+        (1341100800000, 6.70), (1346457600000, 10.50), (1351728000000, 11.00), # 2012
+        (1356998400000, 13.50), (1362268800000, 33.00), (1367366400000, 135.00),# 2013
+        (1372636800000, 97.00), (1380585600000, 135.00), (1385856000000, 1100.00),# 2013
+        (1388534400000, 770.00), (1393632000000, 560.00), (1401580800000, 630.00),# 2014
+        (1409529600000, 480.00), (1417392000000, 375.00), (1420070400000, 315.00),# 2014-2015
+        (1427846400000, 245.00), (1435708800000, 260.00), (1443657600000, 237.00),# 2015
+        (1451606400000, 430.00), (1459468800000, 416.00), (1467331200000, 670.00),# 2015-2016
+        (1475280000000, 610.00), (1480550400000, 740.00), (1483228800000, 960.00),# 2016
+        (1488326400000, 1190.00), (1496275200000, 2500.00), (1504224000000, 4700.00),# 2017
+        (1509494400000, 6400.00), (1512086400000, 10800.00), (1514764800000, 13900.00),# 2017
+        (1519862400000, 10200.00), (1527811200000, 7500.00), (1535760000000, 7000.00),# 2018
+        (1543622400000, 4000.00), (1548979200000, 3400.00), (1556668800000, 5300.00),# 2018-2019
+        (1564617600000, 10100.00), (1572566400000, 9200.00), (1577836800000, 7200.00),# 2019
+        (1580515200000, 9400.00), (1588377600000, 8700.00), (1596326400000, 11400.00),# 2020
+        (1604188800000, 13800.00), (1609459200000, 29000.00), (1612137600000, 45000.00),# 2020-2021
+        (1619827200000, 57000.00), (1625097600000, 35000.00), (1632960000000, 43800.00),# 2021
+        (1635638400000, 61300.00), (1640995200000, 46200.00), (1648771200000, 45500.00),# 2021-2022
+        (1656633600000, 19800.00), (1664582400000, 19400.00), (1672444800000, 16500.00),# 2022
+        (1677628800000, 23100.00), (1685577600000, 27200.00), (1693440000000, 26100.00),# 2023
+        (1698710400000, 34500.00), (1704067200000, 42500.00), (1709251200000, 62000.00),# 2023-2024
+        (1714521600000, 60600.00), (1717200000000, 67500.00),  # 2024 Q2
+    ]
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            if coingecko_key:
+                url = "https://pro-api.coingecko.com/api/v3/coins/bitcoin/market_chart"
+                headers = {"x-cg-pro-api-key": coingecko_key}
+            else:
+                url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
+                headers = {}
+            
+            # Get 2 years of real data (max for Basic plan)
+            response = await client.get(url, params={"vs_currency": "usd", "days": 730}, headers=headers, timeout=30.0)
+            
+            if response.status_code == 200:
+                data = response.json()
+                raw_prices = data.get("prices", [])
+                
+                # Merge historical + real data
+                real_start_ts = raw_prices[0][0] if raw_prices else float('inf')
+                merged = [(ts, p) for ts, p in btc_historical if ts < real_start_ts]
+                
+                # Sample real data to ~300 points
+                step = max(1, len(raw_prices) // 300)
+                for i in range(0, len(raw_prices), step):
+                    merged.append((raw_prices[i][0], raw_prices[i][1]))
+                if raw_prices and raw_prices[-1] not in [(t, p) for t, p in merged]:
+                    merged.append((raw_prices[-1][0], raw_prices[-1][1]))
+                
+                merged.sort(key=lambda x: x[0])
+                
+                chart_points = []
+                for ts_ms, price in merged:
+                    bands = _rainbow_band_prices(ts_ms)
+                    band_idx = _get_current_band(price, bands)
+                    chart_points.append({
+                        "timestamp": ts_ms,
+                        "price": round(price, 2),
+                        "band_index": band_idx,
+                        "band_low": bands[0]["low"],
+                        "band_high": bands[-1]["high"],
+                    })
+                
+                # Current price band info
+                last_ts, last_price = merged[-1]
+                current_bands = _rainbow_band_prices(last_ts)
+                current_band_idx = _get_current_band(last_price, current_bands)
+                
+                result = {
+                    "success": True,
+                    "prices": chart_points,
+                    "bands": [{"label": b["label"], "color": b["color"]} for b in RAINBOW_BANDS],
+                    "current_price": round(last_price, 2),
+                    "current_band": current_band_idx,
+                    "current_band_label": RAINBOW_BANDS[current_band_idx]["label"],
+                    "current_band_color": RAINBOW_BANDS[current_band_idx]["color"],
+                    "current_bands_prices": current_bands,
+                    "total_points": len(chart_points),
+                }
+                
+                _rainbow_cache["data"] = result
+                _rainbow_cache["fetched_at"] = time.time()
+                logger.info(f"Rainbow chart cached: {len(chart_points)} points, current band: {RAINBOW_BANDS[current_band_idx]['label']}")
+                return result
+            else:
+                logger.warning(f"Rainbow chart API returned {response.status_code}")
+                raise HTTPException(status_code=502, detail="Failed to fetch BTC data")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Rainbow chart error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
 @api_router.get("/crypto/trending")
 async def get_trending_cryptos():
     """Get trending cryptocurrencies from global cache"""
