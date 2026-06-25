@@ -225,7 +225,7 @@ function Lesson({ levelId, chapterId, chapterTitle, onBack, onQuiz, lang, token 
       if (token) headers['Authorization'] = `Bearer ${token}`;
       const res = await fetch(`${API}/api/atlas/teach/chat`, {
         method: 'POST', headers,
-        body: JSON.stringify({ chapter_id: chapterId, level_id: levelId, message: userMsg, session_id: sessionId }),
+        body: JSON.stringify({ chapter_id: chapterId, level_id: levelId, message: userMsg, session_id: sessionId, lang }),
       });
       const data = await res.json();
       setChatMessages(prev => [...prev, { role: 'assistant', text: data.response || 'Erreur' }]);
@@ -347,7 +347,7 @@ function Quiz({ levelId, chapterId, chapterTitle, onComplete, lang }: {
     try {
       const res = await fetch(`${API}/api/atlas/quiz/correct`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chapter_id: chapterId, question_index: currentQ, question_type: 'open', answer: openAnswer, question_text: q.question, key_points: q.key_points }),
+        body: JSON.stringify({ chapter_id: chapterId, question_index: currentQ, question_type: 'open', answer: openAnswer, question_text: q.question, key_points: q.key_points, lang }),
       });
       const data = await res.json();
       setCorrection(data.correction || '');

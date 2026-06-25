@@ -445,6 +445,7 @@ class QuizAnswer(BaseModel):
     answer: str  # index for mcq, "true"/"false" for truefalse, text for open
     question_text: Optional[str] = None
     key_points: Optional[List[str]] = None
+    lang: str = "en"
 
 class TeachRequest(BaseModel):
     chapter_id: str
@@ -893,10 +894,13 @@ async def correct_open_answer(data: QuizAnswer):
     if data.question_type != "open":
         return {"error": "Only open questions need AI correction"}
 
+    lang_map = {"fr": "French", "en": "English", "es": "Spanish"}
+    language = lang_map.get(data.lang or "en", "English")
     prompt = CORRECT_PROMPT.format(
         question=data.question_text or "",
         user_answer=data.answer,
         key_points=", ".join(data.key_points or []),
+        language=language,
     )
 
     try:
@@ -940,6 +944,7 @@ async def atlas_chat(data: ChatMessage, credentials: HTTPAuthorizationCredential
     uid, is_vip = await _get_user_and_vip(credentials)
     effective_id = uid or data.user_id or "anonymous"
     session_id = data.session_id or str(uuid.uuid4())
+    logger.info(f"Atlas chat: lang={data.lang}, user={effective_id}, session={session_id[:16]}")
 
     # Rate limit check for non-VIP
     if not is_vip:
@@ -992,6 +997,7 @@ async def atlas_chat_simple(data: ChatMessage, credentials: HTTPAuthorizationCre
     uid, is_vip = await _get_user_and_vip(credentials)
     effective_id = uid or data.user_id or "anonymous"
     session_id = data.session_id or str(uuid.uuid4())
+    logger.info(f"Atlas chat/simple: lang={data.lang}, user={effective_id}, session={session_id[:16]}")
 
     # Rate limit check for non-VIP
     if not is_vip:

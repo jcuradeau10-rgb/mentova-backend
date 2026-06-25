@@ -1,0 +1,38 @@
+{
+  "summary": "Verified the Atlas language P0 bug fix end-to-end. Backend: 8/8 pytest tests PASSED for /api/atlas/chat/simple, /api/atlas/chat (SSE streaming), and /api/atlas/teach/chat. Atlas responds in English when lang=en, French when lang=fr, Spanish when lang=es, and defaults to English when lang is omitted. Frontend: Atlas Chat tab loads in English ('Hey! I'm Atlas', quick prompts 'What is Bitcoin?', 'How does blockchain work?', 'DeFi for beginners', 'Assess my crypto level'), and the backend log confirms the frontend session sent lang=en (atlas-1782346515 -> 'Atlas chat: lang=en'). The Bitcoin reply rendered in the chat is fully English. The P0 bug is FIXED.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_atlas_language.py",
+    "/app/test_reports/pytest/pytest_atlas_language.xml"
+  ],
+  "action_items": [
+    "(optional) Add 'lang' to the useCallback deps of sendMessage in AtlasChat (learn.tsx ~line 524) so a mid-session language switch is picked up by the closure. Currently lang is captured at first render which is fine for typical session lifetime but not for live switching.",
+    "(optional) The fallback error message on /api/atlas/chat catch path is still hard-coded French ('Erreur' / 'Erreur de connexion') in learn.tsx line 521. Localize via t() to match selected language.",
+    "(optional) The rate-limit message in routes/atlas.py line 795 is hard-coded French ('Tu as atteint ta limite...'). Localize using the lang parameter."
+  ],
+  "critical_code_review_comments": [
+    "routes/atlas.py: ATLAS_SYSTEM_PROMPT, TEACH_PROMPT, and TEACH_CHAT_PROMPT all reference {language} and are formatted with the lang_map -> language name. format() calls now include language=language everywhere - the previous KeyError risk is resolved.",
+    "routes/atlas.py: ChatMessage.lang defaults to 'en' and TeachChatRequest.lang defaults to 'en'. Backend correctly maps lang -> English/French/Spanish for prompt injection. Verified via logs: 'Atlas chat/simple: lang=X' and 'Atlas chat: lang=X' debug lines are present for both endpoints.",
+    "learn.tsx: AtlasChat sends lang in /api/atlas/chat (line 514), /api/atlas/chat/simple fallback (line 521), and lesson teach/chat sends lang too. Verified via backend log that lang=en was received on a real UI-triggered request.",
+    "languageStore.ts: getInitialLanguage() reads localStorage synchronously on web and defaults to 'en' - this prevents the previous race where the lang prop was undefined on first render of AtlasChat.",
+    "Minor: useCallback dep array for sendMessage in learn.tsx omits 'lang' - if a user changes language mid-conversation without remounting AtlasChat, requests will still carry the stale lang. Low priority for typical usage."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_atlas_language.py (new - 8 tests, all passing)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "Super Admin: jcuradeau.7@gmail.com / Crypto2026! (not strictly required - the Atlas chat endpoints work for anonymous users with rate-limiting).",
+  "seed_data_creation": "Each test uses a fresh TEST_<uuid> session_id to avoid contaminating shared conversation memory. No DB writes are persisted by these endpoints (only in-memory session map).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All three Atlas language endpoints (/api/atlas/chat, /api/atlas/chat/simple, /api/atlas/teach/chat) respect the 'lang' field in the JSON body and default to English when missing. Backend writes a debug log line 'Atlas chat: lang=X' / 'Atlas chat/simple: lang=X' that can be grepped from /var/log/supervisor/backend.err.log to confirm received lang. For UI testing, the language store defaults to 'en' on first load (web reads localStorage synchronously), and the frontend learn.tsx passes lang through to AtlasChat which includes it in every request body. To reproduce: navigate to /learn, click 'Atlas Chat' tab, click a quick prompt, then click the send button - the UI is in English and the streamed response is in English.",
+  "rca of the issue": "Original P0: ATLAS_SYSTEM_PROMPT.format() previously omitted the 'language' kwarg in some code paths, causing KeyError or unsubstituted '{language}' in the prompt, which led GPT-4o to fall back to its default and produce French (matching the surrounding French rate-limit / error strings in code). Fix applied by main agent: (1) routes/atlas.py atlas_chat and atlas_chat_simple now construct `language = lang_map.get(data.lang or 'en', 'English')` and pass language=language to ATLAS_SYSTEM_PROMPT.format(), (2) teach/chat does the same with TEACH_CHAT_PROMPT, (3) frontend learn.tsx now sends 'lang' in body for /api/atlas/chat, /api/atlas/chat/simple, and lesson teach/chat. Verified end-to-end."
+}
