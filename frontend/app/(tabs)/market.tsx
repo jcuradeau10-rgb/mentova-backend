@@ -105,18 +105,14 @@ const InteractiveChart = ({ coinId, initialData, color = '#00D9A5', currentPrice
     setIsLoading(true);
     try {
       const res = await cryptoAPI.getChart(coinId, days);
-      if (res.data.success && res.data.data?.length > 0 && !res.data.mock) {
+      if (res.data.success && res.data.data?.length > 0) {
         const raw = res.data.data;
         const step = Math.max(1, Math.floor(raw.length / 200));
         const sampled = raw.filter((_: any, i: number) => i % step === 0 || i === raw.length - 1);
         setChartData(sampled);
-      } else if (res.data.mock) {
-        console.warn('Chart returned mock data — CoinGecko API may be down');
-        setChartData([]);
       }
     } catch (e) {
       console.error('Chart load error:', e);
-      setChartData([]);
     } finally {
       setIsLoading(false);
     }
