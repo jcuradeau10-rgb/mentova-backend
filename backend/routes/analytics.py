@@ -93,11 +93,24 @@ async def get_realtime_analytics(admin: dict = Depends(_super_admin_auth)):
     week_start = (datetime.now(timezone.utc) - timedelta(days=7)).timestamp()
     month_start = (datetime.now(timezone.utc) - timedelta(days=30)).timestamp()
     
-    # === ACTIVE USERS ===
-    active_1min = sum(1 for ts in _active_sessions.values() if now - ts < 60)
-    active_5min = sum(1 for ts in _active_sessions.values() if now - ts < 300)
-    active_15min = sum(1 for ts in _active_sessions.values() if now - ts < 900)
-    active_1h = sum(1 for ts in _active_sessions.values() if now - ts < 3600)
+    # === ACTIVE USERS (computed from API call log, not separate session tracking) ===
+    active_users_1min = set()
+    active_users_5min = set()
+    active_users_15min = set()
+    active_users_1h = set()
+    for c in _api_calls_log:
+        uid = c["user_id"]
+        if uid == "anonymous":
+            continue
+        age = now - c["ts"]
+        if age < 60:
+            active_users_1min.add(uid)
+        if age < 300:
+            active_users_5min.add(uid)
+        if age < 900:
+            active_users_15min.add(uid)
+        if age < 3600:
+            active_users_1h.add(uid)
     
     # === API CALLS ===
     calls_1min = sum(1 for c in _api_calls_log if now - c["ts"] < 60)
@@ -257,11 +270,11 @@ async def get_realtime_analytics(admin: dict = Depends(_super_admin_auth)):
     return {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "live": {
-            "active_now": active_1min,
-            "active_5min": active_5min,
-            "active_15min": active_15min,
-            "active_1h": active_1h,
-            "total_sessions": len(_active_sessions),
+            "active_now": len(active_users_1min),
+            "active_5min": len(active_users_5min),
+            "active_15min": len(active_users_15min),
+            "active_1h": len(active_users_1h),
+            "total_sessions": len(set(c["user_id"] for c in _api_calls_log if c["user_id"] != "anonymous")),
         },
         "api": {
             "calls_per_minute": calls_1min,

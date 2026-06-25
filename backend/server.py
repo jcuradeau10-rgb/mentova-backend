@@ -151,11 +151,7 @@ async def _fetch_coingecko(endpoint: str, params: dict = None) -> dict | None:
                 timeout=12.0,
             )
             # Track CoinGecko API call for analytics
-            try:
-                from routes.analytics import track_coingecko_call
-                track_coingecko_call()
-            except Exception:
-                pass
+            track_coingecko_call()
             if resp.status_code == 200:
                 return resp.json()
             logger.warning(f"CoinGecko {endpoint} returned {resp.status_code}")
