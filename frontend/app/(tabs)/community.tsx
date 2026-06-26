@@ -65,8 +65,9 @@ export default function CommunityScreen() {
     }
   }, [user?.founding_member]);
 
-  // ─── COMMUNITY GATE: only founding members can access ───
-  if (!user?.founding_member) {
+  // ─── COMMUNITY GATE: only founding members + admins can access ───
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  if (!user?.founding_member && !isAdmin) {
     const launchDate = new Date('2025-08-10T00:00:00');
     const now = new Date();
     const diff = Math.max(0, launchDate.getTime() - now.getTime());
