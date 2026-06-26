@@ -2840,6 +2840,17 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     'myFeedback.noReplyYet': 'Pas encore de réponse',
     'myFeedback.noReplyDesc': 'Notre équipe a bien reçu votre message et le traitera prochainement.',
 
+    'community.gate.title': 'Espace Communautaire',
+    'community.gate.subtitle': 'Bientôt disponible',
+    'community.gate.message': 'Les membres fondateurs bénéficient d\'un accès anticipé à la communauté.',
+    'community.gate.message2': 'Les autres membres y auront accès au lancement officiel de la plateforme.',
+    'community.gate.countdown_days': 'jours',
+    'community.gate.countdown_hours': 'heures',
+    'community.gate.members_count': 'membres fondateurs',
+    'community.gate.cta': 'Devenir Membre Fondateur',
+    'community.gate.cta_price': '9,99$/mois',
+    'community.gate.note': 'Accès anticipé à la communauté + badge exclusif + outils VIP',
+
   },
   
   en: {
@@ -5566,6 +5577,17 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     'myFeedback.noReplyYet': 'No reply yet',
     'myFeedback.noReplyDesc': 'Our team has received your message and will respond soon.',
 
+    'community.gate.title': 'Community Space',
+    'community.gate.subtitle': 'Coming soon',
+    'community.gate.message': 'Founding members get early access to the community.',
+    'community.gate.message2': 'Other members will get access at the official platform launch.',
+    'community.gate.countdown_days': 'days',
+    'community.gate.countdown_hours': 'hours',
+    'community.gate.members_count': 'founding members',
+    'community.gate.cta': 'Become a Founding Member',
+    'community.gate.cta_price': '$9.99/mo',
+    'community.gate.note': 'Early access to community + exclusive badge + VIP tools',
+
   },
     'vipHub.whatYouWillFind': 'What you will find',
     // === SETTINGS NOTIFICATIONS & PRIVACY ===
@@ -8284,6 +8306,17 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     'myFeedback.adminResponse': 'Respuesta del equipo',
     'myFeedback.noReplyYet': 'Sin respuesta aún',
     'myFeedback.noReplyDesc': 'Nuestro equipo ha recibido tu mensaje y responderá pronto.',
+
+    'community.gate.title': 'Espacio Comunitario',
+    'community.gate.subtitle': 'Próximamente',
+    'community.gate.message': 'Los miembros fundadores tienen acceso anticipado a la comunidad.',
+    'community.gate.message2': 'Los demás miembros tendrán acceso en el lanzamiento oficial de la plataforma.',
+    'community.gate.countdown_days': 'días',
+    'community.gate.countdown_hours': 'horas',
+    'community.gate.members_count': 'miembros fundadores',
+    'community.gate.cta': 'Ser Miembro Fundador',
+    'community.gate.cta_price': '$9.99/mes',
+    'community.gate.note': 'Acceso anticipado a la comunidad + insignia exclusiva + herramientas VIP',
 
   },
     'vipHub.whatYouWillFind': 'Lo que encontrará',

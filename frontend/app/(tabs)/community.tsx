@@ -57,13 +57,13 @@ export default function CommunityScreen() {
 
   // Fetch founding member count for the gate screen
   useEffect(() => {
-    if (!user?.founding_member) {
+    if (!user?.founding_member && !(user?.role === 'admin' || user?.role === 'super_admin')) {
       fetch(`${API}/api/spots-remaining`)
         .then(r => r.json())
-        .then(d => setFoundingCount(d.registered || 0))
+        .then(d => setFoundingCount(d.preregistered || d.registered || 0))
         .catch(() => {});
     }
-  }, [user?.founding_member]);
+  }, [user?.founding_member, user?.role]);
 
   // ─── COMMUNITY GATE: only founding members + admins can access ───
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
@@ -83,18 +83,17 @@ export default function CommunityScreen() {
           </View>
 
           {/* Title */}
-          <Text style={s.gateTitle}>Espace Communautaire</Text>
-          <Text style={s.gateSubtitle}>Bientot disponible</Text>
+          <Text style={s.gateTitle}>{t('community.gate.title')}</Text>
+          <Text style={s.gateSubtitle}>{t('community.gate.subtitle')}</Text>
 
           {/* Message */}
           <View style={s.gateCard}>
             <Ionicons name="calendar-outline" size={22} color="#00D9A5" style={{ marginBottom: 10 }} />
             <Text style={s.gateMessage}>
-              La communaute ouvre ses portes le{' '}
-              <Text style={s.gateHighlight}>10 aout</Text> pour les membres fondateurs.
+              {t('community.gate.message')}
             </Text>
             <Text style={s.gateMessage2}>
-              Sois parmi les premiers a rejoindre la conversation.
+              {t('community.gate.message2')}
             </Text>
           </View>
 
@@ -103,12 +102,12 @@ export default function CommunityScreen() {
             <View style={s.gateCountdown}>
               <View style={s.gateCountItem}>
                 <Text style={s.gateCountNum}>{days}</Text>
-                <Text style={s.gateCountLabel}>jours</Text>
+                <Text style={s.gateCountLabel}>{t('community.gate.countdown_days')}</Text>
               </View>
               <Text style={s.gateCountSep}>:</Text>
               <View style={s.gateCountItem}>
                 <Text style={s.gateCountNum}>{hours}</Text>
-                <Text style={s.gateCountLabel}>heures</Text>
+                <Text style={s.gateCountLabel}>{t('community.gate.countdown_hours')}</Text>
               </View>
             </View>
           )}
@@ -117,7 +116,7 @@ export default function CommunityScreen() {
           <View style={s.gateStats}>
             <Ionicons name="people" size={18} color="#7C3AED" />
             <Text style={s.gateStatsText}>
-              <Text style={s.gateHighlight}>{foundingCount}</Text> / 500 membres fondateurs
+              <Text style={s.gateHighlight}>{foundingCount}</Text> / 500 {t('community.gate.members_count')}
             </Text>
           </View>
 
@@ -130,13 +129,13 @@ export default function CommunityScreen() {
           >
             <LinearGradient colors={['#7C3AED', '#A855F7']} style={s.gateCtaGrad}>
               <Ionicons name="star" size={18} color="#FFD700" />
-              <Text style={s.gateCtaText}>Devenir Membre Fondateur</Text>
-              <Text style={s.gateCtaPrice}>9,99$/mois</Text>
+              <Text style={s.gateCtaText}>{t('community.gate.cta')}</Text>
+              <Text style={s.gateCtaPrice}>{t('community.gate.cta_price')}</Text>
             </LinearGradient>
           </TouchableOpacity>
 
           <Text style={s.gateNote}>
-            Acces prioritaire a la communaute + badge exclusif + outils VIP
+            {t('community.gate.note')}
           </Text>
         </View>
       </SafeAreaView>

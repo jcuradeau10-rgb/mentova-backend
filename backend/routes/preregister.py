@@ -261,12 +261,14 @@ async def spots_remaining():
     try:
         wave_config = await get_wave_config()
         count = await get_registration_count()
+        total_preregistered = await db.pre_registrations.count_documents({})
         total_limit = wave_config.get("total_limit", WAVE1_LIMIT)
 
         return {
             "wave": 2 if wave_config.get("wave2_active") else 1,
             "total": total_limit,
             "registered": count,
+            "preregistered": total_preregistered,
             "remaining": max(0, total_limit - count),
             "wave2_active": wave_config.get("wave2_active", False),
             "wave2_deadline": wave_config.get("wave2_deadline"),
