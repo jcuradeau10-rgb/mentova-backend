@@ -53,6 +53,94 @@ export default function CommunityScreen() {
   const [detail, setDetail] = useState<Post | null>(null);
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState('');
+  const [foundingCount, setFoundingCount] = useState(0);
+
+  // Fetch founding member count for the gate screen
+  useEffect(() => {
+    if (!user?.founding_member) {
+      fetch(`${API}/api/spots-remaining`)
+        .then(r => r.json())
+        .then(d => setFoundingCount(d.registered || 0))
+        .catch(() => {});
+    }
+  }, [user?.founding_member]);
+
+  // ─── COMMUNITY GATE: only founding members can access ───
+  if (!user?.founding_member) {
+    const launchDate = new Date('2025-08-10T00:00:00');
+    const now = new Date();
+    const diff = Math.max(0, launchDate.getTime() - now.getTime());
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+
+    return (
+      <SafeAreaView style={s.safe} edges={['top']}>
+        <View style={s.gateContainer} data-testid="community-gate">
+          {/* Icon */}
+          <View style={s.gateIconWrap}>
+            <Ionicons name="lock-closed" size={40} color="#7C3AED" />
+          </View>
+
+          {/* Title */}
+          <Text style={s.gateTitle}>Espace Communautaire</Text>
+          <Text style={s.gateSubtitle}>Bientot disponible</Text>
+
+          {/* Message */}
+          <View style={s.gateCard}>
+            <Ionicons name="calendar-outline" size={22} color="#00D9A5" style={{ marginBottom: 10 }} />
+            <Text style={s.gateMessage}>
+              La communaute ouvre ses portes le{' '}
+              <Text style={s.gateHighlight}>10 aout</Text> pour les membres fondateurs.
+            </Text>
+            <Text style={s.gateMessage2}>
+              Sois parmi les premiers a rejoindre la conversation.
+            </Text>
+          </View>
+
+          {/* Countdown */}
+          {diff > 0 && (
+            <View style={s.gateCountdown}>
+              <View style={s.gateCountItem}>
+                <Text style={s.gateCountNum}>{days}</Text>
+                <Text style={s.gateCountLabel}>jours</Text>
+              </View>
+              <Text style={s.gateCountSep}>:</Text>
+              <View style={s.gateCountItem}>
+                <Text style={s.gateCountNum}>{hours}</Text>
+                <Text style={s.gateCountLabel}>heures</Text>
+              </View>
+            </View>
+          )}
+
+          {/* Founding counter */}
+          <View style={s.gateStats}>
+            <Ionicons name="people" size={18} color="#7C3AED" />
+            <Text style={s.gateStatsText}>
+              <Text style={s.gateHighlight}>{foundingCount}</Text> / 500 membres fondateurs
+            </Text>
+          </View>
+
+          {/* CTA */}
+          <TouchableOpacity
+            style={s.gateCta}
+            onPress={() => router.push('/vip/hub' as any)}
+            activeOpacity={0.8}
+            data-testid="community-gate-cta"
+          >
+            <LinearGradient colors={['#7C3AED', '#A855F7']} style={s.gateCtaGrad}>
+              <Ionicons name="star" size={18} color="#FFD700" />
+              <Text style={s.gateCtaText}>Devenir Membre Fondateur</Text>
+              <Text style={s.gateCtaPrice}>9,99$/mois</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          <Text style={s.gateNote}>
+            Acces prioritaire a la communaute + badge exclusif + outils VIP
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -602,4 +690,26 @@ const s = StyleSheet.create({
   composeTools: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.06)' },
   composeTool: { padding: 8, borderRadius: 10, backgroundColor: 'rgba(124,58,237,0.1)' },
   composeCount: { color: '#555', fontSize: 13 },
+
+  // ─── COMMUNITY GATE ───
+  gateContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28 },
+  gateIconWrap: { width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(124,58,237,0.12)', alignItems: 'center', justifyContent: 'center', marginBottom: 20, borderWidth: 1, borderColor: 'rgba(124,58,237,0.2)' },
+  gateTitle: { fontSize: 24, fontWeight: '900', color: '#FFF', marginBottom: 4, letterSpacing: -0.5 },
+  gateSubtitle: { fontSize: 14, color: '#666', fontWeight: '600', marginBottom: 24, textTransform: 'uppercase', letterSpacing: 1 },
+  gateCard: { backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 20, padding: 24, alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)', marginBottom: 24, width: '100%' },
+  gateMessage: { fontSize: 16, color: '#CCC', textAlign: 'center', lineHeight: 24 },
+  gateMessage2: { fontSize: 14, color: '#888', textAlign: 'center', marginTop: 8, lineHeight: 20 },
+  gateHighlight: { color: '#7C3AED', fontWeight: '800' },
+  gateCountdown: { flexDirection: 'row', alignItems: 'center', marginBottom: 20, gap: 8 },
+  gateCountItem: { alignItems: 'center', backgroundColor: 'rgba(124,58,237,0.1)', borderRadius: 14, paddingHorizontal: 18, paddingVertical: 10, borderWidth: 1, borderColor: 'rgba(124,58,237,0.2)' },
+  gateCountNum: { fontSize: 28, fontWeight: '900', color: '#FFF' },
+  gateCountLabel: { fontSize: 11, color: '#888', fontWeight: '600', textTransform: 'uppercase', marginTop: 2 },
+  gateCountSep: { fontSize: 24, color: '#444', fontWeight: '700' },
+  gateStats: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 24, backgroundColor: 'rgba(124,58,237,0.08)', paddingHorizontal: 18, paddingVertical: 10, borderRadius: 14 },
+  gateStatsText: { fontSize: 14, color: '#AAA', fontWeight: '600' },
+  gateCta: { width: '100%', marginBottom: 12 },
+  gateCtaGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 16, borderRadius: 16 },
+  gateCtaText: { fontSize: 16, fontWeight: '800', color: '#FFF' },
+  gateCtaPrice: { fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: '600' },
+  gateNote: { fontSize: 12, color: '#555', textAlign: 'center', lineHeight: 18 },
 });
