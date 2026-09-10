@@ -44,6 +44,8 @@
 6. Updated translations (FR/EN/ES) for onboarding features
 7. Deployed static site to mentova-academy.com
 8. Built + deployed React app to app.mentova-academy.com
+9. Enriched landing page (FR/EN/ES) with: Stats banner (20+, 3 langs, 24/7, 0$), detailed feature sections (Atlas, Market, News with visuals), "How it works" 3-step section, "Our Vision" section with 4 values, removed all middots/dashes
+10. Diagnosed Render 502: MongoDB Atlas cluster is paused, DNS not resolving
 
 ### Known Issues
 - Render backend 502: User needs to trigger a deploy on Render dashboard or push code via GitHub

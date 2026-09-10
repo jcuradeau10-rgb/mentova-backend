@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mentova | Aprende Crypto Gratis</title>
-<meta name="description" content="Mentova: tu mentor IA crypto. Cursos adaptativos, mercado en tiempo real, noticias traducidas. Acceso gratuito. Creado en Canadá.">
+<meta name="description" content="Mentova : ton mentor IA crypto. Cours adaptatifs, marché en temps réel, actualités traduites. Accès gratuit. Créé au Canada.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>M</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,23 +51,61 @@ nav{padding:20px 40px;display:flex;align-items:center;justify-content:space-betw
 .ht-body{padding:20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2;color:#C4B5FD;}
 .ht-body .g{color:#10B981;} .ht-body .w{color:#fff;} .ht-body .d{color:rgba(255,255,255,0.35);}
 
-/* ATLAS */
-.atlas{padding:120px 40px;max-width:1200px;margin:0 auto;}
-.atlas-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:64px;border-bottom:1px solid #E2E8F0;padding-bottom:24px;}
-.atlas-top h2{font-size:clamp(32px,4vw,52px);font-weight:800;max-width:600px;}
-.atlas-top p{font-size:15px;color:#475569;max-width:320px;text-align:right;line-height:1.7;}
-.atlas-cols{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
-.atlas-big{background:#F5F3FF;border:1px solid #DDD6FE;border-radius:16px;padding:40px;}
-.atlas-big h3{font-size:24px;font-weight:700;margin-bottom:12px;}
-.atlas-big p{font-size:15px;color:#475569;line-height:1.7;margin-bottom:24px;}
-.atlas-big .try{display:inline-flex;align-items:center;gap:8px;background:#5B21B6;color:#fff;padding:12px 28px;border-radius:10px;font-weight:600;font-size:14px;transition:all 0.2s;}
-.atlas-big .try:hover{background:#4C1D95;}
-.atlas-small-stack{display:flex;flex-direction:column;gap:20px;}
-.atlas-sm{border:1px solid #E2E8F0;border-radius:16px;padding:28px;transition:all 0.2s;}
-.atlas-sm:hover{border-color:#DDD6FE;background:#FDFCFF;}
-.atlas-sm h3{font-size:18px;font-weight:700;margin-bottom:6px;}
-.atlas-sm p{font-size:14px;color:#475569;line-height:1.6;}
-.atlas-sm .badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#059669;margin-top:12px;text-transform:uppercase;}
+/* STATS BANNER */
+.stats{padding:80px 40px;max-width:1200px;margin:0 auto;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;}
+.stat-card{text-align:center;padding:32px 20px;border:1px solid #E2E8F0;border-radius:16px;transition:all 0.2s;}
+.stat-card:hover{border-color:#DDD6FE;background:#FDFCFF;}
+.stat-num{font-family:'Syne',sans-serif;font-size:clamp(32px,4vw,48px);font-weight:800;color:#5B21B6;line-height:1;margin-bottom:8px;}
+.stat-label{font-size:14px;color:#475569;font-weight:500;}
+.stat-sub{font-size:12px;color:#94A3B8;margin-top:4px;}
+
+/* FEATURES */
+.features{padding:100px 40px;max-width:1200px;margin:0 auto;}
+.features>h2{font-size:clamp(32px,4vw,52px);font-weight:800;margin-bottom:16px;}
+.features>p{font-size:17px;color:#475569;max-width:560px;margin-bottom:64px;line-height:1.75;}
+.feat-block{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-bottom:80px;padding-bottom:80px;border-bottom:1px solid #E2E8F0;}
+.feat-block:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.feat-block.reverse{direction:rtl;}.feat-block.reverse>*{direction:ltr;}
+.feat-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:16px;font-weight:500;}
+.feat-block h3{font-size:clamp(24px,3vw,36px);font-weight:800;margin-bottom:16px;}
+.feat-block p{font-size:16px;color:#475569;line-height:1.75;margin-bottom:16px;}
+.feat-list{list-style:none;padding:0;}
+.feat-list li{font-size:14px;color:#475569;padding:8px 0;padding-left:24px;position:relative;line-height:1.6;}
+.feat-list li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:#5B21B6;}
+.feat-visual{background:#F5F3FF;border:1px solid #DDD6FE;border-radius:20px;padding:40px;min-height:320px;display:flex;align-items:center;justify-content:center;}
+.feat-visual.market{background:#ECFDF5;border-color:#A7F3D0;}
+.feat-visual.news{background:#EFF6FF;border-color:#BFDBFE;}
+.feat-visual-inner{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2;color:#475569;width:100%;}
+.fvi-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.06);}
+.fvi-row:last-child{border-bottom:none;}
+.fvi-green{color:#059669;font-weight:600;}
+.fvi-red{color:#DC2626;font-weight:600;}
+.fvi-bold{color:#0F172A;font-weight:600;}
+
+/* HOW IT WORKS */
+.how{padding:100px 40px;background:#0B0914;color:#fff;}
+.how-inner{max-width:1200px;margin:0 auto;}
+.how h2{font-size:clamp(32px,4vw,52px);font-weight:800;margin-bottom:16px;}
+.how>p,.how-inner>p{font-size:17px;color:#94A3B8;margin-bottom:64px;max-width:480px;}
+.how-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;}
+.how-step{position:relative;padding:40px;border:1px solid rgba(255,255,255,0.08);border-radius:20px;transition:all 0.2s;}
+.how-step:hover{border-color:rgba(124,58,237,0.3);background:rgba(124,58,237,0.04);}
+.how-num{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:rgba(124,58,237,0.15);line-height:1;margin-bottom:16px;}
+.how-step h3{font-size:20px;font-weight:700;margin-bottom:12px;}
+.how-step p{font-size:15px;color:#94A3B8;line-height:1.7;}
+
+/* VISION */
+.vision{padding:100px 40px;max-width:1200px;margin:0 auto;}
+.vision-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.vision h2{font-size:clamp(32px,4vw,52px);font-weight:800;margin-bottom:24px;}
+.vision-text{font-size:17px;color:#475569;line-height:1.85;margin-bottom:20px;}
+.vision-text strong{color:#0F172A;}
+.vision-values{display:flex;flex-direction:column;gap:20px;}
+.vision-val{padding:24px;border:1px solid #E2E8F0;border-radius:16px;transition:all 0.2s;}
+.vision-val:hover{border-color:#DDD6FE;background:#FDFCFF;}
+.vision-val h3{font-size:18px;font-weight:700;margin-bottom:6px;}
+.vision-val p{font-size:14px;color:#475569;line-height:1.65;}
 
 /* STORY */
 .story{background:#0B0914;color:#fff;padding:100px 40px;}
@@ -130,10 +168,15 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
     .hero-grid{grid-template-columns:1fr;gap:40px;}
     .hero-right{display:none;}
     .hero h1{font-size:36px;}
-    .atlas{padding:80px 20px;}
-    .atlas-top{flex-direction:column;gap:16px;}
-    .atlas-top p{text-align:left;max-width:100%;}
-    .atlas-cols{grid-template-columns:1fr;}
+    .stats{padding:60px 20px;}
+    .stats-grid{grid-template-columns:repeat(2,1fr);gap:16px;}
+    .features{padding:60px 20px;}
+    .feat-block,.feat-block.reverse{grid-template-columns:1fr;direction:ltr;gap:32px;}
+    .feat-block.reverse>*{direction:ltr;}
+    .how{padding:60px 20px;}
+    .how-steps{grid-template-columns:1fr;gap:20px;}
+    .vision{padding:60px 20px;}
+    .vision-grid{grid-template-columns:1fr;gap:40px;}
     .story{padding:80px 20px;}
     .roadmap{padding:80px 20px;}
     .road-line{grid-template-columns:1fr;gap:32px;}
@@ -153,9 +196,9 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
 <nav>
     <a href="/fr/" class="nav-logo">MENTOVA<span>.</span></a>
     <div class="nav-links">
-        <a href="#atlas">Atlas IA</a>
-        <a href="#story">Historia</a>
-        <a href="#roadmap">Próximamente</a>
+        <a href="#features">Funcionalidades</a>
+        <a href="#how">Como funciona</a>
+        <a href="#vision">Vision</a>
         <a href="#faq">FAQ</a>
         <div class="nav-lang">
             <a href="/">EN</a>
@@ -167,13 +210,14 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
     <button class="burger" onclick="document.querySelector('.nav-links').classList.toggle('open')">&#9776;</button>
 </nav>
 
+<!-- HERO -->
 <section class="hero" data-testid="hero-section">
     <div class="hero-grid">
         <div class="hero-left">
-            <div class="hero-free">Acceso gratuito &middot; sin tarjeta requerida</div>
+            <div class="hero-free">Acceso gratuito, sin tarjeta de credito</div>
             <h1>Aprende crypto a tu ritmo.</h1>
-            <p class="hero-desc">Un mentor IA personal, mercado en tiempo real y noticias en tu idioma. Creado en Canadá. Abierto a todos.</p>
-            <a href="https://app.mentova-academy.com" class="hero-cta" data-testid="hero-cta">Comenzar gratis &rarr;</a>
+            <p class="hero-desc">Un mentor IA personal, mercado en tiempo real y noticias en tu idioma. Hecho en Canada. Abierto a todos.</p>
+            <a href="https://app.mentova-academy.com" class="hero-cta" data-testid="hero-cta">Empezar gratis &rarr;</a>
         </div>
         <div class="hero-right">
             <div class="hero-terminal">
@@ -184,7 +228,7 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
                     <div class="ht-name">ATLAS IA</div>
                 </div>
                 <div class="ht-body">
-                    <div><span class="g">atlas&gt;</span> <span class="d">¿Qué es el staking?</span></div>
+                    <div><span class="g">atlas&gt;</span> <span class="d">Que es el staking?</span></div>
                     <div>&nbsp;</div>
                     <div><span class="w">El staking es como depositar dinero</span></div>
                     <div><span class="w">en una cuenta de ahorro. Bloqueas tus</span></div>
@@ -198,85 +242,233 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
     </div>
 </section>
 
-<section class="atlas" id="atlas" data-testid="atlas-section">
-    <div class="atlas-top">
-        <h2>Tu mentor IA que se adapta a ti.</h2>
-        <p>Atlas detecta tus fortalezas, llena tus vacíos y construye un recorrido único. 24/7, en 3 idiomas.</p>
-    </div>
-    <div class="atlas-cols">
-        <div class="atlas-big">
-            <h3>Aprendizaje adaptativo</h3>
-            <p>Haz cualquier pregunta. Atlas responde claramente, sin jerga. Si te atascas, lo reformula. Si avanzas rápido, sube la dificultad. Un tutor real, no un chatbot.</p>
-            <a href="https://app.mentova-academy.com" class="try" data-testid="atlas-cta">Probar Atlas &rarr;</a>
+<!-- STATS -->
+<section class="stats" data-testid="stats-section">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-num">20+</div>
+            <div class="stat-label">Criptos rastreadas</div>
+            <div class="stat-sub">Precios en tiempo real</div>
         </div>
-        <div class="atlas-small-stack">
-            <div class="atlas-sm">
-                <h3>Mercado en tiempo real</h3>
-                <p>Precios, volúmenes y tendencias de las 20 principales criptos. Actualizado automáticamente.</p>
-                <div class="badge">Disponible</div>
+        <div class="stat-card">
+            <div class="stat-num">3</div>
+            <div class="stat-label">Idiomas</div>
+            <div class="stat-sub">Frances, ingles, espanol</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">24/7</div>
+            <div class="stat-label">Atlas IA</div>
+            <div class="stat-sub">Tu mentor siempre disponible</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">0$</div>
+            <div class="stat-label">Para empezar</div>
+            <div class="stat-sub">100% gratis, sin trampa</div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features" data-testid="features-section">
+    <h2>Todo lo que necesitas.</h2>
+    <p>Tres herramientas esenciales para entender, seguir y analizar crypto. Sin ruido, sin extras.</p>
+
+    <!-- Atlas AI -->
+    <div class="feat-block">
+        <div>
+            <div class="feat-tag" style="background:#F5F3FF;color:#5B21B6;">Mentor IA</div>
+            <h3>Atlas, tu tutor personal.</h3>
+            <p>Haz cualquier pregunta sobre crypto. Atlas responde claramente, sin jerga. Si te atascas, reformula. Si avanzas rapido, aumenta la dificultad.</p>
+            <ul class="feat-list">
+                <li>Se adapta a tu nivel en tiempo real</li>
+                <li>Explica conceptos complejos de forma simple</li>
+                <li>Disponible en frances, ingles y espanol</li>
+                <li>Ruta de aprendizaje estructurada en modulos</li>
+                <li>Accesible 24/7</li>
+            </ul>
+        </div>
+        <div class="feat-visual">
+            <div class="feat-visual-inner">
+                <div style="color:#5B21B6;font-weight:600;margin-bottom:16px;">atlas&gt; Como funciona DeFi?</div>
+                <div style="color:#0F172A;line-height:1.8;">Las finanzas descentralizadas (DeFi) usan contratos inteligentes para recrear servicios financieros sin intermediarios. Puedes prestar, pedir prestado o intercambiar directamente entre usuarios.</div>
+                <div style="margin-top:16px;padding:12px;background:rgba(91,33,182,0.08);border-radius:8px;font-size:12px;color:#5B21B6;">Siguiente modulo: Liquidity Pools &rarr;</div>
             </div>
-            <div class="atlas-sm">
-                <h3>Noticias multilingües</h3>
-                <p>Las mejores fuentes mundiales, traducidas y resumidas en francés, inglés y español.</p>
-                <div class="badge">Disponible</div>
+        </div>
+    </div>
+
+    <!-- Market -->
+    <div class="feat-block reverse">
+        <div>
+            <div class="feat-tag" style="background:#ECFDF5;color:#059669;">Mercado</div>
+            <h3>El mercado, de un vistazo.</h3>
+            <p>Sigue precios, volumen y tendencias de las 20 principales criptomonedas. Los datos se actualizan automaticamente, solo mira.</p>
+            <ul class="feat-list">
+                <li>Top 20 criptomonedas por capitalizacion</li>
+                <li>Graficos interactivos: 24h, 7d, 30d, 90d, 1a</li>
+                <li>Estadisticas globales del mercado</li>
+                <li>Tendencias y criptos populares</li>
+                <li>Datos alimentados por CoinGecko Pro</li>
+            </ul>
+        </div>
+        <div class="feat-visual market">
+            <div class="feat-visual-inner">
+                <div class="fvi-row"><span class="fvi-bold">BTC Bitcoin</span><span class="fvi-bold">$67,500</span><span class="fvi-green">+0.75%</span></div>
+                <div class="fvi-row"><span class="fvi-bold">ETH Ethereum</span><span class="fvi-bold">$1,950</span><span class="fvi-green">+0.52%</span></div>
+                <div class="fvi-row"><span class="fvi-bold">SOL Solana</span><span class="fvi-bold">$142</span><span class="fvi-red">-1.20%</span></div>
+                <div class="fvi-row"><span class="fvi-bold">BNB</span><span class="fvi-bold">$305</span><span class="fvi-green">+0.38%</span></div>
+                <div class="fvi-row"><span class="fvi-bold">XRP</span><span class="fvi-bold">$0.62</span><span class="fvi-green">+2.10%</span></div>
+                <div style="margin-top:12px;font-size:11px;color:#94A3B8;">Actualizado automaticamente cada minuto</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- News -->
+    <div class="feat-block">
+        <div>
+            <div class="feat-tag" style="background:#EFF6FF;color:#2563EB;">Noticias</div>
+            <h3>Noticias crypto, traducidas y analizadas.</h3>
+            <p>Las mejores fuentes mundiales (CoinDesk, CoinTelegraph, Decrypt), traducidas y resumidas en tu idioma. Cada articulo incluye un analisis de impacto para saber si es positivo o negativo para el mercado.</p>
+            <ul class="feat-list">
+                <li>Articulos de 3 fuentes internacionales principales</li>
+                <li>Traducidos automaticamente en FR, EN, ES</li>
+                <li>Analisis de impacto: alcista, bajista o neutro</li>
+                <li>Categorias: macro, regulacion, tecnologia, seguridad</li>
+                <li>Actualizado continuamente</li>
+            </ul>
+        </div>
+        <div class="feat-visual news">
+            <div class="feat-visual-inner">
+                <div style="padding:12px;background:rgba(37,99,235,0.06);border-radius:8px;margin-bottom:12px;">
+                    <div style="font-weight:600;color:#0F172A;margin-bottom:4px;">BlackRock aumenta posiciones en BTC</div>
+                    <div style="font-size:11px;color:#059669;font-weight:600;">Alcista</div>
+                </div>
+                <div style="padding:12px;background:rgba(37,99,235,0.06);border-radius:8px;margin-bottom:12px;">
+                    <div style="font-weight:600;color:#0F172A;margin-bottom:4px;">La UE finaliza el marco MiCA</div>
+                    <div style="font-size:11px;color:#94A3B8;font-weight:600;">Neutro</div>
+                </div>
+                <div style="padding:12px;background:rgba(37,99,235,0.06);border-radius:8px;">
+                    <div style="font-weight:600;color:#0F172A;margin-bottom:4px;">Ethereum completa la actualizacion Pectra</div>
+                    <div style="font-size:11px;color:#059669;font-weight:600;">Alcista</div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
+<!-- HOW IT WORKS -->
+<section class="how" id="how" data-testid="how-section">
+    <div class="how-inner">
+        <h2>Como funciona.</h2>
+        <p>Tres pasos para empezar a aprender. Sin procesos complicados, sin tarjeta de credito.</p>
+        <div class="how-steps">
+            <div class="how-step">
+                <div class="how-num">01</div>
+                <h3>Crea tu cuenta</h3>
+                <p>Registro en 30 segundos con tu email. Sin tarjeta de credito, sin compromiso.</p>
+            </div>
+            <div class="how-step">
+                <div class="how-num">02</div>
+                <h3>Habla con Atlas</h3>
+                <p>Haz tu primera pregunta. Atlas evalua tu nivel y crea un camino adaptado a tus conocimientos.</p>
+            </div>
+            <div class="how-step">
+                <div class="how-num">03</div>
+                <h3>Aprende y sigue el mercado</h3>
+                <p>Progresa a tu ritmo. Sigue los precios en vivo. Lee las noticias analizadas. Todo en un solo lugar.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- VISION -->
+<section class="vision" id="vision" data-testid="vision-section">
+    <div class="vision-grid">
+        <div>
+            <h2>Nuestra vision.</h2>
+            <p class="vision-text"><strong>Las criptomonedas son el futuro de las finanzas.</strong> Pero hoy, la mayoria de los recursos educativos son de pago, complejos o llenos de ruido de marketing.</p>
+            <p class="vision-text">Mentova nacio de una conviccion simple: <strong>todos merecen acceso a una educacion crypto de calidad, gratis.</strong></p>
+            <p class="vision-text">No vendemos senales. No prometemos rendimientos. Construimos una herramienta que hace el conocimiento accesible, un modulo a la vez.</p>
+        </div>
+        <div class="vision-values">
+            <div class="vision-val">
+                <h3>Acceso libre</h3>
+                <p>El nucleo de Mentova siempre sera gratuito. La educacion nunca deberia estar detras de un muro de pago.</p>
+            </div>
+            <div class="vision-val">
+                <h3>Transparencia</h3>
+                <p>Sin falsa escasez, sin cuentas regresivas falsas. Te decimos exactamente lo que Mentova hace y no hace.</p>
+            </div>
+            <div class="vision-val">
+                <h3>Aprendizaje adaptativo</h3>
+                <p>Cada persona aprende diferente. Atlas se adapta a tu ritmo, tu nivel y tu idioma.</p>
+            </div>
+            <div class="vision-val">
+                <h3>Hecho en Canada</h3>
+                <p>Creado en Montreal por un equipo apasionado por crypto y educacion. Disenado para el mundo entero.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- STORY -->
 <section class="story" id="story" data-testid="founder-section">
     <div class="story-inner">
         <div class="story-quote">&ldquo;</div>
-        <h2>Por qué existe Mentova.</h2>
-        <p class="story-text"><strong>La educación crypto estaba rota.</strong> Demasiados gurús vendiendo suscripciones por contenido reciclado. Demasiadas plataformas con muros de pago y escasez falsa.</p>
-        <p class="story-text">Creé Mentova porque <strong>el conocimiento nunca debería estar detrás de un muro de pago.</strong> Hoy, el acceso es gratuito. Sin tarjeta de crédito. Sin trampa.</p>
-        <p class="story-text">Nuestra misión: hacer la educación crypto accesible para todos. Funciones premium llegarán eventualmente, pero el corazón de Mentova siempre será accesible.</p>
+        <h2>Por que existe Mentova.</h2>
+        <p class="story-text"><strong>La educacion crypto estaba rota.</strong> Demasiados gurus vendiendo suscripciones por contenido reciclado. Demasiadas plataformas con muros de pago y falsa escasez.</p>
+        <p class="story-text">Cree Mentova porque <strong>el conocimiento nunca deberia estar detras de un muro de pago.</strong> Hoy, el acceso es gratuito. Sin tarjeta de credito. Sin trampa.</p>
+        <p class="story-text">Nuestra mision: hacer la educacion crypto accesible para todos. Funciones premium llegaran eventualmente, pero el nucleo de Mentova siempre sera accesible.</p>
         <div class="story-sig">
             Justin
-            <span>Fundador, Mentova Academy &middot; Montreal, Canadá</span>
+            <span>Fundador, Mentova Academy, Montreal, Canada</span>
         </div>
     </div>
 </section>
 
+<!-- ROADMAP -->
 <section class="roadmap" id="roadmap" data-testid="roadmap-section">
     <h2>Lo que estamos construyendo.</h2>
     <div class="road-line">
         <div class="road-item">
             <div class="road-dot" style="background:#5B21B6;box-shadow:0 0 0 4px #DDD6FE;"></div>
             <h3>Comunidad</h3>
-            <p>Un espacio para conectar entre apasionados, hacer preguntas y compartir investigaciones.</p>
-            <div class="when">T3 2026 &middot; En desarrollo</div>
+            <p>Un espacio para intercambiar entre apasionados, hacer preguntas y compartir investigaciones.</p>
+            <div class="when">T3 2026, en desarrollo</div>
         </div>
         <div class="road-item">
             <div class="road-dot" style="background:#E2E8F0;box-shadow:0 0 0 4px #F1F5F9;"></div>
             <h3>Mentores humanos</h3>
             <p>Sesiones en vivo con educadores crypto y analistas experimentados.</p>
-            <div class="when">T4 2026 &middot; Próximamente</div>
+            <div class="when">T4 2026, proximamente</div>
         </div>
         <div class="road-item">
             <div class="road-dot" style="background:#E2E8F0;box-shadow:0 0 0 4px #F1F5F9;"></div>
             <h3>Herramientas avanzadas</h3>
-            <p>Seguimiento on-chain, mapas de liquidez, alertas automáticas.</p>
-            <div class="when">T1 2027 &middot; Planificado</div>
+            <p>Tracking on-chain, heatmaps de liquidez, alertas automaticas.</p>
+            <div class="when">T1 2027, planificado</div>
         </div>
     </div>
 </section>
 
+<!-- FAQ -->
 <section class="faq" id="faq" data-testid="faq-section">
-    <h2>Preguntas.</h2>
-    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿El acceso es realmente gratuito?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Sí. Ahora mismo, todas las funciones son de acceso gratuito. Crea una cuenta y empieza a aprender sin costo.</p></div></div>
-    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿Cómo funciona Atlas IA?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Atlas es un mentor IA que se adapta a tu nivel. Analiza tus respuestas y ajusta el contenido en tiempo real. Disponible en francés, inglés y español.</p></div></div>
-    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿Disponible fuera de Canadá?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Sí. Acceso mundial en 3 idiomas. La app web funciona en cualquier dispositivo.</p></div></div>
-    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿Habrá una suscripción de pago?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Se planean funciones premium a futuro. Pero la experiencia principal — aprender con Atlas, seguir el mercado, leer noticias — seguirá siendo accesible.</p></div></div>
-    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿La app está en iPhone y Android?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>La app web funciona en todos los dispositivos. Las versiones App Store y Google Play llegarán pronto.</p></div></div>
+    <h2>Questions.</h2>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">El acceso es realmente gratis?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Si. Ahora mismo, todas las funcionalidades son accesibles gratis. Crea una cuenta y empieza a aprender sin costo.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Como funciona Atlas IA?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Atlas est un mentor IA qui s'adapte a ton niveau. Il analyse tes reponses et ajuste le contenu en temps reel. Disponible en frances, ingles y espanol.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Que criptos estan disponibles?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>El mercado muestra las 20 principales criptomonedas por capitalizacion, con graficos en 5 periodos diferentes (24h, 7d, 30d, 90d, 1a).</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Disponible fuera de Canada?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Si. Acceso mundial en 3 idiomas. La app web funciona en cualquier dispositivo.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Habra una suscripcion de pago?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Funciones premium estan previstas a futuro. Pero el nucleo de la experiencia, aprender con Atlas, seguir el mercado, leer noticias, seguira siendo accesible.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">La app esta en iPhone y Android?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>La app web funciona en todos los dispositivos. Las versiones de App Store y Google Play llegaran pronto.</p></div></div>
 </section>
 
+<!-- CTA FINAL -->
 <section class="cta-final" data-testid="final-cta">
-    <h2>¿Listo para empezar?</h2>
-    <p>Crea tu cuenta en 30 segundos. Sin tarjeta de crédito.</p>
+    <h2>Listo para empezar?</h2>
+    <p>Crea tu cuenta en 30 secondes. Aucune carte de credit requise.</p>
     <a href="https://app.mentova-academy.com" data-testid="final-cta-btn">Abrir Mentova &rarr;</a>
 </section>
 
+<!-- FOOTER -->
 <footer data-testid="footer">
     <div class="foot-inner">
         <div>
@@ -286,24 +478,25 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
         <div class="foot-cols">
             <div class="foot-col">
                 <h4>Producto</h4>
-                <a href="#atlas">Atlas IA</a>
+                <a href="#features">Funcionalidades</a>
                 <a href="https://app.mentova-academy.com">App Web</a>
             </div>
             <div class="foot-col">
                 <h4>Mentova</h4>
+                <a href="#vision">Vision</a>
                 <a href="#story">Historia</a>
                 <a href="#roadmap">Hoja de ruta</a>
                 <a href="mailto:info@mentova-academy.com">Contact</a>
             </div>
             <div class="foot-col">
                 <h4>Legal</h4>
-                <a href="/terms.html">Términos</a>
+                <a href="/terms.html">Terminos</a>
                 <a href="/privacy.html">Privacidad</a>
             </div>
         </div>
     </div>
     <div class="foot-bottom">
-        <span>&copy; 2026 Mentova Academy Inc. Montréal, Canada.</span>
+        <span>&copy; 2026 Mentova Academy Inc. Montreal, Canada.</span>
         <span>info@mentova-academy.com</span>
     </div>
 </footer>
