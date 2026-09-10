@@ -333,13 +333,12 @@ async def upload_image(
                 file_ext = ext
         
         unique_filename = f"{uuid.uuid4()}.{file_ext}"
-        file_path = _deps.get('uploads_dir', Path('uploads')) / unique_filename
         
-        # Save file
-        with open(file_path, 'wb') as f:
-            f.write(image_bytes)
+        # Store image as base64 in MongoDB instead of local filesystem
+        encoded = base64.b64encode(image_bytes).decode('utf-8')
+        img_doc = {"filename": unique_filename, "data": encoded, "content_type": f"image/{file_ext}", "created_at": datetime.now(timezone.utc).isoformat()}
+        await _db.uploaded_files.insert_one(img_doc)
         
-        # Return URL (using the API base URL)
         image_url = f"/api/uploads/{unique_filename}"
         
         return {
@@ -372,10 +371,11 @@ async def upload_file(
         raise HTTPException(status_code=400, detail="File must not exceed 50 MB")
     
     unique_filename = f"{uuid.uuid4()}.{file_ext}"
-    file_path = _deps.get('uploads_dir', Path('uploads')) / unique_filename
     
-    with open(file_path, 'wb') as f:
-        f.write(contents)
+    # Store file as base64 in MongoDB instead of local filesystem
+    encoded = base64.b64encode(contents).decode('utf-8')
+    file_doc = {"filename": unique_filename, "data": encoded, "content_type": file.content_type or f"application/{file_ext}", "created_at": datetime.now(timezone.utc).isoformat()}
+    await _db.uploaded_files.insert_one(file_doc)
     
     file_url = f"/api/uploads/{unique_filename}"
     
@@ -414,9 +414,9 @@ async def create_community_post(
         try:
             img_id = str(uuid.uuid4())
             ext = image.filename.split('.')[-1] if '.' in image.filename else 'jpg'
-            img_path = f"uploads/{img_id}.{ext}"
-            with open(img_path, "wb") as f:
-                f.write(await image.read())
+            img_data = await image.read()
+            encoded = base64.b64encode(img_data).decode('utf-8')
+            await _db.uploaded_files.insert_one({"filename": f"{img_id}.{ext}", "data": encoded, "content_type": f"image/{ext}", "created_at": datetime.now(timezone.utc).isoformat()})
             post_image_url = f"/api/uploads/{img_id}.{ext}"
         except Exception as e:
             logger.error(f"Image upload error: {e}")
