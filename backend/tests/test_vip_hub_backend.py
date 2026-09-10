@@ -225,7 +225,7 @@ class TestVIPAlertsAPI:
         for alert_id in self.created_alerts:
             try:
                 requests.delete(f"{BASE_URL}/api/vip/alerts/{alert_id}", headers=self.headers)
-            except:
+            except Exception:
                 pass
     
     def test_alerts_endpoint_requires_auth(self):

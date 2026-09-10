@@ -793,7 +793,7 @@ async def teach_chat(data: TeachChatRequest, credentials: HTTPAuthorizationCrede
         rate = _check_rate_limit(effective_id)
         if not rate["allowed"]:
             limit_msgs = {"fr": "Tu as atteint ta limite de messages. Abonne-toi VIP pour un acces illimite !", "en": "You've reached your message limit. Subscribe VIP for unlimited access!", "es": "Has alcanzado tu limite de mensajes. Suscribete VIP para acceso ilimitado!"}
-            return {"response": limit_msgs.get(lang, limit_msgs["en"]), "limit_reached": True}
+            return {"response": limit_msgs.get(data.language or "en", limit_msgs["en"]), "limit_reached": True}
         _increment_usage(effective_id)
 
     level = CURRICULUM.get(data.level_id)

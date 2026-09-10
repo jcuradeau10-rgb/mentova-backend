@@ -1,46 +1,48 @@
 # Mentova - Professional Crypto Mentor Marketplace
 
-## Original Problem Statement
-Build a professional mentor marketplace named "Mentova" using React Native (Expo) and FastAPI.
-
 ## Architecture
-- **Frontend**: React Native (Expo) with web export → Netlify
+- **Frontend**: React Native (Expo) → Netlify (web) + EAS Build (iOS/Android)
 - **Backend**: FastAPI → Render
 - **Database**: MongoDB Atlas
 - **Payments**: Stripe Checkout
 - **Crypto Data**: CoinGecko Pro API (zero user-call architecture)
 
-## What's Been Implemented
+## Current State (Sept 10, 2026)
 
-### Core Features (DONE)
-- Auth (JWT), Stripe VIP, Atlas AI, Community, Messaging, Profiles, Admin
+### Simplified 5-Tab Navigation (DONE)
+- **Home** — Dashboard principal
+- **Atlas AI** — Mentor IA personnalisé (killer feature)
+- **Market** — Prix crypto temps réel
+- **News** — Articles traduits FR/EN/ES
+- **Profile** — Compte + abonnement VIP
 
-### CoinGecko Zero-User-Call Architecture (DONE - June 25, 2026)
-- ALL calls in background scheduler, zero user-triggered calls
-- ~78k/month budget (under 100k Pro limit)
+### Hidden Features (code kept, not visible)
+- Community (gate verrouillé - founding members only)
+- Mentors humains / Marketplace
+- "More" menu floating (removed)
+- Bookings, Messages, Pro Dashboard
 
-### Founding Member System (DONE - June 25, 2026)
-- Spots counter counts only Stripe-confirmed payments
-- Badge on profile (gold star), set via checkout + webhook
+### Active Features
+- CoinGecko zero-user-call architecture (~78k/month budget)
+- Founding Member badge system (Stripe webhook configured)
+- Spots counter (preregistered: 9/500)
+- Community gate with i18n FR/EN/ES
+- PWA install prompt (iOS/Android detection)
+- Static site fixes (removed em dashes, layout shift)
 
-### PWA Install Prompt (DONE - June 25, 2026)
-- Bottom sheet popup appears 2.5s after login in the app
-- Detects iOS vs Android vs Desktop and shows platform-specific instructions
-- iOS: Partager → Sur l'écran d'accueil → Ajouter
-- Android: Menu → Ajouter à l'écran d'accueil → Installer
-- "Ne plus afficher" checkbox → permanently dismisses via AsyncStorage
-- Doesn't show if already installed as PWA (standalone mode)
-- Benefits listed: accès rapide, notifications, plein écran
-- App Store & Google Play "bientôt disponible" note
+### Infrastructure Issues
+- Render: SERVICE SUSPENDED - check dashboard.render.com
+- MongoDB Atlas: DNS not resolving - check cloud.mongodb.com
+- GitHub token: EXPIRED - use "Save to Github" feature
 
-### Static Site Fixes (DONE - June 25, 2026)
-- Removed "—" from EN/FR/ES, fixed duplicate heroSpots IDs
-- Layout shift fix with `contain: layout style`
+### To Launch
+1. Reactivate Render + MongoDB Atlas
+2. Push latest code via "Save to Github"
+3. Build Netlify: `npx expo export -p web && netlify deploy --prod --dir=dist`
+4. Build iOS: `npx eas build --platform ios --profile production`
+5. Submit to Apple: `npx eas submit --platform ios --profile production`
 
-## Pending Tasks
-- (P2) Desktop responsiveness
-- (P2) Technical indicators (RSI, Bollinger) for VIP charts
-- (P2) Refactor server.py
-
-## Backlog
-- (P3) reCAPTCHA, split translations, localize notifications
+## Key Credentials
+- Super Admin: jcuradeau.7@gmail.com / Crypto2026!
+- Stripe webhook: https://mentova-api.onrender.com/api/webhook/stripe
+- EAS config: eas.json with EXPO_PUBLIC_BACKEND_URL set to Render

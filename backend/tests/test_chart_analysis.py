@@ -62,7 +62,7 @@ def generate_test_chart_image():
         draw.text((10, 10), "BTC/USDT", fill=(255, 255, 255))
         draw.text((10, 270), "Support", fill=(124, 58, 237))
         draw.text((10, 55), "Resistance", fill=(245, 158, 11))
-    except:
+    except Exception:
         pass  # Text drawing might fail without fonts
     
     # Convert to JPEG (more universally supported) with proper base64

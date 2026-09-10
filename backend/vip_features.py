@@ -256,7 +256,7 @@ class VIPRoutes:
                     price_data = await self._get_crypto_price(alert["crypto_symbol"])
                     alert["current_price"] = price_data.get("current_price", 0)
                     alert["price_change_24h"] = price_data.get("price_change_percentage_24h", 0)
-                except:
+                except Exception:
                     alert["current_price"] = 0
                     alert["price_change_24h"] = 0
             
@@ -326,7 +326,7 @@ class VIPRoutes:
                         )
                         if price_resp.status_code == 200:
                             eth_price = price_resp.json().get("ethereum", {}).get("usd", 2500)
-                except:
+                except Exception:
                     pass
                 
                 transactions = []
@@ -547,14 +547,17 @@ class VIPRoutes:
             progress_map = {p["course_id"]: p for p in user_progress}
             
             # Add progress to courses
+            serialized = []
             for course in courses:
                 prog = progress_map.get(course["id"], {})
-                course["progress_percent"] = prog.get("progress_percent", 0)
-                course["completed"] = prog.get("completed", False)
-                course["started"] = prog.get("started", False)
-                course["last_accessed"] = prog.get("last_accessed")
+                c = {k: v for k, v in course.items() if k != "_id"}
+                c["progress_percent"] = prog.get("progress_percent", 0)
+                c["completed"] = prog.get("completed", False)
+                c["started"] = prog.get("started", False)
+                c["last_accessed"] = prog.get("last_accessed")
+                serialized.append(c)
             
-            return {"success": True, "data": courses}
+            return {"success": True, "data": serialized}
         
         @self.router.post("/academy/courses/{course_id}/progress")
         async def update_course_progress(

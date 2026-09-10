@@ -85,7 +85,7 @@ class TestContentLibraryCRUD:
         for content_id in self.created_content_ids:
             try:
                 requests.delete(f"{BASE_URL}/api/pro/content-library/{content_id}", headers=self.headers)
-            except:
+            except Exception:
                 pass
     
     def test_get_content_library(self):
@@ -284,7 +284,7 @@ class TestOfferCRUD:
         for offer_id in self.created_offer_ids:
             try:
                 requests.delete(f"{BASE_URL}/api/pro/offers/{offer_id}", headers=self.headers)
-            except:
+            except Exception:
                 pass
     
     def test_get_offers(self):

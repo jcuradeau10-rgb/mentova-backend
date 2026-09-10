@@ -1742,7 +1742,7 @@ async def ask_ai(
             current_user = await get_current_user(credentials)
             user_id = current_user["id"]
             is_vip = await check_user_vip_status(user_id)
-        except:
+        except Exception:
             pass
     
     # Check usage limit for non-VIP users
@@ -2641,7 +2641,7 @@ async def get_smart_money(
                 )
                 if price_resp.status_code == 200:
                     eth_price = price_resp.json().get("ethereum", {}).get("usd", 3200)
-            except:
+            except Exception:
                 pass
             
             # Get Etherscan API key from environment
@@ -3926,7 +3926,7 @@ async def get_all_crypto_tools(user: dict = Depends(require_vip)):
                     result = gas_data["result"]
                     def parse_gas(v):
                         try: return int(float(v)) if v else 0
-                        except: return 0
+                        except Exception: return 0
                     
                     results["eth_gas"] = {
                         "low": parse_gas(result.get("SafeGasPrice", 0)),
@@ -4082,7 +4082,7 @@ async def get_all_crypto_tools(user: dict = Depends(require_vip)):
         try:
             block_resp = await client.get("https://blockchain.info/latestblock", timeout=5.0)
             current_block = block_resp.json().get("height", 940000) if block_resp.status_code == 200 else 940000
-        except:
+        except Exception:
             current_block = 940000
         
         blocks_remaining = max(0, HALVING_BLOCK - current_block)
@@ -4245,7 +4245,7 @@ async def get_halving_countdown(user: dict = Depends(require_vip)):
             else:
                 days_since_halving = (datetime.now(timezone.utc) - LAST_HALVING_DATE).days
                 current_block = 840000 + (days_since_halving * BLOCKS_PER_DAY)
-    except:
+    except Exception:
         days_since_halving = (datetime.now(timezone.utc) - LAST_HALVING_DATE).days
         current_block = 840000 + (days_since_halving * BLOCKS_PER_DAY)
     
@@ -4362,7 +4362,7 @@ async def get_daily_briefing(lang: str = "en", user: dict = Depends(require_vip)
                 )
                 if prices_resp.status_code == 200:
                     market_data["prices"] = prices_resp.json()
-            except:
+            except Exception:
                 market_data["prices"] = {"bitcoin": {"usd": 67000, "usd_24h_change": 1.5}, "ethereum": {"usd": 3200, "usd_24h_change": 0.8}}
             
             try:
@@ -4370,7 +4370,7 @@ async def get_daily_briefing(lang: str = "en", user: dict = Depends(require_vip)
                 if fng_resp.status_code == 200:
                     fng_data = fng_resp.json().get("data", [{}])[0]
                     market_data["fear_greed"] = {"value": fng_data.get("value"), "label": fng_data.get("value_classification")}
-            except:
+            except Exception:
                 market_data["fear_greed"] = {}
         
         llm_key = os.environ.get("EMERGENT_LLM_KEY")
@@ -5398,9 +5398,9 @@ async def get_user_profile(user_id: str, request: Request):
     if auth_header.startswith("Bearer "):
         try:
             token = auth_header.split(" ")[1]
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
+            payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
             current_user_id = payload.get("user_id")
-        except:
+        except Exception:
             pass
 
     user = await db.users.find_one({"id": user_id}, {"_id": 0, "hashed_password": 0})
@@ -5678,53 +5678,6 @@ async def send_message(user_id: str, message: MessageCreate, current_user: dict 
 # ==================== NOTIFICATIONS (uses /notifications/history and /notifications/mark-read) ====================
 # Primary notification endpoints are defined above (lines ~5963-6009) using is_read field
 
-# ==================== PRICE ALERT CHECKER ====================
-
-@api_router.post("/alerts/check")
-async def check_price_alerts():
-    """Check all active alerts and trigger notifications (called by cron)"""
-    prices = await get_crypto_prices_cached()
-    
-    alerts = await db.vip_alerts.find({"is_active": True, "is_triggered": False}).to_list(1000)
-    triggered = []
-    
-    for alert in alerts:
-        symbol = alert["crypto_symbol"].upper()
-        current_price = prices.get(symbol, 0)
-        
-        if current_price == 0:
-            continue
-        
-        should_trigger = False
-        if alert["alert_type"] == "price_above" and current_price >= alert["target_value"]:
-            should_trigger = True
-        elif alert["alert_type"] == "price_below" and current_price <= alert["target_value"]:
-            should_trigger = True
-        
-        if should_trigger:
-            # Mark as triggered
-            await db.vip_alerts.update_one(
-                {"id": alert["id"]},
-                {"$set": {"is_triggered": True, "triggered_at": datetime.now(timezone.utc).isoformat()}}
-            )
-            
-            # Create notification
-            alert_type_text = "au-dessus de" if alert["alert_type"] == "price_above" else "en-dessous de"
-            await db.notifications.insert_one({
-                "id": str(uuid.uuid4()),
-                "user_id": alert["user_id"],
-                "type": "alert",
-                "title": f"Alerte {symbol}",
-                "body": f"{symbol} est maintenant {alert_type_text} ${alert['target_value']} (Prix actuel: ${current_price})",
-                "data": {"alert_id": alert["id"], "symbol": symbol, "price": current_price},
-                "read": False,
-                "created_at": datetime.now(timezone.utc).isoformat()
-            })
-            
-            triggered.append(alert["id"])
-    
-    return {"success": True, "triggered_count": len(triggered)}
-
 # ==================== ROOT ROUTES ====================
 
 @api_router.get("/")
@@ -5734,10 +5687,6 @@ async def root():
         "version": "1.0.0",
         "status": "active"
     }
-
-@api_router.get("/health")
-async def health_check():
-    return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}
 
 
 # ==================== PROFESSIONAL MENTORS MARKETPLACE ====================
@@ -6893,7 +6842,7 @@ async def get_available_slots(
         try:
             booked_dt = datetime.fromisoformat(booking["scheduled_at"].replace('Z', '+00:00'))
             booked_times.add(booked_dt.strftime("%H:%M"))
-        except:
+        except Exception:
             pass
     
     # Filter out booked slots
@@ -7303,7 +7252,7 @@ async def get_pro_advanced_stats(
                         month_key = created_at.strftime("%Y-%m")
                     monthly_revenue[month_key] += booking.get("pro_earnings", 0)
                     monthly_bookings_count[month_key] += 1
-                except:
+                except Exception:
                     pass
     
     # Get offer purchases for this pro
@@ -7323,7 +7272,7 @@ async def get_pro_advanced_stats(
                     month_key = completed_at.strftime("%Y-%m")
                 monthly_revenue[month_key] += purchase.get("pro_earnings", 0)
                 monthly_bookings_count[month_key] += 1
-            except:
+            except Exception:
                 pass
     
     # Sort and get last 6 months
@@ -8116,11 +8065,11 @@ async def download_document(
         raise HTTPException(status_code=404, detail="Document not found")
     
     import base64
-    from fastapi.responses import Response
+    from fastapi.responses import Response as FileResponse
     
     content = base64.b64decode(document["file_data"])
     
-    return Response(
+    return FileResponse(
         content=content,
         media_type=document["content_type"],
         headers={
@@ -9510,7 +9459,7 @@ async def get_payment_status(
     }
 
 @api_router.post("/webhook/stripe")
-async def stripe_webhook(request: Request):
+async def stripe_webhook_handler(request: Request):
     """Handle Stripe webhooks"""
     body = await request.body()
     signature = request.headers.get("Stripe-Signature")
@@ -10203,7 +10152,7 @@ async def export_pro_revenue(year: int = None, current_user: dict = Depends(get_
             amount = booking.get("amount", 0)
             monthly_data[month]["bookings"] += amount
             monthly_data[month]["total"] += amount
-        except: pass
+        except Exception: pass
     
     for enrollment in enrollments:
         try:
@@ -10211,7 +10160,7 @@ async def export_pro_revenue(year: int = None, current_user: dict = Depends(get_
             amount = enrollment.get("price_paid", 0)
             monthly_data[month]["courses"] += amount
             monthly_data[month]["total"] += amount
-        except: pass
+        except Exception: pass
     
     total_bookings = sum(d["bookings"] for d in monthly_data.values())
     total_courses = sum(d["courses"] for d in monthly_data.values())
@@ -10262,14 +10211,14 @@ async def export_pro_revenue_pdf(year: int = None, current_user: dict = Depends(
             month = int(booking.get("created_at", "")[5:7])
             monthly_data[month]["bookings"] += booking.get("amount", 0)
             monthly_data[month]["total"] += booking.get("amount", 0)
-        except: pass
+        except Exception: pass
     
     for enrollment in enrollments:
         try:
             month = int(enrollment.get("enrolled_at", "")[5:7])
             monthly_data[month]["courses"] += enrollment.get("price_paid", 0)
             monthly_data[month]["total"] += enrollment.get("price_paid", 0)
-        except: pass
+        except Exception: pass
     
     total_bookings_rev = sum(d["bookings"] for d in monthly_data.values())
     total_courses_rev = sum(d["courses"] for d in monthly_data.values())
@@ -10931,9 +10880,9 @@ async def get_user_public_profile(user_id: str, request: Request):
     if auth_header.startswith("Bearer "):
         try:
             token = auth_header.split(" ")[1]
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
+            payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
             current_user_id = payload.get("user_id")
-        except:
+        except Exception:
             pass
     
     user = await db.users.find_one({"id": user_id}, {"_id": 0, "hashed_password": 0})
@@ -10993,7 +10942,7 @@ async def get_user_public_profile(user_id: str, request: Request):
     }
 
 @api_router.put("/users/me/profile")
-async def update_my_profile(request: Request, current_user: dict = Depends(get_current_user)):
+async def update_my_profile_v2(request: Request, current_user: dict = Depends(get_current_user)):
     """Update own profile"""
     data = await request.json()
     allowed_fields = ["bio", "username", "avatar_url", "cover_url", "is_profile_public"]
@@ -11018,7 +10967,7 @@ async def update_my_profile(request: Request, current_user: dict = Depends(get_c
     return {"success": True, "data": {k: v for k, v in user.items() if k != "_id"}}
 
 @api_router.post("/users/{user_id}/follow")
-async def follow_user(user_id: str, current_user: dict = Depends(get_current_user)):
+async def follow_user_v2(user_id: str, current_user: dict = Depends(get_current_user)):
     """Follow any user"""
     if user_id == current_user["id"]:
         raise HTTPException(status_code=400, detail="Cannot follow yourself")
@@ -11054,7 +11003,7 @@ async def unfollow_user(user_id: str, current_user: dict = Depends(get_current_u
     return {"success": True, "is_following": False, "followers_count": followers_count}
 
 @api_router.get("/users/{user_id}/followers")
-async def get_user_followers(user_id: str, limit: int = 50):
+async def get_user_followers_v2(user_id: str, limit: int = 50):
     """Get a user's followers list"""
     follows = await db.user_follows.find(
         {"following_id": user_id}, {"_id": 0, "follower_id": 1}
@@ -11068,7 +11017,7 @@ async def get_user_followers(user_id: str, limit: int = 50):
     return {"success": True, "data": users, "total": len(users)}
 
 @api_router.get("/users/{user_id}/following")
-async def get_user_following(user_id: str, limit: int = 50):
+async def get_user_following_v2(user_id: str, limit: int = 50):
     """Get list of users this user follows"""
     follows = await db.user_follows.find(
         {"follower_id": user_id}, {"_id": 0, "following_id": 1}
@@ -11315,7 +11264,7 @@ async def get_purchase_access(purchase_id: str, current_user: dict = Depends(get
                     else:
                         available_datetime = available_from
                     content["is_available"] = now >= available_datetime
-                except:
+                except Exception:
                     content["is_available"] = True
             else:
                 content["is_available"] = True
