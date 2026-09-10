@@ -5,11 +5,9 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Pressable,
   RefreshControl,
   Image,
   Animated,
-  Easing,
   Dimensions,
   Modal,
   Linking,
@@ -29,7 +27,6 @@ import {
   FloatAnimation 
 } from '../../components/AnimatedComponents';
 import NotificationCenter from '../../components/NotificationCenter';
-import VIPPromoSection from '../../components/VIPPromoSection';
 import LanguageSelector from '../../components/LanguageSelector';
 
 // Fallback wrapper to prevent undefined errors
@@ -67,6 +64,16 @@ interface MenuItem {
 
 const getMenuItems = (t: (key: string) => string): MenuItem[] => [
   {
+    id: 'learn',
+    title: 'Atlas',
+    subtitle: t('home.coursesQuiz'),
+    icon: 'planet',
+    color: '#7C3AED',
+    bgColor: 'rgba(124, 58, 237, 0.15)',
+    route: '/(tabs)/learn',
+    badge: 'IA',
+  },
+  {
     id: 'market',
     title: t('home.market'),
     subtitle: t('home.livePrice'),
@@ -76,32 +83,13 @@ const getMenuItems = (t: (key: string) => string): MenuItem[] => [
     route: '/(tabs)/market',
   },
   {
-    id: 'learn',
-    title: t('home.learn'),
-    subtitle: t('home.coursesQuiz'),
-    icon: 'school',
-    color: '#7C3AED',
-    bgColor: 'rgba(124, 58, 237, 0.15)',
-    route: '/(tabs)/learn',
-  },
-  {
-    id: 'community',
-    title: t('home.community'),
-    subtitle: t('home.forumWiki'),
-    icon: 'people',
-    color: '#FF6B35',
-    bgColor: 'rgba(255, 107, 53, 0.15)',
-    route: '/(tabs)/community',
-  },
-  {
-    id: 'ai',
-    title: t('home.aiAssistant'),
-    subtitle: t('home.askQuestions'),
-    icon: 'sparkles',
+    id: 'news',
+    title: t('nav.news'),
+    subtitle: t('home.latestNews') || 'Articles & analyses',
+    icon: 'newspaper',
     color: '#3B82F6',
     bgColor: 'rgba(59, 130, 246, 0.15)',
-    route: '/(tabs)/ai',
-    badge: 'IA',
+    route: '/(tabs)/news',
   },
   {
     id: 'profile',
@@ -501,126 +489,6 @@ export default function HomeScreen() {
           </View>
         </AnimatedSection>
 
-        {/* VIP Section - Dynamic based on VIP status */}
-        <AnimatedSection delay={350}>
-          {user?.is_vip ? (
-            // VIP Member Quick Access Card - Modern Design
-            <TouchableOpacity 
-              style={styles.vipMemberSection}
-              onPress={() => router.push('/vip/hub')}
-              activeOpacity={0.9}
-              data-testid="home-vip-hub-access"
-            >
-              <View style={styles.vipMemberGradientBg}>
-                <View style={styles.vipMemberContent}>
-                  {/* Header with icon and title */}
-                  <View style={styles.vipMemberHeader}>
-                    <View style={styles.vipMemberIconWrapper}>
-                      <Ionicons name="diamond" size={28} color="#FFD700" />
-                    </View>
-                    <View style={styles.vipMemberInfo}>
-                      <View style={styles.vipMemberBadgeRow}>
-                        <Text style={styles.vipMemberTitle}>{t('home.vipSpace')}</Text>
-                        <View style={styles.vipActiveBadge}>
-                          <View style={styles.vipActiveDot} />
-                          <Text style={styles.vipActiveBadgeText}>{t('common.active')}</Text>
-                        </View>
-                      </View>
-                      <Text style={styles.vipMemberSubtitle}>{t('home.accessPremium')}</Text>
-                    </View>
-                    <View style={styles.vipArrowCircle}>
-                      <Ionicons name="arrow-forward" size={18} color="#FFD700" />
-                    </View>
-                  </View>
-                  
-                  {/* Feature pills */}
-                  <View style={styles.vipMemberFeatures}>
-                    <View style={styles.vipMemberFeature}>
-                      <Ionicons name="school" size={15} color="#A78BFA" />
-                      <Text style={styles.vipMemberFeatureText}>{t('home.academy')}</Text>
-                    </View>
-                    <View style={styles.vipMemberFeature}>
-                      <Ionicons name="construct" size={15} color="#00D9A5" />
-                      <Text style={styles.vipMemberFeatureText}>{t('home.tools')}</Text>
-                    </View>
-                    <View style={styles.vipMemberFeature}>
-                      <Ionicons name="chatbubbles" size={15} color="#3B82F6" />
-                      <Text style={styles.vipMemberFeatureText}>{t('home.community')}</Text>
-                    </View>
-                    <View style={styles.vipMemberFeature}>
-                      <Ionicons name="storefront" size={15} color="#F59E0B" />
-                      <Text style={styles.vipMemberFeatureText}>{t('home.marketplace')}</Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ) : (
-            // Non-VIP: Show a subtle, non-aggressive VIP hint instead of a big promo
-            <TouchableOpacity 
-              style={{ marginHorizontal: 16, backgroundColor: 'rgba(124,58,237,0.06)', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: 'rgba(124,58,237,0.1)', flexDirection: 'row', alignItems: 'center', gap: 12 }}
-              onPress={() => router.push('/vip')}
-              activeOpacity={0.8}
-              data-testid="home-vip-subtle-hint"
-            >
-              <View style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: 'rgba(124,58,237,0.15)', justifyContent: 'center', alignItems: 'center' }}>
-                <Ionicons name="diamond-outline" size={20} color="#A78BFA" />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: '#E5E7EB' }}>{t('home.discoverVip') || 'Discover VIP'}</Text>
-                <Text style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>{t('home.vipSubtle') || 'Academy, tools, and exclusive content'}</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={18} color="#6B7280" />
-            </TouchableOpacity>
-          )}
-        </AnimatedSection>
-
-        {/* Become a Mentor CTA */}
-        <AnimatedSection delay={420}>
-          <Pressable
-            style={({ pressed }) => [styles.mentorCtaCard, pressed && { opacity: 0.85 }]}
-            onPress={() => router.push('/pro/join')}
-            data-testid="home-become-mentor-cta"
-          >
-            <View style={styles.mentorCtaGlow} />
-            <View style={styles.mentorCtaContent}>
-              <View style={styles.mentorCtaBadgeRow}>
-                <View style={styles.mentorCtaBadge}>
-                  <Ionicons name="flame" size={14} color="#FF6B35" />
-                  <Text style={styles.mentorCtaBadgeText}>{t('home.becomeMentorBadge')}</Text>
-                </View>
-              </View>
-              <View style={styles.mentorCtaBody}>
-                <View style={styles.mentorCtaTextBlock}>
-                  <Text style={styles.mentorCtaTitle}>{t('home.becomeMentorTitle')}</Text>
-                  <Text style={styles.mentorCtaDesc}>{t('home.becomeMentorDesc')}</Text>
-                </View>
-                <View style={styles.mentorCtaIconBlock}>
-                  <View style={styles.mentorCtaIconCircle}>
-                    <Ionicons name="school" size={28} color="#FFFFFF" />
-                  </View>
-                </View>
-              </View>
-              <View style={styles.mentorCtaBtnRow}>
-                <View style={styles.mentorCtaBtn}>
-                  <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
-                  <Text style={styles.mentorCtaBtnText}>{t('home.becomeMentorCta')}</Text>
-                </View>
-                <View style={styles.mentorCtaStats}>
-                  <View style={styles.mentorCtaStat}>
-                    <Ionicons name="people" size={14} color="#10B981" />
-                    <Text style={styles.mentorCtaStatText}>500+</Text>
-                  </View>
-                  <View style={styles.mentorCtaStat}>
-                    <Ionicons name="star" size={14} color="#FFD700" />
-                    <Text style={styles.mentorCtaStatText}>4.9</Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-          </Pressable>
-        </AnimatedSection>
-
         {/* News Section */}
         <AnimatedSection delay={500}>
           <View style={styles.section}>
@@ -785,9 +653,9 @@ export default function HomeScreen() {
                   <Ionicons name="school" size={24} color="#7C3AED" />
                 </View>
                 <View style={styles.progressCardInfo}>
-                  <Text style={styles.progressCardTitle}>Continuer votre apprentissage</Text>
+                  <Text style={styles.progressCardTitle}>{t('home.continueLearning') || 'Continuer votre apprentissage'}</Text>
                   <Text style={styles.progressCardSubtitle}>
-                    {user?.progress?.modules_completed?.length || 0}/12 leçons complétées
+                    {user?.progress?.modules_completed?.length || 0}/12 {t('home.lessonsCompleted') || 'leçons complétées'}
                   </Text>
                 </View>
                 <View style={styles.progressCardPercentage}>
@@ -798,7 +666,7 @@ export default function HomeScreen() {
                 <Animated.View style={[styles.progressCardBarFill, { width: `${getProgressPercentage()}%` }]} />
               </View>
               <View style={styles.progressCardAction}>
-                <Text style={styles.progressCardActionText}>Reprendre le cours</Text>
+                <Text style={styles.progressCardActionText}>{t('home.resumeCourse') || 'Reprendre le cours'}</Text>
                 <Ionicons name="arrow-forward-circle" size={22} color="#7C3AED" />
               </View>
             </TouchableOpacity>
@@ -808,26 +676,16 @@ export default function HomeScreen() {
         {/* Quick Actions */}
         <AnimatedSection delay={900}>
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Actions Rapides</Text>
+            <Text style={styles.sectionTitle}>{t('home.quickActions')}</Text>
             <View style={styles.quickActionsGrid}>
               <AnimatedButton 
                 style={styles.quickActionCard}
-                onPress={() => router.push('/(tabs)/ai')}
+                onPress={() => router.push('/(tabs)/learn')}
               >
-                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-                  <Ionicons name="chatbubble-ellipses" size={24} color="#3B82F6" />
+                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(124, 58, 237, 0.15)' }]}>
+                  <Ionicons name="planet" size={24} color="#7C3AED" />
                 </View>
-                <Text style={styles.quickActionText}>Poser une question</Text>
-              </AnimatedButton>
-              
-              <AnimatedButton 
-                style={styles.quickActionCard}
-                onPress={() => router.push('/(tabs)/community')}
-              >
-                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(255, 107, 53, 0.15)' }]}>
-                  <Ionicons name="create" size={24} color="#FF6B35" />
-                </View>
-                <Text style={styles.quickActionText}>{t("home.createPost")}</Text>
+                <Text style={styles.quickActionText}>Atlas IA</Text>
               </AnimatedButton>
               
               <AnimatedButton 
@@ -835,9 +693,19 @@ export default function HomeScreen() {
                 onPress={() => router.push('/(tabs)/market')}
               >
                 <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(0, 217, 165, 0.15)' }]}>
-                  <Ionicons name="search" size={24} color="#00D9A5" />
+                  <Ionicons name="trending-up" size={24} color="#00D9A5" />
                 </View>
                 <Text style={styles.quickActionText}>{t("home.exploreMarket")}</Text>
+              </AnimatedButton>
+              
+              <AnimatedButton 
+                style={styles.quickActionCard}
+                onPress={() => router.push('/(tabs)/news')}
+              >
+                <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
+                  <Ionicons name="newspaper" size={24} color="#3B82F6" />
+                </View>
+                <Text style={styles.quickActionText}>{t('nav.news')}</Text>
               </AnimatedButton>
             </View>
           </View>

@@ -99,7 +99,7 @@ export default function OnboardingPage() {
     { icon: 'flash', title: t('onboarding.feature1.title'), desc: t('onboarding.feature1.desc'), color: '#7C3AED', bg: 'rgba(124,58,237,0.12)' },
     { icon: 'analytics', title: t('onboarding.feature2.title'), desc: t('onboarding.feature2.desc'), color: '#00D9A5', bg: 'rgba(0,217,165,0.12)' },
     { icon: 'shield-checkmark', title: t('onboarding.feature3.title'), desc: t('onboarding.feature3.desc'), color: '#06B6D4', bg: 'rgba(6,182,212,0.12)' },
-    { icon: 'people', title: t('onboarding.feature4.title') || 'Community', desc: t('onboarding.feature4.desc') || 'Connect with traders', color: '#F59E0B', bg: 'rgba(245,158,11,0.12)' },
+    { icon: 'newspaper', title: t('nav.news') || 'News', desc: t('onboarding.feature4.desc') || 'Translated crypto news', color: '#F59E0B', bg: 'rgba(245,158,11,0.12)' },
   ];
 
   const stats = [
