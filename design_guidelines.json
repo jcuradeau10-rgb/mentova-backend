@@ -1,110 +1,166 @@
 {
-  "theme": "DARK",
-  "archetype": "7 (Electric & Neon)",
-  "rationale": "Mentova is a crypto education app. The requested 'innovative, dynamic, modern' vibe aligns perfectly with Archetype 7, but we are grounding it using E1's 'Black-on-Black' protocol. Deep dark navy (#06060F) serves as the endless void. Purple (#7C3AED) and Green (#00D9A5) are treated as kinetic triggers—used only for active states, gradients, and critical actions. We avoid flat, lifeless interfaces by integrating floating particles, glowing orbs, and glassmorphic 'Crystal' cards with 1px tactile borders.",
-  "colors": {
-    "background": {
-      "app": "#06060F",
-      "surface": "#0A0A1A",
-      "glass": "rgba(255, 255, 255, 0.02)"
+  "project_name": "Mentova Academy Redesign",
+  "app_type": "landing_page",
+  "design_archetype": "EDITORIAL_ORGANIC_TACTICAL_HYBRID",
+  "anti_ai_mandate": {
+    "core_directive": "ELIMINATE AI SLOP AND TEMPLATE MONOTONY. NO purple gradients, NO centered generic hero boxes, NO fake 500-spot countdowns, NO $9.99 pricing. Make it feel like an authentic, human-designed, editorial magazine meets high-precision Swiss tactical terminal.",
+    "key_design_moves": [
+      "Asymmetric grid layouts with generous breathing space",
+      "Tactical high-contrast editorial typography (Cabinet Grotesk / Outfit + JetBrains Mono + DM Sans)",
+      "Organic paper & warm obsidian surfaces with delicate 1px subtle strokes",
+      "Interactive live components (Real-time Market Ticker simulator, Interactive Atlas AI Chat Demo, Translated News Feed)",
+      "Authentic Founder Letter from Justin (Canada) explaining why Mentova went 100% FREE",
+      "Explicit language switcher (FR, EN, ES) with full localization dictionary",
+      "Roadmap section showing hidden/upcoming features (Community Forum, Human Mentors, VIP Tools)",
+      "Direct CTAs linking to app.mentova-academy.com without frictionless paywalls"
+    ]
+  },
+  "theme_strategy": {
+    "default_mode": "dark",
+    "theme_support": "Dual Theme (Obsidian Night / Paper Light)",
+    "dark_palette": {
+      "bg_primary": "#0A0C10",
+      "bg_secondary": "#12151C",
+      "bg_card": "#181C26",
+      "text_primary": "#F3F4F6",
+      "text_secondary": "#9CA3AF",
+      "border": "rgba(255, 255, 255, 0.08)",
+      "accent_primary": "#FF4800",
+      "accent_green": "#10B981",
+      "accent_blue": "#3B82F6"
     },
-    "brand": {
-      "primary": "#7C3AED",
-      "primaryLight": "#A78BFA",
-      "accent": "#00D9A5"
-    },
-    "text": {
-      "heading": "#FFFFFF",
-      "body": "rgba(255, 255, 255, 0.7)",
-      "muted": "rgba(255, 255, 255, 0.4)"
-    },
-    "border": {
-      "glass": "rgba(255, 255, 255, 0.08)",
-      "active": "rgba(124, 58, 237, 0.5)"
+    "light_palette": {
+      "bg_primary": "#FAF8F5",
+      "bg_secondary": "#F1EEE7",
+      "bg_card": "#FFFFFF",
+      "text_primary": "#111827",
+      "text_secondary": "#4B5563",
+      "border": "rgba(0, 0, 0, 0.08)",
+      "accent_primary": "#E03E00",
+      "accent_green": "#059669",
+      "accent_blue": "#2563EB"
     }
   },
   "typography": {
-    "guidelines": "Do NOT use generic Inter for headings. We demand high-tension typography. Since this is React Native and custom fonts might not be pre-loaded, assume system fallbacks if needed, but structure the styles as if a strong geometric display sans is used.",
-    "headings": {
-      "fontFamily": "'Unbounded', 'Space Grotesk', system-ui",
-      "fontWeight": "900",
-      "letterSpacing": -1
-    },
-    "body": {
-      "fontFamily": "'Chivo', 'Roboto', system-ui",
-      "fontWeight": "400",
-      "letterSpacing": 0
-    },
-    "scale": {
-      "h1": 42,
-      "h2": 32,
-      "h3": 24,
-      "body": 16,
-      "caption": 13,
-      "overline": 10
+    "font_family_heading": "'Cabinet Grotesk', 'Outfit', 'Playfair Display', sans-serif",
+    "font_family_body": "'DM Sans', 'Inter', sans-serif",
+    "font_family_mono": "'JetBrains Mono', 'Fira Code', monospace",
+    "hierarchy": {
+      "hero_h1": "text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08]",
+      "section_h2": "text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight",
+      "card_h3": "text-xl sm:text-2xl font-semibold",
+      "body": "text-base sm:text-lg leading-relaxed text-secondary",
+      "mono_data": "font-mono text-xs sm:text-sm tracking-widest uppercase"
     }
   },
-  "layout_and_spacing": {
-    "strategy": "Mobile-first, generous padding. Cards do not touch the screen edges.",
-    "padding": {
-      "screen": 24,
-      "card": 20,
-      "button": 16
+  "key_features_to_showcase": [
+    {
+      "id": "atlas-ai",
+      "title": "Atlas AI Mentor",
+      "status": "Available Now - 100% Free",
+      "description": "Your 24/7 personal crypto guide. Translates complex whitepapers, analyzes market sentiment, and answers any crypto question in simple plain human terms.",
+      "interactive_demo": "Interactive Atlas AI sandbox chat widget allowing visitors to test real prompts (e.g. 'Explain Solana Staking simply', 'What happened with ETF flows today?')."
     },
-    "radii": {
-      "card": 24,
-      "button": 16,
-      "pill": 999
+    {
+      "id": "market-tracking",
+      "title": "Live Market Intelligence",
+      "status": "Available Now - 100% Free",
+      "description": "Real-time crypto price tracking, volatility metrics, and technical indicators simplified for quick daily briefings.",
+      "interactive_demo": "Live updating simulated ticker chart with real crypto assets (BTC, ETH, SOL, AVAX, NEAR) and quick timeframe toggles."
     },
-    "gap": {
-      "sm": 8,
-      "md": 16,
-      "lg": 24,
-      "xl": 32
+    {
+      "id": "translated-news",
+      "title": "Multi-Lingual News Engine",
+      "status": "Available Now - 100% Free",
+      "description": "Curated global crypto news automatically translated and summarized in French, English, and Spanish without algorithmic clickbait.",
+      "interactive_demo": "Interactive news card feed with language filter tabs and one-click AI summary expander."
+    }
+  ],
+  "upcoming_features_roadmap": [
+    {
+      "id": "community-forum",
+      "title": "Community Forum",
+      "timeline": "Q3 2026",
+      "status": "In Development",
+      "description": "Peer-to-peer discussion hub for sharing research, strategies, and verified learning milestones."
+    },
+    {
+      "id": "human-mentors",
+      "title": "Human Mentors & Office Hours",
+      "timeline": "Q4 2026",
+      "status": "Upcoming",
+      "description": "Weekly live sessions with experienced crypto educators and market analysts based in Canada and Europe."
+    },
+    {
+      "id": "vip-tools",
+      "title": "Advanced Pro Analytics",
+      "timeline": "Q1 2027",
+      "status": "Upcoming",
+      "description": "On-chain wallet tracking, liquidity heatmaps, and automated portfolio rebalancing alerts."
+    }
+  ],
+  "founder_story": {
+    "founder_name": "Justin",
+    "location": "Montreal, Canada 🇨🇦",
+    "headline": "Why I made Mentova 100% Free for everyone.",
+    "quote": "Crypto education was broken. Too many fake gurus charging $9.99/month for regurgitated Telegram signals and generic AI summaries. Mentova started as a paid experiment, but I realized knowledge should never be gatekept. Today, Mentova is completely free. No credit card, no VIP paywalls, no fake scarcity.",
+    "image_url": "https://images.unsplash.com/photo-1572610304424-34b7b2b46540?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMG1hbGUlMjBmb3VuZGVyJTIwd29ya2luZyUyMGNvZmZlZSUyMHN0dWRpbyUyMG5vdGVib29rfGVufDB8fHx8MTc4OTA0NDk4N3ww&ixlib=rb-4.1.0&q=85"
+  },
+  "languages": ["FR", "EN", "ES"],
+  "translations": {
+    "EN": {
+      "nav_features": "Features",
+      "nav_story": "Founder Story",
+      "nav_roadmap": "Roadmap",
+      "nav_faq": "FAQ",
+      "hero_badge": "100% Free Forever • No Subscription • No Paywall",
+      "hero_title": "Master Crypto Without the Noise. Powered by AI, Built for Humans.",
+      "hero_subtitle": "Meet Atlas AI, track real-time crypto markets, and read curated multi-lingual news — completely free. Made in Canada by Justin.",
+      "cta_app": "Launch Free Web App",
+      "cta_explore": "Explore Features",
+      "free_banner": "No $9.99/mo subscription. No 500-spot limit. 100% Free access for all learners."
+    },
+    "FR": {
+      "nav_features": "Fonctionnalités",
+      "nav_story": "Notre Histoire",
+      "nav_roadmap": "Feuille de Route",
+      "nav_faq": "FAQ",
+      "hero_badge": "100% Gratuit pour Toujours • Sans Abonnement • Sans Paywall",
+      "hero_title": "Maîtrisez la Crypto Sans le Bruit. Propulsé par l'IA, Conçu pour les Humains.",
+      "hero_subtitle": "Découvrez Atlas IA, suivez le marché en temps réel et lisez des actualités traduites — entièrement gratuit. Créé au Canada par Justin.",
+      "cta_app": "Ouvrir l'Application Gratuite",
+      "cta_explore": "Découvrir les Fonctionnalités",
+      "free_banner": "Fini l'abonnement à 9,99$/mois. Fini la limite de 500 places. Accès 100% gratuit pour tous."
+    },
+    "ES": {
+      "nav_features": "Características",
+      "nav_story": "Historia del Fundador",
+      "nav_roadmap": "Hoja de Ruta",
+      "nav_faq": "Preguntas Frecuentes",
+      "hero_badge": "100% Gratis para Siempre • Sin Suscripción • Sin Muros de Pago",
+      "hero_title": "Domina el Cripto Sin Ruido. Potenciado por IA, Creado para Humanos.",
+      "hero_subtitle": "Conoce a Atlas IA, rastrea mercados en tiempo real y lee noticias traducidas — completamente gratis. Creado en Canadá por Justin.",
+      "cta_app": "Abrir la App Gratuita",
+      "cta_explore": "Explorar Funciones",
+      "free_banner": "Sin suscripción de $9.99/mes. Sin límite de 500 plazas. Acceso 100% gratuito para todos."
     }
   },
-  "components": {
-    "hero": {
-      "structure": "Animated M logo center-top, Tagline badge above the Title, H1 Title, Subtitle.",
-      "taglineBadge": "Tiny pill shape, border 1px solid rgba(0, 217, 165, 0.3), text #00D9A5. Uppercase, tracking wide.",
-      "title": "Massive text. Can use green or purple text-shadow or linear-gradient overlay if possible."
-    },
-    "statsBar": {
-      "structure": "Horizontal row of 3 small bento items. '9+ Pro Tools', '24/7 AI Active', '3 Languages'.",
-      "style": "Glass surface. Number/Icon highlighted in Primary/Accent color. Deep padding."
-    },
-    "featureCards": {
-      "structure": "4 cards (AI Trading, Pro Charts, Verified Mentors, Community). Auto-rotate carousel or stack.",
-      "style": "Crystal variant glassmorphism. Background rgba(255,255,255,0.03), 1px solid rgba(255,255,255,0.05). Internal glowing icon.",
-      "activeState": "Border becomes Purple, subtle drop shadow."
-    },
-    "buttons": {
-      "primary": "Solid #7C3AED background. Text #FFFFFF. Bold, large hit area. Subtext '→ register'.",
-      "secondary": "Transparent. Text rgba(255,255,255,0.7). No border or extremely subtle border. Subtext '→ login'.",
-      "trustBadges": "Muted text beneath the buttons (security, encryption). 12px."
-    }
-  },
-  "motion_and_interactions": {
-    "background": "Use expo-linear-gradient as absolute-positioned giant blurred orbs (width 300, height 300, borderRadius 150) in top-right (purple) and bottom-left (green) with low opacity (0.15) to simulate glowing space.",
-    "cards": "Use React Native Animated API for the auto-rotate functionality.",
-    "logo": "Pulsing or floating animation via Animated.loop and Animated.sequence on the Y-axis."
-  },
-  "media": {
-    "image_urls": [
-      {
-        "url": "https://images.unsplash.com/photo-1672911640671-65d5dfa97d26?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGRhcmslMjAzZCUyMG5lb24lMjBjcnlwdG8lMjB3ZWIzfGVufDB8fHx8MTc4MjMzOTEyMHww&ixlib=rb-4.1.0&q=85",
-        "category": "abstract_crypto",
-        "description": "Abstract 3D crypto element for potential visual flair inside feature cards or as a subtle background header image."
-      }
-    ]
+  "image_urls": {
+    "founder_portrait": "https://images.unsplash.com/photo-1572610304424-34b7b2b46540?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMG1hbGUlMjBmb3VuZGVyJTIwd29ya2luZyUyMGNvZmZlZSUyMHN0dWRpbyUyMG5vdGVib29rfGVufDB8fHx8MTc4OTA0NDk4N3ww&ixlib=rb-4.1.0&q=85",
+    "laptop_workspace": "https://images.unsplash.com/photo-1657818026005-7eee3649bbc5?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTJ8MHwxfHNlYXJjaHwyfHxjcnlwdG8lMjBlZHVjYXRpb24lMjB0cmFkaW5nJTIwbGVhcm5pbmclMjBsYXB0b3AlMjBmb3VuZGVyJTIwY2FuYWRhfGVufDB8fHx8MTc4OTA0NDk4N3ww&ixlib=rb-4.1.0&q=85",
+    "market_desk": "https://images.unsplash.com/photo-1560890264-4b92305ee66e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzZ8MHwxfHNlYXJjaHwzfHxjcnlwdG8lMjBtYXJrZXQlMjBmaW5hbmNpYWwlMjBkYXRhJTIwc2NyZWVuJTIwd2FybSUyMHdvb2QlMjBkZXNrfGVufDB8fHx8MTc4OTA0NDk4N3ww&ixlib=rb-4.1.0&q=85"
   },
   "instructions_to_main_agent": [
-    "CRITICAL: Use pure React Native components (View, Text, TouchableOpacity, StyleSheet, Animated) since this is an Expo export.",
-    "Do NOT use DOM elements like <div> or <span>.",
-    "All code must be in .js files (no .tsx).",
-    "Use expo-linear-gradient for background gradients and glowing orbs.",
-    "Use Ionicons from @expo/vector-icons (or react-native-vector-icons) for all UI iconography.",
-    "For Glassmorphism in React Native: use backgroundColor: 'rgba(255,255,255,0.03)' with a border. You cannot easily use backdrop-blur in pure RN without expo-blur, so simulate it with low-opacity dark/light fills.",
-    "MANDATORY: Add testID AND data-testid attributes to all interactive and key informational elements for automated testing (e.g., testID='hero-title' data-testid='hero-title')."
+    "Build a bespoke, anti-AI aesthetic React landing page in /app/frontend.",
+    "Ensure 100% Free message is loud, clear, and prominent everywhere (No pricing, no $9.99, no spot count).",
+    "Include FR/EN/ES language switcher state that updates text dynamically across the page.",
+    "Add interactive Atlas AI demo widget with pre-set prompt buttons and simulated intelligent answers.",
+    "Add live interactive Market Tracker card with real price charts and ticker simulation.",
+    "Add multi-lingual News section with language tabs and summary expanders.",
+    "Add Founder Justin's personal letter card with Canada location badge.",
+    "Add Upcoming Roadmap grid (Community, Human Mentors, VIP Tools) with 'In Development' tags.",
+    "Add clean FAQ accordion section addressing common questions (Why free? How does Atlas work? What's coming next?).",
+    "Ensure CTAs point to https://app.mentova-academy.com with target='_blank' or clean link interaction.",
+    "Add data-testid attributes on all interactive controls (buttons, tabs, inputs, language switches)."
   ]
 }

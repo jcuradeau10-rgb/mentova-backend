@@ -3,1372 +3,344 @@
 <head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-2GLPG3JB9N"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-2GLPG3JB9N');</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mentova Academy | Apprends la Crypto. À ton rythme.</title>
-    <meta name="description" content="La plateforme d'éducation trading & crypto. AI-powered adaptive learning, verified mentors, pro tools. FR, EN, ES.">
-    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>M</text></svg>">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;700;900&family=Chivo:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        :root {
-            --bg: #06060F;
-            --bg-secondary: #0D0D1F;
-            --bg-surface: #12122A;
-            --purple: #7C3AED;
-            --purple-light: #A78BFA;
-            --purple-dark: #5B21B6;
-            --green: #00D9A5;
-            --gold: #FFD700;
-            --red: #EF4444;
-            --blue: #06B6D4;
-            --text: #FFFFFF;
-            --text-secondary: #A1A1AA;
-            --text-muted: #5A5A6E;
-            --border: rgba(124,58,237,0.15);
-            --border-active: rgba(124,58,237,0.5);
-            --radius: 16px;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: 'Chivo', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            overflow-x: hidden;
-            font-weight: 300;
-        }
-        h1, h2, h3, h4, h5 {
-            font-family: 'Unbounded', cursive;
-            letter-spacing: -0.02em;
-            line-height: 0.95;
-        }
-        a { color: var(--purple-light); text-decoration: none; transition: color 0.2s; }
-        a:hover { color: var(--purple-dark); }
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
-        @media (min-width: 768px) { .container { padding: 0 48px; } }
-        @media (min-width: 1024px) { .container { padding: 0 96px; } }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentova | Apprends la Crypto. Gratuitement.</title>
+<meta name="description" content="Mentova : ton mentor IA crypto personnel. Cours adaptatifs, marche en temps reel, actualites traduites. 100% gratuit. Cree au Canada.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>M</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #0A0C10;
+    --bg2: #12151C;
+    --bg3: #181C26;
+    --text: #F3F4F6;
+    --text2: #9CA3AF;
+    --text3: #5A5F6E;
+    --border: rgba(255,255,255,0.08);
+    --accent: #FF4800;
+    --green: #10B981;
+    --blue: #3B82F6;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.65;overflow-x:hidden;font-weight:400;}
+h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;letter-spacing:-0.03em;}
+a{color:inherit;text-decoration:none;}
+.container{max-width:1100px;margin:0 auto;padding:0 24px;}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;}
 
-        /* LABEL STYLE */
-        .label { text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; font-weight: 700; color: var(--text-muted); }
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 0;backdrop-filter:blur(20px);background:rgba(10,12,16,0.85);border-bottom:1px solid var(--border);}
+nav .inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:0 24px;}
+nav .logo{font-family:'Outfit',sans-serif;font-weight:800;font-size:20px;color:var(--text);}
+nav .logo span{color:var(--accent);}
+nav .links{display:flex;align-items:center;gap:28px;}
+nav .links a{font-size:14px;color:var(--text2);font-weight:500;transition:color 0.2s;}
+nav .links a:hover{color:var(--text);}
+nav .lang-switch{display:flex;gap:4px;margin-left:12px;}
+nav .lang-switch a{font-family:'JetBrains Mono',monospace;font-size:11px;padding:5px 10px;border-radius:6px;font-weight:600;border:1px solid transparent;transition:all 0.2s;}
+nav .lang-switch a.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+nav .lang-switch a:not(.active){color:var(--text3);border-color:var(--border);}
+nav .lang-switch a:not(.active):hover{color:var(--text);border-color:var(--text3);}
+nav .cta-nav{font-size:13px;font-weight:600;background:var(--accent);color:#fff;padding:8px 20px;border-radius:8px;transition:opacity 0.2s;}
+nav .cta-nav:hover{opacity:0.85;}
+.burger{display:none;background:none;border:none;color:var(--text);font-size:22px;cursor:pointer;}
 
-        /* GRAIN OVERLAY */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 9998;
-            opacity: 0.4;
-        }
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;align-items:center;padding-top:100px;padding-bottom:60px;}
+.hero-inner{display:grid;grid-template-columns:1fr;gap:48px;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:100px;padding:6px 16px;margin-bottom:24px;}
+.hero-badge span{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;color:var(--green);font-weight:600;}
+.hero h1{font-size:clamp(36px,5.5vw,64px);font-weight:900;margin-bottom:20px;color:var(--text);}
+.hero h1 em{font-style:normal;color:var(--accent);}
+.hero-sub{font-size:18px;color:var(--text2);max-width:540px;line-height:1.7;margin-bottom:36px;}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;}
+.btn-main{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px;transition:all 0.2s;border:none;cursor:pointer;}
+.btn-main:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,72,0,0.25);}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;color:var(--text2);padding:14px 24px;border-radius:10px;font-weight:600;font-size:15px;border:1px solid var(--border);transition:all 0.2s;}
+.btn-ghost:hover{color:var(--text);border-color:var(--text3);}
+.hero-stats{display:flex;gap:40px;margin-top:48px;padding-top:32px;border-top:1px solid var(--border);}
+.hero-stat .val{font-family:'Outfit',sans-serif;font-size:28px;font-weight:800;color:var(--text);}
+.hero-stat .lbl{font-size:13px;color:var(--text3);margin-top:2px;}
 
-        /* ═══ HEADER ═══ */
-        header {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 100;
-            background: rgba(5,5,5,0.6);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border-bottom: 1px solid rgba(124,58,237,0.1);
-            transition: all 0.3s;
-        }
-        header .container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 72px;
-        }
-        .logo {
-            font-family: 'Unbounded', cursive;
-            font-size: 20px;
-            font-weight: 900;
-            color: var(--text);
-            letter-spacing: -0.03em;
-        }
-        .logo span { color: var(--purple-light); }
-        .nav-links {
-            display: flex;
-            gap: 32px;
-            align-items: center;
-        }
-        .nav-links a {
-            color: var(--text-secondary);
-            font-size: 13px;
-            font-weight: 500;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }
-        .nav-links a:hover { color: var(--text); }
-        .nav-right {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-        .lang-switch {
-            display: flex;
-            gap: 4px;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            padding: 3px;
-            border: 1px solid var(--border);
-        }
-        .lang-switch a {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            padding: 5px 10px;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-        .lang-switch a.active {
-            background: var(--purple);
-            color: #fff;
-        }
-        .btn-primary {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, var(--purple), var(--purple-dark));
-            color: #fff;
-            padding: 10px 24px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 13px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, var(--purple-dark), var(--purple));
-            color: #fff;
-            transform: translateY(-1px);
-            box-shadow: 0 8px 32px rgba(124,58,237,0.3);
-        }
-        .btn-outline {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: transparent;
-            color: var(--text);
-            padding: 10px 24px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 13px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.3s;
-            letter-spacing: 0.05em;
-        }
-        .btn-outline:hover {
-            border-color: var(--purple-light);
-            color: var(--purple-light);
-            transform: translateY(-1px);
-        }
-        .nav-toggle { display: none; background: none; border: none; color: var(--text); font-size: 22px; cursor: pointer; }
-        .nav-mobile {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(5,5,5,0.98);
-            backdrop-filter: blur(20px);
-            z-index: 200;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 28px;
-        }
-        .nav-mobile.open { display: flex; }
-        .nav-mobile a { font-family: 'Unbounded', cursive; font-size: 24px; font-weight: 700; color: var(--text); }
-        .nav-mobile .close-mob {
-            position: absolute; top: 24px; right: 24px;
-            background: none; border: none; color: var(--text); font-size: 32px; cursor: pointer;
-        }
+/* ── FEATURES ── */
+.features{padding:120px 0 80px;}
+.section-tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;font-weight:600;}
+.section-h{font-size:clamp(28px,4vw,44px);font-weight:800;margin-bottom:16px;}
+.section-p{font-size:17px;color:var(--text2);max-width:560px;line-height:1.7;margin-bottom:56px;}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+.feat-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px 28px;transition:all 0.3s;}
+.feat-card:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-2px);}
+.feat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:20px;}
+.feat-card h3{font-size:18px;font-weight:700;margin-bottom:10px;}
+.feat-card p{font-size:14px;color:var(--text2);line-height:1.6;}
+.feat-card .tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;color:var(--green);margin-top:16px;display:inline-block;}
 
-        @media (max-width: 900px) {
-            .nav-links { display: none; }
-            .nav-toggle { display: block; }
-            .nav-right .btn-primary, .nav-right .btn-outline { display: none; }
-        }
+/* ── ATLAS DEMO ── */
+.atlas{padding:80px 0 120px;}
+.atlas-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+.atlas-terminal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.term-header{display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--bg3);}
+.term-dot{width:10px;height:10px;border-radius:50%;}
+.term-title{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);margin-left:auto;letter-spacing:0.05em;}
+.term-body{padding:24px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2;}
+.term-body .prompt{color:var(--green);}
+.term-body .dim{color:var(--text3);}
+.term-body .hl{color:var(--accent);}
+.term-body .ok{color:var(--green);}
 
-        /* ═══ HERO ═══ */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            position: relative;
-            padding-top: 72px;
-            overflow: hidden;
-        }
-        .hero-bg {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: url('https://images.unsplash.com/photo-1771015138422-819587ae7011?w=1920&q=80') center/cover no-repeat;
-            opacity: 0.15;
-        }
-        .hero-gradient {
-            position: absolute;
-            bottom: 0; left: 0; right: 0; height: 50%;
-            background: linear-gradient(to top, var(--bg), transparent);
-        }
-        .hero .container {
-            position: relative;
-            z-index: 2;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 48px;
-            padding-top: 80px;
-            padding-bottom: 80px;
-        }
-        @media (min-width: 1024px) {
-            .hero .container {
-                grid-template-columns: 1.2fr 0.8fr;
-                align-items: center;
-                padding-top: 40px;
-                padding-bottom: 40px;
-            }
-        }
-        .hero-content {}
-        .hero-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(124,58,237,0.08);
-            border: 1px solid rgba(124,58,237,0.2);
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--purple-light);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 32px;
-        }
-        .hero h1 {
-            font-size: clamp(40px, 6vw, 72px);
-            font-weight: 900;
-            margin-bottom: 24px;
-            text-transform: uppercase;
-        }
-        .hero h1 .accent {
-            color: var(--purple-light);
-        }
-        .hero-desc {
-            contain: layout style;
-            font-size: 17px;
-            color: var(--text-secondary);
-            max-width: 520px;
-            line-height: 1.7;
-            margin-bottom: 40px;
-        }
-        .hero-actions {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            margin-bottom: 48px;
-        }
-        .hero-stats {
-            display: flex;
-            gap: 40px;
-        }
-        .hero-stat { text-align: left; }
-        .hero-stat .num {
-            font-family: 'Unbounded', cursive;
-            font-size: 32px;
-            font-weight: 900;
-            color: var(--text);
-        }
-        .hero-stat .lbl {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            font-weight: 600;
-        }
+/* ── FOUNDER ── */
+.founder{padding:80px 0 120px;border-top:1px solid var(--border);}
+.founder-inner{display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:start;}
+.founder-photo{width:80px;height:80px;border-radius:50%;overflow:hidden;border:2px solid var(--border);}
+.founder-photo img{width:100%;height:100%;object-fit:cover;}
+.founder-header{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
+.founder-name{font-family:'Outfit',sans-serif;font-size:18px;font-weight:700;}
+.founder-loc{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:0.06em;}
+.founder-text{font-size:17px;color:var(--text2);line-height:1.8;margin-top:16px;}
+.founder-text strong{color:var(--text);font-weight:600;}
 
-        /* COUNTDOWN WIDGET */
-        .countdown-widget {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 32px;
-            max-width: 400px;
-        }
-        .countdown-title {
-            font-family: 'Unbounded', cursive;
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--purple-light);
-            margin-bottom: 8px;
-        }
-        .countdown-date {
-            font-family: 'Unbounded', cursive;
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 24px;
-        }
-        .countdown-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 24px;
-        }
-        .cd-item {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 14px 8px;
-            text-align: center;
-        }
-        .cd-item .num {
-            font-family: 'Unbounded', cursive;
-            font-size: 28px;
-            font-weight: 900;
-            display: block;
-            color: var(--text);
-            min-width: 2ch;
-        }
-        .cd-item .lbl {
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--text-muted);
-            font-weight: 700;
-        }
-        .countdown-spots { color: var(--gold);
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--purple-light);
-        }
+/* ── ROADMAP ── */
+.roadmap{padding:80px 0 120px;}
+.road-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+.road-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;}
+.road-card .timeline{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;color:var(--accent);margin-bottom:12px;}
+.road-card h3{font-size:17px;font-weight:700;margin-bottom:8px;}
+.road-card p{font-size:14px;color:var(--text2);line-height:1.6;}
+.road-card .status{display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text3);letter-spacing:0.05em;}
+.road-card .status .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
 
-        /* ═══ MARQUEE ═══ */
-        .marquee-section {
-            overflow: hidden;
-            padding: 32px 0;
-            border-top: 1px solid rgba(124,58,237,0.1);
-            border-bottom: 1px solid rgba(124,58,237,0.1);
-        }
-        .marquee-track {
-            display: flex;
-            animation: marqueeScroll 30s linear infinite;
-            white-space: nowrap;
-        }
-        .marquee-text {
-            font-family: 'Unbounded', cursive;
-            font-size: clamp(48px, 8vw, 100px);
-            font-weight: 900;
-            color: transparent;
-            -webkit-text-stroke: 1px rgba(124,58,237,0.3);
-            text-transform: uppercase;
-            padding: 0 40px;
-            flex-shrink: 0;
-        }
-        .marquee-text .highlight {
-            -webkit-text-stroke-color: rgba(124,58,237,0.3);
-        }
-        @keyframes marqueeScroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
+/* ── FAQ ── */
+.faq{padding:80px 0 120px;border-top:1px solid var(--border);}
+.faq-list{max-width:680px;}
+.faq-item{border-bottom:1px solid var(--border);padding:20px 0;}
+.faq-q{font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;color:var(--text);transition:color 0.2s;}
+.faq-q:hover{color:var(--accent);}
+.faq-q svg{flex-shrink:0;transition:transform 0.3s;}
+.faq-item.open .faq-q svg{transform:rotate(180deg);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease;}
+.faq-item.open .faq-a{max-height:300px;padding-top:12px;}
+.faq-a p{font-size:15px;color:var(--text2);line-height:1.7;}
 
-        /* ═══ FEATURES BENTO ═══ */
-        .features-section {
-            padding: 96px 0;
-        }
-        .section-label {
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
-            margin-bottom: 16px;
-        }
-        .section-title {
-            font-size: clamp(28px, 4vw, 48px);
-            font-weight: 900;
-            margin-bottom: 16px;
-            text-transform: uppercase;
-        }
-        .section-desc {
-            font-size: 16px;
-            color: var(--text-secondary);
-            max-width: 560px;
-            line-height: 1.7;
-            margin-bottom: 56px;
-        }
-        .bento-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-        }
-        @media (min-width: 768px) {
-            .bento-grid {
-                grid-template-columns: repeat(8, 1fr);
-            }
-        }
-        @media (min-width: 1024px) {
-            .bento-grid {
-                grid-template-columns: repeat(12, 1fr);
-            }
-        }
-        .bento-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 32px;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-        .bento-card:hover {
-            border-color: rgba(124,58,237,0.3);
-            transform: translateY(-4px);
-        }
-        .bento-card .card-icon {
-            width: 48px; height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin-bottom: 20px;
-        }
-        .bento-card h3 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-        .bento-card p {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-        /* Card spans */
-        @media (min-width: 768px) {
-            .bento-1 { grid-column: span 5; }
-            .bento-2 { grid-column: span 3; }
-            .bento-3 { grid-column: span 4; }
-            .bento-4 { grid-column: span 4; }
-        }
-        @media (min-width: 1024px) {
-            .bento-1 { grid-column: span 7; grid-row: span 2; min-height: 360px; }
-            .bento-2 { grid-column: span 5; }
-            .bento-3 { grid-column: span 5; }
-            .bento-4 { grid-column: span 6; }
-            .bento-5 { grid-column: span 6; }
-        }
+/* ── FINAL CTA ── */
+.final-cta{padding:80px 0;text-align:center;}
+.final-cta h2{font-size:clamp(28px,4vw,40px);font-weight:800;margin-bottom:12px;}
+.final-cta p{color:var(--text2);font-size:16px;margin-bottom:32px;}
 
-        /* ═══ AI SECTION ═══ */
-        .ai-section {
-            padding: 96px 0;
-            position: relative;
-        }
-        .ai-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 64px;
-        }
-        @media (min-width: 1024px) {
-            .ai-grid { grid-template-columns: 1fr 1fr; align-items: center; }
-        }
-        .ai-features-list {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-            margin-top: 32px;
-        }
-        .ai-feat {
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-        }
-        .ai-feat-icon {
-            width: 44px; height: 44px; min-width: 44px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-        .ai-feat h4 {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            line-height: 1.3;
-        }
-        .ai-feat p { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);padding:48px 0 32px;}
+.footer-inner{display:flex;justify-content:space-between;align-items:start;gap:32px;flex-wrap:wrap;}
+.footer-brand{font-family:'Outfit',sans-serif;font-weight:800;font-size:18px;}
+.footer-brand span{color:var(--accent);}
+.footer-links{display:flex;gap:48px;}
+.footer-col{display:flex;flex-direction:column;gap:8px;}
+.footer-col h4{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;}
+.footer-col a{font-size:14px;color:var(--text2);transition:color 0.2s;}
+.footer-col a:hover{color:var(--text);}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:40px;padding-top:24px;border-top:1px solid var(--border);font-size:13px;color:var(--text3);}
 
-        /* AI TERMINAL MOCKUP */
-        .ai-terminal {
-            background: #0A0A0A;
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 32px 80px rgba(0,0,0,0.5);
-        }
-        .terminal-header {
-            background: linear-gradient(135deg, #1A1A2E, #0A0A1A);
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-        .terminal-dots {
-            display: flex;
-            gap: 6px;
-        }
-        .terminal-dots span {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-        }
-        .terminal-name {
-            font-family: 'Unbounded', cursive;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--purple-light);
-        }
-        .terminal-body {
-            padding: 24px;
-            font-family: 'Chivo', monospace;
-            font-size: 13px;
-            line-height: 1.7;
-            min-height: 340px;
-        }
-        .t-line {
-            margin-bottom: 12px;
-            animation: termFade 0.5s ease forwards;
-            opacity: 0;
-        }
-        .t-prompt { color: var(--purple-light); font-weight: 700; }
-        .t-response { color: var(--text-secondary); }
-        .t-highlight { color: var(--green); font-weight: 700; }
-        .t-dim { color: var(--text-muted); }
-        .t-progress {
-            height: 4px;
-            background: rgba(255,255,255,0.06);
-            border-radius: 2px;
-            overflow: hidden;
-            margin: 8px 0;
-            width: 200px;
-        }
-        .t-progress-fill {
-            height: 100%;
-            border-radius: 2px;
-            background: linear-gradient(90deg, var(--purple-light), var(--green));
-        }
-        @keyframes termFade {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .t-line:nth-child(1) { animation-delay: 0.1s; }
-        .t-line:nth-child(2) { animation-delay: 0.3s; }
-        .t-line:nth-child(3) { animation-delay: 0.5s; }
-        .t-line:nth-child(4) { animation-delay: 0.7s; }
-        .t-line:nth-child(5) { animation-delay: 0.9s; }
-        .t-line:nth-child(6) { animation-delay: 1.1s; }
-        .t-line:nth-child(7) { animation-delay: 1.3s; }
-        .t-line:nth-child(8) { animation-delay: 1.5s; }
-
-        /* ═══ PRICING ═══ */
-        .pricing-section {
-            padding: 96px 0;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-        }
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
-            max-width: 880px;
-            margin: 0 auto;
-        }
-        @media (min-width: 768px) {
-            .pricing-grid { grid-template-columns: 1fr 1fr; }
-        }
-        .price-card {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 40px 32px;
-            position: relative;
-        }
-        .price-card.vip {
-            border-color: transparent;
-            background: linear-gradient(var(--bg), var(--bg)) padding-box,
-                        linear-gradient(135deg, var(--purple-light), var(--green), var(--purple-light)) border-box;
-            border: 2px solid transparent;
-            animation: tracingBeam 4s linear infinite;
-        }
-        @keyframes tracingBeam {
-            0% { background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(0deg, var(--purple-light), transparent 50%, var(--purple-light)) border-box; }
-            25% { background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(90deg, var(--purple-light), transparent 50%, var(--purple-light)) border-box; }
-            50% { background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(180deg, var(--purple-light), transparent 50%, var(--purple-light)) border-box; }
-            75% { background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(270deg, var(--purple-light), transparent 50%, var(--purple-light)) border-box; }
-            100% { background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(360deg, var(--purple-light), transparent 50%, var(--purple-light)) border-box; }
-        }
-        .price-label {
-            font-family: 'Unbounded', cursive;
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 8px;
-        }
-        .price-label.free-label { color: var(--text-muted); }
-        .price-label.vip-label { color: var(--gold); }
-        .price-badge {
-            display: inline-block;
-            background: rgba(239,68,68,0.12);
-            color: var(--red);
-            font-size: 11px;
-            font-weight: 800;
-            padding: 4px 12px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .price-amount {
-            font-family: 'Unbounded', cursive;
-            font-size: 48px;
-            font-weight: 900;
-            margin-bottom: 4px;
-        }
-        .price-amount span { font-size: 16px; font-weight: 400; color: var(--text-secondary); }
-        .price-old { font-size: 14px; color: var(--text-muted); text-decoration: line-through; margin-bottom: 20px; }
-        .price-spots {
-            font-size: 13px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            font-weight: 700;
-            display: inline-block;
-        }
-        .price-spots.hot { background: rgba(239,68,68,0.1); color: var(--red); }
-        .price-spots.normal { background: rgba(124,58,237,0.1); color: var(--gold); }
-        .price-features {
-            list-style: none;
-            margin-bottom: 28px;
-        }
-        .price-features li {
-            padding: 7px 0;
-            font-size: 14px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .price-features li i {
-            color: var(--green);
-            font-size: 12px;
-            width: 16px;
-            text-align: center;
-        }
-        .price-note {
-            font-size: 12px;
-            color: var(--text-muted);
-            line-height: 1.6;
-            padding: 14px;
-            background: rgba(124,58,237,0.04);
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(124,58,237,0.1);
-        }
-
-        /* ═══ REGISTRATION ═══ */
-        .register-section {
-            padding: 96px 0;
-        }
-        .register-box {
-            max-width: 560px;
-            margin: 0 auto;
-        }
-        .progress-bar-wrap { margin-bottom: 32px; }
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-        .progress-track {
-            height: 6px;
-            background: rgba(255,255,255,0.06);
-            border-radius: 6px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--purple-light), var(--green));
-            border-radius: 6px;
-            transition: width 0.6s ease;
-        }
-        .form-group { margin-bottom: 18px; }
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-        .form-input {
-            width: 100%;
-            padding: 14px 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: var(--text);
-            font-size: 15px;
-            font-family: 'Chivo', sans-serif;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        .form-input:focus { border-color: var(--purple-light); }
-        .form-select {
-            width: 100%;
-            padding: 14px 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: var(--text);
-            font-size: 15px;
-            font-family: 'Chivo', sans-serif;
-            outline: none;
-            appearance: none;
-            cursor: pointer;
-        }
-        .form-checkbox {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        .form-checkbox input { margin-top: 3px; accent-color: var(--purple-light); width: 18px; height: 18px; }
-        .form-checkbox label { font-size: 13px; color: var(--text-secondary); line-height: 1.5; cursor: pointer; }
-        .form-submit {
-            width: 100%;
-            padding: 16px;
-            background: var(--purple);
-            color: #000;
-            border: none;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 800;
-            font-family: 'Unbounded', cursive;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .form-submit:hover { background: var(--purple-dark); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,58,237,0.2); }
-        .form-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .form-legal { font-size: 11px; color: var(--text-muted); line-height: 1.6; margin-top: 16px; text-align: center; }
-        .success-box, .error-box { padding: 24px; border-radius: 16px; text-align: center; margin-top: 20px; display: none; }
-        .success-box { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); }
-        .success-box h3 { font-family: 'Unbounded', cursive; color: var(--green); font-size: 18px; margin-bottom: 8px; }
-        .success-box p { color: var(--text-secondary); font-size: 14px; line-height: 1.6; }
-        .error-box { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: var(--red); }
-
-        /* ═══ APP SCREENSHOTS ═══ */
-        .screenshots-section { padding: 96px 0; }
-        .screenshots-scroll {
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            padding: 20px 0;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-        }
-        .screenshots-scroll::-webkit-scrollbar { display: none; }
-        .screenshot-mock {
-            width: 220px; min-width: 220px; height: 440px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 28px;
-            overflow: hidden;
-            scroll-snap-align: center;
-            flex-shrink: 0;
-            transition: transform 0.3s;
-        }
-        .screenshot-mock:hover { transform: translateY(-8px); }
-        .screenshot-mock img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* ═══ REFERRAL ═══ */
-        .referral-section { padding: 96px 0; }
-        .referral-steps {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-            margin-bottom: 48px;
-        }
-        @media (min-width: 768px) {
-            .referral-steps { grid-template-columns: repeat(3, 1fr); }
-        }
-        .ref-step {
-            text-align: center;
-            padding: 32px 24px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            transition: all 0.3s;
-        }
-        .ref-step:hover { border-color: rgba(124,58,237,0.3); transform: translateY(-4px); }
-        .ref-step-num {
-            width: 44px; height: 44px;
-            border-radius: 50%;
-            background: var(--purple);
-            color: #000;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Unbounded', cursive;
-            font-weight: 900;
-            font-size: 16px;
-            margin-bottom: 16px;
-        }
-        .ref-step h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-        .ref-step p { font-size: 13px; color: var(--text-secondary); }
-        .ref-tiers {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .ref-tier {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 18px 28px;
-            text-align: center;
-        }
-        .ref-tier .refs {
-            font-family: 'Unbounded', cursive;
-            font-size: 18px;
-            font-weight: 900;
-            color: var(--text);
-        }
-        .ref-tier .reward { font-size: 13px; color: var(--purple-light); font-weight: 700; }
-
-        /* ═══ FOUNDER ═══ */
-        .founder-section {
-            padding: 96px 0;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-        }
-        .founder-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 40px;
-            align-items: center;
-        }
-        @media (min-width: 768px) {
-            .founder-grid { grid-template-columns: auto 1fr; }
-        }
-        .founder-photo {
-            width: 180px; height: 180px;
-            border-radius: 50%;
-            border: 3px solid var(--purple-light);
-            overflow: hidden;
-            margin: 0 auto;
-        }
-        .founder-photo img { width: 100%; height: 100%; object-fit: cover; }
-        .founder-quote {
-            font-size: 16px;
-            color: var(--text-secondary);
-            line-height: 1.8;
-        }
-        .founder-quote strong { color: var(--text); }
-        .founder-sig {
-            margin-top: 20px;
-            font-size: 13px;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        /* ═══ FAQ ═══ */
-        .faq-section { padding: 96px 0; }
-        .faq-list { max-width: 720px; margin: 0 auto; }
-        .faq-item { border-bottom: 1px solid var(--border); }
-        .faq-q {
-            padding: 22px 0;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 15px;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-        .faq-q:hover { color: var(--purple-light); }
-        .faq-q i { transition: transform 0.3s; color: var(--text-muted); }
-        .faq-q.open i { transform: rotate(180deg); color: var(--purple-light); }
-        .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s; }
-        .faq-a.open { max-height: 300px; padding-bottom: 22px; }
-        .faq-a p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
-
-        /* ═══ FINAL CTA ═══ */
-        .final-cta {
-            text-align: center;
-            padding: 120px 0;
-            background: radial-gradient(ellipse at center, rgba(124,58,237,0.05) 0%, transparent 70%);
-        }
-        .final-cta h2 {
-            font-size: clamp(28px, 4.5vw, 52px);
-            font-weight: 900;
-            margin-bottom: 16px;
-            text-transform: uppercase;
-        }
-        .final-cta p {
-            color: var(--text-secondary);
-            font-size: 16px;
-            margin-bottom: 40px;
-            max-width: 480px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* ═══ FOOTER ═══ */
-        footer {
-            padding: 80px 0 32px;
-            background: var(--bg);
-            border-top: 1px solid var(--border);
-        }
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 48px;
-            margin-bottom: 64px;
-        }
-        .footer-brand-name {
-            font-family: 'Unbounded', cursive;
-            font-size: 24px;
-            font-weight: 900;
-            margin-bottom: 12px;
-        }
-        .footer-brand-name span { color: var(--purple-light); }
-        .footer-brand p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
-        .footer-col h4 {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--text-muted);
-            margin-bottom: 16px;
-        }
-        .footer-col a { display: block; font-size: 14px; color: var(--text-secondary); padding: 5px 0; }
-        .footer-col a:hover { color: var(--text); }
-        .footer-bottom {
-            text-align: center;
-            font-size: 12px;
-            color: var(--text-muted);
-            border-top: 1px solid var(--border);
-            padding-top: 24px;
-        }
-        .footer-huge {
-            font-family: 'Unbounded', cursive;
-            font-size: clamp(48px, 8vw, 96px);
-            font-weight: 900;
-            color: transparent;
-            -webkit-text-stroke: 1px rgba(124,58,237,0.1);
-            text-transform: uppercase;
-            text-align: center;
-            margin-bottom: 48px;
-        }
-        @media (max-width: 768px) {
-            .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
-        }
-        @media (max-width: 480px) {
-            .footer-grid { grid-template-columns: 1fr; }
-        }
-
-        /* ENTRANCE ANIMATIONS */
-        .fade-up {
-            opacity: 0;
-            transform: translateY(24px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-        .fade-up.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        @media (max-width: 1024px) {
-            .fade-up {
-                opacity: 1 !important;
-                transform: none !important;
-            }
-        }
-    </style>
+/* ── MOBILE ── */
+@media(max-width:768px){
+    nav .links{display:none;}
+    .burger{display:block;}
+    .hero h1{font-size:32px;}
+    .hero-stats{gap:24px;}
+    .feat-grid,.road-grid{grid-template-columns:1fr;}
+    .atlas-grid{grid-template-columns:1fr;gap:40px;}
+    .founder-inner{grid-template-columns:1fr;text-align:left;}
+    .footer-links{gap:32px;}
+    .footer-inner{flex-direction:column;}
+    .footer-bottom{flex-direction:column;gap:12px;text-align:center;}
+}
+@media(min-width:769px) and (max-width:1024px){
+    .feat-grid,.road-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
 </head>
 <body>
 
-<!-- ═══ HEADER ═══ -->
-<header data-testid="main-header">
-    <div class="container">
-        <a href="/" class="logo" data-testid="logo">Mentova<span>.</span></a>
-        <div class="nav-links">
-            <a href="#features">Fonctionnalités</a>
-            <a href="#ai-mentor">Mentor IA</a>
-            <a href="#pricing">Tarifs</a>
+<!-- ═══ NAV ═══ -->
+<nav>
+    <div class="inner">
+        <a href="/fr/" class="logo">Mentova<span>.</span></a>
+        <div class="links">
+            <a href="#features">Fonctionnalites</a>
+            <a href="#story">Notre histoire</a>
+            <a href="#roadmap">A venir</a>
             <a href="#faq">FAQ</a>
-            <a href="/blog">Blog</a>
-        </div>
-        <div class="nav-right">
-            <div class="lang-switch" data-testid="lang-switch">
+            <div class="lang-switch">
                 <a href="/">EN</a>
                 <a href="/fr/" class="active">FR</a>
                 <a href="/es/">ES</a>
             </div>
-            <a href="https://app.mentova-academy.com/login" class="btn-outline" data-testid="login-btn">Connexion</a>
-            <a href="#pre-register" class="btn-primary" data-testid="header-cta">S'abonner</a>
+            <a href="https://app.mentova-academy.com" class="cta-nav" data-testid="nav-cta">Ouvrir l'App</a>
         </div>
-        <button class="nav-toggle" onclick="document.getElementById('mobileNav').classList.add('open')" data-testid="nav-toggle">
-            <i class="fas fa-bars"></i>
-        </button>
+        <button class="burger" onclick="document.querySelector('.links').classList.toggle('open')" aria-label="Menu">&#9776;</button>
     </div>
-</header>
-
-<div class="nav-mobile" id="mobileNav">
-    <button class="close-mob" onclick="this.parentElement.classList.remove('open')">&times;</button>
-    <a href="#features" onclick="this.parentElement.classList.remove('open')">Fonctionnalités</a>
-    <a href="#ai-mentor" onclick="this.parentElement.classList.remove('open')">Mentor IA</a>
-    <a href="#pricing" onclick="this.parentElement.classList.remove('open')">Tarifs</a>
-    <a href="#faq" onclick="this.parentElement.classList.remove('open')">FAQ</a>
-    <a href="/blog">Blog</a>
-    <a href="/ambassadors">Ambassadeurs</a>
-    <a href="/mentors">Devenir Mentor</a>
-    <a href="https://app.mentova-academy.com/login" style="border:1px solid var(--purple-light);padding:12px 32px;border-radius:12px;color:var(--purple-light)">Connexion</a>
-    <a href="#pre-register" onclick="this.parentElement.classList.remove('open')" class="btn-primary">S'abonner</a>
-    <div style="display:flex;gap:8px;margin-top:8px;">
-        <a href="/" style="padding:6px 14px;border-radius:8px;background:var(--purple-light);color:#000;font-size:13px;font-weight:700;">EN</a>
-        <a href="/fr/" style="padding:6px 14px;border-radius:8px;background:var(--purple);color:#fff;font-size:13px;font-weight:700;">FR</a>
-        <a href="/es/" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);color:var(--text-muted);font-size:13px;font-weight:700;">ES</a>
-    </div>
-</div>
+</nav>
 
 <!-- ═══ HERO ═══ -->
 <section class="hero" data-testid="hero-section">
-    <div class="hero-bg"></div>
-    <div class="hero-gradient"></div>
     <div class="container">
-        <div class="hero-content">
-            <div class="hero-tag"><i class="fas fa-bolt"></i> Prix Fondateur | Limité à 500 Membres</div>
-            <h1>Apprends la Crypto.<br><span class="accent" style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">À ton rythme.</span></h1>
-            <p class="hero-desc">Apprentissage adaptatif par IA, mentors vérifiés, outils de trading pro et communauté multilingue. Mentova est le réseau social pour les débutants en crypto.</p>
-            <div class="hero-actions">
-                <a href="#pre-register" class="btn-primary" style="padding:16px 36px;font-size:15px;" data-testid="hero-cta-button">
-                    S'abonner à 9,99$/mois <i class="fas fa-arrow-right"></i>
-                </a>
-                <a href="https://app.mentova-academy.com" class="btn-outline" style="padding:16px 36px;font-size:15px;" data-testid="hero-app-button">
-                    Ouvrir l'App <i class="fas fa-external-link-alt"></i>
-                </a>
-            </div>
-            <div class="hero-stats">
-                <div class="hero-stat"><div class="num">9+</div><div class="lbl">Outils Pro</div></div>
-                <div class="hero-stat"><div class="num">24/7</div><div class="lbl">IA Active</div></div>
-                <div class="hero-stat"><div class="num">3</div><div class="lbl">Langues</div></div>
-            </div>
-        </div>
-        <div class="countdown-widget fade-up" data-testid="countdown-widget">
-            <div class="countdown-title">Lancement App Store</div>
-            <div class="countdown-date">10 Août 2026</div>
-            <div class="countdown-grid" id="countdown">
-                <div class="cd-item"><span class="num" id="cd-days">--</span><span class="lbl">Jours</span></div>
-                <div class="cd-item"><span class="num" id="cd-hours">--</span><span class="lbl">Heures</span></div>
-                <div class="cd-item"><span class="num" id="cd-mins">--</span><span class="lbl">Min</span></div>
-                <div class="cd-item"><span class="num" id="cd-secs">--</span><span class="lbl">Sec</span></div>
-            </div>
-            <div class="countdown-spots" id="heroSpots" style="min-height:20px;"></div>
-            <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:6px;overflow:hidden;">
-                <div id="spotsBar" style="height:100%;background:linear-gradient(90deg,var(--purple),var(--green));border-radius:6px;width:0%;transition:width 1s ease;"></div>
+        <div class="hero-inner">
+            <div>
+                <div class="hero-badge">
+                    <span>100% gratuit — aucun abonnement requis</span>
+                </div>
+                <h1>Apprends la crypto.<br><em>Sans le bruit.</em></h1>
+                <p class="hero-sub">Atlas, ton mentor IA personnel, t'accompagne de zero a avance. Suis le marche en temps reel. Lis les actualites traduites dans ta langue. Tout est gratuit.</p>
+                <div class="hero-actions">
+                    <a href="https://app.mentova-academy.com" class="btn-main" data-testid="hero-cta">
+                        Commencer gratuitement &rarr;
+                    </a>
+                    <a href="#features" class="btn-ghost" data-testid="hero-explore">
+                        Decouvrir les fonctionnalites
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat"><div class="val">24/7</div><div class="lbl">IA disponible</div></div>
+                    <div class="hero-stat"><div class="val">3</div><div class="lbl">Langues</div></div>
+                    <div class="hero-stat"><div class="val">0$</div><div class="lbl">Pour toujours</div></div>
+                </div>
             </div>
         </div>
-</section>
-
-<!-- ═══ MARQUEE ═══ -->
-<div class="marquee-section">
-    <div class="marquee-track">
-        <div class="marquee-text">MENTOVA <span class="highlight">ACADEMY</span></div>
-        <div class="marquee-text">APPRENDRE TRADER GRANDIR</div>
-        <div class="marquee-text">MENTOVA <span class="highlight">ACADEMY</span></div>
-        <div class="marquee-text">APPRENDRE TRADER GRANDIR</div>
     </div>
-</div>
+</section>
 
 <!-- ═══ FEATURES ═══ -->
-<section class="features-section" id="features" data-testid="features-section">
+<section class="features" id="features" data-testid="features-section">
     <div class="container">
-        <div class="section-label">Pourquoi Mentova</div>
-        <h2 class="section-title">Tout ce qu'il te faut<br>pour commencer <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">bien</span>.</h2>
-        <p class="section-desc">La plupart des débutants perdent de l'argent avant d'apprendre les bases. Mentova change ça avec une éducation structurée, de vrais outils et une communauté.</p>
-        <div class="bento-grid">
-            <div class="bento-card bento-1 fade-up">
-                <div class="card-icon" style="background:rgba(124,58,237,0.1)"><i class="fas fa-brain" style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;"></i></div>
-                <h3>Atlas Mentor IA</h3>
-                <p>Ton tuteur IA s'adapte à ton niveau en temps réel. Il détecte tes forces, comble tes lacunes et construit un parcours personnalisé. Disponible 24/7 en 3 langues.</p>
+        <div class="section-tag">Fonctionnalites</div>
+        <h2 class="section-h">Trois outils. Zero bruit.</h2>
+        <p class="section-p">Pas 50 features dont tu n'as pas besoin. Juste ce qu'il faut pour apprendre, suivre et comprendre la crypto.</p>
+        <div class="feat-grid">
+            <div class="feat-card" data-testid="feat-atlas">
+                <div class="feat-icon" style="background:rgba(255,72,0,0.1);color:var(--accent);">&#9673;</div>
+                <h3>Atlas IA</h3>
+                <p>Ton tuteur personnel qui s'adapte a ton niveau. Il detecte tes lacunes, construit ton parcours et repond a toutes tes questions. En francais, anglais ou espagnol.</p>
+                <div class="tag">Disponible maintenant</div>
             </div>
-            <div class="bento-card bento-2 fade-up">
-                <div class="card-icon" style="background:rgba(59,130,246,0.1)"><i class="fas fa-users" style="color:var(--blue)"></i></div>
-                <h3>Forum Communautaire</h3>
-                <p>Discussions style Twitter. Publie des idées, pose des questions, gagne en réputation.</p>
+            <div class="feat-card" data-testid="feat-market">
+                <div class="feat-icon" style="background:rgba(16,185,129,0.1);color:var(--green);">&#9650;</div>
+                <h3>Marche en temps reel</h3>
+                <p>Prix, variations et tendances des 20 principales cryptos. Mis a jour automatiquement. Pas besoin d'ouvrir 5 onglets.</p>
+                <div class="tag">Disponible maintenant</div>
             </div>
-            <div class="bento-card bento-3 fade-up">
-                <div class="card-icon" style="background:rgba(34,197,94,0.1)"><i class="fas fa-chart-line" style="color:var(--green)"></i></div>
-                <h3>Graphiques Interactifs</h3>
-                <p>Graphiques professionnels avec données en temps réel. Indicateurs techniques pour VIP.</p>
-            </div>
-            <div class="bento-card bento-4 fade-up">
-                <div class="card-icon" style="background:rgba(236,72,153,0.1)"><i class="fas fa-user-check" style="color:#EC4899"></i></div>
-                <h3>Mentors Vérifiés</h3>
-                <p>Chaque mentor est vérifié pour son historique et qualité de contenu.</p>
-            </div>
-            <div class="bento-card bento-5 fade-up">
-                <div class="card-icon" style="background:rgba(139,92,246,0.1)"><i class="fas fa-bell" style="color:#8B5CF6"></i></div>
-                <h3>Alertes & Outils Pro</h3>
-                <p>Alertes de prix, fear & greed, halving, portfolio. Outils pro.</p>
+            <div class="feat-card" data-testid="feat-news">
+                <div class="feat-icon" style="background:rgba(59,130,246,0.1);color:var(--blue);">&#9881;</div>
+                <h3>Actualites traduites</h3>
+                <p>Les meilleures sources crypto du monde, traduites et resumees dans ta langue. Plus besoin de lire en anglais.</p>
+                <div class="tag">Disponible maintenant</div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ═══ AI SECTION ═══ -->
-<section class="ai-section" id="ai-mentor" data-testid="ai-section">
+<!-- ═══ ATLAS DEMO ═══ -->
+<section class="atlas" id="atlas" data-testid="atlas-section">
     <div class="container">
-        <div class="ai-grid">
+        <div class="atlas-grid">
             <div>
-                <div class="section-label">Intelligence Artificielle</div>
-                <h2 class="section-title">Atlas IA<br>apprend <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">à ton rythme</span>.</h2>
-                <p class="section-desc" style="margin-bottom:0;">Oublie les cours génériques. Atlas analyse chaque réponse, adapte le contenu en temps réel et te suit du premier concept au trading avancé.</p>
-                <div class="ai-features-list">
-                    <div class="ai-feat">
-                        <div class="ai-feat-icon" style="background:rgba(124,58,237,0.1)"><i class="fas fa-brain" style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;"></i></div>
-                        <div><h4>Apprentissage Adaptatif</h4><p>Les bonnes réponses augmentent la difficulté. En difficulté ? Il reformule et te guide pas à pas.</p></div>
-                    </div>
-                    <div class="ai-feat">
-                        <div class="ai-feat-icon" style="background:rgba(34,197,94,0.1)"><i class="fas fa-route" style="color:var(--green)"></i></div>
-                        <div><h4>Parcours Personnalisé</h4><p>Curriculum unique basé sur ton niveau, tes objectifs et ta vitesse.</p></div>
-                    </div>
-                    <div class="ai-feat">
-                        <div class="ai-feat-icon" style="background:rgba(59,130,246,0.1)"><i class="fas fa-chart-bar" style="color:var(--blue)"></i></div>
-                        <div><h4>Progression en Temps Réel</h4><p>L'IA décide quand tu es prêt pour le module suivant.</p></div>
-                    </div>
-                    <div class="ai-feat">
-                        <div class="ai-feat-icon" style="background:rgba(236,72,153,0.1)"><i class="fas fa-comments" style="color:#EC4899"></i></div>
-                        <div><h4>Conversation Naturelle</h4><p>Pose n'importe quelle question. Atlas répond dans ton contexte en FR, EN ou ES.</p></div>
-                    </div>
+                <div class="section-tag">Atlas IA</div>
+                <h2 class="section-h">Un mentor qui apprend en meme temps que toi.</h2>
+                <p class="section-p" style="margin-bottom:24px;">Atlas analyse chaque reponse. Si tu bloques, il reformule. Si tu avances vite, il augmente la difficulte. C'est comme un prof particulier, disponible 24h/24.</p>
+                <a href="https://app.mentova-academy.com" class="btn-main" data-testid="atlas-cta">Essayer Atlas gratuitement &rarr;</a>
+            </div>
+            <div class="atlas-terminal">
+                <div class="term-header">
+                    <div class="term-dot" style="background:#EF4444;"></div>
+                    <div class="term-dot" style="background:#F59E0B;"></div>
+                    <div class="term-dot" style="background:#22C55E;"></div>
+                    <div class="term-title">ATLAS IA v3</div>
+                </div>
+                <div class="term-body">
+                    <div><span class="prompt">atlas&gt;</span> <span class="dim">analyse_profil...</span></div>
+                    <div><span class="ok">Niveau :</span> <span class="hl">Intermediaire</span> | Module : Securite</div>
+                    <div style="height:12px;"></div>
+                    <div><span class="prompt">atlas&gt;</span> Tu as 5 000$ en crypto. Ou les stocker ?</div>
+                    <div><span class="dim">&nbsp;&nbsp;a) Sur l'exchange</span></div>
+                    <div><span class="dim">&nbsp;&nbsp;b) Portefeuille chaud</span></div>
+                    <div><span class="hl">&nbsp;&nbsp;c) Portefeuille materiel (Ledger) &larr;</span></div>
+                    <div><span class="dim">&nbsp;&nbsp;d) Repartir sur 3 exchanges</span></div>
+                    <div style="height:8px;"></div>
+                    <div><span class="ok">&#10003; Correct.</span> Les cold wallets sont le standard de securite.</div>
+                    <div style="height:8px;"></div>
+                    <div><span class="dim">Securite : 85% termine</span></div>
+                    <div style="background:rgba(255,255,255,0.06);height:4px;border-radius:2px;margin-top:4px;"><div style="width:85%;height:100%;background:var(--green);border-radius:2px;"></div></div>
                 </div>
             </div>
-            <div class="fade-up">
-                <div class="ai-terminal">
-                    <div class="terminal-header">
-                        <div class="terminal-dots">
-                            <span style="background:#EF4444"></span>
-                            <span style="background:#F59E0B"></span>
-                            <span style="background:#22C55E"></span>
-                        </div>
-                        <div class="terminal-name">ATLAS IA v3</div>
-                    </div>
-                    <div class="terminal-body">
-                        <div class="t-line"><span class="t-prompt">atlas&gt;</span> <span class="t-dim">analyse_profil...</span></div>
-                        <div class="t-line"><span class="t-response">Niveau : <span class="t-highlight">Intermédiaire</span> | Module : Sécurité</span></div>
-                        <div class="t-line"><span class="t-prompt">atlas&gt;</span> <span class="t-response">Tu as 5 000$ en crypto. Meilleure stratégie de stockage ?</span></div>
-                        <div class="t-line"><span class="t-dim">  a) Laisser sur l'exchange</span></div>
-                        <div class="t-line"><span class="t-dim">  b) Portefeuille chaud sur téléphone</span></div>
-                        <div class="t-line"><span class="t-highlight">  c) Portefeuille matériel (Ledger) ←</span></div>
-                        <div class="t-line"><span class="t-dim">  d) Répartir sur 3 exchanges</span></div>
-                        <div class="t-line"><span class="t-highlight"><i class="fas fa-check-circle"></i> Correct !</span> <span class="t-response">Les cold wallets sont le standard.</span></div>
-                        <div class="t-line">
-                            <span class="t-dim">Sécurité : 85% terminé</span>
-                            <div class="t-progress"><div class="t-progress-fill" style="width:85%"></div></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ═══ APP SCREENSHOTS ═══ -->
-<section class="screenshots-section" data-testid="screenshots-section">
-    <div class="container">
-        <div class="section-label">Aperçu de l'App</div>
-        <h2 class="section-title">Conçue pour le <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">mobile</span>.</h2>
-        <p class="section-desc">Pas juste des outils. Une vraie communauté avec des mentors, l'IA et tout ce qu'il faut.</p>
-        <div class="screenshots-scroll">
-            <div class="screenshot-mock"><img src="../screenshots/app_screen_1.png" alt="Mentova News" loading="lazy"></div>
-            <div class="screenshot-mock"><img src="../screenshots/app_screen_2.png" alt="Mentova Mentors" loading="lazy"></div>
-            <div class="screenshot-mock"><img src="../screenshots/app_screen_3.png" alt="Mentova AI" loading="lazy"></div>
-            <div class="screenshot-mock"><img src="../screenshots/app_screen_4.png" alt="Mentova Charts" loading="lazy"></div>
-        </div>
-    </div>
-</section>
-
-<!-- ═══ PRICING ═══ -->
-<section class="pricing-section" id="pricing" data-testid="pricing-section">
-    <div class="container">
-        <div style="text-align:center;">
-            <div class="section-label">Tarifs</div>
-            <h2 class="section-title">Simple. <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Transparent.</span></h2>
-            <p class="section-desc" style="margin:0 auto 56px;text-align:center;">Aucun frais caché. Annule à tout moment.</p>
-        </div>
-        <div class="pricing-grid">
-            <div class="price-card" data-testid="price-free">
-                <div class="price-label free-label">Gratuit</div>
-                <div class="price-amount">$0</div>
-                <div style="height:20px"></div>
-                <ul class="price-features">
-                    <li><i class="fas fa-check"></i> Accès à l'app</li>
-                    <li><i class="fas fa-check"></i> Fil d'actualités</li>
-                    <li><i class="fas fa-check"></i> Atlas IA (2 chapitres gratuits, 20 msg/jour)</li>
-                    <li><i class="fas fa-check"></i> Forum communautaire</li>
-                    <li><i class="fas fa-check"></i> Parcourir les mentors</li>
-                </ul>
-                <a href="https://app.mentova-academy.com/register" class="btn-outline" style="width:100%;justify-content:center;">Télécharger Gratuit</a>
-            </div>
-            <div class="price-card vip" data-testid="price-vip">
-                <div class="price-badge">Prix Membre Fondateur</div>
-                <div class="price-label vip-label">VIP Illimité</div>
-                <div class="price-amount">$9.99<span>/mois USD</span></div>
-                <div class="price-old">Prix régulier : 25,99$/mois après 500 membres</div>
-                <div class="price-spots normal" id="priceCounter"></div>
-                <ul class="price-features">
-                    <li><i class="fas fa-check"></i> Briefing IA Quotidien : résumé du marché par Atlas IA, adapté à ton portfolio</li>
-                    <li><i class="fas fa-check"></i> Atlas & IA Illimités : aucune limite de messages, tous les chapitres débloqués</li>
-                    <li><i class="fas fa-check"></i> Badge VIP : statut visible, mis en avant dans les discussions</li>
-                    <li><i class="fas fa-check"></i> Messages directs aux mentors : contact privé avec les mentors certifiés</li>
-                </ul>
-                <div class="price-note">Abonne-toi maintenant au prix fondateur de 9,99$/mois. Ce tarif exclusif est réservé aux 500 premiers membres. Après, ça passe à 25,99$/mois. Badge Membre Fondateur inclus à vie.</div>
-                <a href="#pre-register" class="btn-primary" style="width:100%;justify-content:center;padding:16px;" data-testid="vip-cta">S'abonner à 9,99$/mois <i class="fas fa-arrow-right"></i></a>
-                <div style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:12px;">Annule à tout moment</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ═══ PRE-REGISTER ═══ -->
-<section class="register-section" id="pre-register" data-testid="register-section">
-    <div class="container">
-        <div class="register-box">
-            <div style="text-align:center;">
-                <div class="section-label">S'abonner</div>
-                <h2 class="section-title" id="preregTitle">Obtiens ton<br><span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">prix fondateur</span>.</h2>
-                <p class="section-desc" style="margin:0 auto 40px;text-align:center;" id="preregSub">Abonne-toi à 9,99$/mois. Seulement 500 places à ce prix. Premier arrivé, premier servi.</p>
-            </div>
-
-            <div class="progress-bar-wrap">
-                <div class="progress-label"><span id="progLabel"></span><span id="progPct">1%</span></div>
-                <div class="progress-track"><div class="progress-fill" id="progFill" style="width:1%"></div></div>
-            </div>
-
-            <form id="preregForm" data-testid="prereg-form">
-                <div class="form-group">
-                    <label>Courriel</label>
-                    <input type="email" class="form-input" id="regEmail" placeholder="ton@email.com" required data-testid="reg-email">
-                </div>
-                <div class="form-group">
-                    <label>Nom Complet</label>
-                    <input type="text" class="form-input" id="regName" placeholder="Ton nom complet" required data-testid="reg-name">
-                </div>
-                <div class="form-group">
-                    <label>Mot de passe</label>
-                    <input type="password" class="form-input" id="regPassword" placeholder="Min. 6 caractères" required minlength="6" data-testid="reg-password">
-                </div>
-                <div class="form-group">
-                    <label>Langue</label>
-                    <select class="form-select" id="regLang" data-testid="reg-lang">
-                        <option value="FR">Français</option>
-                        <option value="EN">Anglais</option>
-                        <option value="ES">Espagnol</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Code de parrainage (optionnel)</label>
-                    <input type="text" class="form-input" id="regRef" placeholder="MNT-XXXXX" data-testid="reg-ref">
-                </div>
-                <div class="form-checkbox">
-                    <input type="checkbox" id="regCommit" required>
-                    <label for="regCommit">J'accepte de m'abonner au VIP à 9,99$/mois. Je peux annuler à tout moment.</label>
-                </div>
-                <button type="submit" class="form-submit" id="regBtn" data-testid="reg-submit">Créer un Compte & S'abonner <i class="fas fa-arrow-right"></i></button>
-            </form>
-
-            <div class="success-box" id="successBox"><h3 id="successTitle"></h3><p id="successMsg"></p></div>
-            <div class="error-box" id="errorBox"></div>
-
-            <p class="form-legal">En t'abonnant tu acceptes nos <a href="/terms.html">Conditions</a> et <a href="/privacy.html">Politique de Confidentialité</a>.</p>
-        </div>
-    </div>
-</section>
-
-<!-- ═══ REFERRAL ═══ -->
-<section class="referral-section" data-testid="referral-section">
-    <div class="container">
-        <div style="text-align:center;">
-            <div class="section-label">Programme de Parrainage</div>
-            <h2 class="section-title">Parraine tes amis.<br><span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Gagne des mois gratuits.</span></h2>
-            <p class="section-desc" style="margin:0 auto 56px;text-align:center;">Chaque 5 amis abonnés = 1 mois VIP gratuit. Sans limite.</p>
-        </div>
-        <div class="referral-steps">
-            <div class="ref-step fade-up"><div class="ref-step-num">1</div><h4>Inscris-toi</h4><p>Obtiens ton lien de parrainage unique</p></div>
-            <div class="ref-step fade-up"><div class="ref-step-num">2</div><h4>Partage</h4><p>5 amis s'abonnent avec ton lien</p></div>
-            <div class="ref-step fade-up"><div class="ref-step-num">3</div><h4>Gagne</h4><p>1 mois gratuit pour 5 parrainages</p></div>
-        </div>
-        <div class="ref-tiers">
-            <div class="ref-tier"><div class="refs">5</div><div class="reward">1 mois gratuit</div></div>
-            <div class="ref-tier"><div class="refs">10</div><div class="reward">2 mois gratuits</div></div>
-            <div class="ref-tier"><div class="refs">15</div><div class="reward">3 mois gratuits</div></div>
-            <div class="ref-tier"><div class="refs">&#8734;</div><div class="reward">Sans limite</div></div>
         </div>
     </div>
 </section>
 
 <!-- ═══ FOUNDER ═══ -->
-<section class="founder-section" data-testid="founder-section">
+<section class="founder" id="story" data-testid="founder-section">
     <div class="container">
-        <div class="section-label" style="text-align:center;">Notre Histoire</div>
-        <h2 class="section-title" style="text-align:center;margin-bottom:48px;">Créé par quelqu'un<br>qui <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">comprend</span>.</h2>
-        <div class="founder-grid">
+        <div class="section-tag">Notre histoire</div>
+        <div class="founder-inner" style="margin-top:32px;">
             <div class="founder-photo">
-                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&q=80" alt="Justin, Founder">
+                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&q=80" alt="Justin" loading="lazy">
             </div>
             <div>
-                <p class="founder-quote"><strong>Je suis Justin, fondateur de Mentova Academy.</strong><br><br>Basé au Canada, j'ai créé Mentova après avoir vu à quel point l'éducation crypto était dispersée.<br><br>Mentova, c'est ce que j'aurais aimé avoir : des mentors vérifiés, de vrais outils, des parcours structurés et une communauté multilingue mondiale.<br><br><strong>Ce n'est pas juste une plateforme. C'est une mission.</strong></p>
-                <p class="founder-sig">Justin, Fondateur & CEO | Mentova Academy | Canada</p>
+                <div class="founder-header">
+                    <div class="founder-name">Justin</div>
+                    <div class="founder-loc">Montreal, Canada</div>
+                </div>
+                <div class="founder-text">
+                    <strong>L'education crypto etait cassee.</strong> Trop de gourous qui facturent des abonnements mensuels pour du contenu recycle. Trop de plateformes avec des murs de paiement et de la fausse rarete.<br><br>
+                    Mentova a commence comme une experience payante. Mais j'ai realise que le savoir ne devrait jamais etre derriere un paywall. <strong>Aujourd'hui, Mentova est entierement gratuit.</strong> Pas de carte de credit. Pas d'abonnement cache. Pas de "prix fondateur".<br><br>
+                    Juste un outil honnete pour apprendre la crypto a ton rythme.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ ROADMAP ═══ -->
+<section class="roadmap" id="roadmap" data-testid="roadmap-section">
+    <div class="container">
+        <div class="section-tag">Feuille de route</div>
+        <h2 class="section-h">Ce qui arrive bientot.</h2>
+        <p class="section-p">On construit en public. Voici ce qui s'en vient.</p>
+        <div class="road-grid">
+            <div class="road-card">
+                <div class="timeline">T3 2026</div>
+                <h3>Forum Communautaire</h3>
+                <p>Un espace pour discuter strategies, partager tes recherches et poser des questions a la communaute.</p>
+                <div class="status"><span class="dot"></span> En developpement</div>
+            </div>
+            <div class="road-card">
+                <div class="timeline">T4 2026</div>
+                <h3>Mentors Humains</h3>
+                <p>Sessions live hebdomadaires avec des educateurs crypto et analystes experimentes.</p>
+                <div class="status"><span class="dot" style="background:var(--blue);"></span> A venir</div>
+            </div>
+            <div class="road-card">
+                <div class="timeline">T1 2027</div>
+                <h3>Outils Pro Avances</h3>
+                <p>Suivi de portefeuille on-chain, heatmaps de liquidite et alertes de rebalancement automatique.</p>
+                <div class="status"><span class="dot" style="background:var(--text3);animation:none;"></span> Planifie</div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- ═══ FAQ ═══ -->
-<section class="faq-section" id="faq" data-testid="faq-section">
+<section class="faq" id="faq" data-testid="faq-section">
     <div class="container">
-        <div style="text-align:center;">
-            <div class="section-label">FAQ</div>
-            <h2 class="section-title" style="margin-bottom:56px;">Questions<br><span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">fréquentes</span>.</h2>
-        </div>
+        <div class="section-tag">FAQ</div>
+        <h2 class="section-h" style="margin-bottom:40px;">Questions frequentes.</h2>
         <div class="faq-list">
-            <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Mentova est-il disponible hors du Canada ?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><p>Oui. Accès mondial en français, anglais et espagnol.</p></div></div>
-            <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Comment les mentors sont-ils vérifiés ?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><p>Vérification manuelle : historique, qualifications et qualité du contenu.</p></div></div>
-            <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Gratuit vs VIP ?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><p>Gratuit = accès de base (news, IA limitée). VIP = tout (IA illimitée, outils pro, mentors, alertes, etc).</p></div></div>
-            <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Est-ce que je paie immédiatement ?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><p>Oui. L'abonnement VIP à 9,99$/mois commence dès que tu t'inscris. Le prix fondateur est garanti tant qu'il reste des places.</p></div></div>
-            <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Que se passe-t-il si les 500 places sont prises ?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><p>Le prix passe à 25,99$/mois. Ton badge Membre Fondateur reste à vie si tu es dans les 500 premiers.</p></div></div>
-            <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Annule à tout moment?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><p>Oui, depuis les paramètres de ton compte. Sans questions.</p></div></div>
-            <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Sécurité des paiements ?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><p>Stripe, Apple Pay, Google Pay. Chiffrement bancaire. Aucune carte stockée.</p></div></div>
-            <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Mentova est-il réglementé ?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><p>Mentova est une plateforme éducative. Pas de conseils financiers.</p></div></div>
-            <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Même compte sur web et mobile ?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><p>Oui. Inscris-toi sur le site, connecte-toi avec le même courriel dans l'app.</p></div></div>
+            <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">C'est vraiment gratuit ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Oui. 100% gratuit. Pas de periode d'essai, pas de carte de credit, pas de frais caches. Tu crees un compte et tu as acces a tout.</p></div></div>
+            <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Comment fonctionne Atlas IA ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Atlas est un mentor IA qui s'adapte a ton niveau. Il te pose des questions, analyse tes reponses et ajuste le contenu en temps reel. Disponible en francais, anglais et espagnol.</p></div></div>
+            <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Mentova est disponible hors du Canada ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Oui. Acces mondial en francais, anglais et espagnol. L'app web fonctionne sur n'importe quel appareil.</p></div></div>
+            <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Il y aura un abonnement payant plus tard ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Les fonctionnalites actuelles resteront gratuites. Des outils avances optionnels pourraient etre proposes plus tard, mais le coeur de Mentova sera toujours gratuit.</p></div></div>
+            <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">L'app est disponible sur iPhone et Android ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>L'app web fonctionne sur tous les appareils. Les versions App Store et Google Play arrivent bientot. En attendant, tu peux ajouter l'app a ton ecran d'accueil.</p></div></div>
+            <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Mes donnees sont en securite ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Oui. Chiffrement de bout en bout. Aucune donnee financiere stockee. Mentova est une plateforme educative, pas un exchange.</p></div></div>
         </div>
     </div>
 </section>
@@ -1376,256 +348,54 @@
 <!-- ═══ FINAL CTA ═══ -->
 <div class="final-cta" data-testid="final-cta">
     <div class="container">
-        <h2>Ton premier pas<br>ne coûte <span style="background:linear-gradient(135deg, var(--purple-light), var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">rien</span>.</h2>
-        <p>Abonne-toi au prix fondateur. 9,99$/mois au lieu de 25,99$. Badge Membre Fondateur à vie.</p>
-        <a href="#pre-register" class="btn-primary" style="padding:18px 44px;font-size:16px;" data-testid="final-cta-button">S'abonner | 9,99$/mois <i class="fas fa-arrow-right"></i></a>
+        <h2>Pret a apprendre ?</h2>
+        <p>Cree ton compte en 30 secondes. C'est gratuit.</p>
+        <a href="https://app.mentova-academy.com" class="btn-main" style="padding:16px 40px;font-size:16px;" data-testid="final-cta-btn">Commencer gratuitement &rarr;</a>
     </div>
 </div>
 
 <!-- ═══ FOOTER ═══ -->
 <footer data-testid="footer">
     <div class="container">
-        <div class="footer-huge">MENTOVA</div>
-        <div class="footer-grid">
-            <div class="footer-brand">
-                <div class="footer-brand-name">Mentova<span>.</span></div>
-                <p>La plateforme d'éducation trading & crypto.<br>FR | EN | ES<br><br>info@mentova-academy.com</p>
+        <div class="footer-inner">
+            <div>
+                <div class="footer-brand">Mentova<span>.</span></div>
+                <p style="font-size:14px;color:var(--text3);margin-top:8px;">Apprendre la crypto. Gratuitement.<br>FR | EN | ES</p>
             </div>
-            <div class="footer-col">
-                <h4>Produit</h4>
-                <a href="#features">Fonctionnalités</a>
-                <a href="#ai-mentor">Mentor IA</a>
-                <a href="#pricing">Tarifs</a>
-                <a href="https://app.mentova-academy.com">App Web</a>
-            </div>
-            <div class="footer-col">
-                <h4>Entreprise</h4>
-                <a href="/ambassadors">Ambassadeurs</a>
-                <a href="/mentors">Mentors</a>
-                <a href="/blog">Blog</a>
-                <a href="mailto:info@mentova-academy.com">Contact</a>
-            </div>
-            <div class="footer-col">
-                <h4>Légal</h4>
-                <a href="/terms.html">Conditions</a>
-                <a href="/privacy.html">Privacy</a>
-                <a href="/cookies.html">Cookies</a>
-                <a href="/disclaimer.html">Avertissement</a>
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>Produit</h4>
+                    <a href="#features">Fonctionnalites</a>
+                    <a href="#atlas">Atlas IA</a>
+                    <a href="https://app.mentova-academy.com">App Web</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Entreprise</h4>
+                    <a href="#story">Notre histoire</a>
+                    <a href="#roadmap">Feuille de route</a>
+                    <a href="mailto:info@mentova-academy.com">Contact</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <a href="/terms.html">Conditions</a>
+                    <a href="/privacy.html">Confidentialite</a>
+                </div>
             </div>
         </div>
-        <div class="footer-bottom">&copy; 2026 Mentova Academy Inc. | Canada</div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 Mentova Academy Inc. Montreal, Canada.</span>
+            <span>info@mentova-academy.com</span>
+        </div>
     </div>
 </footer>
 
-<script>
-const API_URL = 'https://mentova-api.onrender.com';
-
-
-
-
-// Countdown
-const LAUNCH = new Date('2026-08-10T00:00:00Z').getTime();
-function updateCountdown() {
-    try {
-        const now = Date.now();
-        const diff = LAUNCH - now;
-        if (diff <= 0) {
-            var cg = document.getElementById('countdown');
-            if (cg) cg.innerHTML = '<div style="grid-column:span 4;text-align:center;font-family:Unbounded,cursive;font-size:20px;font-weight:900;color:var(--green);padding:16px 0;">LIVE NOW</div>';
-            return;
-        }
-        const d = Math.floor(diff / 86400000);
-        const h = Math.floor((diff % 86400000) / 3600000);
-        const m = Math.floor((diff % 3600000) / 60000);
-        const s = Math.floor((diff % 60000) / 1000);
-        document.getElementById('cd-days').textContent = String(d).padStart(2, '0');
-        document.getElementById('cd-hours').textContent = String(h).padStart(2, '0');
-        document.getElementById('cd-mins').textContent = String(m).padStart(2, '0');
-        document.getElementById('cd-secs').textContent = String(s).padStart(2, '0');
-    } catch(e) {}
+<style>
+@media(max-width:768px){
+    nav .links.open{display:flex;flex-direction:column;position:fixed;top:56px;left:0;right:0;background:var(--bg);padding:24px;gap:16px;border-bottom:1px solid var(--border);z-index:99;}
+    nav .links.open .lang-switch{margin-left:0;}
+    nav .links.open .cta-nav{text-align:center;}
 }
-updateCountdown();
-setInterval(updateCountdown, 1000);
+</style>
 
-// Spots
-let spotsData = null;
-var BASELINE_REGISTERED = 7;
-function getCachedSpots() { try { var c = JSON.parse(localStorage.getItem('mentova_spots')); if (c && c.registered >= BASELINE_REGISTERED) return c; } catch(e){} return {wave:1, total:500, registered:BASELINE_REGISTERED, remaining:500-BASELINE_REGISTERED}; }
-function setCachedSpots(d) { try { localStorage.setItem('mentova_spots', JSON.stringify(d)); } catch(e){} }
-async function fetchSpots() {
-    try {
-        const r = await fetch(API_URL + '/api/spots-remaining', {mode:'cors'});
-        if (r.ok) {
-            spotsData = await r.json();
-            if (spotsData.registered < BASELINE_REGISTERED) spotsData.registered = BASELINE_REGISTERED;
-            spotsData.remaining = spotsData.total - spotsData.registered;
-            setCachedSpots(spotsData);
-            updateUI();
-        } else { throw new Error('not ok'); }
-    } catch(e) {
-        spotsData = getCachedSpots();
-        updateUI();
-    }
-}
-function updateUI() {
-    if (!spotsData) return;
-    const { total, registered, remaining } = spotsData;
-
-    // Price counter
-    const pc = document.getElementById('priceCounter');
-    if (remaining <= 0) {
-        pc.textContent = 'Prix fondateur fermé';
-        pc.className = 'price-spots hot';
-    } else if (remaining < 50) {
-        pc.textContent = 'Presque plein ! ' + remaining + ' places restantes';
-        pc.className = 'price-spots hot';
-    } else {
-        pc.textContent = remaining + ' places restantes / ' + total;
-        pc.className = 'price-spots normal';
-    }
-
-    // Hero spots
-    var hs = document.getElementById('heroSpots');
-    var sn = document.getElementById('spotsNum');
-    var sb = document.getElementById('spotsBar');
-    if (sn) sn.textContent = remaining;
-    if (sb) sb.style.width = Math.round((registered / total) * 100) + '%';
-    if (hs) hs.textContent = '$9.99/mo | ' + remaining + ' places de fondateurs restantes';
-
-    // Progress bar
-    const pct = Math.round((registered / total) * 100);
-    document.getElementById('progLabel').textContent = registered + ' / ' + total + ' places prises';
-    document.getElementById('progPct').textContent = pct + '%';
-    document.getElementById('progFill').style.width = pct + '%';
-}
-fetchSpots();
-setInterval(fetchSpots, 30000);
-
-// Referral from URL
-const urlRef = new URLSearchParams(window.location.search).get('ref');
-if (urlRef) document.getElementById('regRef').value = urlRef;
-
-// Form & Stripe checkout
-var TEXTS = {
-    passwordMin: 'Mot de passe min. 6 caractères.',
-    subscribing: 'Création du compte...',
-    redirecting: 'Redirection vers le paiement...',
-    listFull: 'Toutes les places sont prises.',
-    invalidEmail: 'Courriel invalide.',
-    error: 'Erreur. Réessaye.',
-    btnDefault: 'Créer un Compte & S\u0027abonner <i class="fas fa-arrow-right"></i>'
-};
-
-document.getElementById('preregForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const btn = document.getElementById('regBtn');
-    const email = document.getElementById('regEmail').value.trim();
-    const name = document.getElementById('regName').value.trim();
-    const password = document.getElementById('regPassword').value;
-    const lang = document.getElementById('regLang').value;
-    const ref = document.getElementById('regRef').value.trim();
-    const committed = document.getElementById('regCommit').checked;
-
-    if (!email || !name || !password || !committed) return;
-    if (password.length < 6) { document.getElementById('errorBox').textContent = TEXTS.passwordMin; document.getElementById('errorBox').style.display = 'block'; return; }
-
-    btn.disabled = true;
-    btn.textContent = TEXTS.subscribing;
-    document.getElementById('errorBox').style.display = 'none';
-
-    try {
-        // Step 1: Pre-register (creates account)
-        const r = await fetch(API_URL + '/api/pre-register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password, name, language: lang, committed, referred_by: ref || null })
-        });
-        const data = await r.json();
-
-        if (data.error === 'already_registered') {
-            // Already registered : try to login and go to checkout
-            btn.textContent = TEXTS.redirecting;
-            await loginAndCheckout(email, password, ref);
-            return;
-        } else if (data.error === 'list_full') {
-            document.getElementById('errorBox').textContent = TEXTS.listFull;
-            document.getElementById('errorBox').style.display = 'block';
-        } else if (data.error === 'invalid_email') {
-            document.getElementById('errorBox').textContent = TEXTS.invalidEmail;
-            document.getElementById('errorBox').style.display = 'block';
-        } else if (data.success) {
-            // Step 2: Auto-login to get token
-            btn.textContent = TEXTS.redirecting;
-            await loginAndCheckout(email, password, ref);
-            return;
-        }
-    } catch(err) {
-        document.getElementById('errorBox').textContent = TEXTS.error;
-        document.getElementById('errorBox').style.display = 'block';
-    }
-
-    btn.disabled = false;
-    btn.innerHTML = TEXTS.btnDefault;
-});
-
-async function loginAndCheckout(email, password, refCode) {
-    try {
-        // Login
-        const loginRes = await fetch(API_URL + '/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-        const loginData = await loginRes.json();
-
-        if (!loginData.access_token) {
-            // Login failed - redirect to app
-            window.location.href = 'https://app.mentova-academy.com/login';
-            return;
-        }
-
-        // Step 3: Create Stripe checkout session
-        const checkoutRes = await fetch(API_URL + '/api/vip/checkout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + loginData.access_token
-            },
-            body: JSON.stringify({
-                origin_url: 'https://app.mentova-academy.com',
-                ref_code: refCode || null
-            })
-        });
-        const checkoutData = await checkoutRes.json();
-
-        if (checkoutData.checkout_url) {
-            // Redirect to Stripe Checkout
-            window.location.href = checkoutData.checkout_url;
-        } else {
-            // If already VIP or error, redirect to app
-            window.location.href = 'https://app.mentova-academy.com';
-        }
-    } catch(err) {
-        // Fallback: redirect to app
-        window.location.href = 'https://app.mentova-academy.com/login';
-    }
-}
-
-// FAQ toggle
-function toggleFaq(el) {
-    el.classList.toggle('open');
-    el.nextElementSibling.classList.toggle('open');
-}
-
-// Scroll fade-up animations
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-        }
-    });
-}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
-document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-</script>
 </body>
 </html>
