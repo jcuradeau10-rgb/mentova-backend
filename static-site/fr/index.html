@@ -5,397 +5,317 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-2GLPG3JB9N');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mentova | Apprends la Crypto. Gratuitement.</title>
-<meta name="description" content="Mentova : ton mentor IA crypto personnel. Cours adaptatifs, marche en temps reel, actualites traduites. 100% gratuit. Cree au Canada.">
+<title>Mentova | Apprends la Crypto Gratuitement</title>
+<meta name="description" content="Mentova : ton mentor IA crypto. Cours adaptatifs, marche en temps reel, actualites traduites. 100% gratuit.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>M</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-    --bg: #0A0C10;
-    --bg2: #12151C;
-    --bg3: #181C26;
-    --text: #F3F4F6;
-    --text2: #9CA3AF;
-    --text3: #5A5F6E;
-    --border: rgba(255,255,255,0.08);
-    --accent: #FF4800;
-    --green: #10B981;
-    --blue: #3B82F6;
-}
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.65;overflow-x:hidden;font-weight:400;}
-h1,h2,h3,h4{font-family:'Outfit',sans-serif;line-height:1.1;letter-spacing:-0.03em;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#FAF9F6;color:#0F172A;line-height:1.65;overflow-x:hidden;}
+h1,h2,h3{font-family:'Syne',sans-serif;letter-spacing:-0.04em;line-height:1.05;}
 a{color:inherit;text-decoration:none;}
-.container{max-width:1100px;margin:0 auto;padding:0 24px;}
-.mono{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;}
 
 /* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 0;backdrop-filter:blur(20px);background:rgba(10,12,16,0.85);border-bottom:1px solid var(--border);}
-nav .inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:0 24px;}
-nav .logo{font-family:'Outfit',sans-serif;font-weight:800;font-size:20px;color:var(--text);}
-nav .logo span{color:var(--accent);}
-nav .links{display:flex;align-items:center;gap:28px;}
-nav .links a{font-size:14px;color:var(--text2);font-weight:500;transition:color 0.2s;}
-nav .links a:hover{color:var(--text);}
-nav .lang-switch{display:flex;gap:4px;margin-left:12px;}
-nav .lang-switch a{font-family:'JetBrains Mono',monospace;font-size:11px;padding:5px 10px;border-radius:6px;font-weight:600;border:1px solid transparent;transition:all 0.2s;}
-nav .lang-switch a.active{background:var(--accent);color:#fff;border-color:var(--accent);}
-nav .lang-switch a:not(.active){color:var(--text3);border-color:var(--border);}
-nav .lang-switch a:not(.active):hover{color:var(--text);border-color:var(--text3);}
-nav .cta-nav{font-size:13px;font-weight:600;background:var(--accent);color:#fff;padding:8px 20px;border-radius:8px;transition:opacity 0.2s;}
-nav .cta-nav:hover{opacity:0.85;}
-.burger{display:none;background:none;border:none;color:var(--text);font-size:22px;cursor:pointer;}
+nav{padding:20px 40px;display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(250,249,246,0.92);backdrop-filter:blur(12px);border-bottom:1px solid #E2E8F0;}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;letter-spacing:-0.03em;}
+.nav-logo span{color:#7C3AED;}
+.nav-links{display:flex;align-items:center;gap:32px;}
+.nav-links a{font-size:14px;color:#475569;font-weight:500;transition:color 0.2s;}
+.nav-links a:hover{color:#0F172A;}
+.nav-lang{display:flex;border:1px solid #E2E8F0;border-radius:8px;overflow:hidden;}
+.nav-lang a{padding:6px 12px;font-size:12px;font-weight:600;color:#475569;transition:all 0.15s;}
+.nav-lang a.active{background:#5B21B6;color:#fff;}
+.nav-lang a:not(.active):hover{background:#F5F3FF;}
+.nav-cta{background:#5B21B6;color:#fff;padding:10px 24px;border-radius:10px;font-weight:600;font-size:14px;transition:all 0.2s;}
+.nav-cta:hover{background:#4C1D95;transform:translateY(-1px);}
+.burger{display:none;background:none;border:none;font-size:24px;cursor:pointer;color:#0F172A;}
 
-/* ── HERO ── */
-.hero{min-height:100vh;display:flex;align-items:center;padding-top:100px;padding-bottom:60px;}
-.hero-inner{display:grid;grid-template-columns:1fr;gap:48px;}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:100px;padding:6px 16px;margin-bottom:24px;}
-.hero-badge span{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;color:var(--green);font-weight:600;}
-.hero h1{font-size:clamp(36px,5.5vw,64px);font-weight:900;margin-bottom:20px;color:var(--text);}
-.hero h1 em{font-style:normal;color:var(--accent);}
-.hero-sub{font-size:18px;color:var(--text2);max-width:540px;line-height:1.7;margin-bottom:36px;}
-.hero-actions{display:flex;gap:14px;flex-wrap:wrap;}
-.btn-main{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px;transition:all 0.2s;border:none;cursor:pointer;}
-.btn-main:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,72,0,0.25);}
-.btn-ghost{display:inline-flex;align-items:center;gap:8px;color:var(--text2);padding:14px 24px;border-radius:10px;font-weight:600;font-size:15px;border:1px solid var(--border);transition:all 0.2s;}
-.btn-ghost:hover{color:var(--text);border-color:var(--text3);}
-.hero-stats{display:flex;gap:40px;margin-top:48px;padding-top:32px;border-top:1px solid var(--border);}
-.hero-stat .val{font-family:'Outfit',sans-serif;font-size:28px;font-weight:800;color:var(--text);}
-.hero-stat .lbl{font-size:13px;color:var(--text3);margin-top:2px;}
+/* ── HERO — full violet block ── */
+.hero{background:#2E1065;color:#fff;padding:160px 40px 100px;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:200px;background:linear-gradient(to top,#FAF9F6,transparent);pointer-events:none;}
+.hero-grid{display:grid;grid-template-columns:1fr 420px;gap:80px;align-items:end;max-width:1200px;margin:0 auto;}
+.hero-left{padding-bottom:40px;}
+.hero-free{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#DDD6FE;border:1px solid rgba(221,214,254,0.3);padding:8px 16px;border-radius:100px;margin-bottom:32px;}
+.hero h1{font-size:clamp(40px,5vw,72px);font-weight:800;margin-bottom:24px;max-width:580px;}
+.hero-desc{font-size:18px;color:#C4B5FD;max-width:480px;line-height:1.75;margin-bottom:40px;font-weight:400;}
+.hero-cta{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#2E1065;padding:16px 36px;border-radius:12px;font-weight:700;font-size:16px;transition:all 0.2s;}
+.hero-cta:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,0.3);}
+.hero-right{position:relative;z-index:2;}
+.hero-terminal{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:0;overflow:hidden;backdrop-filter:blur(8px);}
+.ht-bar{display:flex;align-items:center;gap:6px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.ht-dot{width:8px;height:8px;border-radius:50%;}
+.ht-name{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:0.08em;}
+.ht-body{padding:20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2;color:#C4B5FD;}
+.ht-body .g{color:#10B981;} .ht-body .p{color:#7C3AED;} .ht-body .w{color:#fff;} .ht-body .d{color:rgba(255,255,255,0.35);}
 
-/* ── FEATURES ── */
-.features{padding:120px 0 80px;}
-.section-tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;font-weight:600;}
-.section-h{font-size:clamp(28px,4vw,44px);font-weight:800;margin-bottom:16px;}
-.section-p{font-size:17px;color:var(--text2);max-width:560px;line-height:1.7;margin-bottom:56px;}
-.feat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
-.feat-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px 28px;transition:all 0.3s;}
-.feat-card:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-2px);}
-.feat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:20px;}
-.feat-card h3{font-size:18px;font-weight:700;margin-bottom:10px;}
-.feat-card p{font-size:14px;color:var(--text2);line-height:1.6;}
-.feat-card .tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;color:var(--green);margin-top:16px;display:inline-block;}
+/* ── ATLAS — asymmetric editorial ── */
+.atlas{padding:120px 40px;max-width:1200px;margin:0 auto;}
+.atlas-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:64px;border-bottom:1px solid #E2E8F0;padding-bottom:24px;}
+.atlas-top h2{font-size:clamp(32px,4vw,52px);font-weight:800;max-width:600px;}
+.atlas-top p{font-size:15px;color:#475569;max-width:320px;text-align:right;line-height:1.7;}
+.atlas-cols{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+.atlas-big{background:#F5F3FF;border:1px solid #DDD6FE;border-radius:16px;padding:40px;position:relative;}
+.atlas-big h3{font-size:24px;font-weight:700;margin-bottom:12px;}
+.atlas-big p{font-size:15px;color:#475569;line-height:1.7;margin-bottom:24px;}
+.atlas-big .try{display:inline-flex;align-items:center;gap:8px;background:#5B21B6;color:#fff;padding:12px 28px;border-radius:10px;font-weight:600;font-size:14px;transition:all 0.2s;}
+.atlas-big .try:hover{background:#4C1D95;}
+.atlas-small-stack{display:flex;flex-direction:column;gap:20px;}
+.atlas-sm{border:1px solid #E2E8F0;border-radius:16px;padding:28px;transition:all 0.2s;}
+.atlas-sm:hover{border-color:#DDD6FE;background:#FDFCFF;}
+.atlas-sm h3{font-size:18px;font-weight:700;margin-bottom:6px;}
+.atlas-sm p{font-size:14px;color:#475569;line-height:1.6;}
+.atlas-sm .badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#059669;margin-top:12px;text-transform:uppercase;}
 
-/* ── ATLAS DEMO ── */
-.atlas{padding:80px 0 120px;}
-.atlas-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
-.atlas-terminal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
-.term-header{display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--bg3);}
-.term-dot{width:10px;height:10px;border-radius:50%;}
-.term-title{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);margin-left:auto;letter-spacing:0.05em;}
-.term-body{padding:24px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2;}
-.term-body .prompt{color:var(--green);}
-.term-body .dim{color:var(--text3);}
-.term-body .hl{color:var(--accent);}
-.term-body .ok{color:var(--green);}
+/* ── STORY — editorial manifesto ── */
+.story{background:#0B0914;color:#fff;padding:100px 40px;}
+.story-inner{max-width:720px;margin:0 auto;}
+.story-quote{font-size:64px;color:#5B21B6;font-family:'Syne',sans-serif;line-height:0.5;margin-bottom:24px;}
+.story h2{font-size:clamp(24px,3vw,36px);font-weight:700;margin-bottom:32px;line-height:1.3;}
+.story-text{font-size:17px;color:#94A3B8;line-height:1.85;margin-bottom:20px;}
+.story-text strong{color:#E2E8F0;font-weight:600;}
+.story-sig{font-family:'Syne',sans-serif;font-size:20px;font-weight:600;color:#7C3AED;margin-top:40px;padding-top:24px;border-top:1px solid #2E2A4A;}
+.story-sig span{color:#94A3B8;font-size:14px;font-weight:400;font-family:'Plus Jakarta Sans',sans-serif;display:block;margin-top:4px;}
 
-/* ── FOUNDER ── */
-.founder{padding:80px 0 120px;border-top:1px solid var(--border);}
-.founder-inner{display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:start;}
-.founder-photo{width:80px;height:80px;border-radius:50%;overflow:hidden;border:2px solid var(--border);}
-.founder-photo img{width:100%;height:100%;object-fit:cover;}
-.founder-header{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
-.founder-name{font-family:'Outfit',sans-serif;font-size:18px;font-weight:700;}
-.founder-loc{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:0.06em;}
-.founder-text{font-size:17px;color:var(--text2);line-height:1.8;margin-top:16px;}
-.founder-text strong{color:var(--text);font-weight:600;}
+/* ── ROADMAP — horizontal ── */
+.roadmap{padding:100px 40px;max-width:1200px;margin:0 auto;}
+.roadmap h2{font-size:clamp(28px,3.5vw,44px);font-weight:800;margin-bottom:48px;}
+.road-line{display:grid;grid-template-columns:repeat(3,1fr);gap:0;position:relative;}
+.road-line::before{content:'';position:absolute;top:20px;left:40px;right:40px;height:2px;background:#E2E8F0;}
+.road-item{text-align:center;position:relative;padding:0 20px;}
+.road-dot{width:12px;height:12px;border-radius:50%;margin:14px auto 24px;position:relative;z-index:1;}
+.road-item h3{font-size:16px;font-weight:700;margin-bottom:6px;}
+.road-item p{font-size:13px;color:#475569;line-height:1.6;}
+.road-item .when{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#5B21B6;margin-top:12px;text-transform:uppercase;}
 
-/* ── ROADMAP ── */
-.roadmap{padding:80px 0 120px;}
-.road-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
-.road-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;}
-.road-card .timeline{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;color:var(--accent);margin-bottom:12px;}
-.road-card h3{font-size:17px;font-weight:700;margin-bottom:8px;}
-.road-card p{font-size:14px;color:var(--text2);line-height:1.6;}
-.road-card .status{display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text3);letter-spacing:0.05em;}
-.road-card .status .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
-
-/* ── FAQ ── */
-.faq{padding:80px 0 120px;border-top:1px solid var(--border);}
-.faq-list{max-width:680px;}
-.faq-item{border-bottom:1px solid var(--border);padding:20px 0;}
-.faq-q{font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;color:var(--text);transition:color 0.2s;}
-.faq-q:hover{color:var(--accent);}
+/* ── FAQ — left aligned, minimal ── */
+.faq{padding:80px 40px 120px;max-width:720px;margin:0 auto;}
+.faq h2{font-size:clamp(28px,3.5vw,44px);font-weight:800;margin-bottom:48px;}
+.faq-item{border-bottom:1px solid #E2E8F0;padding:20px 0;}
+.faq-q{font-size:16px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;transition:color 0.2s;}
+.faq-q:hover{color:#5B21B6;}
 .faq-q svg{flex-shrink:0;transition:transform 0.3s;}
 .faq-item.open .faq-q svg{transform:rotate(180deg);}
-.faq-a{max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease;}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.3s ease;}
 .faq-item.open .faq-a{max-height:300px;padding-top:12px;}
-.faq-a p{font-size:15px;color:var(--text2);line-height:1.7;}
+.faq-a p{font-size:15px;color:#475569;line-height:1.75;}
 
-/* ── FINAL CTA ── */
-.final-cta{padding:80px 0;text-align:center;}
-.final-cta h2{font-size:clamp(28px,4vw,40px);font-weight:800;margin-bottom:12px;}
-.final-cta p{color:var(--text2);font-size:16px;margin-bottom:32px;}
+/* ── CTA FINAL ── */
+.cta-final{background:#5B21B6;color:#fff;padding:80px 40px;text-align:center;}
+.cta-final h2{font-size:clamp(28px,4vw,48px);font-weight:800;margin-bottom:16px;}
+.cta-final p{font-size:17px;color:#DDD6FE;margin-bottom:32px;}
+.cta-final a{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#2E1065;padding:16px 40px;border-radius:12px;font-weight:700;font-size:16px;transition:all 0.2s;}
+.cta-final a:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,0.3);}
 
 /* ── FOOTER ── */
-footer{border-top:1px solid var(--border);padding:48px 0 32px;}
-.footer-inner{display:flex;justify-content:space-between;align-items:start;gap:32px;flex-wrap:wrap;}
-.footer-brand{font-family:'Outfit',sans-serif;font-weight:800;font-size:18px;}
-.footer-brand span{color:var(--accent);}
-.footer-links{display:flex;gap:48px;}
-.footer-col{display:flex;flex-direction:column;gap:8px;}
-.footer-col h4{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;}
-.footer-col a{font-size:14px;color:var(--text2);transition:color 0.2s;}
-.footer-col a:hover{color:var(--text);}
-.footer-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:40px;padding-top:24px;border-top:1px solid var(--border);font-size:13px;color:var(--text3);}
+footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
+.foot-inner{display:flex;justify-content:space-between;align-items:start;max-width:1200px;margin:0 auto;gap:40px;flex-wrap:wrap;}
+.foot-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;}
+.foot-brand span{color:#7C3AED;}
+.foot-cols{display:flex;gap:56px;}
+.foot-col h4{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#94A3B8;margin-bottom:12px;}
+.foot-col a{display:block;font-size:14px;color:#475569;margin-bottom:8px;transition:color 0.15s;}
+.foot-col a:hover{color:#0F172A;}
+.foot-bottom{max-width:1200px;margin:32px auto 0;padding-top:20px;border-top:1px solid #E2E8F0;display:flex;justify-content:space-between;font-size:12px;color:#94A3B8;}
 
 /* ── MOBILE ── */
 @media(max-width:768px){
-    nav .links{display:none;}
+    nav{padding:14px 20px;}
+    .nav-links{display:none;}
     .burger{display:block;}
-    .hero h1{font-size:32px;}
-    .hero-stats{gap:24px;}
-    .feat-grid,.road-grid{grid-template-columns:1fr;}
-    .atlas-grid{grid-template-columns:1fr;gap:40px;}
-    .founder-inner{grid-template-columns:1fr;text-align:left;}
-    .footer-links{gap:32px;}
-    .footer-inner{flex-direction:column;}
-    .footer-bottom{flex-direction:column;gap:12px;text-align:center;}
-}
-@media(min-width:769px) and (max-width:1024px){
-    .feat-grid,.road-grid{grid-template-columns:1fr 1fr;}
+    .nav-links.open{display:flex;flex-direction:column;position:fixed;top:56px;left:0;right:0;background:#FAF9F6;padding:24px 20px;gap:16px;border-bottom:1px solid #E2E8F0;z-index:99;}
+    .hero{padding:120px 20px 80px;}
+    .hero-grid{grid-template-columns:1fr;gap:40px;}
+    .hero-right{display:none;}
+    .hero h1{font-size:36px;}
+    .atlas{padding:80px 20px;}
+    .atlas-top{flex-direction:column;gap:16px;}
+    .atlas-top p{text-align:left;max-width:100%;}
+    .atlas-cols{grid-template-columns:1fr;}
+    .story{padding:80px 20px;}
+    .roadmap{padding:80px 20px;}
+    .road-line{grid-template-columns:1fr;gap:32px;}
+    .road-line::before{display:none;}
+    .road-item{text-align:left;}
+    .road-dot{margin:0 0 12px;}
+    .faq{padding:60px 20px 80px;}
+    .cta-final{padding:60px 20px;}
+    .foot-inner{flex-direction:column;}
+    .foot-cols{flex-wrap:wrap;gap:32px;}
+    .foot-bottom{flex-direction:column;gap:8px;}
 }
 </style>
 </head>
 <body>
 
-<!-- ═══ NAV ═══ -->
+<!-- NAV -->
 <nav>
-    <div class="inner">
-        <a href="/fr/" class="logo">Mentova<span>.</span></a>
-        <div class="links">
-            <a href="#features">Fonctionnalites</a>
-            <a href="#story">Notre histoire</a>
-            <a href="#roadmap">A venir</a>
-            <a href="#faq">FAQ</a>
-            <div class="lang-switch">
-                <a href="/">EN</a>
-                <a href="/fr/" class="active">FR</a>
-                <a href="/es/">ES</a>
-            </div>
-            <a href="https://app.mentova-academy.com" class="cta-nav" data-testid="nav-cta">Ouvrir l'App</a>
+    <a href="/fr/" class="nav-logo">MENTOVA<span>.</span></a>
+    <div class="nav-links">
+        <a href="#atlas">Atlas IA</a>
+        <a href="#story">Histoire</a>
+        <a href="#roadmap">A venir</a>
+        <a href="#faq">FAQ</a>
+        <div class="nav-lang">
+            <a href="/">EN</a>
+            <a href="/fr/" class="active">FR</a>
+            <a href="/es/">ES</a>
         </div>
-        <button class="burger" onclick="document.querySelector('.links').classList.toggle('open')" aria-label="Menu">&#9776;</button>
+        <a href="https://app.mentova-academy.com" class="nav-cta" data-testid="nav-cta">Ouvrir l'App</a>
     </div>
+    <button class="burger" onclick="document.querySelector('.nav-links').classList.toggle('open')">&#9776;</button>
 </nav>
 
-<!-- ═══ HERO ═══ -->
+<!-- HERO -->
 <section class="hero" data-testid="hero-section">
-    <div class="container">
-        <div class="hero-inner">
-            <div>
-                <div class="hero-badge">
-                    <span>100% gratuit — aucun abonnement requis</span>
+    <div class="hero-grid">
+        <div class="hero-left">
+            <div class="hero-free">100% gratuit &middot; sans abonnement</div>
+            <h1>Apprends la crypto a ton rythme.</h1>
+            <p class="hero-desc">Un mentor IA personnel, le marche en temps reel et des actualites dans ta langue. Cree au Canada. Ouvert a tous.</p>
+            <a href="https://app.mentova-academy.com" class="hero-cta" data-testid="hero-cta">Commencer gratuitement &rarr;</a>
+        </div>
+        <div class="hero-right">
+            <div class="hero-terminal">
+                <div class="ht-bar">
+                    <div class="ht-dot" style="background:#EF4444"></div>
+                    <div class="ht-dot" style="background:#F59E0B"></div>
+                    <div class="ht-dot" style="background:#22C55E"></div>
+                    <div class="ht-name">ATLAS IA</div>
                 </div>
-                <h1>Apprends la crypto.<br><em>Sans le bruit.</em></h1>
-                <p class="hero-sub">Atlas, ton mentor IA personnel, t'accompagne de zero a avance. Suis le marche en temps reel. Lis les actualites traduites dans ta langue. Tout est gratuit.</p>
-                <div class="hero-actions">
-                    <a href="https://app.mentova-academy.com" class="btn-main" data-testid="hero-cta">
-                        Commencer gratuitement &rarr;
-                    </a>
-                    <a href="#features" class="btn-ghost" data-testid="hero-explore">
-                        Decouvrir les fonctionnalites
-                    </a>
-                </div>
-                <div class="hero-stats">
-                    <div class="hero-stat"><div class="val">24/7</div><div class="lbl">IA disponible</div></div>
-                    <div class="hero-stat"><div class="val">3</div><div class="lbl">Langues</div></div>
-                    <div class="hero-stat"><div class="val">0$</div><div class="lbl">Pour toujours</div></div>
+                <div class="ht-body">
+                    <div><span class="g">atlas&gt;</span> <span class="d">C'est quoi le staking ?</span></div>
+                    <div>&nbsp;</div>
+                    <div><span class="w">Le staking, c'est comme deposer de l'argent</span></div>
+                    <div><span class="w">dans un compte epargne. Tu bloques tes</span></div>
+                    <div><span class="w">cryptos pour aider le reseau, et en</span></div>
+                    <div><span class="w">echange tu recois des recompenses.</span></div>
+                    <div>&nbsp;</div>
+                    <div><span class="g">&#10003;</span> <span class="d">Exemple : 32 ETH staked = ~4% / an</span></div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ═══ FEATURES ═══ -->
-<section class="features" id="features" data-testid="features-section">
-    <div class="container">
-        <div class="section-tag">Fonctionnalites</div>
-        <h2 class="section-h">Trois outils. Zero bruit.</h2>
-        <p class="section-p">Pas 50 features dont tu n'as pas besoin. Juste ce qu'il faut pour apprendre, suivre et comprendre la crypto.</p>
-        <div class="feat-grid">
-            <div class="feat-card" data-testid="feat-atlas">
-                <div class="feat-icon" style="background:rgba(255,72,0,0.1);color:var(--accent);">&#9673;</div>
-                <h3>Atlas IA</h3>
-                <p>Ton tuteur personnel qui s'adapte a ton niveau. Il detecte tes lacunes, construit ton parcours et repond a toutes tes questions. En francais, anglais ou espagnol.</p>
-                <div class="tag">Disponible maintenant</div>
-            </div>
-            <div class="feat-card" data-testid="feat-market">
-                <div class="feat-icon" style="background:rgba(16,185,129,0.1);color:var(--green);">&#9650;</div>
-                <h3>Marche en temps reel</h3>
-                <p>Prix, variations et tendances des 20 principales cryptos. Mis a jour automatiquement. Pas besoin d'ouvrir 5 onglets.</p>
-                <div class="tag">Disponible maintenant</div>
-            </div>
-            <div class="feat-card" data-testid="feat-news">
-                <div class="feat-icon" style="background:rgba(59,130,246,0.1);color:var(--blue);">&#9881;</div>
-                <h3>Actualites traduites</h3>
-                <p>Les meilleures sources crypto du monde, traduites et resumees dans ta langue. Plus besoin de lire en anglais.</p>
-                <div class="tag">Disponible maintenant</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ═══ ATLAS DEMO ═══ -->
+<!-- ATLAS — asymmetric -->
 <section class="atlas" id="atlas" data-testid="atlas-section">
-    <div class="container">
-        <div class="atlas-grid">
-            <div>
-                <div class="section-tag">Atlas IA</div>
-                <h2 class="section-h">Un mentor qui apprend en meme temps que toi.</h2>
-                <p class="section-p" style="margin-bottom:24px;">Atlas analyse chaque reponse. Si tu bloques, il reformule. Si tu avances vite, il augmente la difficulte. C'est comme un prof particulier, disponible 24h/24.</p>
-                <a href="https://app.mentova-academy.com" class="btn-main" data-testid="atlas-cta">Essayer Atlas gratuitement &rarr;</a>
+    <div class="atlas-top">
+        <h2>Ton mentor IA qui s'adapte a toi.</h2>
+        <p>Atlas detecte tes forces, comble tes lacunes et construit un parcours unique. 24h/24, en 3 langues.</p>
+    </div>
+    <div class="atlas-cols">
+        <div class="atlas-big">
+            <h3>Apprentissage adaptatif</h3>
+            <p>Pose n'importe quelle question. Atlas repond clairement, sans jargon. Si tu bloques, il reformule. Si tu avances vite, il augmente la difficulte. C'est un vrai tuteur, pas un chatbot.</p>
+            <a href="https://app.mentova-academy.com" class="try" data-testid="atlas-cta">Essayer Atlas &rarr;</a>
+        </div>
+        <div class="atlas-small-stack">
+            <div class="atlas-sm">
+                <h3>Marche en temps reel</h3>
+                <p>Prix, volumes et tendances des 20 principales cryptos. Rafraichi automatiquement, sans ouvrir 5 onglets.</p>
+                <div class="badge">Disponible</div>
             </div>
-            <div class="atlas-terminal">
-                <div class="term-header">
-                    <div class="term-dot" style="background:#EF4444;"></div>
-                    <div class="term-dot" style="background:#F59E0B;"></div>
-                    <div class="term-dot" style="background:#22C55E;"></div>
-                    <div class="term-title">ATLAS IA v3</div>
-                </div>
-                <div class="term-body">
-                    <div><span class="prompt">atlas&gt;</span> <span class="dim">analyse_profil...</span></div>
-                    <div><span class="ok">Niveau :</span> <span class="hl">Intermediaire</span> | Module : Securite</div>
-                    <div style="height:12px;"></div>
-                    <div><span class="prompt">atlas&gt;</span> Tu as 5 000$ en crypto. Ou les stocker ?</div>
-                    <div><span class="dim">&nbsp;&nbsp;a) Sur l'exchange</span></div>
-                    <div><span class="dim">&nbsp;&nbsp;b) Portefeuille chaud</span></div>
-                    <div><span class="hl">&nbsp;&nbsp;c) Portefeuille materiel (Ledger) &larr;</span></div>
-                    <div><span class="dim">&nbsp;&nbsp;d) Repartir sur 3 exchanges</span></div>
-                    <div style="height:8px;"></div>
-                    <div><span class="ok">&#10003; Correct.</span> Les cold wallets sont le standard de securite.</div>
-                    <div style="height:8px;"></div>
-                    <div><span class="dim">Securite : 85% termine</span></div>
-                    <div style="background:rgba(255,255,255,0.06);height:4px;border-radius:2px;margin-top:4px;"><div style="width:85%;height:100%;background:var(--green);border-radius:2px;"></div></div>
-                </div>
+            <div class="atlas-sm">
+                <h3>Actualites multilingues</h3>
+                <p>Les meilleures sources mondiales, traduites et resumees en francais, anglais et espagnol.</p>
+                <div class="badge">Disponible</div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ═══ FOUNDER ═══ -->
-<section class="founder" id="story" data-testid="founder-section">
-    <div class="container">
-        <div class="section-tag">Notre histoire</div>
-        <div class="founder-inner" style="margin-top:32px;">
-            <div class="founder-photo">
-                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&q=80" alt="Justin" loading="lazy">
-            </div>
-            <div>
-                <div class="founder-header">
-                    <div class="founder-name">Justin</div>
-                    <div class="founder-loc">Montreal, Canada</div>
-                </div>
-                <div class="founder-text">
-                    <strong>L'education crypto etait cassee.</strong> Trop de gourous qui facturent des abonnements mensuels pour du contenu recycle. Trop de plateformes avec des murs de paiement et de la fausse rarete.<br><br>
-                    Mentova a commence comme une experience payante. Mais j'ai realise que le savoir ne devrait jamais etre derriere un paywall. <strong>Aujourd'hui, Mentova est entierement gratuit.</strong> Pas de carte de credit. Pas d'abonnement cache. Pas de "prix fondateur".<br><br>
-                    Juste un outil honnete pour apprendre la crypto a ton rythme.
-                </div>
-            </div>
+<!-- STORY — editorial manifesto -->
+<section class="story" id="story" data-testid="founder-section">
+    <div class="story-inner">
+        <div class="story-quote">&ldquo;</div>
+        <h2>Pourquoi Mentova est 100% gratuit.</h2>
+        <p class="story-text"><strong>L'education crypto etait cassee.</strong> Trop de gourous qui vendent des abonnements pour du contenu recycle. Trop de plateformes avec des murs de paiement et de la fausse rarete.</p>
+        <p class="story-text">Mentova a commence comme un projet payant. Mais j'ai realise que <strong>le savoir ne devrait jamais etre derriere un paywall.</strong></p>
+        <p class="story-text">Aujourd'hui, tout est gratuit. Pas de carte de credit. Pas de "prix fondateur". Pas de piege. Juste un outil honnete pour apprendre la crypto.</p>
+        <div class="story-sig">
+            Justin
+            <span>Fondateur, Mentova Academy &middot; Montreal, Canada</span>
         </div>
     </div>
 </section>
 
-<!-- ═══ ROADMAP ═══ -->
+<!-- ROADMAP — horizontal timeline -->
 <section class="roadmap" id="roadmap" data-testid="roadmap-section">
-    <div class="container">
-        <div class="section-tag">Feuille de route</div>
-        <h2 class="section-h">Ce qui arrive bientot.</h2>
-        <p class="section-p">On construit en public. Voici ce qui s'en vient.</p>
-        <div class="road-grid">
-            <div class="road-card">
-                <div class="timeline">T3 2026</div>
-                <h3>Forum Communautaire</h3>
-                <p>Un espace pour discuter strategies, partager tes recherches et poser des questions a la communaute.</p>
-                <div class="status"><span class="dot"></span> En developpement</div>
-            </div>
-            <div class="road-card">
-                <div class="timeline">T4 2026</div>
-                <h3>Mentors Humains</h3>
-                <p>Sessions live hebdomadaires avec des educateurs crypto et analystes experimentes.</p>
-                <div class="status"><span class="dot" style="background:var(--blue);"></span> A venir</div>
-            </div>
-            <div class="road-card">
-                <div class="timeline">T1 2027</div>
-                <h3>Outils Pro Avances</h3>
-                <p>Suivi de portefeuille on-chain, heatmaps de liquidite et alertes de rebalancement automatique.</p>
-                <div class="status"><span class="dot" style="background:var(--text3);animation:none;"></span> Planifie</div>
-            </div>
+    <h2>Ce qu'on construit.</h2>
+    <div class="road-line">
+        <div class="road-item">
+            <div class="road-dot" style="background:#5B21B6;box-shadow:0 0 0 4px #DDD6FE;"></div>
+            <h3>Communaute</h3>
+            <p>Un espace pour echanger entre passionnes, poser des questions et partager ses recherches.</p>
+            <div class="when">T3 2026 &middot; En dev</div>
+        </div>
+        <div class="road-item">
+            <div class="road-dot" style="background:#E2E8F0;box-shadow:0 0 0 4px #F1F5F9;"></div>
+            <h3>Mentors humains</h3>
+            <p>Sessions live avec des educateurs crypto et analystes experimentes.</p>
+            <div class="when">T4 2026 &middot; A venir</div>
+        </div>
+        <div class="road-item">
+            <div class="road-dot" style="background:#E2E8F0;box-shadow:0 0 0 4px #F1F5F9;"></div>
+            <h3>Outils avances</h3>
+            <p>Tracking on-chain, heatmaps de liquidite, alertes automatiques.</p>
+            <div class="when">T1 2027 &middot; Planifie</div>
         </div>
     </div>
 </section>
 
-<!-- ═══ FAQ ═══ -->
+<!-- FAQ -->
 <section class="faq" id="faq" data-testid="faq-section">
-    <div class="container">
-        <div class="section-tag">FAQ</div>
-        <h2 class="section-h" style="margin-bottom:40px;">Questions frequentes.</h2>
-        <div class="faq-list">
-            <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">C'est vraiment gratuit ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Oui. 100% gratuit. Pas de periode d'essai, pas de carte de credit, pas de frais caches. Tu crees un compte et tu as acces a tout.</p></div></div>
-            <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Comment fonctionne Atlas IA ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Atlas est un mentor IA qui s'adapte a ton niveau. Il te pose des questions, analyse tes reponses et ajuste le contenu en temps reel. Disponible en francais, anglais et espagnol.</p></div></div>
-            <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Mentova est disponible hors du Canada ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Oui. Acces mondial en francais, anglais et espagnol. L'app web fonctionne sur n'importe quel appareil.</p></div></div>
-            <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Il y aura un abonnement payant plus tard ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Les fonctionnalites actuelles resteront gratuites. Des outils avances optionnels pourraient etre proposes plus tard, mais le coeur de Mentova sera toujours gratuit.</p></div></div>
-            <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">L'app est disponible sur iPhone et Android ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>L'app web fonctionne sur tous les appareils. Les versions App Store et Google Play arrivent bientot. En attendant, tu peux ajouter l'app a ton ecran d'accueil.</p></div></div>
-            <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Mes donnees sont en securite ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Oui. Chiffrement de bout en bout. Aucune donnee financiere stockee. Mentova est une plateforme educative, pas un exchange.</p></div></div>
-        </div>
-    </div>
+    <h2>Questions.</h2>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">C'est vraiment gratuit ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Oui. 100% gratuit. Pas de periode d'essai, pas de carte de credit, pas de frais caches. Tu crees un compte et tu as acces a tout.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Comment fonctionne Atlas IA ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Atlas est un mentor IA qui s'adapte a ton niveau. Il analyse tes reponses et ajuste le contenu en temps reel. Disponible en francais, anglais et espagnol.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Disponible hors du Canada ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Oui. Acces mondial en 3 langues. L'app web fonctionne sur n'importe quel appareil.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Il y aura un abonnement payant ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Les fonctionnalites actuelles resteront gratuites. Des outils avances optionnels pourraient etre proposes plus tard.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">L'app est sur iPhone et Android ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>L'app web fonctionne partout. Les versions App Store et Google Play arrivent bientot.</p></div></div>
 </section>
 
-<!-- ═══ FINAL CTA ═══ -->
-<div class="final-cta" data-testid="final-cta">
-    <div class="container">
-        <h2>Pret a apprendre ?</h2>
-        <p>Cree ton compte en 30 secondes. C'est gratuit.</p>
-        <a href="https://app.mentova-academy.com" class="btn-main" style="padding:16px 40px;font-size:16px;" data-testid="final-cta-btn">Commencer gratuitement &rarr;</a>
-    </div>
-</div>
+<!-- CTA FINAL -->
+<section class="cta-final" data-testid="final-cta">
+    <h2>Pret a commencer ?</h2>
+    <p>Cree ton compte en 30 secondes. C'est gratuit, pour de vrai.</p>
+    <a href="https://app.mentova-academy.com" data-testid="final-cta-btn">Ouvrir Mentova &rarr;</a>
+</section>
 
-<!-- ═══ FOOTER ═══ -->
+<!-- FOOTER -->
 <footer data-testid="footer">
-    <div class="container">
-        <div class="footer-inner">
-            <div>
-                <div class="footer-brand">Mentova<span>.</span></div>
-                <p style="font-size:14px;color:var(--text3);margin-top:8px;">Apprendre la crypto. Gratuitement.<br>FR | EN | ES</p>
+    <div class="foot-inner">
+        <div>
+            <div class="foot-brand">MENTOVA<span>.</span></div>
+            <p style="font-size:13px;color:#94A3B8;margin-top:8px;">Apprendre la crypto. Gratuitement.</p>
+        </div>
+        <div class="foot-cols">
+            <div class="foot-col">
+                <h4>Produit</h4>
+                <a href="#atlas">Atlas IA</a>
+                <a href="https://app.mentova-academy.com">App Web</a>
             </div>
-            <div class="footer-links">
-                <div class="footer-col">
-                    <h4>Produit</h4>
-                    <a href="#features">Fonctionnalites</a>
-                    <a href="#atlas">Atlas IA</a>
-                    <a href="https://app.mentova-academy.com">App Web</a>
-                </div>
-                <div class="footer-col">
-                    <h4>Entreprise</h4>
-                    <a href="#story">Notre histoire</a>
-                    <a href="#roadmap">Feuille de route</a>
-                    <a href="mailto:info@mentova-academy.com">Contact</a>
-                </div>
-                <div class="footer-col">
-                    <h4>Legal</h4>
-                    <a href="/terms.html">Conditions</a>
-                    <a href="/privacy.html">Confidentialite</a>
-                </div>
+            <div class="foot-col">
+                <h4>Mentova</h4>
+                <a href="#story">Histoire</a>
+                <a href="#roadmap">Feuille de route</a>
+                <a href="mailto:info@mentova-academy.com">Contact</a>
+            </div>
+            <div class="foot-col">
+                <h4>Legal</h4>
+                <a href="/terms.html">Conditions</a>
+                <a href="/privacy.html">Confidentialite</a>
             </div>
         </div>
-        <div class="footer-bottom">
-            <span>&copy; 2026 Mentova Academy Inc. Montreal, Canada.</span>
-            <span>info@mentova-academy.com</span>
-        </div>
+    </div>
+    <div class="foot-bottom">
+        <span>&copy; 2026 Mentova Academy Inc. Montreal, Canada.</span>
+        <span>info@mentova-academy.com</span>
     </div>
 </footer>
-
-<style>
-@media(max-width:768px){
-    nav .links.open{display:flex;flex-direction:column;position:fixed;top:56px;left:0;right:0;background:var(--bg);padding:24px;gap:16px;border-bottom:1px solid var(--border);z-index:99;}
-    nav .links.open .lang-switch{margin-left:0;}
-    nav .links.open .cta-nav{text-align:center;}
-}
-</style>
 
 </body>
 </html>
