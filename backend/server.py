@@ -12028,7 +12028,7 @@ set_preregister_db(db)
 app.include_router(preregister_router)
 
 # Include Atlas AI router
-from routes.atlas import atlas_router
+from routes.atlas_v3 import atlas_router
 app.include_router(atlas_router)
 
 # Include Glossary router

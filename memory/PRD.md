@@ -4,63 +4,73 @@
 - **Frontend**: React Native (Expo) Web Export -> Netlify (app.mentova-academy.com)
 - **Static Site**: HTML/CSS -> Netlify (mentova-academy.com)
 - **Backend**: FastAPI -> Render (mentova-api.onrender.com)
-- **Database**: MongoDB Atlas
+- **Database**: MongoDB Atlas (production) / localhost (preview)
+- **AI**: OpenAI GPT-5.6 Terra (user's own API key)
 - **Payments**: Stripe Checkout (DISABLED for free launch)
 - **Crypto Data**: CoinGecko Pro API (zero user-call architecture)
-- **AI**: OpenAI GPT-4o via Emergent LLM Key
 
 ## Current State (Sept 10, 2026)
 
 ### Simplified 5-Tab Navigation (DONE)
 - **Home** - Dashboard with market stats, quick actions, news preview, learning progress
-- **Atlas AI** - Mentor IA (killer feature)
+- **Atlas AI** - Persistent AI mentor with GPT-5.6 Terra
 - **Market** - Real-time crypto prices
 - **News** - Translated articles FR/EN/ES
 - **Profile** - Account settings
+
+### Atlas AI v3 - Backend COMPLETE
+Database collections created:
+- user_learning_profiles
+- atlas_memories
+- atlas_conversations
+- learning_modules
+- module_progress
+- quiz_attempts
+
+10 OpenAI function tools implemented:
+- get_user_profile, update_user_profile, save_memory
+- get_learning_history, get_modules, create_learning_module
+- update_learning_module, record_quiz_result, update_mastery, mark_module_mastered
+
+API Endpoints:
+- POST /api/atlas/chat (main chat with function calling)
+- GET /api/atlas/conversations (list)
+- GET /api/atlas/conversations/:id (detail)
+- DELETE /api/atlas/conversations/:id
+- GET /api/atlas/modules (user's modules)
+- GET /api/atlas/modules/:id (module detail + progress + quizzes)
+- GET /api/atlas/profile (learning profile + stats)
+- GET /api/atlas/progress (detailed progress by category)
+
+### Landing Page (DONE)
+- Editorial design, solid colors, asymmetrical layouts
+- Atlas IA animated showcase (5-slide cycle)
+- Stats, features, how it works, vision, story, roadmap, FAQ sections
+- Mentor & Ambassador recruitment pages linked in nav
+- Deployed FR/EN/ES with proper accents
+- "Accès libre" messaging (not "gratuit")
+- No Montreal, just Canada
 
 ### Hidden Features (code kept, not visible)
 - Community (gate + founding members)
 - Mentors / Marketplace
 - VIP/Premium features
-- Floating action menu (FAB)
-
-### Active Features
-- CoinGecko zero-user-call caching (scheduler pre-fetches)
-- PWA install prompt
-- i18n FR/EN/ES
-- Founding Member badge system (Stripe webhook, currently disabled in UI)
+- Old Atlas v1/v2 (routes/atlas.py still exists but not mounted)
 
 ### Deployments
-- mentova-academy.com: LIVE (Netlify, editorial redesign deployed Sept 10)
-- app.mentova-academy.com: LIVE (Netlify, cleaned-up 5-tab app deployed Sept 10)
-- mentova-api.onrender.com: 502 - Needs Render rebuild/redeploy
-
-### What Was Done This Session (Sept 10)
-1. Cleaned Home dashboard: removed Community, AI tab, VIP promo, Mentor CTA links
-2. Updated menu grid to only show Atlas, Market, News, Profile (+Admin)
-3. Updated Quick Actions to reference only active tabs
-4. Cleaned _layout.tsx: removed dead AnimatedTabIcon + FloatingMenu code
-5. Updated onboarding page feature carousel: Community -> Crypto News
-6. Updated translations (FR/EN/ES) for onboarding features
-7. Deployed static site to mentova-academy.com
-8. Built + deployed React app to app.mentova-academy.com
-9. Enriched landing page (FR/EN/ES) with: Stats banner (20+, 3 langs, 24/7, 0$), detailed feature sections (Atlas, Market, News with visuals), "How it works" 3-step section, "Our Vision" section with 4 values, removed all middots/dashes
-10. Diagnosed Render 502: MongoDB Atlas cluster is paused, DNS not resolving
-
-### Known Issues
-- Render backend 502: User needs to trigger a deploy on Render dashboard or push code via GitHub
-- CoinGecko API: Returning 401 (key may need renewal)
-- Desktop responsiveness: Not addressed yet (P2)
+- mentova-academy.com: LIVE (Netlify)
+- app.mentova-academy.com: LIVE (Netlify)
+- mentova-api.onrender.com: 502 - MongoDB Atlas cluster paused
 
 ## Key Credentials
 - Super Admin: jcuradeau.7@gmail.com / Crypto2026!
-- Stripe webhook: https://mentova-api.onrender.com/api/webhook/stripe
-- EAS config: eas.json with EXPO_PUBLIC_BACKEND_URL
-- Netlify sites: mentova-academy.com + app.mentova-academy.com
+- OpenAI API Key: In backend/.env (OPENAI_API_KEY)
+- Netlify Token: nfp_et6ZSodb7Wj2mHSGNY4JrRnvrEYFxJVR3b9e
 
 ## Backlog
 ### P0
-- Fix Render backend (user needs to redeploy)
+- Fix Render backend (MongoDB Atlas cluster needs to be resumed)
+- **Atlas Frontend UI** (Phase 3): Chat screen, Modules screen, Progress screen, History
 
 ### P1
 - Fix CoinGecko API key (401 errors)
@@ -73,4 +83,4 @@
 ### P3
 - Technical indicators (RSI, Bollinger) on crypto charts
 - reCAPTCHA on auth forms
-- Refactor server.py monolith into routes/
+- Refactor server.py monolith
