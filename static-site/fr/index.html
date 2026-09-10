@@ -217,7 +217,7 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
     .nav-links.open{display:flex;flex-direction:column;position:fixed;top:56px;left:0;right:0;background:#FAF9F6;padding:24px 20px;gap:16px;border-bottom:1px solid #E2E8F0;z-index:99;}
     .hero{padding:120px 20px 80px;}
     .hero-grid{grid-template-columns:1fr;gap:40px;}
-    .hero-right{display:none;}
+    .hero-right{display:block;}
     .atlas-show{width:100%;}
     .hero h1{font-size:36px;}
     .stats{padding:60px 20px;}
@@ -393,11 +393,29 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
                 <li>Accessible 24h/24, 7j/7</li>
             </ul>
         </div>
-        <div class="feat-visual">
-            <div class="feat-visual-inner">
-                <div style="color:#5B21B6;font-weight:600;margin-bottom:16px;">atlas&gt; Comment fonctionne le DeFi ?</div>
-                <div style="color:#0F172A;line-height:1.8;">La finance decentralisee (DeFi) utilise des contrats intelligents pour recreer des services financiers sans intermediaires. Tu peux preter, emprunter ou echanger directement entre utilisateurs.</div>
-                <div style="margin-top:16px;padding:12px;background:rgba(91,33,182,0.08);border-radius:8px;font-size:12px;color:#5B21B6;">Module suivant : Liquidity Pools &rarr;</div>
+        <div class="feat-visual" style="padding:0;overflow:hidden;background:#1A0A2E;">
+            <div style="width:100%;">
+                <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.08);background:rgba(124,58,237,0.1);">
+                    <div style="width:8px;height:8px;border-radius:50%;background:#10B981;"></div>
+                    <span style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#DDD6FE;">Atlas IA</span>
+                    <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;color:#10B981;letter-spacing:0.08em;">EN LIGNE</span>
+                </div>
+                <div style="padding:16px 20px;">
+                    <div style="display:flex;gap:10px;margin-bottom:14px;">
+                        <div style="width:28px;height:28px;border-radius:10px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:#DDD6FE;font-size:12px;font-weight:700;flex-shrink:0;">T</div>
+                        <div style="font-size:13px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.06);color:#E2E8F0;border:1px solid rgba(255,255,255,0.08);">Comment fonctionne le DeFi ?</div>
+                    </div>
+                    <div style="display:flex;gap:10px;margin-bottom:14px;">
+                        <div style="width:28px;height:28px;border-radius:10px;background:rgba(124,58,237,0.3);display:flex;align-items:center;justify-content:center;color:#C4B5FD;font-size:12px;font-weight:700;flex-shrink:0;">A</div>
+                        <div style="font-size:13px;padding:10px 14px;border-radius:12px;background:rgba(124,58,237,0.12);color:#E8E0FF;border:1px solid rgba(124,58,237,0.2);line-height:1.65;">La DeFi utilise des contrats intelligents pour recreer des services financiers sans intermediaires. Tu peux preter, emprunter ou echanger directement.</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:10px;margin-bottom:10px;">
+                        <div style="width:24px;height:24px;background:rgba(16,185,129,0.2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#10B981;">&#9654;</div>
+                        <span style="font-size:11px;color:#6EE7B7;font-weight:500;">Module suivant : Liquidity Pools</span>
+                        <span style="margin-left:auto;font-size:12px;color:#10B981;">&rarr;</span>
+                    </div>
+                    <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:rgba(124,58,237,0.15);border-radius:6px;font-size:10px;color:#C4B5FD;font-weight:500;">&#8593; Niveau adapte : Intermediaire</div>
+                </div>
             </div>
         </div>
     </div>

@@ -217,7 +217,7 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
     .nav-links.open{display:flex;flex-direction:column;position:fixed;top:56px;left:0;right:0;background:#FAF9F6;padding:24px 20px;gap:16px;border-bottom:1px solid #E2E8F0;z-index:99;}
     .hero{padding:120px 20px 80px;}
     .hero-grid{grid-template-columns:1fr;gap:40px;}
-    .hero-right{display:none;}
+    .hero-right{display:block;}
     .atlas-show{width:100%;}
     .hero h1{font-size:36px;}
     .stats{padding:60px 20px;}
@@ -301,7 +301,7 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
                         <!-- Slide 2: Atlas s'adapte + module -->
                         <div class="as-slide" id="slide2">
                             <div class="as-msg"><div class="as-avatar user">T</div><div class="as-bubble user">And how do you buy Bitcoin?</div></div>
-                            <div class="as-msg"><div class="as-avatar atlas">A</div><div class="as-bubble atlas">You can buy BTC on an exchange platform like Coinbase or Binance. I'll show you the steps in the next module.</div></div>
+                            <div class="as-msg"><div class="as-avatar atlas">A</div><div class="as-bubble atlas">You can buy BTC on an exchange like Coinbase or Binance. I'll show you the steps in the next module.</div></div>
                             <div class="as-module">
                                 <div class="as-module-icon">&#9654;</div>
                                 <div class="as-module-text">Module: Buy your first crypto</div>
@@ -393,11 +393,29 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
                 <li>Accessible 24/7</li>
             </ul>
         </div>
-        <div class="feat-visual">
-            <div class="feat-visual-inner">
-                <div style="color:#5B21B6;font-weight:600;margin-bottom:16px;">atlas&gt; How does DeFi work?</div>
-                <div style="color:#0F172A;line-height:1.8;">Decentralized finance (DeFi) uses smart contracts to recreate financial services without intermediaries. You can lend, borrow, or trade directly between users.</div>
-                <div style="margin-top:16px;padding:12px;background:rgba(91,33,182,0.08);border-radius:8px;font-size:12px;color:#5B21B6;">Next module: Liquidity Pools &rarr;</div>
+        <div class="feat-visual" style="padding:0;overflow:hidden;background:#1A0A2E;">
+            <div style="width:100%;">
+                <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.08);background:rgba(124,58,237,0.1);">
+                    <div style="width:8px;height:8px;border-radius:50%;background:#10B981;"></div>
+                    <span style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#DDD6FE;">Atlas IA</span>
+                    <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;color:#10B981;letter-spacing:0.08em;">ONLINE</span>
+                </div>
+                <div style="padding:16px 20px;">
+                    <div style="display:flex;gap:10px;margin-bottom:14px;">
+                        <div style="width:28px;height:28px;border-radius:10px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:#DDD6FE;font-size:12px;font-weight:700;flex-shrink:0;">T</div>
+                        <div style="font-size:13px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.06);color:#E2E8F0;border:1px solid rgba(255,255,255,0.08);">How does DeFi work?</div>
+                    </div>
+                    <div style="display:flex;gap:10px;margin-bottom:14px;">
+                        <div style="width:28px;height:28px;border-radius:10px;background:rgba(124,58,237,0.3);display:flex;align-items:center;justify-content:center;color:#C4B5FD;font-size:12px;font-weight:700;flex-shrink:0;">A</div>
+                        <div style="font-size:13px;padding:10px 14px;border-radius:12px;background:rgba(124,58,237,0.12);color:#E8E0FF;border:1px solid rgba(124,58,237,0.2);line-height:1.65;">DeFi uses smart contracts to recreate financial services without intermediaries. You can lend, borrow, or trade directly.</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:10px;margin-bottom:10px;">
+                        <div style="width:24px;height:24px;background:rgba(16,185,129,0.2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#10B981;">&#9654;</div>
+                        <span style="font-size:11px;color:#6EE7B7;font-weight:500;">Next module: Liquidity Pools</span>
+                        <span style="margin-left:auto;font-size:12px;color:#10B981;">&rarr;</span>
+                    </div>
+                    <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:rgba(124,58,237,0.15);border-radius:6px;font-size:10px;color:#C4B5FD;font-weight:500;">&#8593; Level adapted: Intermediate</div>
+                </div>
             </div>
         </div>
     </div>
@@ -561,9 +579,9 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
     <h2>Questions.</h2>
     <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is access really free?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Yes. Right now, all features are free to use. Create an account and start learning at no cost.</p></div></div>
     <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">How does Atlas AI work?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Atlas est un mentor IA qui s'adapte a ton niveau. Il analyse tes reponses et ajuste le contenu en temps reel. Available in French, English and Spanish.</p></div></div>
-    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Which cryptos are available?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>The market shows the top 20 cryptocurrencies by market cap, with charts across 5 different time periods (24h, 7d, 30d, 90d, 1y).</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Which cryptos are available?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>The market shows the top 20 cryptocurrencies by market cap, with charts across 5 time periods (24h, 7d, 30d, 90d, 1y).</p></div></div>
     <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Available outside Canada?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Yes. Worldwide access in 3 languages. The web app works on any device.</p></div></div>
-    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Will there be a paid subscription?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Premium features are planned down the road. But the core experience, learning with Atlas, tracking the market, reading news, will remain accessible.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Will there be a paid subscription?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Premium features are planned. But the core experience, learning with Atlas, tracking the market, reading news, will remain accessible.</p></div></div>
     <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is the app on iPhone and Android?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>The web app works on all devices. App Store and Google Play versions are coming soon.</p></div></div>
 </section>
 

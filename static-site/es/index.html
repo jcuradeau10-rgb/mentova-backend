@@ -217,7 +217,7 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
     .nav-links.open{display:flex;flex-direction:column;position:fixed;top:56px;left:0;right:0;background:#FAF9F6;padding:24px 20px;gap:16px;border-bottom:1px solid #E2E8F0;z-index:99;}
     .hero{padding:120px 20px 80px;}
     .hero-grid{grid-template-columns:1fr;gap:40px;}
-    .hero-right{display:none;}
+    .hero-right{display:block;}
     .atlas-show{width:100%;}
     .hero h1{font-size:36px;}
     .stats{padding:60px 20px;}
@@ -301,7 +301,7 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
                         <!-- Slide 2: Atlas s'adapte + module -->
                         <div class="as-slide" id="slide2">
                             <div class="as-msg"><div class="as-avatar user">T</div><div class="as-bubble user">Y como se compra Bitcoin?</div></div>
-                            <div class="as-msg"><div class="as-avatar atlas">A</div><div class="as-bubble atlas">Puedes comprar BTC en una plataforma de intercambio como Coinbase o Binance. Te muestro los pasos en el siguiente modulo.</div></div>
+                            <div class="as-msg"><div class="as-avatar atlas">A</div><div class="as-bubble atlas">Puedes comprar BTC en una plataforma como Coinbase o Binance. Te muestro los pasos en el siguiente modulo.</div></div>
                             <div class="as-module">
                                 <div class="as-module-icon">&#9654;</div>
                                 <div class="as-module-text">Modulo: Compra tu primera crypto</div>
@@ -311,7 +311,7 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
                         <!-- Slide 3: Question avancee -->
                         <div class="as-slide" id="slide3">
                             <div class="as-msg"><div class="as-avatar user">T</div><div class="as-bubble user">Cual es la diferencia entre PoW y PoS?</div></div>
-                            <div class="as-msg"><div class="as-avatar atlas">A</div><div class="as-bubble atlas">El Proof of Work usa poder de computo para validar bloques. El Proof of Stake usa tus criptos en juego. PoS consume 99% menos energia.</div></div>
+                            <div class="as-msg"><div class="as-avatar atlas">A</div><div class="as-bubble atlas">Proof of Work usa poder de computo para validar bloques. Proof of Stake usa tus criptos en juego. PoS consume 99% menos energia.</div></div>
                             <div class="as-adapt"><span class="as-adapt-icon">&#8593;</span> Nivel adaptado: Intermedio</div>
                         </div>
                         <!-- Slide 4: Quiz -->
@@ -393,11 +393,29 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
                 <li>Accesible 24/7</li>
             </ul>
         </div>
-        <div class="feat-visual">
-            <div class="feat-visual-inner">
-                <div style="color:#5B21B6;font-weight:600;margin-bottom:16px;">atlas&gt; Como funciona DeFi?</div>
-                <div style="color:#0F172A;line-height:1.8;">Las finanzas descentralizadas (DeFi) usan contratos inteligentes para recrear servicios financieros sin intermediarios. Puedes prestar, pedir prestado o intercambiar directamente entre usuarios.</div>
-                <div style="margin-top:16px;padding:12px;background:rgba(91,33,182,0.08);border-radius:8px;font-size:12px;color:#5B21B6;">Siguiente modulo: Liquidity Pools &rarr;</div>
+        <div class="feat-visual" style="padding:0;overflow:hidden;background:#1A0A2E;">
+            <div style="width:100%;">
+                <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.08);background:rgba(124,58,237,0.1);">
+                    <div style="width:8px;height:8px;border-radius:50%;background:#10B981;"></div>
+                    <span style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#DDD6FE;">Atlas IA</span>
+                    <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;color:#10B981;letter-spacing:0.08em;">EN LINEA</span>
+                </div>
+                <div style="padding:16px 20px;">
+                    <div style="display:flex;gap:10px;margin-bottom:14px;">
+                        <div style="width:28px;height:28px;border-radius:10px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:#DDD6FE;font-size:12px;font-weight:700;flex-shrink:0;">T</div>
+                        <div style="font-size:13px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.06);color:#E2E8F0;border:1px solid rgba(255,255,255,0.08);">Como funciona DeFi?</div>
+                    </div>
+                    <div style="display:flex;gap:10px;margin-bottom:14px;">
+                        <div style="width:28px;height:28px;border-radius:10px;background:rgba(124,58,237,0.3);display:flex;align-items:center;justify-content:center;color:#C4B5FD;font-size:12px;font-weight:700;flex-shrink:0;">A</div>
+                        <div style="font-size:13px;padding:10px 14px;border-radius:12px;background:rgba(124,58,237,0.12);color:#E8E0FF;border:1px solid rgba(124,58,237,0.2);line-height:1.65;">DeFi usa contratos inteligentes para recrear servicios financieros sin intermediarios. Puedes prestar, pedir prestado o intercambiar directamente.</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:10px;margin-bottom:10px;">
+                        <div style="width:24px;height:24px;background:rgba(16,185,129,0.2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#10B981;">&#9654;</div>
+                        <span style="font-size:11px;color:#6EE7B7;font-weight:500;">Siguiente modulo: Liquidity Pools</span>
+                        <span style="margin-left:auto;font-size:12px;color:#10B981;">&rarr;</span>
+                    </div>
+                    <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:rgba(124,58,237,0.15);border-radius:6px;font-size:10px;color:#C4B5FD;font-weight:500;">&#8593; Nivel adaptado: Intermedio</div>
+                </div>
             </div>
         </div>
     </div>
@@ -435,7 +453,7 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
             <h3>Noticias crypto, traducidas y analizadas.</h3>
             <p>Las mejores fuentes mundiales (CoinDesk, CoinTelegraph, Decrypt), traducidas y resumidas en tu idioma. Cada articulo incluye un analisis de impacto.</p>
             <ul class="feat-list">
-                <li>Articulos de 3 fuentes internacionales principales</li>
+                <li>Articulos de 3 fuentes internacionales</li>
                 <li>Traducidos automaticamente en FR, EN, ES</li>
                 <li>Analisis de impacto: alcista, bajista o neutro</li>
                 <li>Categorias: macro, regulacion, tecnologia, seguridad</li>
@@ -561,10 +579,10 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
     <h2>Questions.</h2>
     <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">El acceso es realmente gratis?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Si. Ahora mismo, todas las funcionalidades son accesibles gratis. Crea una cuenta y empieza a aprender sin costo.</p></div></div>
     <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Como funciona Atlas IA?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Atlas est un mentor IA qui s'adapte a ton niveau. Il analyse tes reponses et ajuste le contenu en temps reel. Disponible en frances, ingles y espanol.</p></div></div>
-    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Que criptos estan disponibles?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>El mercado muestra las 20 principales criptomonedas por capitalizacion, con graficos en 5 periodos diferentes (24h, 7d, 30d, 90d, 1a).</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Que criptos estan disponibles?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>El mercado muestra las 20 principales criptomonedas por capitalizacion, con graficos en 5 periodos (24h, 7d, 30d, 90d, 1a).</p></div></div>
     <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Disponible fuera de Canada?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Si. Acceso mundial en 3 idiomas. La app web funciona en cualquier dispositivo.</p></div></div>
-    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Habra una suscripcion de pago?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Funciones premium estan previstas a futuro. Pero el nucleo de la experiencia, aprender con Atlas, seguir el mercado, leer noticias, seguira siendo accesible.</p></div></div>
-    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">La app esta en iPhone y Android?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>La app web funciona en todos los dispositivos. Las versiones de App Store y Google Play llegaran pronto.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Habra una suscripcion de pago?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Funciones premium estan previstas a futuro. Pero el nucleo, aprender con Atlas, seguir el mercado, leer noticias, seguira siendo accesible.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">La app esta en iPhone y Android?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>La app web funciona en todos los dispositivos. Las versiones App Store y Google Play llegaran pronto.</p></div></div>
 </section>
 
 <!-- CTA FINAL -->
