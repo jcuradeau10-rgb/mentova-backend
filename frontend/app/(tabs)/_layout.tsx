@@ -1,13 +1,9 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { View, StyleSheet, Platform, Animated, TouchableOpacity, Text, Pressable, PanResponder, Dimensions, useWindowDimensions } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, StyleSheet, Platform, Text } from 'react-native';
 import { useAuthStore } from '../../store/authStore';
-import { useRouter, usePathname } from 'expo-router';
 import { useTranslation } from '../../store/languageStore';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Haptics from 'expo-haptics';
 import InstallPWAPrompt from '../../components/InstallPWAPrompt';
 
 interface TabIconProps {
@@ -498,11 +494,8 @@ export default function TabLayout() {
   const pathname = usePathname();
   const { t, language, isLoaded } = useTranslation();
   
-  const isVip = user?.is_vip || false;
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
-  const isPro = user?.is_professional || false;
 
-  // Wait for language to be loaded
   if (!isLoaded) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -510,64 +503,6 @@ export default function TabLayout() {
       </View>
     );
   }
-
-  // Define tab labels with translations - these will update when language changes
-  const tabLabels = {
-    home: t('nav.home'),
-    market: t('nav.market'),
-    news: t('nav.news'),
-    community: t('nav.community'),
-    learn: t('nav.learn'),
-    ai: t('nav.ai'),
-    profile: t('nav.profile'),
-  };
-
-  // More menu state
-  const [showMoreMenu, setShowMoreMenu] = useState(false);
-  const moreMenuAnim = useRef(new Animated.Value(0)).current;
-  const backdropAnim = useRef(new Animated.Value(0)).current;
-  const itemAnims = useRef(Array.from({ length: 8 }, () => new Animated.Value(0))).current;
-
-  const toggleMoreMenu = () => {
-    if (showMoreMenu) {
-      closeMoreMenu();
-    } else {
-      if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      setShowMoreMenu(true);
-      Animated.parallel([
-        Animated.spring(moreMenuAnim, { toValue: 1, friction: 6, tension: 120, useNativeDriver: true }),
-        Animated.timing(backdropAnim, { toValue: 1, duration: 250, useNativeDriver: true }),
-      ]).start();
-      // Staggered item animations
-      itemAnims.forEach((anim, i) => {
-        anim.setValue(0);
-        Animated.spring(anim, {
-          toValue: 1,
-          friction: 5,
-          tension: 80,
-          useNativeDriver: true,
-          delay: i * 60,
-        }).start();
-      });
-    }
-  };
-
-  const closeMoreMenu = () => {
-    Animated.parallel([
-      Animated.timing(moreMenuAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
-      Animated.timing(backdropAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
-    ]).start(() => setShowMoreMenu(false));
-    itemAnims.forEach(anim => anim.setValue(0));
-  };
-
-  const navigateMore = (path: string) => {
-    if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    closeMoreMenu();
-    router.push(path as any);
-  };
-
-  const { width: screenWidth } = useWindowDimensions();
-  const isDesktop = false; // Disabled - using CSS phone frame instead
 
   return (
     <View style={styles.container}>
@@ -583,7 +518,7 @@ export default function TabLayout() {
           tabBarShowLabel: true,
         }}
       >
-        {/* LEFT SIDE */}
+        {/* ── 1. ACCUEIL ── */}
         <Tabs.Screen
           name="index"
           options={{
@@ -598,57 +533,8 @@ export default function TabLayout() {
             ),
           }}
         />
-        <Tabs.Screen
-          name="mentors"
-          options={{
-            title: t('nav.mentors') || 'Mentors',
-            tabBarLabel: ({ focused }) => (
-              <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{t('nav.mentors') || 'Mentors'}</Text>
-            ),
-            tabBarIcon: ({ focused }) => (
-              <View style={[styles.tabIconWrap, focused && styles.tabIconActive]}>
-                <Ionicons name={focused ? 'people' : 'people-outline'} size={22} color={focused ? '#FFF' : '#5A5A6E'} />
-              </View>
-            ),
-          }}
-        />
 
-        {/* CENTER - More button placeholder tab */}
-        <Tabs.Screen
-          name="market"
-          options={{
-            title: 'More',
-            tabBarLabel: () => null,
-            tabBarIcon: () => null,
-            tabBarButton: () => (
-              <View style={styles.centerBtnSpace}>
-                <TouchableOpacity
-                  style={styles.centerBtn}
-                  onPress={toggleMoreMenu}
-                  activeOpacity={0.8}
-                  data-testid="center-more-btn"
-                >
-                  <LinearGradient
-                    colors={showMoreMenu ? ['#5B21B6', '#7C3AED'] : ['#7C3AED', '#A855F7']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.centerBtnGradient}
-                  >
-                    <Animated.View style={{
-                      transform: [{
-                        rotate: moreMenuAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '135deg'] })
-                      }]
-                    }}>
-                      <Ionicons name="add" size={28} color="#FFF" />
-                    </Animated.View>
-                  </LinearGradient>
-                </TouchableOpacity>
-              </View>
-            ),
-          }}
-        />
-
-        {/* RIGHT SIDE */}
+        {/* ── 2. ATLAS AI ── */}
         <Tabs.Screen
           name="learn"
           options={{
@@ -663,6 +549,40 @@ export default function TabLayout() {
             ),
           }}
         />
+
+        {/* ── 3. MARCHÉ ── */}
+        <Tabs.Screen
+          name="market"
+          options={{
+            title: t('nav.market'),
+            tabBarLabel: ({ focused }) => (
+              <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{t('nav.market')}</Text>
+            ),
+            tabBarIcon: ({ focused }) => (
+              <View style={[styles.tabIconWrap, focused && styles.tabIconActive]}>
+                <Ionicons name={focused ? 'trending-up' : 'trending-up-outline'} size={22} color={focused ? '#FFF' : '#5A5A6E'} />
+              </View>
+            ),
+          }}
+        />
+
+        {/* ── 4. NEWS ── */}
+        <Tabs.Screen
+          name="news"
+          options={{
+            title: t('nav.news'),
+            tabBarLabel: ({ focused }) => (
+              <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{t('nav.news')}</Text>
+            ),
+            tabBarIcon: ({ focused }) => (
+              <View style={[styles.tabIconWrap, focused && styles.tabIconActive]}>
+                <Ionicons name={focused ? 'newspaper' : 'newspaper-outline'} size={22} color={focused ? '#FFF' : '#5A5A6E'} />
+              </View>
+            ),
+          }}
+        />
+
+        {/* ── 5. PROFIL ── */}
         <Tabs.Screen
           name="profile"
           options={{
@@ -678,77 +598,11 @@ export default function TabLayout() {
           }}
         />
 
-        {/* Hidden tabs */}
-        <Tabs.Screen name="news" options={{ href: null }} />
+        {/* ── HIDDEN TABS (code kept, not visible in tab bar) ── */}
         <Tabs.Screen name="community" options={{ href: null }} />
         <Tabs.Screen name="ai" options={{ href: null }} />
+        <Tabs.Screen name="mentors" options={{ href: null }} />
       </Tabs>
-
-      {/* Premium More Menu Overlay */}
-      {showMoreMenu && (
-        <>
-          <Animated.View style={[styles.moreBackdrop, { opacity: backdropAnim }]}>
-            <Pressable style={StyleSheet.absoluteFill} onPress={closeMoreMenu} />
-          </Animated.View>
-          <Animated.View style={[
-            styles.moreMenuContainer,
-            {
-              opacity: moreMenuAnim,
-              transform: [
-                { translateY: moreMenuAnim.interpolate({ inputRange: [0, 1], outputRange: [60, 0] }) },
-              ],
-            },
-          ]}>
-            {/* Menu Header */}
-            <View style={styles.moreMenuHeader}>
-              <View style={styles.moreMenuHandle} />
-              <Text style={styles.moreMenuTitle}>Menu</Text>
-            </View>
-
-            {/* Menu Grid */}
-            <View style={styles.moreGrid}>
-              {[
-                { icon: 'chatbubble-ellipses', label: 'Messages', gradient: ['#7C3AED', '#A855F7'] as [string, string], path: '/messages', testId: 'more-messages' },
-                { icon: 'newspaper', label: t('nav.news'), gradient: ['#2563EB', '#3B82F6'] as [string, string], path: '/(tabs)/news', testId: 'more-news' },
-                { icon: 'chatbubbles', label: 'Forum', gradient: ['#DB2777', '#EC4899'] as [string, string], path: '/(tabs)/community', testId: 'more-forum' },
-                { icon: 'school', label: t('nav.learn'), gradient: ['#D97706', '#F59E0B'] as [string, string], path: '/(tabs)/learn', testId: 'more-learn' },
-                { icon: 'storefront', label: 'Shop', gradient: ['#7C3AED', '#A855F7'] as [string, string], path: '/marketplace', testId: 'more-marketplace' },
-                ...(isVip ? [{ icon: 'diamond', label: 'VIP Hub', gradient: ['#B8860B', '#FFD700'] as [string, string], path: '/vip/hub', testId: 'more-vip' }] : []),
-                ...(isPro ? [{ icon: 'briefcase', label: 'Mentor', gradient: ['#059669', '#10B981'] as [string, string], path: '/mentor-dashboard', testId: 'more-mentor' }] : []),
-                ...(isAdmin ? [{ icon: 'shield-checkmark', label: 'Admin', gradient: ['#DC2626', '#EF4444'] as [string, string], path: '/admin', testId: 'more-admin' }] : []),
-              ].map((item, index) => (
-                <Animated.View
-                  key={item.testId}
-                  style={{
-                    opacity: itemAnims[index] || new Animated.Value(1),
-                    transform: [
-                      { scale: (itemAnims[index] || new Animated.Value(1)).interpolate({ inputRange: [0, 1], outputRange: [0.3, 1] }) },
-                      { translateY: (itemAnims[index] || new Animated.Value(1)).interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) },
-                    ],
-                  }}
-                >
-                  <TouchableOpacity
-                    style={styles.moreGridItem}
-                    onPress={() => navigateMore(item.path)}
-                    testID={item.testId}
-                    activeOpacity={0.7}
-                  >
-                    <LinearGradient
-                      colors={item.gradient}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={styles.moreGridIconGradient}
-                    >
-                      <Ionicons name={item.icon as any} size={24} color="#FFF" />
-                    </LinearGradient>
-                    <Text style={styles.moreGridLabel}>{item.label}</Text>
-                  </TouchableOpacity>
-                </Animated.View>
-              ))}
-            </View>
-          </Animated.View>
-        </>
-      )}
     </View>
   );
 }
@@ -760,17 +614,16 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     backgroundColor: '#06060F',
-    borderTopWidth: 0,
-    height: Platform.OS === 'ios' ? 84 : 64,
-    paddingTop: 0,
-    paddingBottom: Platform.OS === 'ios' ? 22 : 6,
-    paddingHorizontal: 4,
-    elevation: 0,
-    borderTopColor: 'rgba(124, 58, 237, 0.06)',
     borderTopWidth: 1,
+    borderTopColor: 'rgba(124, 58, 237, 0.08)',
+    height: Platform.OS === 'ios' ? 84 : 64,
+    paddingTop: 4,
+    paddingBottom: Platform.OS === 'ios' ? 22 : 6,
+    paddingHorizontal: 8,
+    elevation: 0,
   },
   tabBarItem: {
-    paddingTop: 6,
+    paddingTop: 4,
     paddingBottom: 0,
   },
   tabLabel: {
@@ -793,183 +646,10 @@ const styles = StyleSheet.create({
   tabIconActive: {
     backgroundColor: 'rgba(124, 58, 237, 0.25)',
   },
-
-  // Center More Button
-  centerBtnSpace: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: 0,
-  },
-  centerBtn: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    marginTop: -14,
-    ...(Platform.OS === 'web' ? {
-      boxShadow: '0px 4px 16px rgba(124, 58, 237, 0.5)',
-    } : {}),
-  },
-  centerBtnGradient: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 3,
-    borderColor: '#06060F',
-  },
-
-  // More Menu - Premium Design
-  moreBackdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    zIndex: 998,
-  },
-  moreMenuContainer: {
-    position: 'absolute',
-    bottom: Platform.OS === 'ios' ? 100 : 80,
-    left: 20,
-    right: 20,
-    backgroundColor: 'rgba(12, 12, 32, 0.95)',
-    borderRadius: 24,
-    paddingTop: 16,
-    paddingBottom: 24,
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(124, 58, 237, 0.2)',
-    zIndex: 999,
-    ...(Platform.OS === 'web' ? {
-      boxShadow: '0px 0px 40px rgba(124, 58, 237, 0.15), 0px 20px 60px rgba(0,0,0,0.5)',
-    } : {}),
-  },
-  moreMenuHeader: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  moreMenuHandle: {
-    width: 36,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: 'rgba(124, 58, 237, 0.4)',
-    marginBottom: 12,
-  },
-  moreMenuTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: 'rgba(255,255,255,0.5)',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-  },
-  moreGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: 14,
-  },
-  moreGridItem: {
-    alignItems: 'center',
-    width: 72,
-    gap: 8,
-  },
-  moreGridIconGradient: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  moreGridLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#D0D0E0',
-    letterSpacing: 0.3,
-  },
-
-  // Legacy (unused but kept for reference)
-  tabIconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tabIconBgActive: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-
-
-const desktopStyles = StyleSheet.create({
-  sidebar: {
-    width: 220,
-    backgroundColor: '#0a0a14',
-    borderRightWidth: 1,
-    borderRightColor: 'rgba(255,255,255,0.06)',
-    paddingTop: 20,
-    paddingBottom: 20,
-  },
-  sidebarHeader: {
-    paddingHorizontal: 20,
-    paddingBottom: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.06)',
-    marginBottom: 12,
-  },
-  logo: {
-    fontSize: 22,
-    fontWeight: '800' as const,
-    color: '#FFF',
-  },
-  sidebarNav: {
-    paddingHorizontal: 10,
-    gap: 4,
-  },
-  sidebarItem: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    gap: 12,
-    paddingVertical: 11,
-    paddingHorizontal: 14,
-    borderRadius: 10,
-  },
-  sidebarItemActive: {
-    backgroundColor: 'rgba(124,58,237,0.15)',
-  },
-  sidebarLabel: {
-    fontSize: 14,
-    color: '#888',
-    fontWeight: '500' as const,
-  },
-  sidebarLabelActive: {
-    color: '#FFF',
-    fontWeight: '700' as const,
-  },
-  sidebarVip: {
-    paddingHorizontal: 16,
-    marginTop: 'auto' as any,
-    paddingTop: 16,
-  },
-  sidebarVipGrad: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-    gap: 8,
-    paddingVertical: 10,
-    borderRadius: 10,
-  },
-  sidebarVipText: {
-    fontSize: 13,
-    fontWeight: '700' as const,
-    color: '#000',
-  },
-  mainContent: {
-    maxWidth: 600,
-    marginHorizontal: 'auto' as any,
+  tabBarLabel: {
+    fontSize: 10,
+    fontWeight: '500',
+    color: '#4A4A5E',
+    marginTop: 2,
   },
 });
