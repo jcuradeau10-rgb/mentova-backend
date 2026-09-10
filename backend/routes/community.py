@@ -1,6 +1,7 @@
 """Community routes - Forum posts, comments, likes, bookmarks, reports, leaderboard."""
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+import base64
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Body
 from fastapi.security import HTTPBearer

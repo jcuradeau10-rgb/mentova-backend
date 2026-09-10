@@ -1,7 +1,7 @@
 """Admin routes - User management, moderation, stats."""
 import os
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Body
 from fastapi.security import HTTPBearer
@@ -243,7 +243,7 @@ async def admin_set_pro(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    if badge_level not in [PRO_BADGE_BASIC, PRO_BADGE_VERIFIED, PRO_BADGE_PREMIUM]:
+    if badge_level not in ["basic", "verified", "premium"]:
         raise HTTPException(status_code=400, detail="Niveau de badge invalide")
     
     if is_pro:
