@@ -44,12 +44,63 @@ nav{padding:20px 40px;display:flex;align-items:center;justify-content:space-betw
 .hero-cta{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#2E1065;padding:16px 36px;border-radius:12px;font-weight:700;font-size:16px;transition:all 0.2s;}
 .hero-cta:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,0.3);}
 .hero-right{position:relative;z-index:2;}
-.hero-terminal{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:16px;overflow:hidden;backdrop-filter:blur(8px);}
-.ht-bar{display:flex;align-items:center;gap:6px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.08);}
-.ht-dot{width:8px;height:8px;border-radius:50%;}
-.ht-name{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:0.08em;}
-.ht-body{padding:20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2;color:#C4B5FD;}
-.ht-body .g{color:#10B981;} .ht-body .w{color:#fff;} .ht-body .d{color:rgba(255,255,255,0.35);}
+
+/* ATLAS SHOWCASE - Animated Learning Journey */
+.atlas-show{background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.1);border-radius:20px;overflow:hidden;backdrop-filter:blur(12px);width:440px;}
+.as-header{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.08);background:rgba(124,58,237,0.08);}
+.as-dots{display:flex;gap:5px;}
+.as-dot{width:8px;height:8px;border-radius:50%;}
+.as-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#DDD6FE;letter-spacing:0.02em;}
+.as-status{margin-left:auto;display:flex;align-items:center;gap:6px;}
+.as-status-dot{width:6px;height:6px;border-radius:50%;background:#10B981;animation:pulse-dot 2s infinite;}
+.as-status-text{font-family:'JetBrains Mono',monospace;font-size:9px;color:#10B981;letter-spacing:0.08em;text-transform:uppercase;}
+@keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+/* Level bar */
+.as-level{display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.15);}
+.as-level-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:#94A3B8;text-transform:uppercase;letter-spacing:0.1em;white-space:nowrap;}
+.as-level-bar{flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;}
+.as-level-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#7C3AED,#A78BFA);animation:level-grow 15s infinite;width:35%;}
+@keyframes level-grow{0%,18%{width:35%;}20%,38%{width:35%;}40%,58%{width:52%;}60%,78%{width:52%;}80%,100%{width:65%;}}
+.as-level-pct{font-family:'JetBrains Mono',monospace;font-size:10px;color:#A78BFA;font-weight:600;min-width:28px;text-align:right;}
+
+/* Chat area */
+.as-chat{padding:16px 20px;min-height:260px;position:relative;overflow:hidden;}
+.as-slides{position:relative;height:240px;}
+.as-slide{position:absolute;top:0;left:0;right:0;opacity:0;transform:translateY(12px);transition:opacity 0.6s ease, transform 0.6s ease;pointer-events:none;}
+.as-slide.active{opacity:1;transform:translateY(0);pointer-events:auto;}
+
+/* Messages */
+.as-msg{display:flex;gap:10px;margin-bottom:14px;}
+.as-avatar{width:28px;height:28px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.as-avatar.user{background:rgba(255,255,255,0.1);color:#DDD6FE;}
+.as-avatar.atlas{background:rgba(124,58,237,0.3);color:#C4B5FD;}
+.as-bubble{font-size:13px;line-height:1.65;padding:10px 14px;border-radius:12px;max-width:320px;}
+.as-bubble.user{background:rgba(255,255,255,0.06);color:#E2E8F0;border:1px solid rgba(255,255,255,0.08);}
+.as-bubble.atlas{background:rgba(124,58,237,0.12);color:#E8E0FF;border:1px solid rgba(124,58,237,0.2);}
+
+/* Module suggestion */
+.as-module{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:10px;margin-top:8px;}
+.as-module-icon{width:24px;height:24px;background:rgba(16,185,129,0.2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#10B981;}
+.as-module-text{font-size:11px;color:#6EE7B7;font-weight:500;}
+.as-module-arrow{margin-left:auto;font-size:12px;color:#10B981;}
+
+/* Quiz card */
+.as-quiz{padding:14px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:10px;margin-top:10px;}
+.as-quiz-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:#F59E0B;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;}
+.as-quiz-q{font-size:13px;color:#FDE68A;font-weight:600;margin-bottom:10px;}
+.as-quiz-opts{display:flex;flex-direction:column;gap:6px;}
+.as-quiz-opt{font-size:12px;padding:7px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);color:#E2E8F0;background:rgba(0,0,0,0.15);transition:all 0.2s;}
+.as-quiz-opt.correct{border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.1);color:#6EE7B7;}
+
+/* Adapt badge */
+.as-adapt{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:rgba(124,58,237,0.15);border-radius:6px;margin-top:8px;font-size:10px;color:#C4B5FD;font-weight:500;}
+.as-adapt-icon{font-size:12px;}
+
+/* Footer bar */
+.as-footer{display:flex;align-items:center;gap:8px;padding:12px 20px;border-top:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.15);}
+.as-input{flex:1;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 14px;}
+.as-send{width:32px;height:32px;border-radius:8px;background:rgba(124,58,237,0.3);display:flex;align-items:center;justify-content:center;color:#C4B5FD;font-size:14px;}
 
 /* STATS BANNER */
 .stats{padding:80px 40px;max-width:1200px;margin:0 auto;}
@@ -167,6 +218,7 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
     .hero{padding:120px 20px 80px;}
     .hero-grid{grid-template-columns:1fr;gap:40px;}
     .hero-right{display:none;}
+    .atlas-show{width:100%;}
     .hero h1{font-size:36px;}
     .stats{padding:60px 20px;}
     .stats-grid{grid-template-columns:repeat(2,1fr);gap:16px;}
@@ -220,22 +272,76 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
             <a href="https://app.mentova-academy.com" class="hero-cta" data-testid="hero-cta">Get started for free &rarr;</a>
         </div>
         <div class="hero-right">
-            <div class="hero-terminal">
-                <div class="ht-bar">
-                    <div class="ht-dot" style="background:#EF4444"></div>
-                    <div class="ht-dot" style="background:#F59E0B"></div>
-                    <div class="ht-dot" style="background:#22C55E"></div>
-                    <div class="ht-name">ATLAS IA</div>
+            <div class="atlas-show">
+                <div class="as-header">
+                    <div class="as-dots">
+                        <div class="as-dot" style="background:#EF4444"></div>
+                        <div class="as-dot" style="background:#F59E0B"></div>
+                        <div class="as-dot" style="background:#22C55E"></div>
+                    </div>
+                    <div class="as-title">Atlas IA</div>
+                    <div class="as-status">
+                        <div class="as-status-dot"></div>
+                        <div class="as-status-text">Online</div>
+                    </div>
                 </div>
-                <div class="ht-body">
-                    <div><span class="g">atlas&gt;</span> <span class="d">What is staking?</span></div>
-                    <div>&nbsp;</div>
-                    <div><span class="w">Staking is like putting money</span></div>
-                    <div><span class="w">in a savings account. You lock your</span></div>
-                    <div><span class="w">crypto to help the network, and in</span></div>
-                    <div><span class="w">return you receive rewards.</span></div>
-                    <div>&nbsp;</div>
-                    <div><span class="g">&#10003;</span> <span class="d">Exemple : 32 ETH staked = ~4% / an</span></div>
+                <div class="as-level">
+                    <div class="as-level-label">Level</div>
+                    <div class="as-level-bar"><div class="as-level-fill" id="levelFill"></div></div>
+                    <div class="as-level-pct" id="levelPct">35%</div>
+                </div>
+                <div class="as-chat">
+                    <div class="as-slides">
+                        <!-- Slide 1: Question debutant -->
+                        <div class="as-slide active" id="slide1">
+                            <div class="as-msg"><div class="as-avatar user">T</div><div class="as-bubble user">What exactly is Bitcoin?</div></div>
+                            <div class="as-msg"><div class="as-avatar atlas">A</div><div class="as-bubble atlas">Bitcoin is a decentralized digital currency. No bank, no middleman. Transactions are verified by a worldwide network of computers.</div></div>
+                            <div class="as-adapt"><span class="as-adapt-icon">&#9881;</span> Level detected: Beginner</div>
+                        </div>
+                        <!-- Slide 2: Atlas s'adapte + module -->
+                        <div class="as-slide" id="slide2">
+                            <div class="as-msg"><div class="as-avatar user">T</div><div class="as-bubble user">And how do you buy Bitcoin?</div></div>
+                            <div class="as-msg"><div class="as-avatar atlas">A</div><div class="as-bubble atlas">You can buy BTC on an exchange platform like Coinbase or Binance. I'll show you the steps in the next module.</div></div>
+                            <div class="as-module">
+                                <div class="as-module-icon">&#9654;</div>
+                                <div class="as-module-text">Module: Buy your first crypto</div>
+                                <div class="as-module-arrow">&rarr;</div>
+                            </div>
+                        </div>
+                        <!-- Slide 3: Question avancee -->
+                        <div class="as-slide" id="slide3">
+                            <div class="as-msg"><div class="as-avatar user">T</div><div class="as-bubble user">What is the difference between PoW and PoS?</div></div>
+                            <div class="as-msg"><div class="as-avatar atlas">A</div><div class="as-bubble atlas">Proof of Work uses computing power to validate blocks. Proof of Stake uses your staked crypto. PoS consumes 99% less energy.</div></div>
+                            <div class="as-adapt"><span class="as-adapt-icon">&#8593;</span> Level adapted: Intermediate</div>
+                        </div>
+                        <!-- Slide 4: Quiz -->
+                        <div class="as-slide" id="slide4">
+                            <div class="as-quiz">
+                                <div class="as-quiz-label">Quick quiz</div>
+                                <div class="as-quiz-q">Which mechanism does Ethereum use?</div>
+                                <div class="as-quiz-opts">
+                                    <div class="as-quiz-opt">A. Proof of Work</div>
+                                    <div class="as-quiz-opt correct">B. Proof of Stake &#10003;</div>
+                                    <div class="as-quiz-opt">C. Delegated PoS</div>
+                                </div>
+                            </div>
+                            <div class="as-adapt" style="margin-top:12px;"><span class="as-adapt-icon">&#9733;</span> +15 XP, progress updated</div>
+                        </div>
+                        <!-- Slide 5: Advanced + next module -->
+                        <div class="as-slide" id="slide5">
+                            <div class="as-msg"><div class="as-avatar user">T</div><div class="as-bubble user">Explain liquidity pools in DeFi</div></div>
+                            <div class="as-msg"><div class="as-avatar atlas">A</div><div class="as-bubble atlas">Liquidity pools are reserves of tokens locked in a smart contract. Users provide the liquidity and earn fees on every trade.</div></div>
+                            <div class="as-module">
+                                <div class="as-module-icon">&#9654;</div>
+                                <div class="as-module-text">Next module: Yield Farming</div>
+                                <div class="as-module-arrow">&rarr;</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="as-footer">
+                    <div class="as-input">Ask Atlas your question...</div>
+                    <div class="as-send">&rarr;</div>
                 </div>
             </div>
         </div>
@@ -257,7 +363,7 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
         </div>
         <div class="stat-card">
             <div class="stat-num">24/7</div>
-            <div class="stat-label">Atlas AI</div>
+            <div class="stat-label">Atlas IA</div>
             <div class="stat-sub">Your mentor, always available</div>
         </div>
         <div class="stat-card">
@@ -327,7 +433,7 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
         <div>
             <div class="feat-tag" style="background:#EFF6FF;color:#2563EB;">News</div>
             <h3>Crypto news, translated and analyzed.</h3>
-            <p>Top global sources (CoinDesk, CoinTelegraph, Decrypt), translated and summarized in your language. Each article includes an impact analysis to know if it is positive or negative for the market.</p>
+            <p>Top global sources (CoinDesk, CoinTelegraph, Decrypt), translated and summarized in your language. Each article includes an impact analysis.</p>
             <ul class="feat-list">
                 <li>Articles from 3 major international sources</li>
                 <li>Automatically translated in FR, EN, ES</li>
@@ -445,7 +551,7 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
             <div class="road-dot" style="background:#E2E8F0;box-shadow:0 0 0 4px #F1F5F9;"></div>
             <h3>Advanced tools</h3>
             <p>On-chain tracking, liquidity heatmaps, automated alerts.</p>
-            <div class="when">T1 2027, planned</div>
+            <div class="when">T1 2027, planifie</div>
         </div>
     </div>
 </section>
@@ -454,7 +560,7 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
 <section class="faq" id="faq" data-testid="faq-section">
     <h2>Questions.</h2>
     <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is access really free?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Yes. Right now, all features are free to use. Create an account and start learning at no cost.</p></div></div>
-    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Comment fonctionne Atlas AI ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Atlas est un mentor IA qui s'adapte a ton niveau. Il analyse tes reponses et ajuste le contenu en temps reel. Available in French, English and Spanish.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">How does Atlas AI work?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Atlas est un mentor IA qui s'adapte a ton niveau. Il analyse tes reponses et ajuste le contenu en temps reel. Available in French, English and Spanish.</p></div></div>
     <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Which cryptos are available?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>The market shows the top 20 cryptocurrencies by market cap, with charts across 5 different time periods (24h, 7d, 30d, 90d, 1y).</p></div></div>
     <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Available outside Canada?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Yes. Worldwide access in 3 languages. The web app works on any device.</p></div></div>
     <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Will there be a paid subscription?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="faq-a"><p>Premium features are planned down the road. But the core experience, learning with Atlas, tracking the market, reading news, will remain accessible.</p></div></div>
@@ -464,7 +570,7 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
 <!-- CTA FINAL -->
 <section class="cta-final" data-testid="final-cta">
     <h2>Ready to start?</h2>
-    <p>Create your account en 30 secondes. Aucune carte de credit requise.</p>
+    <p>Create your account in 30 seconds. No credit card required.</p>
     <a href="https://app.mentova-academy.com" data-testid="final-cta-btn">Open Mentova &rarr;</a>
 </section>
 
@@ -501,5 +607,22 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
     </div>
 </footer>
 
+<script>
+(function(){
+    const slides=document.querySelectorAll('.as-slide');
+    const lvlFill=document.getElementById('levelFill');
+    const lvlPct=document.getElementById('levelPct');
+    const levels=[35,35,52,52,65];
+    let cur=0;
+    if(slides.length===0)return;
+    setInterval(()=>{
+        slides[cur].classList.remove('active');
+        cur=(cur+1)%slides.length;
+        slides[cur].classList.add('active');
+        if(lvlFill){lvlFill.style.width=levels[cur]+'%';}
+        if(lvlPct){lvlPct.textContent=levels[cur]+'%';}
+    },4000);
+})();
+</script>
 </body>
 </html>

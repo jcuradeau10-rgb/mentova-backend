@@ -44,12 +44,63 @@ nav{padding:20px 40px;display:flex;align-items:center;justify-content:space-betw
 .hero-cta{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#2E1065;padding:16px 36px;border-radius:12px;font-weight:700;font-size:16px;transition:all 0.2s;}
 .hero-cta:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,0.3);}
 .hero-right{position:relative;z-index:2;}
-.hero-terminal{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:16px;overflow:hidden;backdrop-filter:blur(8px);}
-.ht-bar{display:flex;align-items:center;gap:6px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.08);}
-.ht-dot{width:8px;height:8px;border-radius:50%;}
-.ht-name{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:0.08em;}
-.ht-body{padding:20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2;color:#C4B5FD;}
-.ht-body .g{color:#10B981;} .ht-body .w{color:#fff;} .ht-body .d{color:rgba(255,255,255,0.35);}
+
+/* ATLAS SHOWCASE - Animated Learning Journey */
+.atlas-show{background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.1);border-radius:20px;overflow:hidden;backdrop-filter:blur(12px);width:440px;}
+.as-header{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.08);background:rgba(124,58,237,0.08);}
+.as-dots{display:flex;gap:5px;}
+.as-dot{width:8px;height:8px;border-radius:50%;}
+.as-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#DDD6FE;letter-spacing:0.02em;}
+.as-status{margin-left:auto;display:flex;align-items:center;gap:6px;}
+.as-status-dot{width:6px;height:6px;border-radius:50%;background:#10B981;animation:pulse-dot 2s infinite;}
+.as-status-text{font-family:'JetBrains Mono',monospace;font-size:9px;color:#10B981;letter-spacing:0.08em;text-transform:uppercase;}
+@keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+/* Level bar */
+.as-level{display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.15);}
+.as-level-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:#94A3B8;text-transform:uppercase;letter-spacing:0.1em;white-space:nowrap;}
+.as-level-bar{flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;}
+.as-level-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#7C3AED,#A78BFA);animation:level-grow 15s infinite;width:35%;}
+@keyframes level-grow{0%,18%{width:35%;}20%,38%{width:35%;}40%,58%{width:52%;}60%,78%{width:52%;}80%,100%{width:65%;}}
+.as-level-pct{font-family:'JetBrains Mono',monospace;font-size:10px;color:#A78BFA;font-weight:600;min-width:28px;text-align:right;}
+
+/* Chat area */
+.as-chat{padding:16px 20px;min-height:260px;position:relative;overflow:hidden;}
+.as-slides{position:relative;height:240px;}
+.as-slide{position:absolute;top:0;left:0;right:0;opacity:0;transform:translateY(12px);transition:opacity 0.6s ease, transform 0.6s ease;pointer-events:none;}
+.as-slide.active{opacity:1;transform:translateY(0);pointer-events:auto;}
+
+/* Messages */
+.as-msg{display:flex;gap:10px;margin-bottom:14px;}
+.as-avatar{width:28px;height:28px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.as-avatar.user{background:rgba(255,255,255,0.1);color:#DDD6FE;}
+.as-avatar.atlas{background:rgba(124,58,237,0.3);color:#C4B5FD;}
+.as-bubble{font-size:13px;line-height:1.65;padding:10px 14px;border-radius:12px;max-width:320px;}
+.as-bubble.user{background:rgba(255,255,255,0.06);color:#E2E8F0;border:1px solid rgba(255,255,255,0.08);}
+.as-bubble.atlas{background:rgba(124,58,237,0.12);color:#E8E0FF;border:1px solid rgba(124,58,237,0.2);}
+
+/* Module suggestion */
+.as-module{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:10px;margin-top:8px;}
+.as-module-icon{width:24px;height:24px;background:rgba(16,185,129,0.2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#10B981;}
+.as-module-text{font-size:11px;color:#6EE7B7;font-weight:500;}
+.as-module-arrow{margin-left:auto;font-size:12px;color:#10B981;}
+
+/* Quiz card */
+.as-quiz{padding:14px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:10px;margin-top:10px;}
+.as-quiz-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:#F59E0B;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;}
+.as-quiz-q{font-size:13px;color:#FDE68A;font-weight:600;margin-bottom:10px;}
+.as-quiz-opts{display:flex;flex-direction:column;gap:6px;}
+.as-quiz-opt{font-size:12px;padding:7px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);color:#E2E8F0;background:rgba(0,0,0,0.15);transition:all 0.2s;}
+.as-quiz-opt.correct{border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.1);color:#6EE7B7;}
+
+/* Adapt badge */
+.as-adapt{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:rgba(124,58,237,0.15);border-radius:6px;margin-top:8px;font-size:10px;color:#C4B5FD;font-weight:500;}
+.as-adapt-icon{font-size:12px;}
+
+/* Footer bar */
+.as-footer{display:flex;align-items:center;gap:8px;padding:12px 20px;border-top:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.15);}
+.as-input{flex:1;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 14px;}
+.as-send{width:32px;height:32px;border-radius:8px;background:rgba(124,58,237,0.3);display:flex;align-items:center;justify-content:center;color:#C4B5FD;font-size:14px;}
 
 /* STATS BANNER */
 .stats{padding:80px 40px;max-width:1200px;margin:0 auto;}
@@ -167,6 +218,7 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
     .hero{padding:120px 20px 80px;}
     .hero-grid{grid-template-columns:1fr;gap:40px;}
     .hero-right{display:none;}
+    .atlas-show{width:100%;}
     .hero h1{font-size:36px;}
     .stats{padding:60px 20px;}
     .stats-grid{grid-template-columns:repeat(2,1fr);gap:16px;}
@@ -220,22 +272,76 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
             <a href="https://app.mentova-academy.com" class="hero-cta" data-testid="hero-cta">Commencer gratuitement &rarr;</a>
         </div>
         <div class="hero-right">
-            <div class="hero-terminal">
-                <div class="ht-bar">
-                    <div class="ht-dot" style="background:#EF4444"></div>
-                    <div class="ht-dot" style="background:#F59E0B"></div>
-                    <div class="ht-dot" style="background:#22C55E"></div>
-                    <div class="ht-name">ATLAS IA</div>
+            <div class="atlas-show">
+                <div class="as-header">
+                    <div class="as-dots">
+                        <div class="as-dot" style="background:#EF4444"></div>
+                        <div class="as-dot" style="background:#F59E0B"></div>
+                        <div class="as-dot" style="background:#22C55E"></div>
+                    </div>
+                    <div class="as-title">Atlas IA</div>
+                    <div class="as-status">
+                        <div class="as-status-dot"></div>
+                        <div class="as-status-text">En ligne</div>
+                    </div>
                 </div>
-                <div class="ht-body">
-                    <div><span class="g">atlas&gt;</span> <span class="d">C'est quoi le staking ?</span></div>
-                    <div>&nbsp;</div>
-                    <div><span class="w">Le staking, c'est comme deposer de l'argent</span></div>
-                    <div><span class="w">dans un compte epargne. Tu bloques tes</span></div>
-                    <div><span class="w">cryptos pour aider le reseau, et en</span></div>
-                    <div><span class="w">echange tu recois des recompenses.</span></div>
-                    <div>&nbsp;</div>
-                    <div><span class="g">&#10003;</span> <span class="d">Exemple : 32 ETH staked = ~4% / an</span></div>
+                <div class="as-level">
+                    <div class="as-level-label">Niveau</div>
+                    <div class="as-level-bar"><div class="as-level-fill" id="levelFill"></div></div>
+                    <div class="as-level-pct" id="levelPct">35%</div>
+                </div>
+                <div class="as-chat">
+                    <div class="as-slides">
+                        <!-- Slide 1: Question debutant -->
+                        <div class="as-slide active" id="slide1">
+                            <div class="as-msg"><div class="as-avatar user">T</div><div class="as-bubble user">C'est quoi le Bitcoin exactement ?</div></div>
+                            <div class="as-msg"><div class="as-avatar atlas">A</div><div class="as-bubble atlas">Le Bitcoin est une monnaie numerique decentralisee. Pas de banque, pas d'intermediaire. Les transactions sont verifiees par un reseau mondial d'ordinateurs.</div></div>
+                            <div class="as-adapt"><span class="as-adapt-icon">&#9881;</span> Niveau detecte : Debutant</div>
+                        </div>
+                        <!-- Slide 2: Atlas s'adapte + module -->
+                        <div class="as-slide" id="slide2">
+                            <div class="as-msg"><div class="as-avatar user">T</div><div class="as-bubble user">Et comment on achete du Bitcoin ?</div></div>
+                            <div class="as-msg"><div class="as-avatar atlas">A</div><div class="as-bubble atlas">Tu peux acheter du BTC sur une plateforme d'echange comme Coinbase ou Binance. Je te montre les etapes dans le module suivant.</div></div>
+                            <div class="as-module">
+                                <div class="as-module-icon">&#9654;</div>
+                                <div class="as-module-text">Module : Acheter ta premiere crypto</div>
+                                <div class="as-module-arrow">&rarr;</div>
+                            </div>
+                        </div>
+                        <!-- Slide 3: Question avancee -->
+                        <div class="as-slide" id="slide3">
+                            <div class="as-msg"><div class="as-avatar user">T</div><div class="as-bubble user">Quelle est la difference entre PoW et PoS ?</div></div>
+                            <div class="as-msg"><div class="as-avatar atlas">A</div><div class="as-bubble atlas">Le Proof of Work utilise la puissance de calcul pour valider les blocs. Le Proof of Stake utilise tes cryptos mises en jeu. PoS consomme 99% moins d'energie.</div></div>
+                            <div class="as-adapt"><span class="as-adapt-icon">&#8593;</span> Niveau adapte : Intermediaire</div>
+                        </div>
+                        <!-- Slide 4: Quiz -->
+                        <div class="as-slide" id="slide4">
+                            <div class="as-quiz">
+                                <div class="as-quiz-label">Quiz rapide</div>
+                                <div class="as-quiz-q">Quel mecanisme Ethereum utilise-t-il ?</div>
+                                <div class="as-quiz-opts">
+                                    <div class="as-quiz-opt">A. Proof of Work</div>
+                                    <div class="as-quiz-opt correct">B. Proof of Stake &#10003;</div>
+                                    <div class="as-quiz-opt">C. Delegated PoS</div>
+                                </div>
+                            </div>
+                            <div class="as-adapt" style="margin-top:12px;"><span class="as-adapt-icon">&#9733;</span> +15 XP, progression mise a jour</div>
+                        </div>
+                        <!-- Slide 5: Advanced + next module -->
+                        <div class="as-slide" id="slide5">
+                            <div class="as-msg"><div class="as-avatar user">T</div><div class="as-bubble user">Explique-moi les liquidity pools en DeFi</div></div>
+                            <div class="as-msg"><div class="as-avatar atlas">A</div><div class="as-bubble atlas">Les liquidity pools sont des reserves de tokens verrouilles dans un smart contract. Les utilisateurs fournissent la liquidite et gagnent des frais sur chaque echange.</div></div>
+                            <div class="as-module">
+                                <div class="as-module-icon">&#9654;</div>
+                                <div class="as-module-text">Module suivant : Yield Farming</div>
+                                <div class="as-module-arrow">&rarr;</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="as-footer">
+                    <div class="as-input">Pose ta question a Atlas...</div>
+                    <div class="as-send">&rarr;</div>
                 </div>
             </div>
         </div>
@@ -501,5 +607,22 @@ footer{padding:48px 40px 32px;border-top:1px solid #E2E8F0;}
     </div>
 </footer>
 
+<script>
+(function(){
+    const slides=document.querySelectorAll('.as-slide');
+    const lvlFill=document.getElementById('levelFill');
+    const lvlPct=document.getElementById('levelPct');
+    const levels=[35,35,52,52,65];
+    let cur=0;
+    if(slides.length===0)return;
+    setInterval(()=>{
+        slides[cur].classList.remove('active');
+        cur=(cur+1)%slides.length;
+        slides[cur].classList.add('active');
+        if(lvlFill){lvlFill.style.width=levels[cur]+'%';}
+        if(lvlPct){lvlPct.textContent=levels[cur]+'%';}
+    },4000);
+})();
+</script>
 </body>
 </html>
