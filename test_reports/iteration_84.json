@@ -1,0 +1,39 @@
+{
+  "summary": "Frontend-only verification of Mentova restructure around Atlas AI. Verified tab bar order (Atlas first), absence of VIP/Premium/Pro sections on Profile page, absence of biometric toggle in Settings, and full FR/EN/ES translation of the Support page with expandable FAQ. All four features work as specified. Two minor pre-existing issues noted but out of scope of this review.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Home tab (index.tsx)", "issue": "Untranslated i18n keys visible in UI: 'home.continueLearning', 'home.lessonsCompleted', 'home.resumeCourse'. Keys are rendered raw in EN (and likely other locales) instead of translated strings.", "selector": "home continue-learning card", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Landing (pre-login)", "issues": ["Stat card labeled 'PRO TOOLS' on welcome screen — cosmetic label only, not a VIP/subscription banner, but the word 'PRO' may be misread as premium tier. Consider renaming to 'Tools' or 'Features' since the app is 100% free."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Add missing translations for keys home.continueLearning / home.lessonsCompleted / home.resumeCourse in EN/FR/ES dictionaries (currently rendering raw keys on Home tab).",
+    "(Optional) Rename 'PRO TOOLS' label on the landing welcome screen to avoid any 'Pro tier' implication."
+  ],
+  "critical_code_review_comments": [
+    "app/(tabs)/_layout.tsx – Atlas tab correctly placed first via Tabs.Screen name='learn'. Hidden tabs (community/ai/mentors) use href:null which is correct.",
+    "app/support.tsx – Clean dedicated i18n dictionary (supportI18n + faqI18n) with FR/EN/ES entries and safe english fallback. Expand/collapse behavior implemented with local useState. data-testid attributes present, but note that React Native Web sometimes strips data-testid on non-Pressable components — tests may want to use text-based selectors for the title.",
+    "app/(tabs)/profile.tsx & app/settings/index.tsx – grep confirms zero occurrences of VIP / Premium / biometric / fingerprint tokens. Requirements met."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (skipped)", "frontend": "100% for the 4 requested features (4/4 passed); 1 unrelated minor bug (untranslated home.* keys)"},
+  "test_credentials": "jcuradeau.7@gmail.com / Crypto2026! (Super Admin) — worked",
+  "seed_data_creation": "none",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Login flow: the Sign In button on /login is a RN Pressable — text selector strict-mode fails because there are two 'Sign In' text nodes. Use mouse.click(195, 568) after filling inputs, or target the Pressable ancestor of the button text. After login, an 'Installer Mentova' PWA install prompt overlays the Home tab; dismiss with the 'J'ai compris !' text button. Tab bar positions on 390x844 viewport: Atlas x≈35, Home x≈107, Market x≈180, News x≈257, Profile x≈344 (y≈810). Language is persisted in localStorage under key '@mentova_language' (values: en/fr/es).",
+  "verified_features": [
+    "Tab order left-to-right: Atlas → Home → Market → News → Profile ✅",
+    "Profile page: no VIP/Premium/Pro sections. Shows profile card, Atlas Progress, Administration (admin), Achievements, Investor checklist, Language, Settings, Help & support, Logout ✅",
+    "Settings page: no biometric/fingerprint/Touch/Face ID toggle. Sections: PROFILE, SECURITY (password + 2FA), PREFERENCES (Language, Notifications, Theme), PRIVACY, DANGER ZONE, LEGAL ✅",
+    "Support page FR: 'Centre d'aide' / 'Nous contacter' / 'Questions frequentes' ✅",
+    "Support page EN: 'Support Center' / 'Contact Us' / 'Frequently Asked Questions' ✅",
+    "Support page ES: 'Centro de ayuda' / 'Contactanos' / 'Preguntas frecuentes' ✅",
+    "FAQ items expand/collapse via chevron and change from chevron-down to chevron-up ✅"
+  ]
+}

@@ -53,7 +53,7 @@ export default function SettingsScreen() {
   const [show2FAModal, setShow2FAModal] = useState(false);
   const [show2FADisableModal, setShow2FADisableModal] = useState(false);
   const [twoFAEnabled, setTwoFAEnabled] = useState(false);
-  const [biometricEnabled, setBiometricEnabled] = useState(false);
+
   const [setupData, setSetupData] = useState<{ qr_code: string; secret: string; backup_codes: string[] } | null>(null);
   const [verifyCode, setVerifyCode] = useState('');
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
@@ -89,7 +89,7 @@ export default function SettingsScreen() {
         const res2fa = await api.get('/auth/2fa/status');
         if (res2fa.data) {
           setTwoFAEnabled(res2fa.data.enabled || false);
-          setBiometricEnabled(res2fa.data.biometric_enabled || false);
+  
         }
       } catch {}
     };
@@ -142,18 +142,7 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleBiometricToggle = async (value: boolean) => {
-    if (Platform.OS === 'web') {
-      Alert.alert('Info', t('settings.biometricMobileOnly') || 'Biometric authentication is only available on mobile devices');
-      return;
-    }
-    try {
-      await api.post('/auth/biometric/toggle', { enabled: value });
-      setBiometricEnabled(value);
-    } catch {
-      Alert.alert(t('settings.error'), t('settings.saveError'));
-    }
-  };
+
 
   const saveNotifications = async (newNotifs: typeof notifications) => {
     setNotifications(newNotifs);
@@ -349,14 +338,7 @@ export default function SettingsScreen() {
             onPress={() => twoFAEnabled ? setShow2FADisableModal(true) : handle2FASetup()}
             data-testid="2fa-settings-btn"
           />
-          <SettingsItem
-            icon="finger-print"
-            iconColor="#EC4899"
-            title={t('settings.biometric')}
-            subtitle={Platform.OS === 'web' ? (t('settings.mobileOnly') || 'Mobile only') : (biometricEnabled ? t('settings.enabled') || 'Enabled' : t('settings.notEnabled'))}
-            onPress={() => handleBiometricToggle(!biometricEnabled)}
-            data-testid="biometric-settings-btn"
-          />
+
         </View>
 
         {/* Preferences Section */}

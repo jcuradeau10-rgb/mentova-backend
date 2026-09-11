@@ -1,42 +1,60 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useTranslation } from '../store/languageStore';
 
-const FAQ_ITEMS = [
-  {
-    q: "What is Mentova?",
-    a: "Mentova is a premium mentor marketplace connecting certified trading professionals with learners. VIP members get access to exclusive courses, real-time tools, a private community, and curated content from verified mentors."
+const supportI18n: Record<string, Record<string, string>> = {
+  's.title': { fr: 'Centre d\'aide', en: 'Support Center', es: 'Centro de ayuda' },
+  's.subtitle': { fr: 'Nous sommes la pour vous aider a tirer le meilleur parti de Mentova', en: 'We\'re here to help you get the most out of Mentova', es: 'Estamos aqui para ayudarte a aprovechar Mentova al maximo' },
+  's.contactTitle': { fr: 'Nous contacter', en: 'Contact Us', es: 'Contactanos' },
+  's.contactDesc': { fr: 'Une question, un commentaire ou besoin d\'aide ? Ecrivez-nous et nous vous repondrons sous 24 heures.', en: 'Have a question, feedback, or need help? Reach out to our team and we\'ll get back to you within 24 hours.', es: 'Tienes una pregunta, comentario o necesitas ayuda? Escribenos y te responderemos en 24 horas.' },
+  's.responseTime': { fr: 'Reponse sous 24h', en: 'Response within 24h', es: 'Respuesta en 24h' },
+  's.languages': { fr: 'FR / EN / ES', en: 'FR / EN / ES', es: 'FR / EN / ES' },
+  's.faqTitle': { fr: 'Questions frequentes', en: 'Frequently Asked Questions', es: 'Preguntas frecuentes' },
+  's.legalTitle': { fr: 'Mentions legales', en: 'Legal', es: 'Legal' },
+  's.terms': { fr: 'Conditions d\'utilisation', en: 'Terms of Service', es: 'Terminos de servicio' },
+  's.privacy': { fr: 'Politique de confidentialite', en: 'Privacy Policy', es: 'Politica de privacidad' },
+  's.legalDisclaimer': { fr: 'Tout le contenu est fourni a des fins educatives uniquement et ne constitue pas un conseil financier. Le trading de cryptomonnaies comporte des risques importants. Les performances passees ne garantissent pas les resultats futurs.', en: 'All content is provided for educational purposes only and does not constitute financial advice. Trading cryptocurrencies involves significant risk. Past performance is not indicative of future results.', es: 'Todo el contenido se proporciona unicamente con fines educativos y no constituye asesoramiento financiero. El comercio de criptomonedas implica riesgos significativos. El rendimiento pasado no garantiza resultados futuros.' },
+};
+
+const faqI18n: Record<string, { q: Record<string, string>; a: Record<string, string> }> = {
+  faq1: {
+    q: { fr: 'Qu\'est-ce que Mentova ?', en: 'What is Mentova?', es: 'Que es Mentova?' },
+    a: { fr: 'Mentova est une plateforme d\'apprentissage crypto alimentee par Atlas, un mentor IA personnalise. Atlas s\'adapte a votre niveau et vous guide a travers des modules structures pour maitriser les cryptomonnaies.', en: 'Mentova is a crypto learning platform powered by Atlas, a personalized AI mentor. Atlas adapts to your level and guides you through structured modules to master cryptocurrencies.', es: 'Mentova es una plataforma de aprendizaje crypto impulsada por Atlas, un mentor IA personalizado. Atlas se adapta a tu nivel y te guia a traves de modulos estructurados para dominar las criptomonedas.' },
   },
-  {
-    q: "How do I become a VIP member?",
-    a: "Go to the VIP section in the app and subscribe. VIP unlocks the academy, advanced crypto tools, the private community, the mentor marketplace, and much more."
+  faq2: {
+    q: { fr: 'Comment fonctionne Atlas AI ?', en: 'How does Atlas AI work?', es: 'Como funciona Atlas AI?' },
+    a: { fr: 'Atlas est votre mentor crypto personnel. Il analyse votre niveau, memorise vos preferences, et cree un parcours d\'apprentissage adapte. Posez-lui n\'importe quelle question sur les cryptos et il vous repondra de maniere pedagogique.', en: 'Atlas is your personal crypto mentor. It analyzes your level, remembers your preferences, and creates a tailored learning path. Ask it any crypto question and it will respond pedagogically.', es: 'Atlas es tu mentor crypto personal. Analiza tu nivel, recuerda tus preferencias y crea un camino de aprendizaje adaptado. Hazle cualquier pregunta sobre criptomonedas y te respondera de manera pedagogica.' },
   },
-  {
-    q: "How do I contact a mentor?",
-    a: "Browse the Marketplace, select an offer, and purchase it. You can also book live sessions or send direct messages to mentors through the app."
+  faq3: {
+    q: { fr: 'Mentova est-il gratuit ?', en: 'Is Mentova free?', es: 'Mentova es gratuito?' },
+    a: { fr: 'Oui ! Mentova est actuellement en acces libre. Profitez de toutes les fonctionnalites, y compris Atlas AI, les donnees de marche en temps reel et les actualites crypto, sans aucun frais.', en: 'Yes! Mentova is currently free to access. Enjoy all features including Atlas AI, real-time market data, and crypto news at no cost.', es: 'Si! Mentova es actualmente de acceso libre. Disfruta de todas las funciones, incluyendo Atlas AI, datos de mercado en tiempo real y noticias crypto, sin costo alguno.' },
   },
-  {
-    q: "Can I become a mentor on Mentova?",
-    a: "Yes! If you have at least 2 years of verifiable trading experience, you can apply through the 'Become a Mentor' section. Our team reviews every application to maintain quality."
+  faq4: {
+    q: { fr: 'Comment suivre ma progression ?', en: 'How do I track my progress?', es: 'Como sigo mi progreso?' },
+    a: { fr: 'Rendez-vous dans l\'onglet Atlas, section "Progression". Vous y trouverez votre niveau global, vos competences detaillees, les modules completes et votre historique de quiz.', en: 'Go to the Atlas tab, "Progress" section. You\'ll find your overall level, detailed skills, completed modules, and quiz history.', es: 'Ve a la pestana Atlas, seccion "Progreso". Encontraras tu nivel general, habilidades detalladas, modulos completados e historial de quizzes.' },
   },
-  {
-    q: "How do payments work?",
-    a: "All payments are processed securely through Stripe. Mentors receive payouts directly to their connected Stripe account after a standard processing period."
+  faq5: {
+    q: { fr: 'Mes donnees sont-elles securisees ?', en: 'Is my data secure?', es: 'Mis datos estan seguros?' },
+    a: { fr: 'Absolument. Nous utilisons le chiffrement aux standards de l\'industrie et des pratiques de securite rigoureuses. Vos donnees personnelles ne sont jamais partagees avec des tiers sans votre consentement explicite.', en: 'Absolutely. We use industry-standard encryption and rigorous security practices. Your personal data is never shared with third parties without your explicit consent.', es: 'Absolutamente. Utilizamos cifrado estandar de la industria y practicas de seguridad rigurosas. Tus datos personales nunca se comparten con terceros sin tu consentimiento explicito.' },
   },
-  {
-    q: "Can I get a refund?",
-    a: "Refund policies depend on the type of purchase. For subscription issues, contact us at info@mentova-academy.com and we'll assist you promptly."
+  faq6: {
+    q: { fr: 'Comment devenir mentor ou ambassadeur ?', en: 'How do I become a mentor or ambassador?', es: 'Como me convierto en mentor o embajador?' },
+    a: { fr: 'Visitez mentova-academy.com pour decouvrir nos programmes de mentorat et d\'ambassadeur. Nous recherchons des passionnes de crypto avec de l\'experience pour rejoindre notre equipe.', en: 'Visit mentova-academy.com to discover our mentorship and ambassador programs. We\'re looking for crypto enthusiasts with experience to join our team.', es: 'Visita mentova-academy.com para descubrir nuestros programas de mentoria y embajador. Buscamos entusiastas de las criptomonedas con experiencia para unirse a nuestro equipo.' },
   },
-  {
-    q: "Is my data secure?",
-    a: "Absolutely. We use industry-standard encryption and security practices. Your personal data is never shared with third parties without your explicit consent."
-  },
-];
+};
+
+function ts(key: string, lang: string): string {
+  return supportI18n[key]?.[lang] || supportI18n[key]?.['en'] || key;
+}
 
 export default function SupportPage() {
   const router = useRouter();
+  const { language } = useTranslation();
+  const lang = language || 'fr';
+  const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
   const handleEmail = () => {
     if (Platform.OS === 'web') {
@@ -45,6 +63,8 @@ export default function SupportPage() {
       Linking.openURL('mailto:info@mentova-academy.com');
     }
   };
+
+  const faqKeys = Object.keys(faqI18n);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -59,16 +79,14 @@ export default function SupportPage() {
               <Ionicons name="headset" size={28} color="#7C3AED" />
             </View>
           </View>
-          <Text style={styles.title}>Support Center</Text>
-          <Text style={styles.subtitle}>We're here to help you get the most out of Mentova</Text>
+          <Text style={styles.title} data-testid="support-title">{ts('s.title', lang)}</Text>
+          <Text style={styles.subtitle}>{ts('s.subtitle', lang)}</Text>
         </View>
 
         {/* Contact Card */}
         <View style={styles.contactCard} data-testid="support-contact-card">
-          <Text style={styles.contactTitle}>Contact Us</Text>
-          <Text style={styles.contactDesc}>
-            Have a question, feedback, or need help? Reach out to our team and we'll get back to you within 24 hours.
-          </Text>
+          <Text style={styles.contactTitle}>{ts('s.contactTitle', lang)}</Text>
+          <Text style={styles.contactDesc}>{ts('s.contactDesc', lang)}</Text>
           <TouchableOpacity style={styles.emailBtn} onPress={handleEmail} data-testid="support-email-btn">
             <Ionicons name="mail" size={18} color="#fff" />
             <Text style={styles.emailBtnText}>info@mentova-academy.com</Text>
@@ -76,47 +94,56 @@ export default function SupportPage() {
           <View style={styles.contactMeta}>
             <View style={styles.metaItem}>
               <Ionicons name="time-outline" size={14} color="#9CA3AF" />
-              <Text style={styles.metaText}>Response within 24h</Text>
+              <Text style={styles.metaText}>{ts('s.responseTime', lang)}</Text>
             </View>
             <View style={styles.metaItem}>
               <Ionicons name="globe-outline" size={14} color="#9CA3AF" />
-              <Text style={styles.metaText}>FR / EN / ES</Text>
+              <Text style={styles.metaText}>{ts('s.languages', lang)}</Text>
             </View>
           </View>
         </View>
 
         {/* FAQ */}
         <View style={styles.faqSection} data-testid="support-faq-section">
-          <Text style={styles.sectionTitle}>Frequently Asked Questions</Text>
-          {FAQ_ITEMS.map((item, i) => (
-            <View key={i} style={styles.faqItem} data-testid={`faq-item-${i}`}>
-              <View style={styles.faqQ}>
-                <View style={styles.qDot} />
-                <Text style={styles.faqQuestion}>{item.q}</Text>
-              </View>
-              <Text style={styles.faqAnswer}>{item.a}</Text>
-            </View>
-          ))}
+          <Text style={styles.sectionTitle}>{ts('s.faqTitle', lang)}</Text>
+          {faqKeys.map((key, i) => {
+            const isExpanded = expandedFaq === key;
+            return (
+              <TouchableOpacity
+                key={key}
+                style={styles.faqItem}
+                onPress={() => setExpandedFaq(isExpanded ? null : key)}
+                activeOpacity={0.7}
+                data-testid={`faq-item-${i}`}
+              >
+                <View style={styles.faqQ}>
+                  <View style={styles.qDot} />
+                  <Text style={styles.faqQuestion}>{faqI18n[key].q[lang] || faqI18n[key].q['en']}</Text>
+                  <Ionicons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={16} color="#7C3AED" />
+                </View>
+                {isExpanded && (
+                  <Text style={styles.faqAnswer}>{faqI18n[key].a[lang] || faqI18n[key].a['en']}</Text>
+                )}
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         {/* Legal */}
         <View style={styles.legalSection}>
-          <Text style={styles.sectionTitle}>Legal</Text>
+          <Text style={styles.sectionTitle}>{ts('s.legalTitle', lang)}</Text>
           <View style={styles.legalCard}>
             <TouchableOpacity onPress={() => router.push('/terms')} style={styles.legalLink} data-testid="support-terms-link">
               <Ionicons name="document-text-outline" size={18} color="#7C3AED" />
-              <Text style={styles.legalLinkText}>Terms of Service</Text>
+              <Text style={styles.legalLinkText}>{ts('s.terms', lang)}</Text>
               <Ionicons name="chevron-forward" size={16} color="#4B5563" />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push('/privacy')} style={styles.legalLink} data-testid="support-privacy-link">
               <Ionicons name="shield-checkmark-outline" size={18} color="#10B981" />
-              <Text style={styles.legalLinkText}>Privacy Policy</Text>
+              <Text style={styles.legalLinkText}>{ts('s.privacy', lang)}</Text>
               <Ionicons name="chevron-forward" size={16} color="#4B5563" />
             </TouchableOpacity>
-            <Text style={styles.legalText}>
-              All mentor content is provided for educational purposes only and does not constitute financial advice.
-              Trading cryptocurrencies involves significant risk. Past performance is not indicative of future results.
-            </Text>
+            <Text style={styles.legalText}>{ts('s.legalDisclaimer', lang)}</Text>
           </View>
         </View>
 
@@ -150,10 +177,10 @@ const styles = StyleSheet.create({
   faqSection: { paddingHorizontal: 16, marginBottom: 28 },
   sectionTitle: { fontSize: 20, fontWeight: '700', color: '#fff', marginBottom: 16 },
   faqItem: { backgroundColor: '#111128', borderRadius: 12, padding: 18, marginBottom: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.04)' },
-  faqQ: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 },
-  qDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#7C3AED', marginTop: 5 },
+  faqQ: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  qDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#7C3AED' },
   faqQuestion: { fontSize: 14, fontWeight: '700', color: '#E5E7EB', flex: 1 },
-  faqAnswer: { fontSize: 13, color: '#9CA3AF', lineHeight: 20, paddingLeft: 18 },
+  faqAnswer: { fontSize: 13, color: '#9CA3AF', lineHeight: 20, paddingLeft: 18, marginTop: 10 },
   legalSection: { paddingHorizontal: 16, marginBottom: 28 },
   legalCard: { backgroundColor: '#111128', borderRadius: 12, padding: 18, borderWidth: 1, borderColor: 'rgba(255,255,255,0.04)', gap: 12 },
   legalLink: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.04)' },

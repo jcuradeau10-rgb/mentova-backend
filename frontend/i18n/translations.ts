@@ -24,7 +24,7 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     'onboarding.feature3.desc': 'Échangez avec des experts et passionnés',
     'onboarding.feature4.title': 'Actualités Crypto',
     'onboarding.feature4.desc': 'Articles traduits en temps réel',
-    'onboarding.stats.users': 'Outils Pro',
+    'onboarding.stats.users': 'Outils',
     'onboarding.stats.volume': 'IA Active',
     'onboarding.stats.countries': 'Sécurisé',
     
@@ -502,6 +502,9 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     'home.advanced': 'Avancé',
     'home.intermediate': 'Intermédiaire',
     'home.beginner': 'Débutant',
+    'home.continueLearning': 'Continuer votre apprentissage',
+    'home.lessonsCompleted': 'leçons complétées',
+    'home.resumeCourse': 'Reprendre le cours',
     
     // Market page
     'market.title': 'Marché Crypto',
@@ -2867,7 +2870,7 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     'onboarding.feature3.desc': 'Connect with experts and enthusiasts',
     'onboarding.feature4.title': 'Crypto News',
     'onboarding.feature4.desc': 'Real-time translated articles',
-    'onboarding.stats.users': 'Pro Tools',
+    'onboarding.stats.users': 'Tools',
     'onboarding.stats.volume': 'AI Active',
     'onboarding.stats.countries': 'Secured',
     
@@ -3347,6 +3350,9 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     'home.advanced': 'Advanced',
     'home.intermediate': 'Intermediate',
     'home.beginner': 'Beginner',
+    'home.continueLearning': 'Continue your learning',
+    'home.lessonsCompleted': 'lessons completed',
+    'home.resumeCourse': 'Resume course',
     
     // Notifications
     'notif.title': 'Notifications',
@@ -5644,7 +5650,7 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     'onboarding.feature3.desc': 'Conecta con expertos y entusiastas',
     'onboarding.feature4.title': 'Noticias Crypto',
     'onboarding.feature4.desc': 'Artículos traducidos en tiempo real',
-    'onboarding.stats.users': 'Herramientas Pro',
+    'onboarding.stats.users': 'Herramientas',
     'onboarding.stats.volume': 'IA Activa',
     'onboarding.stats.countries': 'Seguro',
     
@@ -6052,6 +6058,9 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     'home.advanced': 'Avanzado',
     'home.intermediate': 'Intermedio',
     'home.beginner': 'Principiante',
+    'home.continueLearning': 'Continuar tu aprendizaje',
+    'home.lessonsCompleted': 'lecciones completadas',
+    'home.resumeCourse': 'Reanudar curso',
     
     // Notifications
     'notif.title': 'Notificaciones',

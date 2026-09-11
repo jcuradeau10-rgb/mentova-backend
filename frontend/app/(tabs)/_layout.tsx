@@ -44,23 +44,7 @@ export default function TabLayout() {
           tabBarShowLabel: true,
         }}
       >
-        {/* ── 1. ACCUEIL ── */}
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: t('nav.home'),
-            tabBarLabel: ({ focused }) => (
-              <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{t('nav.home')}</Text>
-            ),
-            tabBarIcon: ({ focused }) => (
-              <View style={[styles.tabIconWrap, focused && styles.tabIconActive]}>
-                <Ionicons name={focused ? 'home' : 'home-outline'} size={22} color={focused ? '#FFF' : '#5A5A6E'} />
-              </View>
-            ),
-          }}
-        />
-
-        {/* ── 2. ATLAS AI ── */}
+        {/* ── 1. ATLAS AI (Primary) ── */}
         <Tabs.Screen
           name="learn"
           options={{
@@ -71,6 +55,22 @@ export default function TabLayout() {
             tabBarIcon: ({ focused }) => (
               <View style={[styles.tabIconWrap, focused && styles.tabIconActive]}>
                 <Ionicons name={focused ? 'planet' : 'planet-outline'} size={22} color={focused ? '#FFF' : '#5A5A6E'} />
+              </View>
+            ),
+          }}
+        />
+
+        {/* ── 2. ACCUEIL ── */}
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: t('nav.home'),
+            tabBarLabel: ({ focused }) => (
+              <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{t('nav.home')}</Text>
+            ),
+            tabBarIcon: ({ focused }) => (
+              <View style={[styles.tabIconWrap, focused && styles.tabIconActive]}>
+                <Ionicons name={focused ? 'home' : 'home-outline'} size={22} color={focused ? '#FFF' : '#5A5A6E'} />
               </View>
             ),
           }}
