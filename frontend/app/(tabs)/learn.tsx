@@ -4,10 +4,12 @@ import {
   KeyboardAvoidingView, Platform, ActivityIndicator, FlatList, Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../store/authStore';
 import { useTranslation } from '../../store/languageStore';
 import { useThemeStore } from '../../store/themeStore';
+import { useAtlasNavStore } from '../../store/atlasNavStore';
 
 const API = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 const { width: SW } = Dimensions.get('window');
@@ -117,6 +119,23 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
   const [imageAnalyzing, setImageAnalyzing] = useState(false);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
+  const router = useRouter();
+
+  // Listen to sidebar navigation store
+  const { selectedConversationId, triggerNewChat } = useAtlasNavStore();
+
+  useEffect(() => {
+    if (selectedConversationId && selectedConversationId !== activeConvId) {
+      loadConversation(selectedConversationId);
+    }
+  }, [selectedConversationId]);
+
+  useEffect(() => {
+    if (triggerNewChat > 0) {
+      setActiveConvId(null);
+      setMessages([]);
+    }
+  }, [triggerNewChat]);
 
   useEffect(() => {
     fetch(`${API}/api/vip/permissions`, { headers: { Authorization: `Bearer ${token}` } })

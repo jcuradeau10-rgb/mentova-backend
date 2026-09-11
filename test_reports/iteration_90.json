@@ -1,0 +1,29 @@
+{
+  "summary": "Frontend testing of sidebar conversation history feature (ChatGPT-style). All 8 requested features verified working. Logged in as super admin (jcuradeau.7@gmail.com), sidebar renders conversation history grouped by TODAY/YESTERDAY between New Chat button and nav items. 16 conversations fetched from /api/atlas/conversations. Clicking a conv highlights it and loads messages in Atlas chat. New Chat clears and shows Atlas welcome with 4 suggestion cards. Collapsed desktop sidebar (56px) hides conversations and shows Atlas planet icon. Mobile overlay sidebar shows full titles for all 16 conversations. Theme toggle (Dark<->Light) and VIP hub button work.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Sidebar conversations list", "issues": ["16 conversations shown without pagination or a max-height with independent scroll for the conv list; on smaller heights the nav items get pushed below the fold and require scrolling. Consider capping the conv list height or grouping into a collapsible section like ChatGPT."]},
+      {"screen": "Sidebar conversations list", "issues": ["Duplicate conversation titles are shown (e.g. 'Say hi in one word' x2, 'test' x2, 'Bonjour Atlas, un mot rapide sur BT...' x2, 'Salut Atlas!' x3). Not a code bug - reflects data - but visually confusing. Consider showing a small time-of-day hint next to duplicate titles."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "(Optional/design) Add max-height + inner scroll to conversation list so nav items remain visible without scrolling the whole sidebar.",
+    "(Optional) Consider deduping or timestamping conversation titles that share the same title in the same group."
+  ],
+  "critical_code_review_comments": [
+    "_layout.tsx line 60-62 & 68-70: fetch calls lack proper error handling / status check. If /api/atlas/conversations returns non-200 (e.g., 401), r.json() may still parse an error object and setConversations([]) never runs; d.conversations||[] handles the shape but not auth errors. Consider handling r.ok explicitly.",
+    "_layout.tsx setInterval 30s poll for conversations runs regardless of tab visibility - minor perf/network cost. Consider pausing when document is hidden.",
+    "atlasNavStore.ts: selectedConversationId is not reset when the user manually navigates in-app to a different conversation from ChatView's own list (if any) - could cause stale highlight; low priority."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "100%"},
+  "test_credentials": "jcuradeau.7@gmail.com / Crypto2026!",
+  "seed_data_creation": "None - used the 16 existing conversations already in DB",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Sidebar conv history feature is fully functional. testIDs used: sidebar-panel, sidebar-new-chat-button, sidebar-conv-{uuid}, sidebar-nav-{index|market|news|profile|learn}, sidebar-close, sidebar-toggle (mobile hamburger), theme-toggle, sidebar-vip-button, login-email-input/login-password-input/login-submit-btn. Group labels rendered in UPPERCASE via CSS textTransform: 'uppercase' (source text is 'Today', 'Yesterday', etc)."
+}
