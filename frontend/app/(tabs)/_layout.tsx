@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Tabs, useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, Platform, TouchableOpacity, ScrollView, useWindowDimensions, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Platform, TouchableOpacity, ScrollView, useWindowDimensions, Pressable, Animated } from 'react-native';
 import { useTranslation } from '../../store/languageStore';
 import { useAuthStore } from '../../store/authStore';
 import { useThemeStore } from '../../store/themeStore';
@@ -148,9 +148,19 @@ export default function TabLayout() {
   const { width } = useWindowDimensions();
   const isMobile = width < BREAKPOINT;
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [desktopCollapsed, setDesktopCollapsed] = useState(false);
+  const sidebarAnim = React.useRef(new Animated.Value(260)).current;
   const router = useRouter();
 
   useEffect(() => { loadTheme(); }, []);
+
+  useEffect(() => {
+    Animated.timing(sidebarAnim, {
+      toValue: desktopCollapsed ? 0 : 260,
+      duration: 250,
+      useNativeDriver: false,
+    }).start();
+  }, [desktopCollapsed]);
 
   const handleNavigate = (route: string) => {
     router.push(`/(tabs)/${route}` as any);
@@ -183,11 +193,22 @@ export default function TabLayout() {
         </View>
       )}
 
-      {/* Desktop sidebar */}
+      {/* Desktop sidebar — animated width */}
       {!isMobile && (
-        <View style={[st.sidebar, { width: 260, backgroundColor: c.bgSecondary, borderRightColor: c.border }]}>
-          <SidebarContent onNavigate={handleNavigate} />
-        </View>
+        <Animated.View style={[st.sidebar, { width: sidebarAnim, backgroundColor: c.bgSecondary, borderRightColor: c.border, overflow: 'hidden' }]}>
+          {!desktopCollapsed && <SidebarContent onNavigate={handleNavigate} />}
+        </Animated.View>
+      )}
+
+      {/* Desktop collapse toggle — floating button at sidebar edge */}
+      {!isMobile && (
+        <TouchableOpacity
+          style={[st.collapseBtn, { backgroundColor: c.surface, borderColor: c.border, left: desktopCollapsed ? 4 : 248 }]}
+          onPress={() => setDesktopCollapsed(!desktopCollapsed)}
+          testID="sidebar-collapse-toggle"
+        >
+          <Ionicons name={desktopCollapsed ? 'chevron-forward' : 'chevron-back'} size={16} color={c.primary} />
+        </TouchableOpacity>
       )}
 
       {/* Content */}
@@ -217,6 +238,7 @@ const st = StyleSheet.create({
   overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 998 },
   sidebar: { borderRightWidth: 1, paddingTop: Platform.OS === 'web' ? 16 : 50, zIndex: 999 },
   closeBtn: { position: 'absolute', top: Platform.OS === 'web' ? 16 : 50, right: 12, width: 32, height: 32, borderRadius: 8, justifyContent: 'center', alignItems: 'center', zIndex: 1 },
+  collapseBtn: { position: 'absolute', top: '50%', zIndex: 100, width: 28, height: 28, borderRadius: 14, justifyContent: 'center', alignItems: 'center', borderWidth: 1, marginTop: -14 },
   sideTop: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, marginBottom: 14, minHeight: 32 },
   logo: { fontSize: 20, fontWeight: '800', letterSpacing: -0.5 },
   newChatBtn: { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 10, marginBottom: 10, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderStyle: 'dashed' },
