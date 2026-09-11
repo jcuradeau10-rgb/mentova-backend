@@ -109,8 +109,8 @@ if not STRIPE_API_KEY:
 else:
     logger.info(f"Stripe key loaded: {STRIPE_API_KEY[:12]}...")
 
-STRIPE_FOUNDER_PRICE = os.environ.get('STRIPE_FOUNDER_PRICE', 'price_1Tku99F2kTGE9sQBLwcPh58N')
-STRIPE_REGULAR_PRICE = os.environ.get('STRIPE_REGULAR_PRICE', 'price_1Tku99F2kTGE9sQBkjF8TPQQ')
+STRIPE_FOUNDER_PRICE = os.environ.get('STRIPE_FOUNDER_PRICE', '')
+STRIPE_REGULAR_PRICE = os.environ.get('STRIPE_REGULAR_PRICE', '')
 
 # JWT Configuration
 JWT_SECRET = os.environ.get('JWT_SECRET', 'mentova_super_secret_key_2025')
@@ -118,9 +118,9 @@ JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24 * 7  # 7 days
 
 # VIP Configuration
-VIP_PRICE_USD = 9.99  # Monthly subscription price (Founder: $9.99, Regular: $25.99)
+VIP_PRICE_USD = 21.99  # Monthly subscription price
 VIP_DURATION_DAYS = 30  # 30 days per subscription
-FREE_AI_QUESTIONS_PER_DAY = 5  # Non-VIP limit
+FREE_AI_QUESTIONS_PER_DAY = 999  # Legacy — protection is now handled by atlas_protection service
 
 # reCAPTCHA Configuration (test keys - replace with real keys in production)
 RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY', '6LejZ4csAAAAAKcjjyurS23lOeICBqIqAp4jZ9mQ')
@@ -1434,6 +1434,78 @@ async def get_vip_features(lang: Optional[str] = None):
         "features": get_vip_features_for_lang(lang or "fr")
     }
 
+@api_router.get("/vip/permissions")
+async def get_vip_permissions(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get centralized permission set for current user"""
+    current_user = await get_current_user(credentials)
+    from services.vip_permissions import get_user_permissions_response
+    return await get_user_permissions_response(current_user, db)
+
+@api_router.post("/vip/portal")
+async def create_vip_portal(
+    body: dict = Body(...),
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Create Stripe Customer Portal session for subscription management"""
+    current_user = await get_current_user(credentials)
+    if not current_user.get("stripe_customer_id"):
+        raise HTTPException(status_code=400, detail="Aucun abonnement actif")
+    try:
+        from services.stripe_service import create_portal_session
+        return_url = body.get("return_url", "")
+        result = await create_portal_session(current_user, return_url)
+        return result
+    except Exception as e:
+        logger.error(f"Portal error: {e}")
+        raise HTTPException(status_code=500, detail="Erreur lors de la creation du portail")
+
+@api_router.get("/vip/subscription")
+async def get_vip_subscription(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get detailed subscription info"""
+    current_user = await get_current_user(credentials)
+    try:
+        from services.stripe_service import get_subscription_info
+        return await get_subscription_info(current_user, db)
+    except Exception as e:
+        return {"has_subscription": False, "error": str(e)}
+
+@api_router.get("/admin/atlas-usage")
+async def get_atlas_usage_stats(days: int = 30, current_user: dict = Depends(get_admin_user)):
+    """Admin: Get Atlas AI usage and cost statistics"""
+    from services.atlas_protection import get_usage_stats
+    return await get_usage_stats(db, days)
+
+@api_router.get("/admin/vip-stats")
+async def get_admin_vip_stats(current_user: dict = Depends(get_admin_user)):
+    """Admin: Get VIP subscription statistics"""
+    total_users = await db.users.count_documents({})
+    vip_users = await db.users.count_documents({"is_vip": True})
+    free_users = total_users - vip_users
+    active_subs = await db.subscriptions.count_documents({"status": "active"})
+    canceled_subs = await db.subscriptions.count_documents({"status": "canceled"})
+    cancel_pending = await db.users.count_documents({"vip_cancel_at_period_end": True, "is_vip": True})
+    return {
+        "total_users": total_users,
+        "vip_users": vip_users,
+        "free_users": free_users,
+        "active_subscriptions": active_subs,
+        "canceled_subscriptions": canceled_subs,
+        "cancel_pending": cancel_pending,
+        "vip_percentage": round((vip_users / max(1, total_users)) * 100, 1),
+    }
+
+@api_router.get("/admin/protection-config")
+async def get_protection_config_endpoint(current_user: dict = Depends(get_admin_user)):
+    """Admin: View current protection configuration"""
+    from services.atlas_protection import get_protection_config
+    return get_protection_config()
+
+@api_router.put("/admin/protection-config")
+async def update_protection_config_endpoint(updates: dict = Body(...), current_user: dict = Depends(get_super_admin_user)):
+    """Admin: Update protection configuration"""
+    from services.atlas_protection import update_protection_config
+    return update_protection_config(updates)
+
 @api_router.post("/vip/checkout")
 async def create_vip_checkout(
     request: VIPCheckoutRequest,
@@ -1442,70 +1514,18 @@ async def create_vip_checkout(
 ):
     """Create Stripe checkout session for VIP subscription"""
     current_user = await get_current_user(credentials)
-    
-    # Check if already VIP
+
     if await check_user_vip_status(current_user["id"]):
-        raise HTTPException(status_code=400, detail="You are already a VIP member")
-    
+        raise HTTPException(status_code=400, detail="Vous etes deja membre VIP")
+
     try:
-        import stripe as stripe_sdk
-        if not STRIPE_API_KEY:
-            raise Exception("STRIPE_API_KEY is empty")
-        stripe_sdk.api_key = STRIPE_API_KEY
-        logger.info(f"Stripe checkout using key: {STRIPE_API_KEY[:15]}...")
-        
-        host_url = request.origin_url.rstrip('/')
-        success_url = f"{host_url}/vip/success?session_id={{CHECKOUT_SESSION_ID}}"
-        cancel_url = f"{host_url}/vip"
-        
-        # Determine price based on spots remaining
-        config = await db.wave_config.find_one({"_id": "current"})
-        wave2_active = (config or {}).get("wave2_active", False)
-        price_id = STRIPE_REGULAR_PRICE if wave2_active else STRIPE_FOUNDER_PRICE
-        is_founder = not wave2_active
-        
-        # Create Stripe Checkout Session with pre-created price
-        session = stripe_sdk.checkout.Session.create(
-            payment_method_types=["card"],
-            line_items=[{"price": price_id, "quantity": 1}],
-            mode="subscription",
-            success_url=success_url,
-            cancel_url=cancel_url,
-            customer_email=current_user["email"],
-            metadata={
-                "user_id": current_user["id"],
-                "user_email": current_user["email"],
-                "subscription_type": "vip_founder" if is_founder else "vip_regular",
-                "price_type": "founder" if is_founder else "regular",
-                "ref_code": request.ref_code or ""
-            }
-        )
-        
-        # Create payment transaction record
-        await db.payment_transactions.insert_one({
-            "id": str(uuid.uuid4()),
-            "session_id": session.id,
-            "user_id": current_user["id"],
-            "user_email": current_user["email"],
-            "amount": VIP_PRICE_USD if is_founder else 25.99,
-            "currency": "usd",
-            "status": "pending",
-            "payment_status": "initiated",
-            "subscription_type": "vip_founder" if is_founder else "vip_regular",
-            "is_founder": is_founder,
-            "created_at": datetime.now(timezone.utc).isoformat()
-        })
-        
-        logger.info(f"Created VIP checkout session for user {current_user['id']} ({'founder' if is_founder else 'regular'} price)")
-        
-        return VIPCheckoutResponse(
-            checkout_url=session.url,
-            session_id=session.id
-        )
-        
+        from services.stripe_service import create_checkout_session
+        result = await create_checkout_session(current_user, request.origin_url, db)
+        logger.info(f"VIP checkout created for user {current_user['id']}")
+        return VIPCheckoutResponse(checkout_url=result["checkout_url"], session_id=result["session_id"])
     except Exception as e:
         logger.error(f"Stripe checkout error: {e}")
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la création du paiement: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erreur lors de la creation du paiement")
 
 @api_router.get("/vip/checkout/status/{session_id}")
 async def get_checkout_status(
@@ -1615,114 +1635,18 @@ async def get_checkout_status(
 
 @api_router.post("/webhook/stripe")
 async def stripe_webhook(request: Request):
-    """Handle Stripe webhook events"""
+    """Handle Stripe webhook events with proper signature verification"""
     try:
+        from services.stripe_service import handle_webhook_event
         body = await request.body()
         signature = request.headers.get("Stripe-Signature", "")
-        
-        host_url = str(request.base_url).rstrip('/')
-        webhook_url = f"{host_url}/api/webhook/stripe"
-        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
-        
-        webhook_response = await stripe_checkout.handle_webhook(body, signature)
-        
-        if webhook_response.payment_status == "paid":
-            # Find and update transaction
-            transaction = await db.payment_transactions.find_one({"session_id": webhook_response.session_id})
-            
-            if transaction and transaction.get("payment_status") != "paid":
-                await db.payment_transactions.update_one(
-                    {"session_id": webhook_response.session_id},
-                    {"$set": {
-                        "status": "complete",
-                        "payment_status": "paid",
-                        "updated_at": datetime.now(timezone.utc).isoformat()
-                    }}
-                )
-                
-                # Activate VIP
-                user_id = webhook_response.metadata.get("user_id")
-                user_email = webhook_response.metadata.get("user_email", "")
-                if user_id:
-                    vip_expires = datetime.now(timezone.utc) + timedelta(days=VIP_DURATION_DAYS)
-                    now_iso = datetime.now(timezone.utc).isoformat()
-                    
-                    # Check if founder (wave1)
-                    wconfig = await db.wave_config.find_one({"_id": "current"})
-                    is_founder = not (wconfig or {}).get("wave2_active", False)
-                    
-                    await db.users.update_one(
-                        {"id": user_id},
-                        {"$set": {
-                            "is_vip": True,
-                            "vip_expires_at": vip_expires.isoformat(),
-                            "vip_activated_at": now_iso,
-                            "founding_member": is_founder,
-                        }}
-                    )
-                    
-                    # Also update pre_registrations so spots counter works + badge
-                    if user_email:
-                        await db.pre_registrations.update_one(
-                            {"email": user_email},
-                            {"$set": {
-                                "vip_activated_at": now_iso,
-                                "founding_member_badge": is_founder,
-                                "status": "vip_active",
-                            }}
-                        )
-                    
-                    logger.info(f"VIP activated via webhook for user {user_id} (founder={is_founder})")
-                    
-                    # Increment VIP subscriber count in wave_config
-                    await db.wave_config.update_one(
-                        {"_id": "current"},
-                        {"$inc": {"vip_subscribers": 1}}
-                    )
-                    
-                    # Check if 500 founders reached — activate wave 2 pricing
-                    config = await db.wave_config.find_one({"_id": "current"})
-                    total_subs = (config or {}).get("vip_subscribers", 0)
-                    total_preregs = await db.pre_registrations.count_documents({})
-                    if total_subs + total_preregs >= 500:
-                        await db.wave_config.update_one(
-                            {"_id": "current"},
-                            {"$set": {"wave2_active": True}}
-                        )
-                        logger.info("Wave 2 activated! 500 founders reached.")
-                    
-                    logger.info(f"VIP subscriber count: {total_subs + 1}")
-                    
-                    # --- Affiliate conversion tracking ---
-                    ref_code = webhook_response.metadata.get("ref_code", "")
-                    if ref_code:
-                        influencer = await db.influencers.find_one({"code": ref_code, "status": "active"})
-                        if influencer:
-                            # Check if this user was already converted by this influencer (prevent duplicates)
-                            existing = await db.conversions.find_one({"influencer_id": influencer["id"], "user_id": user_id})
-                            if not existing:
-                                commission = round(VIP_PRICE_USD * influencer.get("commission_rate", DEFAULT_COMMISSION_RATE), 2)
-                                conversion = {
-                                    "id": str(uuid.uuid4()),
-                                    "influencer_id": influencer["id"],
-                                    "influencer_name": influencer["name"],
-                                    "user_id": user_id,
-                                    "user_email": webhook_response.metadata.get("user_email", ""),
-                                    "subscription_amount": VIP_PRICE_USD,
-                                    "commission": commission,
-                                    "commission_rate": influencer.get("commission_rate", DEFAULT_COMMISSION_RATE),
-                                    "status": "pending",
-                                    "stripe_session_id": webhook_response.session_id,
-                                    "created_at": datetime.now(timezone.utc).isoformat()
-                                }
-                                await db.conversions.insert_one(conversion)
-                                logger.info(f"Affiliate conversion recorded: {influencer['name']} -> user {user_id}, commission ${commission}")
-        
-        return {"status": "success"}
-        
+        result = await handle_webhook_event(body, signature, db)
+        if result.get("error"):
+            return Response(content=result["error"], status_code=result.get("status", 400))
+        return result
     except Exception as e:
         logger.error(f"Webhook error: {e}")
-        return {"status": "error", "message": str(e)}
+        return {"received": True, "error": str(e)}
 
 # ==================== AI ASSISTANT ROUTES ====================
 

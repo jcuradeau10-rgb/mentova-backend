@@ -7,12 +7,20 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 import os, logging, json, time, uuid
+import sys
 import jwt
 from datetime import datetime, timezone
 from openai import AsyncOpenAI
 from models.atlas_models import (
     UserLearningProfile, AtlasMemory, AtlasConversation,
     LearningModule, ModuleProgress, QuizAttempt, utcnow,
+)
+
+# Ensure services are importable
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from services.vip_permissions import get_permissions
+from services.atlas_protection import (
+    check_request_allowed, record_request_start, record_request_end, log_usage
 )
 
 logger = logging.getLogger("atlas_v3")
@@ -527,8 +535,9 @@ RULES:
 
 # ============ CONTEXT BUILDER ============
 
-async def build_context(user_id: str) -> str:
-    """Build context string from user's profile, memories, and recent modules."""
+async def build_context(user_id: str, is_vip: bool = False) -> str:
+    """Build context string from user's profile, memories, and recent modules.
+    VIP gets full memory + more context. FREE gets basic profile only."""
     parts = []
     profile = await tool_get_user_profile(user_id)
     if profile and not profile.get("error"):
@@ -536,15 +545,18 @@ async def build_context(user_id: str) -> str:
 
     db = _get_db()
     if db is not None:
-        mems = []
-        async for doc in db.atlas_memories.find({"user_id": user_id}).sort("created_at", -1).limit(15):
-            doc.pop("_id", None)
-            mems.append(f"[{doc.get('memory_type','?')}] {doc.get('content','')}")
-        if mems:
-            parts.append(f"KEY MEMORIES:\n" + "\n".join(mems))
+        # VIP: include persistent memories
+        if is_vip:
+            mems = []
+            async for doc in db.atlas_memories.find({"user_id": user_id}).sort("created_at", -1).limit(20):
+                doc.pop("_id", None)
+                mems.append(f"[{doc.get('memory_type','?')}] {doc.get('content','')}")
+            if mems:
+                parts.append(f"KEY MEMORIES:\n" + "\n".join(mems))
 
         mods = []
-        async for doc in db.learning_modules.find({"user_id": user_id}).sort("updated_at", -1).limit(10):
+        limit = 10 if is_vip else 5
+        async for doc in db.learning_modules.find({"user_id": user_id}).sort("updated_at", -1).limit(limit):
             doc.pop("_id", None)
             mods.append(f"- {doc.get('title','')} (id:{doc.get('id','')}, status:{doc.get('status','')}, mastery:{doc.get('mastery_score',0)}%)")
         if mods:
@@ -568,53 +580,99 @@ class ConversationListRequest(BaseModel):
 
 @atlas_router.post("/chat")
 async def atlas_chat(data: ChatRequest, credentials: HTTPAuthorizationCredentials = Depends(optional_security)):
-    """Main Atlas chat endpoint with function calling."""
+    """Main Atlas chat endpoint with function calling, VIP permissions, and invisible protection."""
+    import time as _time
+    start_time = _time.time()
+
     user_id = await _get_authenticated_user(credentials)
-
-    if not _check_rate(user_id):
-        raise HTTPException(status_code=429, detail="Rate limit exceeded. Please wait a moment.")
-
     db = _get_db()
     if db is None:
         raise HTTPException(status_code=500, detail="Database unavailable")
 
-    # Load or create conversation
-    conv_id = data.conversation_id
-    conversation = None
-    if conv_id:
-        conversation = await db.atlas_conversations.find_one({"id": conv_id, "user_id": user_id})
+    # --- Get user and permissions ---
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
 
-    if not conversation:
-        conv_id = str(uuid.uuid4())
-        conversation = AtlasConversation(id=conv_id, user_id=user_id, title=data.message[:60]).to_mongo()
-        await db.atlas_conversations.insert_one(conversation)
+    perms = get_permissions(user)
+    is_vip = perms["is_vip"]
 
-    # Build context
-    context = await build_context(user_id)
-    lang_map = {"fr": "French", "en": "English", "es": "Spanish"}
-    lang_instruction = f"\n\nIMPORTANT: You MUST respond entirely in {lang_map.get(data.lang, 'French')}. Every word of your response must be in {lang_map.get(data.lang, 'French')}."
-    system_msg = ATLAS_SYSTEM_PROMPT + f"\n\nCURRENT USER CONTEXT:\n{context}" + lang_instruction
+    # --- Invisible protection check ---
+    allowed, block_msg = check_request_allowed(user_id, is_vip)
+    if not allowed:
+        raise HTTPException(status_code=429, detail=block_msg)
 
-    # Build messages from conversation history (last 30 messages)
-    history = conversation.get("messages", [])[-30:]
-    messages = [{"role": "system", "content": system_msg}]
-    messages.extend(history)
-    messages.append({"role": "user", "content": data.message})
-
-    # Call OpenAI with tools - loop for multi-turn tool calls
-    max_tool_rounds = 5
-    assistant_response = ""
+    record_request_start(user_id)
 
     try:
+        # Load or create conversation
+        conv_id = data.conversation_id
+        conversation = None
+        if conv_id:
+            conversation = await db.atlas_conversations.find_one({"id": conv_id, "user_id": user_id})
+        if not conversation:
+            conv_id = str(uuid.uuid4())
+            conversation = AtlasConversation(id=conv_id, user_id=user_id, title=data.message[:60]).to_mongo()
+            await db.atlas_conversations.insert_one(conversation)
+
+        # Build context based on VIP status
+        context = await build_context(user_id, is_vip)
+        lang_map = {"fr": "French", "en": "English", "es": "Spanish"}
+        lang_instruction = f"\n\nIMPORTANT: You MUST respond entirely in {lang_map.get(data.lang, 'French')}. Every word of your response must be in {lang_map.get(data.lang, 'French')}."
+
+        # VIP gets enhanced system prompt
+        vip_addon = ""
+        if is_vip:
+            vip_addon = """
+
+VIP USER: This user has Mentova VIP. Provide the most complete, personalized experience:
+- Use all their memories and history to personalize responses
+- Offer deeper analysis and more detailed explanations
+- Proactively suggest relevant modules, quizzes, or learning paths
+- Remember and reference previous conversations
+- Provide market context when relevant to their questions
+"""
+        else:
+            vip_addon = """
+
+FREE USER: Provide a helpful, generous experience. Explain concepts clearly.
+Do NOT mention limits, quotas, or message counts. Never pressure the user to upgrade.
+Focus on being an excellent crypto education mentor.
+"""
+
+        system_msg = ATLAS_SYSTEM_PROMPT + vip_addon + f"\n\nCURRENT USER CONTEXT:\n{context}" + lang_instruction
+
+        # Build messages — VIP gets more history
+        max_history = perms.get("atlas_max_context_messages", 10)
+        history = conversation.get("messages", [])[-max_history:]
+        messages = [{"role": "system", "content": system_msg}]
+        messages.extend(history)
+        messages.append({"role": "user", "content": data.message})
+
+        # Determine which tools to expose based on plan
+        available_tools = TOOLS
+        if not is_vip:
+            # FREE users: exclude memory save tool (memory is VIP-only)
+            available_tools = [t for t in TOOLS if t["function"]["name"] != "save_memory"]
+
+        # Call OpenAI with tools
+        max_tool_rounds = 5
+        assistant_response = ""
+        total_input_tokens = 0
+        total_output_tokens = 0
+
         for _ in range(max_tool_rounds):
             response = await client.chat.completions.create(
                 model=MODEL,
                 messages=messages,
-                tools=TOOLS,
+                tools=available_tools,
                 tool_choice="auto",
                 reasoning_effort="none",
             )
             msg = response.choices[0].message
+            if response.usage:
+                total_input_tokens += response.usage.prompt_tokens
+                total_output_tokens += response.usage.completion_tokens
 
             if msg.tool_calls:
                 messages.append(msg.model_dump())
@@ -635,25 +693,36 @@ async def atlas_chat(data: ChatRequest, credentials: HTTPAuthorizationCredential
         if not assistant_response:
             final = await client.chat.completions.create(model=MODEL, messages=messages, reasoning_effort="none")
             assistant_response = final.choices[0].message.content or ""
+            if final.usage:
+                total_input_tokens += final.usage.prompt_tokens
+                total_output_tokens += final.usage.completion_tokens
 
+        # Save to conversation history
+        new_msgs = conversation.get("messages", [])
+        new_msgs.append({"role": "user", "content": data.message})
+        new_msgs.append({"role": "assistant", "content": assistant_response})
+        await db.atlas_conversations.update_one(
+            {"id": conv_id, "user_id": user_id},
+            {"$set": {"messages": new_msgs, "updated_at": utcnow()}}
+        )
+
+        # Log usage for cost analysis (never shown to user)
+        duration_ms = int((_time.time() - start_time) * 1000)
+        await log_usage(
+            db, user_id, perms["plan"],
+            total_input_tokens, total_output_tokens,
+            MODEL, duration_ms, "chat"
+        )
+
+        return {"response": assistant_response, "conversation_id": conv_id}
+
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"OpenAI error: {e}")
         raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
-
-    # Save to conversation history
-    new_msgs = conversation.get("messages", [])
-    new_msgs.append({"role": "user", "content": data.message})
-    new_msgs.append({"role": "assistant", "content": assistant_response})
-
-    await db.atlas_conversations.update_one(
-        {"id": conv_id, "user_id": user_id},
-        {"$set": {"messages": new_msgs, "updated_at": utcnow()}}
-    )
-
-    return {
-        "response": assistant_response,
-        "conversation_id": conv_id,
-    }
+    finally:
+        record_request_end(user_id)
 
 
 @atlas_router.get("/conversations")
