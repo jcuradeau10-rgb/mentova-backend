@@ -134,15 +134,14 @@ function Sidebar({ state, navigation }: any) {
         {showLabels && <Text style={[st.newChatText, { color: c.primary }]}>{t('nav.newChat') || 'New Chat'}</Text>}
       </TouchableOpacity>
 
-      {/* Scrollable: Conversations + Nav */}
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-        {/* Conversation History */}
-        {showLabels && convGroups.length > 0 && (
+      {/* Conversations — scrollable, capped height */}
+      {showLabels && convGroups.length > 0 && (
+        <ScrollView style={st.convScroll} showsVerticalScrollIndicator={false} nestedScrollEnabled>
           <View style={st.convSection}>
             {convGroups.map((group) => (
               <View key={group.label}>
                 <Text style={[st.convGroupLabel, { color: c.textMuted }]}>{group.label}</Text>
-                {group.items.map((conv) => (
+                {group.items.slice(0, 8).map((conv) => (
                   <TouchableOpacity
                     key={conv.id}
                     style={[st.convItem, selectedConversationId === conv.id && { backgroundColor: c.surfaceHover }]}
@@ -156,23 +155,25 @@ function Sidebar({ state, navigation }: any) {
               </View>
             ))}
           </View>
-        )}
+        </ScrollView>
+      )}
 
-        {/* Collapsed: just show Atlas icon */}
-        {!showLabels && (
-          <TouchableOpacity
-            style={[st.navItem, activeIndex === 0 && { backgroundColor: c.surfaceHover }]}
-            onPress={() => handleNav('learn')}
-            testID="sidebar-nav-learn"
-          >
-            <Ionicons name={activeIndex === 0 ? 'planet' : 'planet-outline'} size={20} color={activeIndex === 0 ? c.primary : c.textMuted} />
-          </TouchableOpacity>
-        )}
+      {/* Collapsed: just show Atlas icon */}
+      {!showLabels && (
+        <TouchableOpacity
+          style={[st.navItem, activeIndex === 0 && { backgroundColor: c.surfaceHover }]}
+          onPress={() => handleNav('learn')}
+          testID="sidebar-nav-learn"
+        >
+          <Ionicons name={activeIndex === 0 ? 'planet' : 'planet-outline'} size={20} color={activeIndex === 0 ? c.primary : c.textMuted} />
+        </TouchableOpacity>
+      )}
 
-        {/* Separator */}
-        {showLabels && <View style={[st.separator, { borderBottomColor: c.borderSubtle }]} />}
+      {/* Separator */}
+      {showLabels && <View style={[st.separator, { borderBottomColor: c.borderSubtle }]} />}
 
-        {/* Nav Items */}
+      {/* Nav Items — always visible, not inside scroll */}
+      <View>
         {state.routes.map((route: any, i: number) => {
           const nav = NAV_ITEMS.find(n => n.name === route.name);
           if (!nav) return null;
@@ -203,7 +204,7 @@ function Sidebar({ state, navigation }: any) {
           <Ionicons name="diamond" size={20} color="#FFD700" />
           {showLabels && <Text style={[st.navLabel, { color: '#FFD700' }]}>{isVip ? 'VIP Hub' : 'VIP'}</Text>}
         </TouchableOpacity>
-      </ScrollView>
+      </View>
 
       {/* Bottom */}
       <View style={[st.sideBottom, { borderTopColor: c.borderSubtle }]}>
@@ -274,6 +275,7 @@ const st = StyleSheet.create({
   newChatText: { fontSize: 13, fontWeight: '600' },
 
   // Conversations
+  convScroll: { maxHeight: 280, flexShrink: 1 },
   convSection: { paddingHorizontal: 8, marginBottom: 4 },
   convGroupLabel: { fontSize: 11, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, paddingHorizontal: 4, paddingVertical: 6, marginTop: 4 },
   convItem: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 8, borderRadius: 8, marginBottom: 1 },

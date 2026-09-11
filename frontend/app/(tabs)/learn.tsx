@@ -305,8 +305,9 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
   // Main chat view
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#06060F' }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={100}>
-      {/* Header - simplified, no redundant menu button */}
+      {/* Header — with left padding for mobile hamburger */}
       <View style={s.chatHeader}>
+        <View style={{ width: 50 }} />{/* Space for hamburger on mobile */}
         <View style={s.chatHeaderCenter}>
           <View style={s.atlasAvatar}><Text style={s.atlasAvatarText}>A</Text></View>
           <Text style={s.chatHeaderTitle}>Atlas AI</Text>
@@ -729,30 +730,9 @@ export default function LearnScreen() {
   }
 
   return (
-    <SafeAreaView style={s.container} edges={['top']}>
-      {/* Sub-tabs as small pills at top-right — non-intrusive */}
-      <View style={s.subTabRow}>
-        {([
-          { key: 'chat' as Tab, icon: 'chatbubbles', label: tAtlas('tab.chat', lang) },
-          { key: 'modules' as Tab, icon: 'library', label: tAtlas('tab.modules', lang) },
-          { key: 'progress' as Tab, icon: 'stats-chart', label: tAtlas('tab.progress', lang) },
-        ]).map(t => (
-          <TouchableOpacity
-            key={t.key}
-            style={[s.subTab, tab === t.key && s.subTabActive]}
-            onPress={() => setTab(t.key)}
-            testID={`atlas-tab-${t.key}`}
-          >
-            <Ionicons name={(tab === t.key ? t.icon : t.icon + '-outline') as any} size={14} color={tab === t.key ? '#7C3AED' : '#64748B'} />
-            <Text style={[s.subTabText, tab === t.key && s.subTabTextActive]}>{t.label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* Content */}
-      {tab === 'chat' && <ChatView token={token} lang={language || 'fr'} />}
-      {tab === 'modules' && <ModulesView token={token} lang={language || 'fr'} />}
-      {tab === 'progress' && <ProgressView token={token} lang={language || 'fr'} />}
+    <SafeAreaView style={s.container} edges={[]}>
+      {/* Direct chat — no sub-tabs for cleaner mobile experience */}
+      <ChatView token={token} lang={language || 'fr'} />
     </SafeAreaView>
   );
 }
