@@ -13,6 +13,76 @@ const { width: SW } = Dimensions.get('window');
 
 type Tab = 'chat' | 'modules' | 'progress';
 
+// ============ i18n FOR ATLAS ============
+const i18n: Record<string, Record<string, string>> = {
+  // Tabs
+  'tab.chat': { fr: 'Chat', en: 'Chat', es: 'Chat' },
+  'tab.modules': { fr: 'Modules', en: 'Modules', es: 'Módulos' },
+  'tab.progress': { fr: 'Progression', en: 'Progress', es: 'Progreso' },
+  // Auth
+  'auth.required': { fr: 'Connexion requise', en: 'Login required', es: 'Inicio de sesión requerido' },
+  'auth.desc': { fr: 'Connecte-toi pour accéder à Atlas IA', en: 'Log in to access Atlas AI', es: 'Inicia sesión para acceder a Atlas IA' },
+  // Chat
+  'chat.placeholder': { fr: 'Écris ton message...', en: 'Write your message...', es: 'Escribe tu mensaje...' },
+  'chat.welcome.title': { fr: 'Atlas IA', en: 'Atlas AI', es: 'Atlas IA' },
+  'chat.welcome.desc': { fr: 'Ton mentor crypto personnel. Pose tes questions, apprends à ton rythme.', en: 'Your personal crypto mentor. Ask questions, learn at your pace.', es: 'Tu mentor crypto personal. Haz preguntas, aprende a tu ritmo.' },
+  'chat.error': { fr: 'Erreur de connexion. Réessaie.', en: 'Connection error. Try again.', es: 'Error de conexión. Inténtalo de nuevo.' },
+  'chat.conversations': { fr: 'Conversations', en: 'Conversations', es: 'Conversaciones' },
+  'chat.new': { fr: 'Nouvelle conversation', en: 'New conversation', es: 'Nueva conversación' },
+  'chat.empty': { fr: 'Aucune conversation', en: 'No conversations', es: 'Sin conversaciones' },
+  'chat.messages': { fr: 'messages', en: 'messages', es: 'mensajes' },
+  // Modules
+  'mod.empty.title': { fr: 'Aucun module', en: 'No modules', es: 'Sin módulos' },
+  'mod.empty.desc': { fr: "Discute avec Atlas pour qu'il crée ton parcours personnalisé !", en: 'Chat with Atlas to create your personalized learning path!', es: '¡Habla con Atlas para que cree tu ruta de aprendizaje personalizada!' },
+  'mod.back': { fr: 'Retour', en: 'Back', es: 'Volver' },
+  'mod.mastery': { fr: 'Maîtrise', en: 'Mastery', es: 'Dominio' },
+  'mod.understood': { fr: 'Compris', en: 'Understood', es: 'Comprendido' },
+  'mod.weak': { fr: 'À revoir', en: 'Needs review', es: 'Por repasar' },
+  'mod.best_quiz': { fr: 'Meilleur quiz', en: 'Best quiz', es: 'Mejor quiz' },
+  'mod.content': { fr: 'Contenu du module', en: 'Module content', es: 'Contenido del módulo' },
+  'mod.quiz_history': { fr: 'Historique des quiz', en: 'Quiz history', es: 'Historial de quiz' },
+  'mod.objective': { fr: 'Objectif', en: 'Objective', es: 'Objetivo' },
+  // Filters
+  'filter.all': { fr: 'Tous', en: 'All', es: 'Todos' },
+  'filter.in_progress': { fr: 'En cours', en: 'In progress', es: 'En curso' },
+  'filter.not_started': { fr: 'À faire', en: 'To do', es: 'Por hacer' },
+  'filter.mastered': { fr: 'Maîtrisés', en: 'Mastered', es: 'Dominados' },
+  // Status
+  'status.not_started': { fr: 'À commencer', en: 'Not started', es: 'Sin empezar' },
+  'status.in_progress': { fr: 'En cours', en: 'In progress', es: 'En curso' },
+  'status.completed': { fr: 'Complété', en: 'Completed', es: 'Completado' },
+  'status.mastered': { fr: 'Maîtrisé', en: 'Mastered', es: 'Dominado' },
+  // Progress
+  'prog.level': { fr: 'Niveau global', en: 'Overall level', es: 'Nivel global' },
+  'prog.skills': { fr: 'Compétences', en: 'Skills', es: 'Competencias' },
+  'prog.modules': { fr: 'Modules', en: 'Modules', es: 'Módulos' },
+  'prog.categories': { fr: 'Par catégorie', en: 'By category', es: 'Por categoría' },
+  'prog.recent_quiz': { fr: 'Derniers quiz', en: 'Recent quizzes', es: 'Últimos quiz' },
+  'prog.total': { fr: 'Total', en: 'Total', es: 'Total' },
+  'prog.in_progress': { fr: 'En cours', en: 'In progress', es: 'En curso' },
+  'prog.mastered': { fr: 'Maîtrisés', en: 'Mastered', es: 'Dominados' },
+  'prog.onboarding_hint': { fr: 'Discute avec Atlas pour évaluer ton niveau', en: 'Chat with Atlas to evaluate your level', es: 'Habla con Atlas para evaluar tu nivel' },
+  'prog.error': { fr: 'Erreur de chargement', en: 'Loading error', es: 'Error de carga' },
+  // Levels
+  'level.unknown': { fr: 'Non évalué', en: 'Not evaluated', es: 'No evaluado' },
+  'level.beginner': { fr: 'Débutant', en: 'Beginner', es: 'Principiante' },
+  'level.intermediate': { fr: 'Intermédiaire', en: 'Intermediate', es: 'Intermedio' },
+  'level.advanced': { fr: 'Avancé', en: 'Advanced', es: 'Avanzado' },
+  'level.expert': { fr: 'Expert', en: 'Expert', es: 'Experto' },
+  // Skills
+  'skill.crypto': { fr: 'Crypto', en: 'Crypto', es: 'Crypto' },
+  'skill.blockchain': { fr: 'Blockchain', en: 'Blockchain', es: 'Blockchain' },
+  'skill.trading': { fr: 'Trading', en: 'Trading', es: 'Trading' },
+  'skill.finance': { fr: 'Finance', en: 'Finance', es: 'Finanzas' },
+  'skill.risk': { fr: 'Gestion risques', en: 'Risk management', es: 'Gestión de riesgos' },
+};
+
+function tAtlas(key: string, lang: string): string {
+  const entry = i18n[key];
+  if (!entry) return key;
+  return entry[lang] || entry['en'] || key;
+}
+
 interface Message { role: 'user' | 'assistant'; content: string; }
 interface Conversation { id: string; title: string; message_count: number; updated_at: string; }
 interface Module { id: string; title: string; description: string; level: string; category: string; status: string; mastery_score: number; learning_objective: string; }
@@ -73,7 +143,7 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
         loadConversations();
       }
     } catch (e: any) {
-      setMessages(prev => [...prev, { role: 'assistant', content: "Erreur de connexion. Réessaie." }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: tAtlas("chat.error", lang) }]);
     }
     setLoading(false);
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 200);
@@ -98,14 +168,14 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
     return (
       <View style={s.sidebarWrap}>
         <View style={s.sidebarHeader}>
-          <Text style={s.sidebarTitle}>Conversations</Text>
+          <Text style={s.sidebarTitle}>{tAtlas("chat.conversations", lang)}</Text>
           <TouchableOpacity onPress={() => setShowSidebar(false)} data-testid="close-sidebar">
             <Ionicons name="close" size={24} color="#E2E8F0" />
           </TouchableOpacity>
         </View>
         <TouchableOpacity style={s.newConvBtn} onPress={newConversation} data-testid="new-conversation-btn">
           <Ionicons name="add-circle-outline" size={20} color="#7C3AED" />
-          <Text style={s.newConvText}>Nouvelle conversation</Text>
+          <Text style={s.newConvText}>{tAtlas("chat.new", lang)}</Text>
         </TouchableOpacity>
         <ScrollView style={{ flex: 1 }}>
           {conversations.map(c => (
@@ -117,7 +187,7 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
             >
               <View style={{ flex: 1 }}>
                 <Text style={s.convTitle} numberOfLines={1}>{c.title}</Text>
-                <Text style={s.convMeta}>{c.message_count} messages</Text>
+                <Text style={s.convMeta}>{c.message_count} {tAtlas("chat.messages", lang)}</Text>
               </View>
               <TouchableOpacity onPress={() => deleteConversation(c.id)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
                 <Ionicons name="trash-outline" size={16} color="#6B7280" />
@@ -125,7 +195,7 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
             </TouchableOpacity>
           ))}
           {conversations.length === 0 && !loadingConvos && (
-            <Text style={s.emptyText}>Aucune conversation</Text>
+            <Text style={s.emptyText}>{tAtlas("chat.empty", lang)}</Text>
           )}
         </ScrollView>
       </View>
@@ -160,8 +230,8 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
         {messages.length === 0 && (
           <View style={s.welcomeWrap}>
             <View style={s.welcomeIcon}><Ionicons name="planet" size={48} color="#7C3AED" /></View>
-            <Text style={s.welcomeTitle}>Atlas IA</Text>
-            <Text style={s.welcomeDesc}>Ton mentor crypto personnel. Pose tes questions, apprends à ton rythme.</Text>
+            <Text style={s.welcomeTitle}>{tAtlas("chat.welcome.title", lang)}</Text>
+            <Text style={s.welcomeDesc}>{tAtlas("chat.welcome.desc", lang)}</Text>
           </View>
         )}
         {messages.map((m, i) => (
@@ -188,7 +258,7 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
           style={s.input}
           value={input}
           onChangeText={setInput}
-          placeholder="Écris ton message..."
+          placeholder={tAtlas("chat.placeholder", lang)}
           placeholderTextColor="#6B7280"
           multiline
           maxLength={2000}
@@ -210,7 +280,7 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
 }
 
 // ============ MODULES VIEW ============
-function ModulesView({ token }: { token: string }) {
+function ModulesView({ token, lang }: { token: string; lang: string }) {
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string | null>(null);
@@ -235,10 +305,10 @@ function ModulesView({ token }: { token: string }) {
   };
 
   const statusConfig: Record<string, { icon: string; color: string; label: string }> = {
-    not_started: { icon: 'ellipse-outline', color: '#6B7280', label: 'À commencer' },
-    in_progress: { icon: 'play-circle', color: '#3B82F6', label: 'En cours' },
-    completed: { icon: 'checkmark-circle', color: '#10B981', label: 'Complété' },
-    mastered: { icon: 'star', color: '#F59E0B', label: 'Maîtrisé' },
+    not_started: { icon: 'ellipse-outline', color: '#6B7280', label: tAtlas('status.not_started', lang) },
+    in_progress: { icon: 'play-circle', color: '#3B82F6', label: tAtlas('status.in_progress', lang) },
+    completed: { icon: 'checkmark-circle', color: '#10B981', label: tAtlas('status.completed', lang) },
+    mastered: { icon: 'star', color: '#F59E0B', label: tAtlas('status.mastered', lang) },
   };
 
   const categoryIcons: Record<string, string> = {
@@ -256,7 +326,7 @@ function ModulesView({ token }: { token: string }) {
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
         <TouchableOpacity onPress={() => setSelectedModule(null)} style={s.backBtn} data-testid="modules-back-btn">
           <Ionicons name="arrow-back" size={20} color="#E2E8F0" />
-          <Text style={s.backText}>Retour</Text>
+          <Text style={s.backText}>{tAtlas("mod.back", lang)}</Text>
         </TouchableOpacity>
         <View style={s.moduleDetailCard}>
           <View style={[s.moduleStatusBadge, { backgroundColor: sc.color + '20' }]}>
@@ -265,11 +335,11 @@ function ModulesView({ token }: { token: string }) {
           </View>
           <Text style={s.moduleDetailTitle}>{mod.title}</Text>
           <Text style={s.moduleDetailDesc}>{mod.description}</Text>
-          {mod.learning_objective ? <Text style={s.moduleDetailObj}>Objectif : {mod.learning_objective}</Text> : null}
+          {mod.learning_objective ? <Text style={s.moduleDetailObj}>{tAtlas("mod.objective", lang)} : {mod.learning_objective}</Text> : null}
 
           {/* Mastery bar */}
           <View style={s.masterySection}>
-            <Text style={s.masteryLabel}>Maîtrise</Text>
+            <Text style={s.masteryLabel}>{tAtlas("mod.mastery", lang)}</Text>
             <View style={s.masteryBarBg}>
               <View style={[s.masteryBarFill, { width: `${mod.mastery_score || 0}%`, backgroundColor: (mod.mastery_score || 0) >= 80 ? '#10B981' : (mod.mastery_score || 0) >= 50 ? '#F59E0B' : '#3B82F6' }]} />
             </View>
@@ -282,19 +352,19 @@ function ModulesView({ token }: { token: string }) {
               {prog.concepts_understood?.length > 0 && (
                 <View style={s.conceptRow}>
                   <Ionicons name="checkmark-circle" size={14} color="#10B981" />
-                  <Text style={s.conceptText}>Compris : {prog.concepts_understood.join(', ')}</Text>
+                  <Text style={s.conceptText}>{tAtlas("mod.understood", lang)} : {prog.concepts_understood.join(', ')}</Text>
                 </View>
               )}
               {prog.concepts_weak?.length > 0 && (
                 <View style={s.conceptRow}>
                   <Ionicons name="alert-circle" size={14} color="#F59E0B" />
-                  <Text style={s.conceptText}>À revoir : {prog.concepts_weak.join(', ')}</Text>
+                  <Text style={s.conceptText}>{tAtlas("mod.weak", lang)} : {prog.concepts_weak.join(', ')}</Text>
                 </View>
               )}
               {prog.best_quiz_score > 0 && (
                 <View style={s.conceptRow}>
                   <Ionicons name="trophy" size={14} color="#F59E0B" />
-                  <Text style={s.conceptText}>Meilleur quiz : {Math.round(prog.best_quiz_score)}%</Text>
+                  <Text style={s.conceptText}>{tAtlas("mod.best_quiz", lang)} : {Math.round(prog.best_quiz_score)}%</Text>
                 </View>
               )}
             </View>
@@ -303,7 +373,7 @@ function ModulesView({ token }: { token: string }) {
           {/* Content */}
           {mod.content ? (
             <View style={s.contentSection}>
-              <Text style={s.contentTitle}>Contenu du module</Text>
+              <Text style={s.contentTitle}>{tAtlas("mod.content", lang)}</Text>
               <Text style={s.contentText}>{mod.content}</Text>
             </View>
           ) : null}
@@ -311,7 +381,7 @@ function ModulesView({ token }: { token: string }) {
           {/* Quiz history */}
           {quizzes.length > 0 && (
             <View style={s.quizHistory}>
-              <Text style={s.quizHistoryTitle}>Historique des quiz</Text>
+              <Text style={s.quizHistoryTitle}>{tAtlas("mod.quiz_history", lang)}</Text>
               {quizzes.map((q: any, i: number) => (
                 <View key={i} style={s.quizRow}>
                   <Text style={s.quizScore}>{Math.round(q.score)}%</Text>
@@ -327,10 +397,10 @@ function ModulesView({ token }: { token: string }) {
   }
 
   const filters = [
-    { key: null, label: 'Tous' },
-    { key: 'in_progress', label: 'En cours' },
-    { key: 'not_started', label: 'À faire' },
-    { key: 'mastered', label: 'Maîtrisés' },
+    { key: null, label: tAtlas('filter.all', lang) },
+    { key: 'in_progress', label: tAtlas('filter.in_progress', lang) },
+    { key: 'not_started', label: tAtlas('filter.not_started', lang) },
+    { key: 'mastered', label: tAtlas('filter.mastered', lang) },
   ];
 
   return (
@@ -353,8 +423,8 @@ function ModulesView({ token }: { token: string }) {
       ) : modules.length === 0 ? (
         <View style={s.emptyModules}>
           <Ionicons name="school-outline" size={48} color="#4B5563" />
-          <Text style={s.emptyModulesTitle}>Aucun module</Text>
-          <Text style={s.emptyModulesDesc}>Discute avec Atlas pour qu'il crée ton parcours personnalisé !</Text>
+          <Text style={s.emptyModulesTitle}>{tAtlas("mod.empty.title", lang)}</Text>
+          <Text style={s.emptyModulesDesc}>{tAtlas("mod.empty.desc", lang)}</Text>
         </View>
       ) : (
         <ScrollView contentContainerStyle={{ padding: 16, gap: 12 }}>
@@ -392,7 +462,7 @@ function ModulesView({ token }: { token: string }) {
 }
 
 // ============ PROGRESS VIEW ============
-function ProgressView({ token }: { token: string }) {
+function ProgressView({ token, lang }: { token: string; lang: string }) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -403,7 +473,7 @@ function ProgressView({ token }: { token: string }) {
   }, [token]);
 
   if (loading) return <ActivityIndicator size="large" color="#7C3AED" style={{ marginTop: 40 }} />;
-  if (!data) return <Text style={{ color: '#9CA3AF', textAlign: 'center', marginTop: 40 }}>Erreur de chargement</Text>;
+  if (!data) return <Text style={{ color: '#9CA3AF', textAlign: 'center', marginTop: 40 }}>{tAtlas('prog.error', lang)}</Text>;
 
   const profile = data.profile || {};
   const summary = data.modules_summary || {};
@@ -411,36 +481,36 @@ function ProgressView({ token }: { token: string }) {
   const quizzes = data.recent_quizzes || [];
 
   const levelColors: Record<string, string> = { unknown: '#6B7280', beginner: '#10B981', intermediate: '#F59E0B', advanced: '#EF4444', expert: '#7C3AED' };
-  const levelLabels: Record<string, string> = { unknown: 'Non évalué', beginner: 'Débutant', intermediate: 'Intermédiaire', advanced: 'Avancé', expert: 'Expert' };
+  const levelLabels = (l: string) => tAtlas(`level.${l}`, lang);
 
   const skillFields = [
-    { key: 'crypto_level', label: 'Crypto', icon: 'logo-bitcoin' },
-    { key: 'blockchain_level', label: 'Blockchain', icon: 'cube' },
-    { key: 'trading_level', label: 'Trading', icon: 'trending-up' },
-    { key: 'finance_level', label: 'Finance', icon: 'cash' },
-    { key: 'risk_management_level', label: 'Gestion risques', icon: 'shield-checkmark' },
+    { key: 'crypto_level', label: tAtlas('skill.crypto', lang), icon: 'logo-bitcoin' },
+    { key: 'blockchain_level', label: tAtlas('skill.blockchain', lang), icon: 'cube' },
+    { key: 'trading_level', label: tAtlas('skill.trading', lang), icon: 'trending-up' },
+    { key: 'finance_level', label: tAtlas('skill.finance', lang), icon: 'cash' },
+    { key: 'risk_management_level', label: tAtlas('skill.risk', lang), icon: 'shield-checkmark' },
   ];
 
   return (
     <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
       {/* Level card */}
       <View style={s.progressCard}>
-        <Text style={s.progressCardTitle}>Niveau global</Text>
+        <Text style={s.progressCardTitle}>{tAtlas('prog.level', lang)}</Text>
         <View style={s.levelRow}>
           <View style={[s.levelBadge, { backgroundColor: (levelColors[profile.overall_level] || '#6B7280') + '20' }]}>
             <Text style={[s.levelBadgeText, { color: levelColors[profile.overall_level] || '#6B7280' }]}>
-              {levelLabels[profile.overall_level] || 'Non évalué'}
+              {levelLabels(profile.overall_level || 'unknown')}
             </Text>
           </View>
           {!profile.onboarding_completed && (
-            <Text style={s.onboardingHint}>Discute avec Atlas pour évaluer ton niveau</Text>
+            <Text style={s.onboardingHint}>{tAtlas('prog.onboarding_hint', lang)}</Text>
           )}
         </View>
       </View>
 
       {/* Skills radar */}
       <View style={s.progressCard}>
-        <Text style={s.progressCardTitle}>Compétences</Text>
+        <Text style={s.progressCardTitle}>{tAtlas('prog.skills', lang)}</Text>
         {skillFields.map(sf => {
           const val = profile[sf.key] || 0;
           return (
@@ -458,18 +528,18 @@ function ProgressView({ token }: { token: string }) {
 
       {/* Modules summary */}
       <View style={s.progressCard}>
-        <Text style={s.progressCardTitle}>Modules</Text>
+        <Text style={s.progressCardTitle}>{tAtlas('prog.modules', lang)}</Text>
         <View style={s.statsRow}>
-          <View style={s.statBox}><Text style={s.statNum}>{summary.total || 0}</Text><Text style={s.statLabel}>Total</Text></View>
-          <View style={s.statBox}><Text style={[s.statNum, { color: '#3B82F6' }]}>{summary.in_progress || 0}</Text><Text style={s.statLabel}>En cours</Text></View>
-          <View style={s.statBox}><Text style={[s.statNum, { color: '#F59E0B' }]}>{summary.mastered || 0}</Text><Text style={s.statLabel}>Maîtrisés</Text></View>
+          <View style={s.statBox}><Text style={s.statNum}>{summary.total || 0}</Text><Text style={s.statLabel}>{tAtlas('prog.total', lang)}</Text></View>
+          <View style={s.statBox}><Text style={[s.statNum, { color: '#3B82F6' }]}>{summary.in_progress || 0}</Text><Text style={s.statLabel}>{tAtlas('prog.in_progress', lang)}</Text></View>
+          <View style={s.statBox}><Text style={[s.statNum, { color: '#F59E0B' }]}>{summary.mastered || 0}</Text><Text style={s.statLabel}>{tAtlas('prog.mastered', lang)}</Text></View>
         </View>
       </View>
 
       {/* Categories */}
       {Object.keys(categories).length > 0 && (
         <View style={s.progressCard}>
-          <Text style={s.progressCardTitle}>Par catégorie</Text>
+          <Text style={s.progressCardTitle}>{tAtlas('prog.categories', lang)}</Text>
           {Object.entries(categories).map(([cat, info]: [string, any]) => (
             <View key={cat} style={s.catRow}>
               <Text style={s.catName}>{cat}</Text>
@@ -483,7 +553,7 @@ function ProgressView({ token }: { token: string }) {
       {/* Recent quizzes */}
       {quizzes.length > 0 && (
         <View style={s.progressCard}>
-          <Text style={s.progressCardTitle}>Derniers quiz</Text>
+          <Text style={s.progressCardTitle}>{tAtlas('prog.recent_quiz', lang)}</Text>
           {quizzes.slice(0, 5).map((q: any, i: number) => (
             <View key={i} style={s.quizRow}>
               <Ionicons name="document-text" size={14} color="#7C3AED" />
@@ -502,6 +572,7 @@ function ProgressView({ token }: { token: string }) {
 export default function LearnScreen() {
   const { token } = useAuthStore();
   const { language } = useTranslation();
+  const lang = language || 'fr';
   const [tab, setTab] = useState<Tab>('chat');
 
   if (!token) {
@@ -509,8 +580,8 @@ export default function LearnScreen() {
       <SafeAreaView style={s.container}>
         <View style={s.authPrompt}>
           <Ionicons name="lock-closed" size={48} color="#4B5563" />
-          <Text style={s.authTitle}>Connexion requise</Text>
-          <Text style={s.authDesc}>Connecte-toi pour accéder à Atlas IA</Text>
+          <Text style={s.authTitle}>{tAtlas("auth.required", lang)}</Text>
+          <Text style={s.authDesc}>{tAtlas("auth.desc", lang)}</Text>
         </View>
       </SafeAreaView>
     );
@@ -521,9 +592,9 @@ export default function LearnScreen() {
       {/* Top tab bar */}
       <View style={s.topTabs}>
         {([
-          { key: 'chat' as Tab, icon: 'chatbubbles', label: 'Chat' },
-          { key: 'modules' as Tab, icon: 'library', label: 'Modules' },
-          { key: 'progress' as Tab, icon: 'stats-chart', label: 'Progression' },
+          { key: 'chat' as Tab, icon: 'chatbubbles', label: tAtlas('tab.chat', lang) },
+          { key: 'modules' as Tab, icon: 'library', label: tAtlas('tab.modules', lang) },
+          { key: 'progress' as Tab, icon: 'stats-chart', label: tAtlas('tab.progress', lang) },
         ]).map(t => (
           <TouchableOpacity
             key={t.key}
@@ -539,8 +610,8 @@ export default function LearnScreen() {
 
       {/* Content */}
       {tab === 'chat' && <ChatView token={token} lang={language || 'fr'} />}
-      {tab === 'modules' && <ModulesView token={token} />}
-      {tab === 'progress' && <ProgressView token={token} />}
+      {tab === 'modules' && <ModulesView token={token} lang={language || 'fr'} />}
+      {tab === 'progress' && <ProgressView token={token} lang={language || 'fr'} />}
     </SafeAreaView>
   );
 }

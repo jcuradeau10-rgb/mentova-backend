@@ -591,7 +591,9 @@ async def atlas_chat(data: ChatRequest, credentials: HTTPAuthorizationCredential
 
     # Build context
     context = await build_context(user_id)
-    system_msg = ATLAS_SYSTEM_PROMPT + f"\n\nCURRENT USER CONTEXT:\n{context}"
+    lang_map = {"fr": "French", "en": "English", "es": "Spanish"}
+    lang_instruction = f"\n\nIMPORTANT: You MUST respond entirely in {lang_map.get(data.lang, 'French')}. Every word of your response must be in {lang_map.get(data.lang, 'French')}."
+    system_msg = ATLAS_SYSTEM_PROMPT + f"\n\nCURRENT USER CONTEXT:\n{context}" + lang_instruction
 
     # Build messages from conversation history (last 30 messages)
     history = conversation.get("messages", [])[-30:]

@@ -18,29 +18,28 @@
 - **News** - Translated articles FR/EN/ES
 - **Profile** - Account settings
 
-### Atlas AI v3 - Backend COMPLETE
-Database collections created:
-- user_learning_profiles
-- atlas_memories
-- atlas_conversations
-- learning_modules
-- module_progress
-- quiz_attempts
+### Atlas AI v3 - COMPLETE (Backend + Frontend)
+Backend:
+- GPT-5.6 Terra with user's OpenAI API key
+- 7 MongoDB collections (user_learning_profiles, atlas_memories, atlas_conversations, learning_modules, module_progress, quiz_attempts)
+- 10 OpenAI function tools for persistent learning
+- Language support: FR/EN/ES (forced via system prompt)
+- Rate limiting: 10/min, 200/day
+- Auth: JWT user isolation
 
-10 OpenAI function tools implemented:
-- get_user_profile, update_user_profile, save_memory
-- get_learning_history, get_modules, create_learning_module
-- update_learning_module, record_quiz_result, update_mastery, mark_module_mastered
+Frontend (learn.tsx):
+- 3 sub-tabs: Chat, Modules, Progression
+- Full i18n with tAtlas() helper (FR/EN/ES)
+- Chat: conversation history sidebar, new/delete conversations, real-time responses
+- Modules: filter bar (all/in_progress/not_started/mastered), detail view with mastery bars, quiz history
+- Progress: level badge, 5 skill bars, modules summary, category breakdown, recent quizzes
 
 API Endpoints:
-- POST /api/atlas/chat (main chat with function calling)
-- GET /api/atlas/conversations (list)
-- GET /api/atlas/conversations/:id (detail)
-- DELETE /api/atlas/conversations/:id
-- GET /api/atlas/modules (user's modules)
-- GET /api/atlas/modules/:id (module detail + progress + quizzes)
-- GET /api/atlas/profile (learning profile + stats)
-- GET /api/atlas/progress (detailed progress by category)
+- POST /api/atlas/chat
+- GET /api/atlas/conversations, GET/DELETE /api/atlas/conversations/:id
+- GET /api/atlas/modules, GET /api/atlas/modules/:id
+- GET /api/atlas/profile
+- GET /api/atlas/progress
 
 ### Landing Page (DONE)
 - Editorial design, solid colors, asymmetrical layouts
