@@ -1,194 +1,169 @@
-import React from 'react';
-import { Tabs } from 'expo-router';
+import React, { useState, useEffect } from 'react';
+import { Tabs, usePathname, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { View, StyleSheet, Platform, Text } from 'react-native';
+import { View, Text, StyleSheet, Platform, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { useTranslation } from '../../store/languageStore';
-import InstallPWAPrompt from '../../components/InstallPWAPrompt';
+import { useAuthStore } from '../../store/authStore';
 
-// Custom tab label component that re-renders when language changes
-function TranslatedTabLabel({ labelKey, focused }: { labelKey: string; focused: boolean }) {
-  const { t } = useTranslation();
+const { width: SCREEN_W } = Dimensions.get('window');
+const IS_WIDE = SCREEN_W > 768;
+
+const NAV_ITEMS = [
+  { name: 'learn', icon: 'planet', label: 'Atlas AI', labelKey: 'nav.atlas' },
+  { name: 'index', icon: 'home', label: 'Home', labelKey: 'nav.home' },
+  { name: 'market', icon: 'trending-up', label: 'Market', labelKey: 'nav.market' },
+  { name: 'news', icon: 'newspaper', label: 'News', labelKey: 'nav.news' },
+  { name: 'profile', icon: 'person', label: 'Profile', labelKey: 'nav.profile' },
+];
+
+function Sidebar({ state, descriptors, navigation }: any) {
+  const { t, language } = useTranslation();
+  const { user, token } = useAuthStore();
+  const router = useRouter();
+  const [collapsed, setCollapsed] = useState(!IS_WIDE);
+  const [isVip, setIsVip] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (token) {
+      const API = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+      fetch(`${API}/api/vip/permissions`, { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.json()).then(d => setIsVip(!!d.is_vip)).catch(() => {});
+    }
+  }, [token]);
+
+  const activeIndex = state.index;
+  const w = collapsed ? 56 : 240;
+
   return (
-    <Text style={[
-      styles.tabBarLabel,
-      { color: focused ? '#7C3AED' : '#5A5A6E' }
-    ]}>
-      {t(labelKey)}
-    </Text>
-  );
-}
-
-export default function TabLayout() {
-  const { t, language, isLoaded } = useTranslation();
-
-  if (!isLoaded) {
-    return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#7C3AED', opacity: 0.5 }} />
+    <View style={[s.sidebar, { width: w }]}>
+      {/* Top: Logo + Toggle */}
+      <View style={s.sideTop}>
+        {!collapsed && <Text style={s.logo}>Mentova<Text style={s.logoDot}>.</Text></Text>}
+        <TouchableOpacity style={s.toggleBtn} onPress={() => setCollapsed(!collapsed)} testID="sidebar-toggle">
+          <Ionicons name={collapsed ? 'menu' : 'close'} size={20} color="#94A3B8" />
+        </TouchableOpacity>
       </View>
-    );
-  }
 
-  return (
-    <View style={styles.container}>
-      <InstallPWAPrompt />
-      <View style={styles.desktopWrapper}>
-      <Tabs
-        key={`tabs-${language}`}
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: styles.tabBar,
-          tabBarActiveTintColor: '#FFFFFF',
-          tabBarInactiveTintColor: '#5A5A6E',
-          tabBarItemStyle: styles.tabBarItem,
-          tabBarShowLabel: true,
-        }}
+      {/* New Chat */}
+      <TouchableOpacity
+        style={s.newChatBtn}
+        onPress={() => { navigation.navigate('learn'); }}
+        testID="sidebar-new-chat-button"
       >
-        {/* ── 1. ATLAS AI (Primary) ── */}
-        <Tabs.Screen
-          name="learn"
-          options={{
-            title: 'Atlas',
-            tabBarLabel: ({ focused }) => (
-              <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>Atlas</Text>
-            ),
-            tabBarIcon: ({ focused }) => (
-              <View style={[styles.tabIconWrap, focused && styles.tabIconActive]}>
-                <Ionicons name={focused ? 'planet' : 'planet-outline'} size={22} color={focused ? '#FFF' : '#5A5A6E'} />
-              </View>
-            ),
-          }}
-        />
+        <Ionicons name="add-circle" size={20} color="#7C3AED" />
+        {!collapsed && <Text style={s.newChatText}>{t('nav.newChat') || 'New Chat'}</Text>}
+      </TouchableOpacity>
 
-        {/* ── 2. ACCUEIL ── */}
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: t('nav.home'),
-            tabBarLabel: ({ focused }) => (
-              <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{t('nav.home')}</Text>
-            ),
-            tabBarIcon: ({ focused }) => (
-              <View style={[styles.tabIconWrap, focused && styles.tabIconActive]}>
-                <Ionicons name={focused ? 'home' : 'home-outline'} size={22} color={focused ? '#FFF' : '#5A5A6E'} />
-              </View>
-            ),
-          }}
-        />
+      {/* Nav Items */}
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+        {state.routes.map((route: any, i: number) => {
+          const navItem = NAV_ITEMS.find(n => n.name === route.name);
+          if (!navItem) return null;
+          const isActive = activeIndex === i;
+          return (
+            <TouchableOpacity
+              key={route.key}
+              style={[s.navItem, isActive && s.navItemActive]}
+              onPress={() => navigation.navigate(route.name)}
+              testID={`sidebar-nav-${navItem.name}`}
+            >
+              <Ionicons
+                name={(isActive ? navItem.icon : `${navItem.icon}-outline`) as any}
+                size={20}
+                color={isActive ? '#7C3AED' : '#64748B'}
+              />
+              {!collapsed && (
+                <Text style={[s.navLabel, isActive && s.navLabelActive]}>
+                  {t(navItem.labelKey) || navItem.label}
+                </Text>
+              )}
+            </TouchableOpacity>
+          );
+        })}
 
-        {/* ── 3. MARCHÉ ── */}
-        <Tabs.Screen
-          name="market"
-          options={{
-            title: t('nav.market'),
-            tabBarLabel: ({ focused }) => (
-              <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{t('nav.market')}</Text>
-            ),
-            tabBarIcon: ({ focused }) => (
-              <View style={[styles.tabIconWrap, focused && styles.tabIconActive]}>
-                <Ionicons name={focused ? 'trending-up' : 'trending-up-outline'} size={22} color={focused ? '#FFF' : '#5A5A6E'} />
-              </View>
-            ),
-          }}
-        />
+        {/* VIP */}
+        <TouchableOpacity
+          style={[s.navItem, s.vipItem]}
+          onPress={() => router.push(isVip ? '/vip/hub' : '/vip')}
+          testID="sidebar-vip-button"
+        >
+          <Ionicons name="diamond" size={20} color="#FFD700" />
+          {!collapsed && (
+            <Text style={[s.navLabel, { color: '#FFD700' }]}>
+              {isVip ? 'VIP Hub' : 'VIP'}
+            </Text>
+          )}
+        </TouchableOpacity>
+      </ScrollView>
 
-        {/* ── 4. NEWS ── */}
-        <Tabs.Screen
-          name="news"
-          options={{
-            title: t('nav.news'),
-            tabBarLabel: ({ focused }) => (
-              <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{t('nav.news')}</Text>
-            ),
-            tabBarIcon: ({ focused }) => (
-              <View style={[styles.tabIconWrap, focused && styles.tabIconActive]}>
-                <Ionicons name={focused ? 'newspaper' : 'newspaper-outline'} size={22} color={focused ? '#FFF' : '#5A5A6E'} />
-              </View>
-            ),
-          }}
-        />
-
-        {/* ── 5. PROFIL ── */}
-        <Tabs.Screen
-          name="profile"
-          options={{
-            title: t('nav.profile'),
-            tabBarLabel: ({ focused }) => (
-              <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{t('nav.profile')}</Text>
-            ),
-            tabBarIcon: ({ focused }) => (
-              <View style={[styles.tabIconWrap, focused && styles.tabIconActive]}>
-                <Ionicons name={focused ? 'person' : 'person-outline'} size={22} color={focused ? '#FFF' : '#5A5A6E'} />
-              </View>
-            ),
-          }}
-        />
-
-        {/* ── HIDDEN TABS (code kept, not visible in tab bar) ── */}
-        <Tabs.Screen name="community" options={{ href: null }} />
-        <Tabs.Screen name="ai" options={{ href: null }} />
-        <Tabs.Screen name="mentors" options={{ href: null }} />
-      </Tabs>
+      {/* Bottom: User */}
+      <View style={s.sideBottom}>
+        <TouchableOpacity style={s.userRow} onPress={() => navigation.navigate('profile')} testID="sidebar-user-profile">
+          <View style={[s.userAvatar, isVip && { borderColor: '#FFD700' }]}>
+            <Text style={s.userInitial}>{(user?.name || user?.email || 'U')[0].toUpperCase()}</Text>
+          </View>
+          {!collapsed && (
+            <View style={{ flex: 1 }}>
+              <Text style={s.userName} numberOfLines={1}>{user?.name || 'User'}</Text>
+              <Text style={s.userPlan}>{isVip ? 'VIP' : 'Free'}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    position: 'relative',
-    backgroundColor: '#06060F',
-    ...(Platform.OS === 'web' ? { alignItems: 'center' } : {}),
-  },
-  desktopWrapper: {
-    flex: 1,
-    width: '100%',
-    maxWidth: Platform.OS === 'web' ? 560 : undefined,
-    ...(Platform.OS === 'web' ? { 
-      borderLeftWidth: 1, 
-      borderRightWidth: 1, 
-      borderColor: 'rgba(124, 58, 237, 0.08)',
-    } : {}),
-  },
-  tabBar: {
-    backgroundColor: '#06060F',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(124, 58, 237, 0.08)',
-    height: Platform.OS === 'ios' ? 84 : 64,
-    paddingTop: 4,
-    paddingBottom: Platform.OS === 'ios' ? 22 : 6,
-    paddingHorizontal: 8,
-    elevation: 0,
-  },
-  tabBarItem: {
-    paddingTop: 4,
-    paddingBottom: 0,
-  },
-  tabLabel: {
-    fontSize: 10,
-    fontWeight: '500',
-    color: '#4A4A5E',
-    marginTop: 2,
-  },
-  tabLabelActive: {
-    color: '#C4B5FD',
-    fontWeight: '700',
-  },
-  tabIconWrap: {
-    width: 40,
-    height: 34,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tabIconActive: {
-    backgroundColor: 'rgba(124, 58, 237, 0.25)',
-  },
-  tabBarLabel: {
-    fontSize: 10,
-    fontWeight: '500',
-    color: '#4A4A5E',
-    marginTop: 2,
-  },
+export default function TabLayout() {
+  const { language, isLoaded } = useTranslation();
+
+  if (!isLoaded) {
+    return <View style={s.container}><View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#7C3AED', opacity: 0.5 }} /></View></View>;
+  }
+
+  return (
+    <View style={s.container}>
+      <Tabs
+        key={`tabs-${language}`}
+        tabBar={(props) => <Sidebar {...props} />}
+        screenOptions={{ headerShown: false }}
+      >
+        <Tabs.Screen name="learn" options={{ title: 'Atlas' }} />
+        <Tabs.Screen name="index" options={{ title: 'Home' }} />
+        <Tabs.Screen name="market" options={{ title: 'Market' }} />
+        <Tabs.Screen name="news" options={{ title: 'News' }} />
+        <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
+        <Tabs.Screen name="ai" options={{ href: null }} />
+        <Tabs.Screen name="community" options={{ href: null }} />
+        <Tabs.Screen name="mentors" options={{ href: null }} />
+      </Tabs>
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#06060F', flexDirection: 'row' },
+
+  sidebar: { backgroundColor: '#0A0A1A', borderRightWidth: 1, borderRightColor: 'rgba(124,58,237,0.12)', paddingTop: Platform.OS === 'web' ? 16 : 50, paddingBottom: 12, justifyContent: 'flex-start' },
+  sideTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, marginBottom: 16, minHeight: 32 },
+  logo: { fontSize: 20, fontWeight: '800', color: '#F8FAFC', letterSpacing: -0.5 },
+  logoDot: { color: '#7C3AED' },
+  toggleBtn: { width: 32, height: 32, borderRadius: 8, backgroundColor: 'rgba(124,58,237,0.08)', justifyContent: 'center', alignItems: 'center' },
+
+  newChatBtn: { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 8, marginBottom: 16, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(124,58,237,0.25)', borderStyle: 'dashed' },
+  newChatText: { fontSize: 13, fontWeight: '600', color: '#7C3AED' },
+
+  navItem: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 12, marginHorizontal: 6, marginBottom: 2, borderRadius: 10 },
+  navItemActive: { backgroundColor: 'rgba(124,58,237,0.1)' },
+  navLabel: { fontSize: 14, color: '#94A3B8', fontWeight: '500' },
+  navLabelActive: { color: '#F8FAFC', fontWeight: '600' },
+  vipItem: { marginTop: 12, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.04)', paddingTop: 16 },
+
+  sideBottom: { borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.04)', paddingTop: 10, paddingHorizontal: 8 },
+  userRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, paddingHorizontal: 4 },
+  userAvatar: { width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(124,58,237,0.2)', justifyContent: 'center', alignItems: 'center', borderWidth: 1.5, borderColor: 'rgba(124,58,237,0.3)' },
+  userInitial: { fontSize: 13, fontWeight: '700', color: '#7C3AED' },
+  userName: { fontSize: 13, fontWeight: '600', color: '#F8FAFC' },
+  userPlan: { fontSize: 11, color: '#64748B' },
 });

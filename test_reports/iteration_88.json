@@ -1,0 +1,32 @@
+{
+  "summary": "Tested new ChatGPT/Claude-style sidebar UI restructuring (iter 88). All architecture change goals working: (1) Onboarding page at / renders Mentova brand, 'Learn crypto / with Atlas AI' title, 4 feature pills (Personalized Learning, Chart Analysis, Market Intelligence, Daily Briefing), Get Started + 'I have an account' buttons. (2) Login page shows 'Welcome back', email/password inputs with mail/lock icons, Sign In button, Forgot password link, Sign Up link; login with jcuradeau.7@gmail.com works and redirects to /learn. (3) After login, LEFT SIDEBAR renders (not bottom tabs) with Mentova logo, New Chat button, 5 nav items (Atlas AI, Home, Market, News, Profile), VIP Hub link, and Mike price / VIP avatar at bottom. (4) Sidebar toggle collapses/expands (56px<->240px). (5) Atlas chat (/learn) is default view after login. (6) Clicking sidebar nav items navigates correctly to /market, /news, /, /profile, /learn. (7) Backend: GET /api/vip/permissions returns exactly the 6 VIP feature flags (atlas_memory, chart_analysis, market_intelligence, personalized_learning, daily_briefing, advanced_tools) with is_vip=true, plan=vip. (8) Atlas chat send works: POST /api/atlas/chat returned 'Hi!' response and rendered in UI. testID props ARE now correctly mapped to data-testid on web (sidebar-toggle, sidebar-new-chat-button, sidebar-nav-*, sidebar-vip-button, sidebar-user-profile all found in DOM) - iter87 concern resolved.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "app/(tabs)/_layout.tsx Sidebar", "issue": "Sidebar shows raw translation keys 'nav.newChat' and 'nav.atlas' instead of translated labels. Root cause: t('nav.atlas') returns the key itself (not undefined) when missing from translations, so the `t(key) || fallback` OR-short-circuit never fires. Keys 'nav.newChat' and 'nav.atlas' are NOT defined in /app/frontend/i18n/translations.ts (only nav.home, nav.market, nav.news, nav.profile, nav.learn, nav.ai, nav.community, nav.mentors exist). Fix: EITHER add 'nav.newChat' and 'nav.atlas' entries to en/fr/es sections of translations.ts OR change fallback to explicit check (e.g., const label = translations[lang][key] ?? navItem.label).", "selector": "[data-testid=\"sidebar-new-chat-button\"], [data-testid=\"sidebar-nav-learn\"]", "priority": "MEDIUM"},
+      {"component": "app/(tabs)/learn.tsx header", "issue": "The 'Chat / Modules / Progress' segmented header (from old learn tab) is still visible at the top of the Atlas view and overlaps visually near the sidebar-toggle hamburger. In the new sidebar-first architecture, this internal tab bar looks redundant / cluttered. Consider removing the top segmented control since nav is now via sidebar.", "selector": "learn top segmented tabs", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/learn (Atlas)", "issues": ["Top 'Chat/Modules/Progress' segmented header overlaps visually with sidebar hamburger icon at 22px from top-left; feels vestigial given the new sidebar navigation model"]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_vip_final_system.py"],
+  "action_items": [
+    "Add missing translation keys 'nav.newChat' (New Chat / Nouveau chat / Nuevo chat) and 'nav.atlas' (Atlas AI) to en/fr/es blocks in /app/frontend/i18n/translations.ts — OR — fix the fallback logic in /app/frontend/app/(tabs)/_layout.tsx lines 55 and 78 (t() returns key on miss, so `t(k) || fallback` never falls back).",
+    "Optional: remove or hide the vestigial 'Chat / Modules / Progress' segmented header at the top of learn.tsx now that navigation is done via the left sidebar."
+  ],
+  "critical_code_review_comments": [
+    "_layout.tsx Sidebar component makes a fresh fetch to /api/vip/permissions on every mount/token change (line 30) — consider caching in a store or using the existing VIP permissions hook to avoid duplicate calls on every tab switch.",
+    "Sidebar uses Dimensions.get('window') once at module load (IS_WIDE constant) — this won't update on window resize on web; use useWindowDimensions() hook so the sidebar auto-expands/collapses when the user resizes the browser.",
+    "translations.ts is 5786+ lines — split by feature/namespace (nav.*, atlas.*, vip.*) into separate files to keep it maintainable."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100%", "frontend": "90%"},
+  "test_credentials": "Super admin (VIP permanent): jcuradeau.7@gmail.com / Crypto2026!",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "New sidebar layout is stable. All data-testids on sidebar are wired correctly (RN Web testID -> data-testid). Only pending issue is two missing translation keys (nav.newChat, nav.atlas) causing raw keys to appear as sidebar labels. To reproduce: login as VIP -> see left sidebar top items show 'nav.newChat' and 'nav.atlas' instead of 'New Chat' and 'Atlas AI'. To verify a fix: after adding keys or fixing fallback, page.evaluate on /learn should NOT contain 'nav.newChat' or 'nav.atlas' text.",
+  "rca of the issue": "Root cause of the sidebar label bug: the languageStore.t() function returns the requested key itself when the key is missing (see /app/frontend/store/languageStore.ts line 97: `const raw = translations[language]?.[key] || translations['en']?.[key] || key;`). In /app/frontend/app/(tabs)/_layout.tsx line 55 and 78, the code does `t('nav.newChat') || 'New Chat'` and `t(navItem.labelKey) || navItem.label` expecting `t()` to return falsy for missing keys, but it always returns a truthy string (the key). Since 'nav.newChat' and 'nav.atlas' are not registered in translations.ts, they appear verbatim. Home/Market/News/Profile work because nav.home/nav.market/nav.news/nav.profile ARE defined in translations.ts. Fix options: (A) add the missing keys to translations.ts en/fr/es sections, (B) change t() to return null/undefined on miss and let call sites handle fallback, or (C) rewrite sidebar to use direct labels without t() for the two missing keys."
+}

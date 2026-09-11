@@ -7,64 +7,64 @@
 - **AI**: OpenAI GPT-5.6 Terra (native SDK)
 - **Payments**: Stripe Live ($21.99/month)
 
-## VIP System — FINAL (Sept 11, 2026)
+## UI Architecture — ChatGPT/Claude Style (Sept 11, 2026)
 
-### The 6 VIP Features
-1. **Memory** — Atlas retains user preferences, level, goals between sessions
-2. **Chart Analysis** — Image upload in Atlas chat for technical analysis
-3. **Market Intelligence** — Atlas injects real-time news + prices into context
-4. **Personalized Learning** — Adaptive education based on user profile
-5. **Daily Briefing** — AI-generated market summary (GPT-5.6 Terra, cached 4h, FR/EN/ES)
-6. **Advanced Tools** — Rainbow Chart, Halving countdown, alerts, virtual portfolio
+### Layout: Sidebar + Main Canvas
+- **No more bottom tabs** — replaced with collapsible left sidebar
+- **Sidebar**: Mentova logo, New Chat, Atlas AI, Home, Market, News, Profile, VIP Hub, User avatar
+- **Main Canvas**: Atlas chat by default (like ChatGPT)
+- **Collapsed**: 56px (icons only) / **Expanded**: 240px (icons + labels)
 
-### NOT Included (by specification)
-- ❌ Fear & Greed (removed from all UI, API, and AI prompts)
-- ❌ Voice/vocal features
-- ❌ Visible message counters/quotas
+### Pages Redesigned
+- **Onboarding** (`/`): Clean, Atlas-centric intro with "Learn crypto with Atlas AI", 4 feature pills, Get Started / I have an account CTAs
+- **Login** (`/login`): Glassmorphism style, "Welcome back", icon inputs, violet accent
+- **Register** (`/register`): Same style, "Create account", 4 fields
+- **Main App** (`/(tabs)/_layout.tsx`): Custom sidebar as tabBar
+
+### Design System
+- Background: #06060F / #0A0A1A
+- Surface: #120E26
+- Primary: #7C3AED (violet)
+- VIP Gold: #FFD700
+- Text: #F8FAFC / #94A3B8 / #64748B
+
+## VIP System — 6 Features
+1. Memory — Atlas persistent memory for VIP users
+2. Chart Analysis — Image upload in Atlas chat
+3. Market Intelligence — News + market data in Atlas context
+4. Personalized Learning — Adaptive education
+5. Daily Briefing — AI-generated market summary
+6. Advanced Tools — Rainbow, Halving, alerts, portfolio
+
+### NOT Included
+- ❌ Fear & Greed (removed everywhere including AI prompts)
+- ❌ Voice/vocal
+- ❌ Visible message counters
 
 ### Smart Upgrade Prompt
-- Backend tracks FREE user usage invisibly
-- After 15+ lifetime + 8+ session requests, `upgrade_prompt: true` in chat response
-- Frontend shows elegant VIP suggestion (dismissible, non-blocking)
-- 24h cooldown between prompts
-- VIP users never see it
+- Invisible trigger for FREE users after sustained usage
+- Non-blocking, dismissible, 24h cooldown
 
-### Protection System
-- Invisible rate limiting (no counters, no quotas shown)
-- Anti-abuse: burst detection, concurrent limits, anomaly thresholds
-- Cost tracking: every request logged (tokens, cost, duration)
-- All configurable via admin API
-
-### Stripe
+### Stripe: $21.99/month
 - Product: Mentova VIP (auto-created)
-- Price: $21.99/month (price_1UEV6kAdwzWILqbUTTxVYjsQ)
-- Full lifecycle: checkout, portal, webhooks (created/updated/deleted/paid/failed)
-- Webhook URL: POST /api/webhook/stripe
-
-### Frontend Pages
-- `/vip` — Sales page (6 features, $21.99, Stripe checkout)
-- `/vip/hub` — VIP Hub (briefing, 6 feature cards, Open Atlas CTA)
-- `/vip/success` — Post-payment
-- Profile: VIP badge + VIP Hub menu
-- Home: VIP badge in header
-- Atlas: Image upload (VIP), Smart Upgrade Prompt (FREE)
+- Price: price_1UEV6kAdwzWILqbUTTxVYjsQ
 
 ## Credentials
 - Super Admin: jcuradeau.7@gmail.com / Crypto2026!
 
 ## Backlog
 ### P0
-- Configure Stripe webhook URL + STRIPE_WEBHOOK_SECRET in Render
-- Deploy updated backend to Render
+- Configure Stripe webhook + STRIPE_WEBHOOK_SECRET in Render
+- Deploy to Render
 
 ### P1
-- CoinGecko API key renewal (401)
-- PWA install prompt overlapping chat input
+- Personalized daily briefing (based on user interests)
+- CoinGecko API key renewal
 
 ### P2
 - Community forum
 - Referral system
 
 ### P3
-- Technical indicators (RSI, Bollinger)
-- reCAPTCHA on auth forms
+- Technical indicators
+- reCAPTCHA
