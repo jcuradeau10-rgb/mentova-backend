@@ -134,28 +134,26 @@ function Sidebar({ state, navigation }: any) {
         {showLabels && <Text style={[st.newChatText, { color: c.primary }]}>{t('nav.newChat') || 'New Chat'}</Text>}
       </TouchableOpacity>
 
-      {/* Conversations — scrollable, capped height */}
+      {/* Conversations — flexible height, scrollable only if many */}
       {showLabels && convGroups.length > 0 && (
-        <ScrollView style={st.convScroll} showsVerticalScrollIndicator={false} nestedScrollEnabled>
-          <View style={st.convSection}>
-            {convGroups.map((group) => (
-              <View key={group.label}>
-                <Text style={[st.convGroupLabel, { color: c.textMuted }]}>{group.label}</Text>
-                {group.items.slice(0, 8).map((conv) => (
-                  <TouchableOpacity
-                    key={conv.id}
-                    style={[st.convItem, selectedConversationId === conv.id && { backgroundColor: c.surfaceHover }]}
-                    onPress={() => handleSelectConv(conv.id)}
-                    testID={`sidebar-conv-${conv.id}`}
-                  >
-                    <Ionicons name="chatbubble-outline" size={14} color={selectedConversationId === conv.id ? c.primary : c.textMuted} />
-                    <Text style={[st.convTitle, { color: selectedConversationId === conv.id ? c.text : c.textSecondary }]} numberOfLines={1}>{conv.title}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            ))}
-          </View>
-        </ScrollView>
+        <View style={st.convSection}>
+          {convGroups.map((group) => (
+            <View key={group.label}>
+              <Text style={[st.convGroupLabel, { color: c.textMuted }]}>{group.label}</Text>
+              {group.items.slice(0, 10).map((conv) => (
+                <TouchableOpacity
+                  key={conv.id}
+                  style={[st.convItem, selectedConversationId === conv.id && { backgroundColor: c.surfaceHover }]}
+                  onPress={() => handleSelectConv(conv.id)}
+                  testID={`sidebar-conv-${conv.id}`}
+                >
+                  <Ionicons name="chatbubble-outline" size={14} color={selectedConversationId === conv.id ? c.primary : c.textMuted} />
+                  <Text style={[st.convTitle, { color: selectedConversationId === conv.id ? c.text : c.textSecondary }]} numberOfLines={1}>{conv.title}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          ))}
+        </View>
       )}
 
       {/* Collapsed: just show Atlas icon */}
@@ -275,7 +273,6 @@ const st = StyleSheet.create({
   newChatText: { fontSize: 13, fontWeight: '600' },
 
   // Conversations
-  convScroll: { maxHeight: 280, flexShrink: 1 },
   convSection: { paddingHorizontal: 8, marginBottom: 4 },
   convGroupLabel: { fontSize: 11, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, paddingHorizontal: 4, paddingVertical: 6, marginTop: 4 },
   convItem: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 8, borderRadius: 8, marginBottom: 1 },

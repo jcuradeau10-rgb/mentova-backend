@@ -565,23 +565,15 @@ async def build_context(user_id: str, is_vip: bool = False) -> str:
 
         # VIP Market Intelligence: inject real-time news + market data
         if is_vip:
-            # Fetch live news from the RSS cache (populated by server.py)
-            import sys
-            sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            # Read news from the global RSS cache in server.py
             try:
-                import httpx
-                async with httpx.AsyncClient(timeout=5) as _http:
-                    # Fetch from our own internal news endpoint
-                    base = os.environ.get("EXPO_PUBLIC_BACKEND_URL", "http://localhost:8001")
-                    news_resp = await _http.get(f"http://localhost:8001/api/news")
-                    if news_resp.status_code == 200:
-                        news_data = news_resp.json()
-                        articles = news_data.get("articles", [])[:6]
-                        if articles:
-                            news_lines = [f"- [{a.get('source','')}] {a.get('title','')}" for a in articles]
-                            parts.append(f"RECENT CRYPTO NEWS (use for context when relevant):\n" + "\n".join(news_lines))
-            except Exception:
-                pass
+                from server import _rss_news_cache
+                articles = _rss_news_cache.get("articles", [])[:6]
+                if articles:
+                    news_lines = [f"- [{a.get('source','')}] {a.get('title','')}" for a in articles]
+                    parts.append(f"RECENT CRYPTO NEWS (use for context when relevant):\n" + "\n".join(news_lines))
+            except Exception as e:
+                logger.debug(f"Could not load RSS cache: {e}")
 
             # Also check DB for daily briefing data
             from datetime import datetime as _dt, timezone as _tz
