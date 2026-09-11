@@ -71,6 +71,8 @@ const i18n: Record<string, Record<string, string>> = {
   'upgrade.title': { fr: 'Atlas peut aller encore plus loin', en: 'Atlas can go even further', es: 'Atlas puede ir aun mas lejos' },
   'upgrade.desc': { fr: 'Vous utilisez deja Atlas regulierement. Avec VIP, beneficiez d\'une memoire personnalisee, de l\'analyse de graphiques, et d\'une experience Atlas beaucoup plus complete.', en: 'You already use Atlas regularly. With VIP, get personalized memory, chart analysis, and a much more complete Atlas experience.', es: 'Ya usas Atlas regularmente. Con VIP, obtendras memoria personalizada, analisis de graficos y una experiencia Atlas mucho mas completa.' },
   'upgrade.cta': { fr: 'Passer a VIP', en: 'Upgrade to VIP', es: 'Pasar a VIP' },
+  'degrade.title': { fr: 'Atlas fonctionne en mode reduit', en: 'Atlas is running in reduced mode', es: 'Atlas esta en modo reducido' },
+  'degrade.desc': { fr: 'Vous avez beaucoup utilise Atlas — c\'est genial ! Pour retrouver la version complete avec des reponses plus detaillees, passez a VIP.', en: 'You\'ve used Atlas a lot — that\'s great! To get back the full version with more detailed answers, upgrade to VIP.', es: 'Has usado mucho Atlas — eso es genial! Para volver a la version completa con respuestas mas detalladas, pasa a VIP.' },
   // Welcome Suggestions
   'sug.1': { fr: 'Qu\'est-ce que le Bitcoin et comment ca fonctionne ?', en: 'What is Bitcoin and how does it work?', es: 'Que es Bitcoin y como funciona?' },
   'sug.2': { fr: 'Explique-moi la DeFi simplement', en: 'Explain DeFi in simple terms', es: 'Explicame DeFi de forma sencilla' },
@@ -120,6 +122,7 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
   const [isVip, setIsVip] = useState(false);
   const [imageAnalyzing, setImageAnalyzing] = useState(false);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [modelDegraded, setModelDegraded] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const router = useRouter();
 
@@ -220,6 +223,9 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
         setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
         if (data.upgrade_prompt && !isVip) {
           setShowUpgradePrompt(true);
+        }
+        if (data.model_degraded && !isVip) {
+          setModelDegraded(true);
         }
         if (!activeConvId && data.conversation_id) {
           setActiveConvId(data.conversation_id);
@@ -405,6 +411,23 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
           </View>
         )}
       </ScrollView>
+
+      {/* Model Degradation Banner (FREE users after threshold) */}
+      {modelDegraded && !isVip && (
+        <View style={s.degradeBanner} data-testid="degrade-banner">
+          <View style={s.degradeContent}>
+            <Ionicons name="warning" size={18} color="#F59E0B" />
+            <View style={{ flex: 1 }}>
+              <Text style={s.degradeTitle}>{tAtlas("degrade.title", lang)}</Text>
+              <Text style={s.degradeDesc}>{tAtlas("degrade.desc", lang)}</Text>
+            </View>
+          </View>
+          <TouchableOpacity style={s.degradeCta} onPress={() => router.push('/vip')} data-testid="degrade-cta-btn">
+            <Ionicons name="diamond" size={14} color="#0A0A1A" />
+            <Text style={s.degradeCtaText}>{tAtlas("upgrade.cta", lang)}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Smart Upgrade Prompt (FREE users only, triggered by backend) */}
       {showUpgradePrompt && !isVip && (
@@ -883,6 +906,13 @@ const s = StyleSheet.create({
   upgradeDesc: { fontSize: 12, color: '#9CA3AF', lineHeight: 17 },
   upgradeCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#FFD700', borderRadius: 10, paddingVertical: 10 },
   upgradeCtaText: { fontSize: 14, fontWeight: '700', color: '#0A0A1A' },
+  // Model Degradation Banner
+  degradeBanner: { marginHorizontal: 12, marginBottom: 8, backgroundColor: 'rgba(245,158,11,0.08)', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: 'rgba(245,158,11,0.25)' },
+  degradeContent: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 10 },
+  degradeTitle: { fontSize: 13, fontWeight: '700', color: '#F59E0B', marginBottom: 3 },
+  degradeDesc: { fontSize: 12, color: '#94A3B8', lineHeight: 17 },
+  degradeCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#FFD700', borderRadius: 10, paddingVertical: 10 },
+  degradeCtaText: { fontSize: 13, fontWeight: '700', color: '#0A0A1A' },
 
   // Sidebar
   sidebarWrap: { flex: 1, backgroundColor: '#0B0914' },

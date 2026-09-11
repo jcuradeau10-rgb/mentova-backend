@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from services.vip_permissions import get_permissions
 from services.atlas_protection import (
     check_request_allowed, record_request_start, record_request_end, log_usage,
-    should_show_upgrade_prompt, mark_upgrade_prompt_shown
+    should_show_upgrade_prompt, mark_upgrade_prompt_shown, get_free_user_model
 )
 
 logger = logging.getLogger("atlas_v3")
@@ -682,6 +682,12 @@ Focus on being an excellent crypto education mentor.
             # FREE users: exclude memory save tool (memory is VIP-only)
             available_tools = [t for t in TOOLS if t["function"]["name"] != "save_memory"]
 
+        # Determine model — FREE users get degraded model after threshold
+        use_model = MODEL
+        is_degraded = False
+        if not is_vip:
+            use_model, is_degraded = await get_free_user_model(user_id, db)
+
         # Call OpenAI with tools
         max_tool_rounds = 5
         assistant_response = ""
@@ -690,7 +696,7 @@ Focus on being an excellent crypto education mentor.
 
         for _ in range(max_tool_rounds):
             response = await client.chat.completions.create(
-                model=MODEL,
+                model=use_model,
                 messages=messages,
                 tools=available_tools,
                 tool_choice="auto",
@@ -718,7 +724,7 @@ Focus on being an excellent crypto education mentor.
                 break
 
         if not assistant_response:
-            final = await client.chat.completions.create(model=MODEL, messages=messages, reasoning_effort="none")
+            final = await client.chat.completions.create(model=use_model, messages=messages, reasoning_effort="none")
             assistant_response = final.choices[0].message.content or ""
             if final.usage:
                 total_input_tokens += final.usage.prompt_tokens
@@ -751,6 +757,8 @@ Focus on being an excellent crypto education mentor.
         result = {"response": assistant_response, "conversation_id": conv_id}
         if show_upgrade:
             result["upgrade_prompt"] = True
+        if is_degraded:
+            result["model_degraded"] = True
         return result
 
     except HTTPException:

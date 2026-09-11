@@ -42,11 +42,15 @@ CONFIG = {
     "cost_per_1k_output_tokens": 0.008,
 
     # --- Smart Upgrade Prompt (FREE users only) ---
-    # Triggers after sustained usage — not a hard limit, just a soft suggestion.
-    "upgrade_prompt_min_total_requests": 15,     # Minimum lifetime requests before considering
-    "upgrade_prompt_min_session_requests": 8,    # Requests in current session
-    "upgrade_prompt_cooldown_hours": 24,         # Don't show again for 24h after shown
+    "upgrade_prompt_min_total_requests": 15,
+    "upgrade_prompt_min_session_requests": 8,
+    "upgrade_prompt_cooldown_hours": 24,
 
+    # --- Model Degradation (FREE users only) ---
+    # After this many TOTAL lifetime messages, FREE users get a reduced model.
+    "free_model_degrade_threshold": 50,
+    "free_degraded_model": "gpt-4o-mini",
+    "free_full_model": "gpt-5.6-terra",
 }
 
 # ============ IN-MEMORY TRACKING ============
@@ -312,3 +316,30 @@ def mark_upgrade_prompt_shown(user_id: str):
     """Record that the upgrade prompt was shown to this user."""
     _upgrade_prompt_shown[user_id] = time.time()
 
+
+
+
+# ============ MODEL DEGRADATION ============
+# After threshold, FREE users get a reduced AI model.
+
+async def get_free_user_model(user_id: str, db) -> tuple:
+    """
+    Determine which model a FREE user should use.
+    Returns (model_name, is_degraded).
+    VIP users should never call this — they always get the full model.
+    """
+    threshold = CONFIG.get("free_model_degrade_threshold", 50)
+    full_model = CONFIG.get("free_full_model", "gpt-5.6-terra")
+    degraded_model = CONFIG.get("free_degraded_model", "gpt-4o-mini")
+
+    if db is None:
+        return full_model, False
+
+    try:
+        total = await db.atlas_usage_logs.count_documents({"user_id": user_id})
+        if total >= threshold:
+            return degraded_model, True
+    except Exception:
+        pass
+
+    return full_model, False
