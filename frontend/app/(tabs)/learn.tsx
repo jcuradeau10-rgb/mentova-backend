@@ -109,7 +109,7 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
     try {
       const data = await api('/api/atlas/conversations', token);
       setConversations(data.conversations || []);
-    } catch (e) { console.error('Load convos error:', e); }
+    } catch (e) { /* Old backend may not have this endpoint */ }
     setLoadingConvos(false);
   }, [token]);
 
@@ -133,14 +133,38 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
 
     try {
-      const data = await api('/api/atlas/chat', token, {
+      const res = await fetch(`${API}/api/atlas/chat`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ message: msg, conversation_id: activeConvId, lang }),
       });
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
-      if (!activeConvId && data.conversation_id) {
-        setActiveConvId(data.conversation_id);
-        loadConversations();
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      
+      const contentType = res.headers.get('content-type') || '';
+      
+      if (contentType.includes('application/json')) {
+        // New atlas_v3 JSON response
+        const data = await res.json();
+        setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+        if (!activeConvId && data.conversation_id) {
+          setActiveConvId(data.conversation_id);
+          loadConversations();
+        }
+      } else {
+        // Old atlas SSE streaming response
+        const text = await res.text();
+        let fullText = '';
+        const lines = text.split('\n');
+        for (const line of lines) {
+          if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+            fullText += line.slice(6);
+          }
+        }
+        if (fullText) {
+          setMessages(prev => [...prev, { role: 'assistant', content: fullText.trim() }]);
+        } else {
+          throw new Error('Empty response');
+        }
       }
     } catch (e: any) {
       setMessages(prev => [...prev, { role: 'assistant', content: tAtlas("chat.error", lang) }]);
