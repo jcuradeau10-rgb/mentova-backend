@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../store/authStore';
 import { useTranslation } from '../store/languageStore';
+import { useThemeStore } from '../store/themeStore';
 
 const tr: Record<string, Record<string, string>> = {
   title: { en: 'Create account', fr: 'Creer un compte', es: 'Crear cuenta' },
@@ -26,6 +27,7 @@ export default function RegisterScreen() {
   const router = useRouter();
   const { register } = useAuthStore();
   const { language } = useTranslation();
+  const { colors: c } = useThemeStore();
   const lang = language || 'en';
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -114,10 +116,10 @@ export default function RegisterScreen() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#06060F' },
+  container: { flex: 1 },
   inner: { flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 40, position: 'relative' },
   glow: { position: 'absolute', top: '15%', right: '20%', width: 200, height: 200, borderRadius: 100, backgroundColor: 'rgba(124,58,237,0.06)' },
-  backBtn: { position: 'absolute', top: 16, left: 16, width: 40, height: 40, borderRadius: 12, backgroundColor: '#120E26', justifyContent: 'center', alignItems: 'center' },
+  backBtn: { position: 'absolute', top: 16, left: 16, width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(18,14,38,0.7)' },
 
   form: { width: '100%', maxWidth: 380, alignItems: 'center' },
   iconWrap: { width: 56, height: 56, borderRadius: 16, backgroundColor: 'rgba(124,58,237,0.1)', justifyContent: 'center', alignItems: 'center', marginBottom: 20, borderWidth: 1, borderColor: 'rgba(124,58,237,0.2)' },

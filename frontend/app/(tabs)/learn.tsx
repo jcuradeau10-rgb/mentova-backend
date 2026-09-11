@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../store/authStore';
 import { useTranslation } from '../../store/languageStore';
+import { useThemeStore } from '../../store/themeStore';
 
 const API = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 const { width: SW } = Dimensions.get('window');
@@ -67,6 +68,11 @@ const i18n: Record<string, Record<string, string>> = {
   'upgrade.title': { fr: 'Atlas peut aller encore plus loin', en: 'Atlas can go even further', es: 'Atlas puede ir aun mas lejos' },
   'upgrade.desc': { fr: 'Vous utilisez deja Atlas regulierement. Avec VIP, beneficiez d\'une memoire personnalisee, de l\'analyse de graphiques, et d\'une experience Atlas beaucoup plus complete.', en: 'You already use Atlas regularly. With VIP, get personalized memory, chart analysis, and a much more complete Atlas experience.', es: 'Ya usas Atlas regularmente. Con VIP, obtendras memoria personalizada, analisis de graficos y una experiencia Atlas mucho mas completa.' },
   'upgrade.cta': { fr: 'Passer a VIP', en: 'Upgrade to VIP', es: 'Pasar a VIP' },
+  // Welcome Suggestions
+  'sug.1': { fr: 'Qu\'est-ce que le Bitcoin et comment ca fonctionne ?', en: 'What is Bitcoin and how does it work?', es: 'Que es Bitcoin y como funciona?' },
+  'sug.2': { fr: 'Explique-moi la DeFi simplement', en: 'Explain DeFi in simple terms', es: 'Explicame DeFi de forma sencilla' },
+  'sug.3': { fr: 'Quelle est la difference entre un token et un coin ?', en: 'What is the difference between a token and a coin?', es: 'Cual es la diferencia entre un token y una moneda?' },
+  'sug.4': { fr: 'Comment lire un graphique de trading ?', en: 'How to read a trading chart?', es: 'Como leer un grafico de trading?' },
   // Levels
   'level.unknown': { fr: 'Non évalué', en: 'Not evaluated', es: 'No evaluado' },
   'level.beginner': { fr: 'Débutant', en: 'Beginner', es: 'Principiante' },
@@ -279,18 +285,15 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
 
   // Main chat view
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={100}>
-      {/* Header */}
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#06060F' }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={100}>
+      {/* Header - simplified, no redundant menu button */}
       <View style={s.chatHeader}>
-        <TouchableOpacity onPress={() => setShowSidebar(true)} data-testid="open-sidebar">
-          <Ionicons name="menu" size={24} color="#E2E8F0" />
-        </TouchableOpacity>
         <View style={s.chatHeaderCenter}>
           <View style={s.atlasAvatar}><Text style={s.atlasAvatarText}>A</Text></View>
-          <Text style={s.chatHeaderTitle}>Atlas IA</Text>
+          <Text style={s.chatHeaderTitle}>Atlas AI</Text>
           <View style={s.onlineDot} />
         </View>
-        <TouchableOpacity onPress={newConversation} data-testid="new-chat-btn">
+        <TouchableOpacity onPress={newConversation} testID="new-chat-btn">
           <Ionicons name="create-outline" size={22} color="#E2E8F0" />
         </TouchableOpacity>
       </View>
@@ -307,6 +310,20 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
             <View style={s.welcomeIcon}><Ionicons name="planet" size={48} color="#7C3AED" /></View>
             <Text style={s.welcomeTitle}>{tAtlas("chat.welcome.title", lang)}</Text>
             <Text style={s.welcomeDesc}>{tAtlas("chat.welcome.desc", lang)}</Text>
+            {/* Suggestion Cards */}
+            <View style={s.sugGrid}>
+              {['sug.1', 'sug.2', 'sug.3', 'sug.4'].map((key, i) => (
+                <TouchableOpacity
+                  key={key}
+                  style={s.sugCard}
+                  onPress={() => { setInput(tAtlas(key, lang)); }}
+                  testID={`suggestion-${i}`}
+                >
+                  <Ionicons name={['logo-bitcoin', 'layers', 'swap-horizontal', 'bar-chart'][i] as any} size={18} color={['#F59E0B', '#3B82F6', '#10B981', '#EF4444'][i]} />
+                  <Text style={s.sugText} numberOfLines={2}>{tAtlas(key, lang)}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         )}
         {messages.map((m, i) => (
@@ -694,8 +711,8 @@ export default function LearnScreen() {
 
   return (
     <SafeAreaView style={s.container} edges={['top']}>
-      {/* Top tab bar */}
-      <View style={s.topTabs}>
+      {/* Sub-tabs as small pills at top-right — non-intrusive */}
+      <View style={s.subTabRow}>
         {([
           { key: 'chat' as Tab, icon: 'chatbubbles', label: tAtlas('tab.chat', lang) },
           { key: 'modules' as Tab, icon: 'library', label: tAtlas('tab.modules', lang) },
@@ -703,12 +720,12 @@ export default function LearnScreen() {
         ]).map(t => (
           <TouchableOpacity
             key={t.key}
-            style={[s.topTab, tab === t.key && s.topTabActive]}
+            style={[s.subTab, tab === t.key && s.subTabActive]}
             onPress={() => setTab(t.key)}
-            data-testid={`atlas-tab-${t.key}`}
+            testID={`atlas-tab-${t.key}`}
           >
-            <Ionicons name={(tab === t.key ? t.icon : t.icon + '-outline') as any} size={18} color={tab === t.key ? '#7C3AED' : '#6B7280'} />
-            <Text style={[s.topTabText, tab === t.key && s.topTabTextActive]}>{t.label}</Text>
+            <Ionicons name={(tab === t.key ? t.icon : t.icon + '-outline') as any} size={14} color={tab === t.key ? '#7C3AED' : '#64748B'} />
+            <Text style={[s.subTabText, tab === t.key && s.subTabTextActive]}>{t.label}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -726,8 +743,11 @@ const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0B0914' },
 
   // Top tabs
-  topTabs: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.06)', paddingHorizontal: 16 },
-  topTab: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 12 },
+  subTabRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 14, paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.04)', justifyContent: 'flex-end' },
+  subTab: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 },
+  subTabActive: { backgroundColor: 'rgba(124,58,237,0.1)' },
+  subTabText: { fontSize: 12, color: '#64748B', fontWeight: '500' },
+  subTabTextActive: { color: '#7C3AED', fontWeight: '600' },
   topTabActive: { borderBottomWidth: 2, borderBottomColor: '#7C3AED' },
   topTabText: { fontSize: 13, fontWeight: '600', color: '#6B7280' },
   topTabTextActive: { color: '#7C3AED' },
@@ -751,6 +771,9 @@ const s = StyleSheet.create({
   welcomeIcon: { width: 80, height: 80, borderRadius: 24, backgroundColor: 'rgba(124,58,237,0.12)', alignItems: 'center', justifyContent: 'center' },
   welcomeTitle: { fontSize: 24, fontWeight: '800', color: '#E2E8F0' },
   welcomeDesc: { fontSize: 14, color: '#6B7280', textAlign: 'center', maxWidth: 300 },
+  sugGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 24, maxWidth: 400, justifyContent: 'center' },
+  sugCard: { width: '47%', backgroundColor: 'rgba(124,58,237,0.06)', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: 'rgba(124,58,237,0.12)', flexDirection: 'column', gap: 8 },
+  sugText: { fontSize: 12, color: '#94A3B8', lineHeight: 17 },
   msgRow: { flexDirection: 'row', marginBottom: 12, gap: 8, alignItems: 'flex-end' },
   msgRowUser: { flexDirection: 'row-reverse' },
   msgAvatar: { width: 28, height: 28, borderRadius: 10, backgroundColor: 'rgba(124,58,237,0.25)', alignItems: 'center', justifyContent: 'center' },

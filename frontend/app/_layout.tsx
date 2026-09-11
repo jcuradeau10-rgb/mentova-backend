@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, Platform } from 'react-native';
 import { useAuthStore } from '../store/authStore';
 import { useLanguageStore } from '../store/languageStore';
+import { useThemeStore } from '../store/themeStore';
 
 // Inject CSS keyframes for aurora animations (web only)
 if (Platform.OS === 'web' && typeof document !== 'undefined') {
@@ -33,13 +34,15 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
 export default function RootLayout() {
   const { checkAuth } = useAuthStore();
   const { loadLanguage, isLoaded } = useLanguageStore();
+  const { loadTheme, colors: c, mode } = useThemeStore();
   const [appReady, setAppReady] = useState(false);
 
   useEffect(() => {
     const initApp = async () => {
       await Promise.all([
         checkAuth(),
-        loadLanguage()
+        loadLanguage(),
+        loadTheme()
       ]);
       setAppReady(true);
     };
@@ -57,11 +60,11 @@ export default function RootLayout() {
 
   return (
     <>
-      <StatusBar style="light" />
+      <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: '#06060F' },
+          contentStyle: { backgroundColor: c.bg },
           animation: 'slide_from_right',
         }}
       >

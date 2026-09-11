@@ -1,0 +1,34 @@
+{
+  "summary": "Tested 3 new features on Mentova (iter 89): mobile hamburger overlay sidebar, theme toggle (light/dark w/ persistence), and Atlas welcome suggestion cards. Backend regression: GET /api/vip/permissions returns exactly the 6 VIP feature flags with is_vip=true and plan=vip; POST /api/atlas/chat returns response; GET /api/vip/daily-briefing returns success market_summary. Desktop (1920x1080) after login: [data-testid=sidebar-panel] rendered, no hamburger (correct), theme-toggle present, all 4 suggestion cards (suggestion-0..3) present with correct texts ('What is Bitcoin and how does it work?', 'Explain DeFi in simple terms', 'What is the difference between a token and a coin?', 'How to read a trading chart?'). Clicking suggestion-0 correctly populated the chat TextInput with the suggestion text (does NOT auto-send, per spec). Theme toggle: sidebar bg went from rgb(10,10,26) [dark #0A0A1A] to rgb(248,250,252) [light #F8FAFC]; after page reload the light theme persisted (bg still 248,250,252) and toggle label read 'Dark' confirming AsyncStorage 'mentova_theme' persistence works. Mobile viewport (390x844): sidebar-panel hidden by default, sidebar-toggle (hamburger) visible at top-left; clicking hamburger opens sidebar-panel + sidebar-overlay backdrop; clicking backdrop closes the sidebar and re-shows the hamburger; all 4 suggestion cards visible. All required data-testids present and wired.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "app/(tabs)/learn.tsx chatHeader", "issue": "learn.tsx still renders its own top row menu button ('open-sidebar' testID at line 291) which visually overlaps with the new sidebar-toggle hamburger from _layout.tsx on mobile. Two hamburger icons stack in the top-left corner of the chat screen at 390px width. The learn.tsx-internal one is now redundant since the sidebar-first architecture handles nav via the _layout.tsx hamburger.", "selector": "[data-testid=\"open-sidebar\"] vs [data-testid=\"sidebar-toggle\"]", "priority": "MEDIUM"},
+      {"component": "app/(tabs)/learn.tsx top segmented control", "issue": "The old 'Chat / Modules / Progress' segmented header at the top of /learn is still present (carried over from iter 88 report). On mobile it visually overlaps the sidebar-toggle hamburger icon; on desktop it also overlaps the sidebar hamburger area. Should be removed or hidden now that navigation is done via left sidebar.", "selector": "learn top segmented tabs", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/learn mobile", "issues": ["Two hamburger/menu icons stack in the top-left (one from _layout Sidebar 'sidebar-toggle', one from learn.tsx chatHeader 'open-sidebar'). Recommend removing the learn.tsx internal menu button."]},
+      {"screen": "sidebar desktop layout", "issues": ["Sidebar visually appears in the lower-left region rather than as a full-height left column in the current expo-router Tabs config (container has flexDirection:'row' but Tabs internal wrapper doesn't fully stretch the sidebar to full height in some screenshots). Functionality works; layout height/stretching could be reviewed."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_vip_final_system.py"],
+  "action_items": [
+    "Remove or hide the redundant 'open-sidebar' menu button in /app/frontend/app/(tabs)/learn.tsx chatHeader (line ~291) to avoid the double-hamburger visual on mobile now that sidebar-toggle in _layout.tsx handles the mobile drawer.",
+    "Optional: hide the vestigial 'Chat / Modules / Progress' segmented header at top of learn.tsx (still open from iter 88)."
+  ],
+  "critical_code_review_comments": [
+    "themeStore.ts is loaded in TWO places (app/_layout.tsx line 45 and app/(tabs)/_layout.tsx useEffect line 162) — the tabs layout call is redundant since root layout already runs loadTheme() before appReady. Remove the duplicate to avoid a brief flash of default theme on tab mount.",
+    "Sidebar component makes a fresh fetch to /api/vip/permissions on every token change (line 34) — persist isVip via a store to avoid duplicate calls (repeated from iter 88).",
+    "The desktop sidebar visual placement suggests Tabs component doesn't fully render sidebar full-height. Consider replacing Tabs.tabBar with a manual Slot/router-based layout for proper 2-column desktop layout.",
+    "Theme toggle label logic 'Light'/'Dark' shows the NEXT state (label='Light' when in dark mode). This is common but ambiguous; consider using 'Switch to Light' or an icon-only label for clarity."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100%", "frontend": "95%"},
+  "test_credentials": "Super admin (VIP permanent): jcuradeau.7@gmail.com / Crypto2026!",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "All three new features (mobile hamburger overlay, theme toggle+persist, welcome suggestion cards) verified working on both desktop (1920x1080) and mobile (390x844). data-testids confirmed: sidebar-panel, sidebar-toggle, sidebar-overlay, sidebar-close, theme-toggle, suggestion-0..3 all resolve on web. Theme persistence via AsyncStorage key 'mentova_theme' works across reload. Only remaining low/medium UI issue: duplicate hamburger + vestigial top segmented tabs in learn.tsx should be cleaned up.",
+  "rca of the issue": "N/A — no functional bugs found. All required flows work as spec'd."
+}

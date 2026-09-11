@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../store/authStore';
 import { useTranslation } from '../store/languageStore';
+import { useThemeStore } from '../store/themeStore';
 
 const { width } = Dimensions.get('window');
 
@@ -27,6 +28,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
   const { language, loadLanguage, isLoaded } = useTranslation();
+  const { colors: c } = useThemeStore();
   const lang = language || 'en';
 
   const fadeIn = useRef(new Animated.Value(0)).current;
@@ -109,7 +111,7 @@ export default function OnboardingPage() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#06060F' },
+  container: { flex: 1, backgroundColor: undefined },
   inner: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32, maxWidth: 440, alignSelf: 'center', width: '100%', position: 'relative', overflow: 'hidden' },
 
   glowOrb1: { position: 'absolute', top: -80, right: -60, width: 220, height: 220, borderRadius: 110, backgroundColor: 'rgba(124,58,237,0.08)' },
