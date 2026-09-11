@@ -818,6 +818,29 @@ async def delete_conversation(conversation_id: str, credentials: HTTPAuthorizati
     return {"success": True}
 
 
+class RenameConversationRequest(BaseModel):
+    title: str
+
+
+@atlas_router.patch("/conversations/{conversation_id}")
+async def rename_conversation(conversation_id: str, req: RenameConversationRequest, credentials: HTTPAuthorizationCredentials = Depends(optional_security)):
+    """Rename a conversation title."""
+    user_id = await _get_authenticated_user(credentials)
+    db = _get_db()
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database unavailable")
+    title = req.title.strip()
+    if not title or len(title) > 200:
+        raise HTTPException(status_code=400, detail="Title must be 1-200 characters")
+    result = await db.atlas_conversations.update_one(
+        {"id": conversation_id, "user_id": user_id},
+        {"$set": {"title": title}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    return {"success": True, "title": title}
+
+
 # ============ MODULES ENDPOINTS ============
 
 @atlas_router.get("/modules")

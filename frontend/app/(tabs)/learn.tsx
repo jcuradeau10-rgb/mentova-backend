@@ -124,6 +124,8 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [modelDegraded, setModelDegraded] = useState(false);
   const [showLangPicker, setShowLangPicker] = useState(false);
+  const [renamingConvId, setRenamingConvId] = useState<string | null>(null);
+  const [renameText, setRenameText] = useState('');
   const scrollRef = useRef<ScrollView>(null);
   const router = useRouter();
   const { setLanguage } = useTranslation();
@@ -306,6 +308,19 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
     } catch (e) { console.error('Delete conv error:', e); }
   };
 
+  const renameConversation = async (convId: string) => {
+    if (!renameText.trim()) { setRenamingConvId(null); return; }
+    try {
+      await fetch(`${API}/api/atlas/conversations/${convId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ title: renameText.trim() }),
+      });
+      setConversations(prev => prev.map(c => c.id === convId ? { ...c, title: renameText.trim() } : c));
+    } catch (e) { console.error('Rename conv error:', e); }
+    setRenamingConvId(null);
+  };
+
   // Sidebar (conversation list)
   if (showSidebar) {
     return (
@@ -329,12 +344,33 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
               data-testid={`conv-${c.id}`}
             >
               <View style={{ flex: 1 }}>
-                <Text style={s.convTitle} numberOfLines={1}>{c.title}</Text>
-                <Text style={s.convMeta}>{c.message_count} {tAtlas("chat.messages", lang)}</Text>
+                {renamingConvId === c.id ? (
+                  <TextInput
+                    style={[s.convTitle, { borderBottomWidth: 1, borderBottomColor: '#7C3AED', paddingVertical: 2 }]}
+                    value={renameText}
+                    onChangeText={setRenameText}
+                    autoFocus
+                    onSubmitEditing={() => renameConversation(c.id)}
+                    onBlur={() => renameConversation(c.id)}
+                    maxLength={200}
+                  />
+                ) : (
+                  <>
+                    <Text style={s.convTitle} numberOfLines={1}>{c.title}</Text>
+                    <Text style={s.convMeta}>{c.message_count} {tAtlas("chat.messages", lang)}</Text>
+                  </>
+                )}
               </View>
-              <TouchableOpacity onPress={() => deleteConversation(c.id)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <Ionicons name="trash-outline" size={16} color="#6B7280" />
-              </TouchableOpacity>
+              {renamingConvId !== c.id && (
+                <View style={{ flexDirection: 'row', gap: 8 }}>
+                  <TouchableOpacity onPress={() => { setRenamingConvId(c.id); setRenameText(c.title); }} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                    <Ionicons name="pencil-outline" size={16} color="#6B7280" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => deleteConversation(c.id)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                    <Ionicons name="trash-outline" size={16} color="#6B7280" />
+                  </TouchableOpacity>
+                </View>
+              )}
             </TouchableOpacity>
           ))}
           {conversations.length === 0 && !loadingConvos && (

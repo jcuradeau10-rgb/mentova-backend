@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Tabs, useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, Platform, TouchableOpacity, ScrollView, useWindowDimensions, Pressable, Animated } from 'react-native';
+import { View, Text, StyleSheet, Platform, TouchableOpacity, ScrollView, useWindowDimensions, Pressable, Animated, TextInput } from 'react-native';
 import { useTranslation } from '../../store/languageStore';
 import { useAuthStore } from '../../store/authStore';
 import { useThemeStore } from '../../store/themeStore';
@@ -98,6 +98,39 @@ function SidebarContent({ onNavigate }: { onNavigate: (route: string) => void })
   const handleNewChat = () => { newChat(); onNavigate('learn'); };
   const isActive = (name: string) => pathname.includes(name) || (name === 'learn' && pathname === '/');
 
+  // Conversation actions
+  const [convMenu, setConvMenu] = useState<string | null>(null);
+  const [renaming, setRenaming] = useState<string | null>(null);
+  const [renameText, setRenameText] = useState('');
+
+  const deleteConv = async (convId: string) => {
+    setConvMenu(null);
+    try {
+      await fetch(`${API}/api/atlas/conversations/${convId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+      setConversations(prev => prev.filter(c => c.id !== convId));
+      if (selectedConversationId === convId) { newChat(); }
+    } catch (e) { console.error(e); }
+  };
+
+  const startRename = (conv: ConvItem) => {
+    setConvMenu(null);
+    setRenaming(conv.id);
+    setRenameText(conv.title);
+  };
+
+  const submitRename = async () => {
+    if (!renaming || !renameText.trim()) { setRenaming(null); return; }
+    try {
+      await fetch(`${API}/api/atlas/conversations/${renaming}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ title: renameText.trim() }),
+      });
+      setConversations(prev => prev.map(c => c.id === renaming ? { ...c, title: renameText.trim() } : c));
+    } catch (e) { console.error(e); }
+    setRenaming(null);
+  };
+
   const convGroups = groupConversations(conversations);
 
   return (
@@ -114,17 +147,54 @@ function SidebarContent({ onNavigate }: { onNavigate: (route: string) => void })
       </TouchableOpacity>
 
       {/* Conversations - scrollable */}
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} onTouchStart={() => { if (convMenu) setConvMenu(null); }}>
         {convGroups.length > 0 && (
           <View style={st.convSection}>
             {convGroups.map((group) => (
               <View key={group.label}>
                 <Text style={[st.convGroupLabel, { color: c.textMuted }]}>{group.label}</Text>
                 {group.items.slice(0, 15).map((conv) => (
-                  <TouchableOpacity key={conv.id} style={[st.convItem, selectedConversationId === conv.id && { backgroundColor: c.surfaceHover }]} onPress={() => handleSelectConv(conv.id)}>
-                    <Ionicons name="chatbubble-outline" size={14} color={selectedConversationId === conv.id ? c.primary : c.textMuted} />
-                    <Text style={[st.convTitle, { color: selectedConversationId === conv.id ? c.text : c.textSecondary }]} numberOfLines={1}>{conv.title}</Text>
-                  </TouchableOpacity>
+                  <View key={conv.id} style={[st.convItemWrap, selectedConversationId === conv.id && { backgroundColor: c.surfaceHover }, convMenu === conv.id && { zIndex: 200 }]}>
+                    {renaming === conv.id ? (
+                      <View style={st.renameRow}>
+                        <TextInput
+                          style={[st.renameInput, { color: c.text, borderColor: c.primary }]}
+                          value={renameText}
+                          onChangeText={setRenameText}
+                          autoFocus
+                          onSubmitEditing={submitRename}
+                          onBlur={submitRename}
+                          maxLength={200}
+                          testID="rename-input"
+                        />
+                        <TouchableOpacity onPress={submitRename} testID="rename-confirm">
+                          <Ionicons name="checkmark" size={18} color={c.primary} />
+                        </TouchableOpacity>
+                      </View>
+                    ) : (
+                      <TouchableOpacity style={st.convItem} onPress={() => handleSelectConv(conv.id)} activeOpacity={0.7}>
+                        <Ionicons name="chatbubble-outline" size={14} color={selectedConversationId === conv.id ? c.primary : c.textMuted} />
+                        <Text style={[st.convTitle, { color: selectedConversationId === conv.id ? c.text : c.textSecondary }]} numberOfLines={1}>{conv.title}</Text>
+                      </TouchableOpacity>
+                    )}
+                    {renaming !== conv.id && (
+                      <TouchableOpacity style={st.convMenuBtn} onPress={(e) => { e.stopPropagation?.(); setConvMenu(convMenu === conv.id ? null : conv.id); }} testID={`conv-menu-${conv.id}`}>
+                        <Ionicons name="ellipsis-horizontal" size={14} color={c.textMuted} />
+                      </TouchableOpacity>
+                    )}
+                    {convMenu === conv.id && (
+                      <View style={[st.convDropdown, { backgroundColor: c.surface, borderColor: c.borderSubtle }]}>
+                        <TouchableOpacity style={st.convDropItem} onPress={(e) => { e.stopPropagation?.(); startRename(conv); }} testID={`conv-rename-${conv.id}`}>
+                          <Ionicons name="pencil" size={14} color={c.text} />
+                          <Text style={[st.convDropText, { color: c.text }]}>Rename</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={st.convDropItem} onPress={(e) => { e.stopPropagation?.(); deleteConv(conv.id); }} testID={`conv-delete-${conv.id}`}>
+                          <Ionicons name="trash" size={14} color="#EF4444" />
+                          <Text style={[st.convDropText, { color: '#EF4444' }]}>Delete</Text>
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                  </View>
                 ))}
               </View>
             ))}
@@ -279,8 +349,15 @@ const st = StyleSheet.create({
   newChatText: { fontSize: 13, fontWeight: '600' },
   convSection: { paddingHorizontal: 8, marginBottom: 4 },
   convGroupLabel: { fontSize: 11, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, paddingHorizontal: 4, paddingVertical: 6, marginTop: 4 },
-  convItem: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 8, borderRadius: 8, marginBottom: 1 },
+  convItem: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 8, borderRadius: 8, marginBottom: 1, flex: 1 },
   convTitle: { fontSize: 13, flex: 1 },
+  convItemWrap: { flexDirection: 'row', alignItems: 'center', borderRadius: 8, marginBottom: 1, position: 'relative' as const },
+  convMenuBtn: { padding: 6, marginRight: 2 },
+  convDropdown: { position: 'absolute' as const, right: 0, top: 34, borderRadius: 10, borderWidth: 1, zIndex: 100, minWidth: 130, overflow: 'hidden' as const },
+  convDropItem: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 10, paddingHorizontal: 14 },
+  convDropText: { fontSize: 13, fontWeight: '500' },
+  renameRow: { flexDirection: 'row', alignItems: 'center', flex: 1, gap: 6, paddingHorizontal: 8, paddingVertical: 4 },
+  renameInput: { flex: 1, fontSize: 13, borderWidth: 1, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4 },
   bottomNav: { borderTopWidth: 1, paddingTop: 8, paddingBottom: 8 },
   navItem: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8, paddingHorizontal: 14, marginHorizontal: 6, marginBottom: 1, borderRadius: 10 },
   navLabel: { fontSize: 14, fontWeight: '500' },

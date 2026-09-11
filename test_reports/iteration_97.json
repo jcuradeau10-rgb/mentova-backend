@@ -1,0 +1,23 @@
+{
+  "summary": "Verified sidebar conversation dropdown z-index bug fix in Mentova. All 3 critical checks passed: (1) Three-dot menu opens with Rename/Delete options, (2) Clicking Rename opens inline TextInput on the correct conversation without navigating, submitting via Enter persists the new title, (3) Clicking Delete removes the correct conversation without navigating to another one. URL remained stable at /learn throughout all interactions confirming no unintended navigation.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Login flow via UI does not persist auth token in Playwright tests - had to inject token via localStorage; main agent may want to investigate why UI-based login attempts leave URL on /login (could be a form submission or navigation race condition after successful auth)",
+    "/app/frontend/app/(tabs)/_layout.tsx is 373 lines and mixes sidebar logic; could be split into a Sidebar component and useConversations hook for maintainability"
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (skipped per request)", "frontend": "100%"},
+  "test_credentials": "jcuradeau.7@gmail.com / Crypto2026! (Super Admin)",
+  "seed_data_creation": "Renamed one existing conversation to 'TEST_Renamed_a3c1ed' and deleted one conversation (id f12bf59a-0ec0-4785-9ab8-ed87d3a24a6c) as part of verification",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "z-index fix on convItemWrap (zIndex:200 when convMenu===conv.id) plus e.stopPropagation() on dropdown TouchableOpacity onPress handlers plus onTouchStart dismiss on ScrollView are all working correctly. UI login flow in Playwright is flaky - use API POST /api/auth/login then localStorage.setItem('token', access_token) before navigating to /learn.",
+  "rca of the issue": "Previously, TouchableOpacity dropdown items were rendered inside convItemWrap which shared the same stacking context as adjacent conv rows. Click events on the dropdown were bubbling to the underlying conv row TouchableOpacity causing navigation. Fix: elevate zIndex on convItemWrap when its menu is open, stop event propagation on dropdown item onPress, and dismiss menu on scroll-area touch. Verified working."
+}

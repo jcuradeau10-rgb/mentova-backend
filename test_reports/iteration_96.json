@@ -1,0 +1,59 @@
+{
+  "summary": "Tested Atlas conversation rename (PATCH) and delete (DELETE). Backend endpoints all pass (10/10). Frontend has a CRITICAL bug in the main sidebar (_layout.tsx): clicking Rename/Delete in the three-dot dropdown does NOT trigger the rename/delete action - instead it navigates to a different (adjacent) conversation because the absolutely-positioned dropdown overlaps neighbouring rows and click events bleed through due to broken z-index stacking context.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "_layout.tsx sidebar conversation dropdown (convDropdown)",
+        "issue": "The dropdown is absolutely positioned (top:34, right:0, zIndex:100) inside convItemWrap. Its parent has position:relative but no zIndex, so it creates a stacking context that does NOT elevate above sibling conversation rows. When user clicks 'Rename' or 'Delete', the click lands on the underlying next-row's TouchableOpacity (convItem) and fires handleSelectConv instead. Verified: clicking conv-rename-<new_id> triggers a GET /api/atlas/conversations/<other_id> and the app selects a different conversation. No PATCH/DELETE request is sent. Rename input never appears; conversation is never deleted.",
+        "selector": "[data-testid=\"conv-rename-<id>\"], [data-testid=\"conv-delete-<id>\"]",
+        "priority": "CRITICAL"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Sidebar rename",
+        "issue": "Clicking Rename in dropdown does not open the rename input (rename-input never appears). Instead, adjacent conversation is selected.",
+        "affected_selectors": ["[data-testid=\"rename-input\"]", "[data-testid=\"conv-rename-<id>\"]"]
+      },
+      {
+        "flow": "Sidebar delete",
+        "issue": "Clicking Delete in dropdown does not send DELETE /api/atlas/conversations/{id}; no network request is fired for delete, and the conversation remains (verified 200 on GET after 'delete' click).",
+        "affected_selectors": ["[data-testid=\"conv-delete-<id>\"]"]
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "Sidebar",
+        "issues": ["convDropdown z-index does not effectively elevate above sibling conversation rows (RN web stacking-context issue). Also the three-dot menu button click, while opening the dropdown correctly, sometimes coincides with a row activation on RN web depending on layout."]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_atlas_conv_rename_delete.py",
+    "/app/test_reports/pytest/atlas_conv_rename_delete.xml"
+  ],
+  "action_items": [
+    "Fix z-index stacking on _layout.tsx sidebar dropdown. Recommended fix: when convMenu === conv.id, apply zIndex to the convItemWrap style (e.g. style={[st.convItemWrap, convMenu===conv.id && {zIndex: 200}]}) so the absolutely positioned dropdown elevates above sibling rows. Additionally consider position:'relative' + isolation or portal rendering. Repro: 1) login as super admin, 2) open sidebar, 3) click ... on any conversation, 4) click Rename -> no input appears; the next row's conversation opens instead. Same for Delete.",
+    "learn.tsx internal conversation list pencil/trash icons are missing data-testid attributes on the TouchableOpacity wrappers, making automated UI testing unreliable (pencil-outline and trash-outline). Add testIDs like conv-inline-rename-<id> and conv-inline-delete-<id>.",
+    "Consider preventing the parent row TouchableOpacity from firing when a click originated from the menu/dropdown children (e.g. wrap dropdown in Pressable with onPress={e => e.stopPropagation()} on RN web, or restructure so dropdown is a sibling of the row list rather than child)."
+  ],
+  "critical_code_review_comments": [
+    "atlas_v3.py rename endpoint validates via manual length check after HTTPException; consider using Pydantic Field(min_length=1, max_length=200) for cleaner validation (currently missing title returns 422 while empty returns 400 — mildly inconsistent but acceptable).",
+    "Sidebar dropdown pattern is duplicated between _layout.tsx and learn.tsx (rename/delete logic). Extract to a shared hook/component to avoid drift.",
+    "Frontend rename/delete calls in _layout.tsx do not check response.ok — a failing PATCH/DELETE silently updates local state, giving a false success indication."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_atlas_conv_rename_delete.py"
+  ],
+  "success_rate": {"backend": "100% (10/10)", "frontend": "0% (rename & delete via sidebar dropdown both broken)"},
+  "test_credentials": "jcuradeau.7@gmail.com / Crypto2026! (super_admin, VIP permanent) — validated login",
+  "seed_data_creation": "Created a few TEST_ conversations via /api/atlas/chat (e.g. 'TEST UI seed', 'TEST bug hunt', 'TEST Renamed 6c41c3'). These remain in the super admin account and can be cleaned via DELETE endpoint after fix.",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend PATCH/DELETE for /api/atlas/conversations/{id} works perfectly (10/10 tests in test_atlas_conv_rename_delete.py). The frontend bug is in /app/frontend/app/(tabs)/_layout.tsx around lines 156-197 and 354-357: the convDropdown zIndex:100 does not win against sibling convItemWrap rows. After fix, retest rename+delete sidebar flow, and also verify learn.tsx internal conversation list pencil/trash icons (they don't have testIDs yet — add them for testability).",
+  "rca_of_the_issue": "React Native Web renders TouchableOpacity as clickable divs. The dropdown View has position:absolute with zIndex:100, but its parent (convItemWrap) has position:relative with no zIndex. Sibling convItemWraps (also position:relative, no zIndex) create the SAME stacking context, so the dropdown does not stack above later siblings. When the dropdown visually overlays the next conversation row, browser hit-testing routes the click to the later-rendered sibling row's TouchableOpacity (handleSelectConv) instead of the dropdown item — hence the neighbouring conversation is opened and startRename/deleteConv are never called. FIX: set zIndex on the convItemWrap when its dropdown is open (e.g. zIndex: convMenu===conv.id?200:1) OR raise the dropdown out of the row via portal/parent list."
+}
