@@ -662,10 +662,8 @@ async def atlas_chat(data: ChatRequest, credentials: HTTPAuthorizationCredential
 VIP USER: This user has Mentova VIP. Provide the most complete, personalized experience:
 - Use all their memories and history to personalize responses
 - Offer deeper analysis and more detailed explanations
-- Proactively suggest relevant modules, quizzes, or learning paths
 - Remember and reference previous conversations
 - Provide market context when relevant to their questions
-- If the user has NO learning modules yet, proactively create a personalized learning path by calling create_learning_module for 3-5 foundational modules based on their level
 - Use save_memory to remember important user preferences, goals, and knowledge level
 - When the user asks about current markets, use the RECENT CRYPTO NEWS data provided in your context
 """
