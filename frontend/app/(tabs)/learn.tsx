@@ -45,6 +45,7 @@ const i18n: Record<string, Record<string, string>> = {
   'mod.content': { fr: 'Contenu du module', en: 'Module content', es: 'Contenido del módulo' },
   'mod.quiz_history': { fr: 'Historique des quiz', en: 'Quiz history', es: 'Historial de quiz' },
   'mod.objective': { fr: 'Objectif', en: 'Objective', es: 'Objetivo' },
+  'mod.continue': { fr: 'Continuer ce module', en: 'Continue this module', es: 'Continuar este modulo' },
   // Filters
   'filter.all': { fr: 'Tous', en: 'All', es: 'Todos' },
   'filter.in_progress': { fr: 'En cours', en: 'In progress', es: 'En curso' },
@@ -108,7 +109,7 @@ function api(path: string, token: string, opts: any = {}) {
 }
 
 // ============ CHAT VIEW ============
-function ChatView({ token, lang }: { token: string; lang: string }) {
+function ChatView({ token, lang, initialMessage, onMessageSent }: { token: string; lang: string; initialMessage?: string | null; onMessageSent?: () => void }) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -137,6 +138,39 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
       setMessages([]);
     }
   }, [triggerNewChat]);
+
+  // Auto-send message when coming from module continue
+  useEffect(() => {
+    if (initialMessage && !loading) {
+      setInput(initialMessage);
+      onMessageSent?.();
+      // Small delay to let state update, then send
+      setTimeout(() => {
+        setMessages(prev => [...prev, { role: 'user', content: initialMessage }]);
+        setInput('');
+        (async () => {
+          setLoading(true);
+          try {
+            const res = await fetch(`${API}/api/atlas/chat`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ message: initialMessage, conversation_id: activeConvId, lang }),
+            });
+            const data = await res.json();
+            if (data.response) {
+              setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+              if (!activeConvId && data.conversation_id) {
+                setActiveConvId(data.conversation_id);
+                loadConversations();
+              }
+            }
+          } catch (e) { console.error(e); }
+          finally { setLoading(false); }
+        })();
+      }, 200);
+    }
+  }, [initialMessage]);
+
 
   useEffect(() => {
     fetch(`${API}/api/vip/permissions`, { headers: { Authorization: `Bearer ${token}` } })
@@ -430,7 +464,7 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
 }
 
 // ============ MODULES VIEW ============
-function ModulesView({ token, lang }: { token: string; lang: string }) {
+function ModulesView({ token, lang, onContinueModule }: { token: string; lang: string; onContinueModule?: (title: string) => void }) {
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string | null>(null);
@@ -541,6 +575,16 @@ function ModulesView({ token, lang }: { token: string; lang: string }) {
               ))}
             </View>
           )}
+
+          {/* Continue Module Button */}
+          <TouchableOpacity
+            style={s.continueModuleBtn}
+            onPress={() => onContinueModule?.(mod.title)}
+            testID="continue-module-btn"
+          >
+            <Ionicons name="chatbubbles" size={18} color="#fff" />
+            <Text style={s.continueModuleBtnText}>{tAtlas("mod.continue", lang)}</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     );
@@ -724,7 +768,17 @@ export default function LearnScreen() {
   const { language } = useTranslation();
   const lang = language || 'fr';
   const [tab, setTab] = useState<Tab>('chat');
+  const [continueModuleMsg, setContinueModuleMsg] = useState<string | null>(null);
 
+  const handleContinueModule = (moduleTitle: string) => {
+    const msg = (tAtlas('sug.1', lang).includes('Bitcoin') ? 'fr' : lang) === 'fr'
+      ? `Je veux continuer le module "${moduleTitle}". Reprends la ou on en etait.`
+      : lang === 'es'
+      ? `Quiero continuar el modulo "${moduleTitle}". Retoma donde lo dejamos.`
+      : `I want to continue the module "${moduleTitle}". Pick up where we left off.`;
+    setContinueModuleMsg(msg);
+    setTab('chat');
+  };
   if (!token) {
     return (
       <SafeAreaView style={s.container}>
@@ -758,8 +812,8 @@ export default function LearnScreen() {
         ))}
       </View>
 
-      {tab === 'chat' && <ChatView token={token} lang={language || 'fr'} />}
-      {tab === 'modules' && <ModulesView token={token} lang={language || 'fr'} />}
+      {tab === 'chat' && <ChatView token={token} lang={language || 'fr'} initialMessage={continueModuleMsg} onMessageSent={() => setContinueModuleMsg(null)} />}
+      {tab === 'modules' && <ModulesView token={token} lang={language || 'fr'} onContinueModule={handleContinueModule} />}
       {tab === 'progress' && <ProgressView token={token} lang={language || 'fr'} />}
     </SafeAreaView>
   );
@@ -911,4 +965,6 @@ const s = StyleSheet.create({
   quizScore: { fontSize: 14, fontWeight: '700', color: '#E2E8F0', width: 40 },
   quizMeta: { fontSize: 12, color: '#6B7280', flex: 1 },
   quizDate: { fontSize: 11, color: '#4B5563' },
+  continueModuleBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: '#7C3AED', borderRadius: 12, paddingVertical: 14, marginTop: 20 },
+  continueModuleBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 });
