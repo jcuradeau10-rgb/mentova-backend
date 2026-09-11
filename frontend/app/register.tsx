@@ -45,7 +45,13 @@ export default function RegisterScreen() {
       await register(email.trim(), password, name.trim());
       router.replace('/(tabs)/learn');
     } catch (e: any) {
-      setError(e.message || 'Registration failed');
+      const detail = e?.response?.data?.detail || e?.message || 'Registration failed';
+      // Translate common backend errors
+      const errorMap: Record<string, Record<string, string>> = {
+        'This email is already in use': { fr: 'Cet email est deja utilise', en: 'This email is already in use', es: 'Este email ya esta en uso' },
+      };
+      const translated = errorMap[detail]?.[lang] || detail;
+      setError(translated);
     } finally { setLoading(false); }
   };
 

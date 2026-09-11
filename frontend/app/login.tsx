@@ -39,7 +39,13 @@ export default function LoginScreen() {
       await login(email.trim(), password);
       router.replace('/(tabs)/learn');
     } catch (e: any) {
-      setError(e.message || 'Login failed');
+      const detail = e?.response?.data?.detail || e?.message || 'Login failed';
+      const errorMap: Record<string, Record<string, string>> = {
+        'Invalid email or password': { fr: 'Email ou mot de passe incorrect', en: 'Invalid email or password', es: 'Email o contrasena incorrectos' },
+        'Account is locked': { fr: 'Compte verrouille', en: 'Account is locked', es: 'Cuenta bloqueada' },
+      };
+      const translated = errorMap[detail]?.[lang] || detail;
+      setError(translated);
     } finally { setLoading(false); }
   };
 
