@@ -563,16 +563,27 @@ async def build_context(user_id: str, is_vip: bool = False) -> str:
         if mods:
             parts.append(f"CURRENT MODULES:\n" + "\n".join(mods))
 
-        # VIP Market Intelligence: inject recent news + market data
+        # VIP Market Intelligence: inject real-time news + market data
         if is_vip:
-            news_items = []
-            async for doc in db.news_cache.find().sort("published_at", -1).limit(5):
-                doc.pop("_id", None)
-                news_items.append(f"- [{doc.get('source','')}] {doc.get('title','')}")
-            if news_items:
-                parts.append(f"RECENT CRYPTO NEWS (for context):\n" + "\n".join(news_items))
+            # Fetch live news from the RSS cache (populated by server.py)
+            import sys
+            sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            try:
+                import httpx
+                async with httpx.AsyncClient(timeout=5) as _http:
+                    # Fetch from our own internal news endpoint
+                    base = os.environ.get("EXPO_PUBLIC_BACKEND_URL", "http://localhost:8001")
+                    news_resp = await _http.get(f"http://localhost:8001/api/news")
+                    if news_resp.status_code == 200:
+                        news_data = news_resp.json()
+                        articles = news_data.get("articles", [])[:6]
+                        if articles:
+                            news_lines = [f"- [{a.get('source','')}] {a.get('title','')}" for a in articles]
+                            parts.append(f"RECENT CRYPTO NEWS (use for context when relevant):\n" + "\n".join(news_lines))
+            except Exception:
+                pass
 
-            # Latest briefing data if available
+            # Also check DB for daily briefing data
             from datetime import datetime as _dt, timezone as _tz
             today_key = _dt.now(_tz.utc).strftime("%Y-%m-%d")
             briefing = await db.daily_briefings.find_one({"cache_key": {"$regex": f"^{today_key}"}}, {"_id": 0, "market_data": 1, "market_summary": 1, "sentiment": 1})
@@ -654,6 +665,9 @@ VIP USER: This user has Mentova VIP. Provide the most complete, personalized exp
 - Proactively suggest relevant modules, quizzes, or learning paths
 - Remember and reference previous conversations
 - Provide market context when relevant to their questions
+- If the user has NO learning modules yet, proactively create a personalized learning path by calling create_learning_module for 3-5 foundational modules based on their level
+- Use save_memory to remember important user preferences, goals, and knowledge level
+- When the user asks about current markets, use the RECENT CRYPTO NEWS data provided in your context
 """
         else:
             vip_addon = """

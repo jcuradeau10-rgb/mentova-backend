@@ -30,6 +30,8 @@ const tr: Record<string, Record<string, string>> = {
   dailyBriefingDesc: { fr: 'Resume quotidien des marches', en: 'Daily market summary', es: 'Resumen diario de los mercados' },
   tools: { fr: 'Outils avances', en: 'Advanced Tools', es: 'Herramientas avanzadas' },
   toolsDesc: { fr: 'Rainbow Chart, Halving, alertes, portefeuille', en: 'Rainbow Chart, Halving, alerts, portfolio', es: 'Rainbow Chart, Halving, alertas, portafolio' },
+  premiumMsg: { fr: 'Vous avez acces a la meilleure version d\'Atlas', en: 'You have access to the best version of Atlas', es: 'Tienes acceso a la mejor version de Atlas' },
+  premiumDesc: { fr: 'Memoire personnalisee, intelligence de marche, apprentissage adapte a votre niveau, briefing quotidien et analyse de graphiques — Atlas VIP est concu pour vous accompagner comme un vrai mentor.', en: 'Personalized memory, market intelligence, learning adapted to your level, daily briefing and chart analysis — Atlas VIP is designed to guide you like a real mentor.', es: 'Memoria personalizada, inteligencia de mercado, aprendizaje adaptado a tu nivel, briefing diario y analisis de graficos — Atlas VIP esta disenado para guiarte como un verdadero mentor.' },
   openAtlas: { fr: 'Ouvrir Atlas', en: 'Open Atlas', es: 'Abrir Atlas' },
   locked: { fr: 'Passez VIP pour debloquer', en: 'Upgrade to VIP to unlock', es: 'Pase a VIP para desbloquear' },
 };
@@ -96,7 +98,6 @@ export default function VIPHubScreen() {
     { key: 'market', icon: 'globe', color: '#10B981', action: () => router.push('/(tabs)/learn') },
     { key: 'learning', icon: 'school', color: '#F59E0B', action: () => router.push('/(tabs)/learn') },
     { key: 'dailyBriefing', icon: 'today', color: '#EF4444', action: loadBriefing },
-    { key: 'tools', icon: 'construct', color: '#06B6D4', action: () => router.push('/(tabs)/market') },
   ];
 
   return (
@@ -158,6 +159,13 @@ export default function VIPHubScreen() {
 
         {/* Open Atlas CTA */}
         <View style={s.section}>
+          {/* Premium Message */}
+          <View style={s.premiumCard}>
+            <Ionicons name="star" size={24} color="#FFD700" />
+            <Text style={s.premiumTitle}>{t('premiumMsg', lang)}</Text>
+            <Text style={s.premiumDesc}>{t('premiumDesc', lang)}</Text>
+          </View>
+
           <TouchableOpacity style={s.atlasBtn} onPress={() => router.push('/(tabs)/learn')} data-testid="open-atlas-btn">
             <Ionicons name="planet" size={20} color="#fff" />
             <Text style={s.atlasBtnText}>{t('openAtlas', lang)}</Text>
@@ -201,4 +209,7 @@ const s = StyleSheet.create({
   featureDesc: { fontSize: 11, color: '#6B7280', lineHeight: 15 },
   atlasBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: '#7C3AED', borderRadius: 14, paddingVertical: 16 },
   atlasBtnText: { fontSize: 16, fontWeight: '700', color: '#fff' },
+  premiumCard: { backgroundColor: 'rgba(255,215,0,0.06)', borderRadius: 14, padding: 20, borderWidth: 1, borderColor: 'rgba(255,215,0,0.15)', alignItems: 'center', gap: 10, marginBottom: 16 },
+  premiumTitle: { fontSize: 16, fontWeight: '700', color: '#FFD700', textAlign: 'center' },
+  premiumDesc: { fontSize: 13, color: '#94A3B8', textAlign: 'center', lineHeight: 19 },
 });

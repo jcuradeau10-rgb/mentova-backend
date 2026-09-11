@@ -30,7 +30,6 @@ const FEATURES: Record<string, Array<{icon: string; color: string; title: string
     { icon: 'globe', color: '#10B981', title: 'Intelligence de marche', desc: 'Atlas utilise les actualites et donnees de marche en temps reel pour contextualiser ses reponses.' },
     { icon: 'school', color: '#F59E0B', title: 'Apprentissage personnalise', desc: 'Atlas adapte ses explications a votre niveau et evolue avec votre progression.' },
     { icon: 'today', color: '#EF4444', title: 'Briefing quotidien', desc: 'Chaque jour, un resume personnalise des evenements importants du marche crypto.' },
-    { icon: 'construct', color: '#06B6D4', title: 'Outils avances', desc: 'Rainbow Chart, Halving countdown, alertes de prix, portefeuille virtuel et plus encore.' },
   ],
   en: [
     { icon: 'cloud', color: '#7C3AED', title: 'Atlas Memory', desc: 'Atlas remembers your preferences, level, and goals. It progressively becomes your personal mentor.' },
@@ -38,7 +37,6 @@ const FEATURES: Record<string, Array<{icon: string; color: string; title: string
     { icon: 'globe', color: '#10B981', title: 'Market Intelligence', desc: 'Atlas uses real-time news and market data to contextualize its responses.' },
     { icon: 'school', color: '#F59E0B', title: 'Personalized Learning', desc: 'Atlas adapts its explanations to your level and evolves with your progress.' },
     { icon: 'today', color: '#EF4444', title: 'Daily Briefing', desc: 'Every day, a personalized summary of important crypto market events.' },
-    { icon: 'construct', color: '#06B6D4', title: 'Advanced Tools', desc: 'Rainbow Chart, Halving countdown, price alerts, virtual portfolio and more.' },
   ],
   es: [
     { icon: 'cloud', color: '#7C3AED', title: 'Memoria de Atlas', desc: 'Atlas recuerda tus preferencias, nivel y objetivos. Se convierte progresivamente en tu mentor personal.' },
@@ -46,7 +44,6 @@ const FEATURES: Record<string, Array<{icon: string; color: string; title: string
     { icon: 'globe', color: '#10B981', title: 'Inteligencia de mercado', desc: 'Atlas usa noticias y datos de mercado en tiempo real para contextualizar sus respuestas.' },
     { icon: 'school', color: '#F59E0B', title: 'Aprendizaje personalizado', desc: 'Atlas adapta sus explicaciones a tu nivel y evoluciona con tu progreso.' },
     { icon: 'today', color: '#EF4444', title: 'Briefing diario', desc: 'Cada dia, un resumen personalizado de los eventos importantes del mercado crypto.' },
-    { icon: 'construct', color: '#06B6D4', title: 'Herramientas avanzadas', desc: 'Rainbow Chart, cuenta regresiva del Halving, alertas de precio, portafolio virtual y mas.' },
   ],
 };
 
