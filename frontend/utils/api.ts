@@ -153,6 +153,12 @@ export const adminAPI = {
   // Logs
   getLogs: (params?: { limit?: number; skip?: number }) =>
     api.get('/admin/logs', { params }),
+  
+  // User Intelligence
+  getUserIntelligence: (userId: string, period?: string) =>
+    api.get(`/admin/users/${userId}/intelligence`, { params: { period: period || 'all' } }),
+  getGlobalIntelligence: () =>
+    api.get('/admin/intelligence/global'),
 };
 
 // VIP APIs

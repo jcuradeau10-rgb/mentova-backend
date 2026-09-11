@@ -11880,9 +11880,15 @@ from routes.analytics import router as analytics_router, set_analytics_db, track
 set_analytics_db(db)
 app.include_router(analytics_router, prefix="/api")
 
+# User Intelligence router
+from routes.user_intelligence import router as intelligence_router, set_intelligence_deps, ensure_intelligence_indexes
+set_intelligence_deps(db)
+app.include_router(intelligence_router, prefix="/api")
+
 @app.on_event("startup")
 async def start_analytics_flush():
     asyncio.create_task(_flush_loop())
+    await ensure_intelligence_indexes()
     logger.info("Analytics flush loop started — persisting to MongoDB every 30s")
 
 

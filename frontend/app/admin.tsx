@@ -2312,6 +2312,16 @@ export default function AdminScreen() {
 
                 <Text style={styles.modalSectionTitle}>Actions</Text>
 
+                {/* User Intelligence Button */}
+                <TouchableOpacity
+                  style={[styles.actionButton, { backgroundColor: '#7C3AED' }]}
+                  onPress={() => { setShowUserModal(false); router.push(`/user/intelligence?userId=${selectedUser.id}`); }}
+                  data-testid="user-intelligence-btn"
+                >
+                  <Ionicons name="analytics" size={22} color="#FFF" />
+                  <Text style={styles.actionButtonText}>User Intelligence</Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity
                   style={[styles.actionButton, selectedUser.is_banned ? styles.actionButtonSuccess : styles.actionButtonDanger]}
                   onPress={() => handleBanUser(selectedUser)}

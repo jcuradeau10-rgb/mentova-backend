@@ -52,6 +52,32 @@ function SidebarContent({ onNavigate }: { onNavigate: (route: string) => void })
   const [isVip, setIsVip] = useState(false);
   const [conversations, setConversations] = useState<ConvItem[]>([]);
 
+  // Session tracking
+  useEffect(() => {
+    if (!token) return;
+    let sessionId: string | null = null;
+    const startSession = async () => {
+      try {
+        const resp = await fetch(`${API}/api/track/session?action=start`, {
+          method: 'POST', headers: { Authorization: `Bearer ${token}` },
+        });
+        const d = await resp.json();
+        sessionId = d.session_id || null;
+      } catch (e) { /* silent */ }
+    };
+    const endSession = () => {
+      if (!sessionId) return;
+      try {
+        navigator.sendBeacon?.(`${API}/api/track/session?action=end&session_id=${sessionId}`);
+      } catch (e) { /* silent */ }
+    };
+    startSession();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('beforeunload', endSession);
+      return () => { endSession(); window.removeEventListener('beforeunload', endSession); };
+    }
+  }, [token]);
+
   useEffect(() => {
     if (token) {
       fetch(`${API}/api/vip/permissions`, { headers: { Authorization: `Bearer ${token}` } })
