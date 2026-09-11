@@ -63,6 +63,10 @@ const i18n: Record<string, Record<string, string>> = {
   'prog.mastered': { fr: 'Maîtrisés', en: 'Mastered', es: 'Dominados' },
   'prog.onboarding_hint': { fr: 'Discute avec Atlas pour évaluer ton niveau', en: 'Chat with Atlas to evaluate your level', es: 'Habla con Atlas para evaluar tu nivel' },
   'prog.error': { fr: 'Erreur de chargement', en: 'Loading error', es: 'Error de carga' },
+  // Smart Upgrade Prompt
+  'upgrade.title': { fr: 'Atlas peut aller encore plus loin', en: 'Atlas can go even further', es: 'Atlas puede ir aun mas lejos' },
+  'upgrade.desc': { fr: 'Vous utilisez deja Atlas regulierement. Avec VIP, beneficiez d\'une memoire personnalisee, de l\'analyse de graphiques, et d\'une experience Atlas beaucoup plus complete.', en: 'You already use Atlas regularly. With VIP, get personalized memory, chart analysis, and a much more complete Atlas experience.', es: 'Ya usas Atlas regularmente. Con VIP, obtendras memoria personalizada, analisis de graficos y una experiencia Atlas mucho mas completa.' },
+  'upgrade.cta': { fr: 'Passer a VIP', en: 'Upgrade to VIP', es: 'Pasar a VIP' },
   // Levels
   'level.unknown': { fr: 'Non évalué', en: 'Not evaluated', es: 'No evaluado' },
   'level.beginner': { fr: 'Débutant', en: 'Beginner', es: 'Principiante' },
@@ -105,6 +109,7 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
   const [showSidebar, setShowSidebar] = useState(false);
   const [isVip, setIsVip] = useState(false);
   const [imageAnalyzing, setImageAnalyzing] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
@@ -153,6 +158,9 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
         // New atlas_v3 JSON response
         const data = await res.json();
         setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+        if (data.upgrade_prompt && !isVip) {
+          setShowUpgradePrompt(true);
+        }
         if (!activeConvId && data.conversation_id) {
           setActiveConvId(data.conversation_id);
           loadConversations();
@@ -319,6 +327,26 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
         )}
       </ScrollView>
 
+      {/* Smart Upgrade Prompt (FREE users only, triggered by backend) */}
+      {showUpgradePrompt && !isVip && (
+        <View style={s.upgradePrompt} data-testid="upgrade-prompt" testID="upgrade-prompt">
+          <View style={s.upgradePromptContent}>
+            <Ionicons name="diamond" size={20} color="#FFD700" />
+            <View style={{ flex: 1 }}>
+              <Text style={s.upgradeTitle}>{tAtlas("upgrade.title", lang)}</Text>
+              <Text style={s.upgradeDesc}>{tAtlas("upgrade.desc", lang)}</Text>
+            </View>
+            <TouchableOpacity onPress={() => setShowUpgradePrompt(false)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+              <Ionicons name="close" size={18} color="#6B7280" />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity style={s.upgradeCta} onPress={() => router.push('/vip')} data-testid="upgrade-cta-btn" testID="upgrade-cta-btn">
+            <Ionicons name="diamond" size={16} color="#0A0A1A" />
+            <Text style={s.upgradeCtaText}>{tAtlas("upgrade.cta", lang)}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Input */}
       <View style={s.inputBar}>
         {isVip && Platform.OS === 'web' && (
@@ -326,7 +354,7 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
             style={s.imageBtn}
             onPress={handleImageUpload}
             disabled={imageAnalyzing}
-            data-testid="chart-upload-btn"
+            data-testid="chart-upload-btn" testID="chart-upload-btn"
           >
             <Ionicons name={imageAnalyzing ? 'hourglass' : 'image'} size={20} color={imageAnalyzing ? '#6B7280' : '#7C3AED'} />
           </TouchableOpacity>
@@ -340,14 +368,14 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
           multiline
           maxLength={2000}
           onKeyPress={(e: any) => { if (e.nativeEvent?.key === 'Enter' && !e.nativeEvent?.shiftKey) { e.preventDefault?.(); sendMessage(); } }}
-          data-testid="chat-input"
+          data-testid="chat-input" testID="chat-input"
         />
         <TouchableOpacity
           style={[s.sendBtn, (!input.trim() || loading) && s.sendBtnDisabled]}
           onPress={sendMessage}
           disabled={!input.trim() || loading}
           accessibilityLabel="Send message"
-          data-testid="send-message-btn"
+          data-testid="send-message-btn" testID="send-message-btn"
         >
           <Ionicons name="send" size={18} color={input.trim() && !loading ? '#FFF' : '#6B7280'} />
         </TouchableOpacity>
@@ -739,6 +767,13 @@ const s = StyleSheet.create({
   sendBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#7C3AED', alignItems: 'center', justifyContent: 'center' },
   sendBtnDisabled: { backgroundColor: 'rgba(255,255,255,0.06)' },
   imageBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(124,58,237,0.12)', alignItems: 'center', justifyContent: 'center' },
+  // Smart Upgrade Prompt
+  upgradePrompt: { marginHorizontal: 12, marginBottom: 8, backgroundColor: 'rgba(255,215,0,0.06)', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: 'rgba(255,215,0,0.2)' },
+  upgradePromptContent: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 10 },
+  upgradeTitle: { fontSize: 14, fontWeight: '700', color: '#FFD700', marginBottom: 4 },
+  upgradeDesc: { fontSize: 12, color: '#9CA3AF', lineHeight: 17 },
+  upgradeCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#FFD700', borderRadius: 10, paddingVertical: 10 },
+  upgradeCtaText: { fontSize: 14, fontWeight: '700', color: '#0A0A1A' },
 
   // Sidebar
   sidebarWrap: { flex: 1, backgroundColor: '#0B0914' },

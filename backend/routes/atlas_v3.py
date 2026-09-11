@@ -20,7 +20,8 @@ from models.atlas_models import (
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from services.vip_permissions import get_permissions
 from services.atlas_protection import (
-    check_request_allowed, record_request_start, record_request_end, log_usage
+    check_request_allowed, record_request_start, record_request_end, log_usage,
+    should_show_upgrade_prompt, mark_upgrade_prompt_shown
 )
 
 logger = logging.getLogger("atlas_v3")
@@ -536,8 +537,8 @@ RULES:
 # ============ CONTEXT BUILDER ============
 
 async def build_context(user_id: str, is_vip: bool = False) -> str:
-    """Build context string from user's profile, memories, and recent modules.
-    VIP gets full memory + more context. FREE gets basic profile only."""
+    """Build context string from user's profile, memories, modules, and market intelligence.
+    VIP gets full memory + market intelligence. FREE gets basic profile only."""
     parts = []
     profile = await tool_get_user_profile(user_id)
     if profile and not profile.get("error"):
@@ -561,6 +562,28 @@ async def build_context(user_id: str, is_vip: bool = False) -> str:
             mods.append(f"- {doc.get('title','')} (id:{doc.get('id','')}, status:{doc.get('status','')}, mastery:{doc.get('mastery_score',0)}%)")
         if mods:
             parts.append(f"CURRENT MODULES:\n" + "\n".join(mods))
+
+        # VIP Market Intelligence: inject recent news + market data
+        if is_vip:
+            news_items = []
+            async for doc in db.news_cache.find().sort("published_at", -1).limit(5):
+                doc.pop("_id", None)
+                news_items.append(f"- [{doc.get('source','')}] {doc.get('title','')}")
+            if news_items:
+                parts.append(f"RECENT CRYPTO NEWS (for context):\n" + "\n".join(news_items))
+
+            # Latest briefing data if available
+            from datetime import datetime as _dt, timezone as _tz
+            today_key = _dt.now(_tz.utc).strftime("%Y-%m-%d")
+            briefing = await db.daily_briefings.find_one({"cache_key": {"$regex": f"^{today_key}"}}, {"_id": 0, "market_data": 1, "market_summary": 1, "sentiment": 1})
+            if briefing:
+                market_data = briefing.get("market_data", {})
+                prices = market_data.get("prices", {})
+                if prices:
+                    price_str = ", ".join([f"{k}: ${v.get('usd','?')}" for k, v in prices.items()])
+                    parts.append(f"CURRENT MARKET PRICES: {price_str}")
+                if briefing.get("market_summary"):
+                    parts.append(f"TODAY'S MARKET SUMMARY: {briefing['market_summary']}")
 
     return "\n\n".join(parts) if parts else "No user data yet (new user)."
 
@@ -714,7 +737,17 @@ Focus on being an excellent crypto education mentor.
             MODEL, duration_ms, "chat"
         )
 
-        return {"response": assistant_response, "conversation_id": conv_id}
+        # Smart Upgrade Prompt: check if FREE user should see VIP suggestion
+        show_upgrade = False
+        if not is_vip:
+            show_upgrade = await should_show_upgrade_prompt(user_id, db)
+            if show_upgrade:
+                mark_upgrade_prompt_shown(user_id)
+
+        result = {"response": assistant_response, "conversation_id": conv_id}
+        if show_upgrade:
+            result["upgrade_prompt"] = True
+        return result
 
     except HTTPException:
         raise

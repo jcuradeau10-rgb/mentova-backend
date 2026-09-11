@@ -40,6 +40,13 @@ CONFIG = {
     # --- Cost estimation (GPT-5.6 Terra approximate pricing) ---
     "cost_per_1k_input_tokens": 0.002,
     "cost_per_1k_output_tokens": 0.008,
+
+    # --- Smart Upgrade Prompt (FREE users only) ---
+    # Triggers after sustained usage — not a hard limit, just a soft suggestion.
+    "upgrade_prompt_min_total_requests": 15,     # Minimum lifetime requests before considering
+    "upgrade_prompt_min_session_requests": 8,    # Requests in current session
+    "upgrade_prompt_cooldown_hours": 24,         # Don't show again for 24h after shown
+
 }
 
 # ============ IN-MEMORY TRACKING ============
@@ -259,3 +266,49 @@ def update_protection_config(updates: dict) -> dict:
             CONFIG[key] = value
             logger.info(f"Protection config updated: {key}={value}")
     return dict(CONFIG)
+
+
+# ============ SMART UPGRADE PROMPT ============
+# Invisible trigger for FREE → VIP conversion. Never reveals thresholds.
+
+_upgrade_prompt_shown: Dict[str, float] = {}  # user_id -> last shown timestamp
+
+
+async def should_show_upgrade_prompt(user_id: str, db) -> bool:
+    """
+    Determine if a FREE user should see a VIP upgrade suggestion.
+    Based on sustained usage patterns — not a fixed message count.
+    Returns True if the prompt should be shown.
+    """
+    now = time.time()
+
+    # Don't show if recently shown
+    last_shown = _upgrade_prompt_shown.get(user_id, 0)
+    cooldown_h = CONFIG.get("upgrade_prompt_cooldown_hours", 24)
+    if now - last_shown < cooldown_h * 3600:
+        return False
+
+    # Check in-memory session usage
+    w = _get_window(user_id)
+    session_requests = w["day_count"]
+    min_session = CONFIG.get("upgrade_prompt_min_session_requests", 8)
+    if session_requests < min_session:
+        return False
+
+    # Check total lifetime usage from DB
+    if db is not None:
+        try:
+            total = await db.atlas_usage_logs.count_documents({"user_id": user_id})
+            min_total = CONFIG.get("upgrade_prompt_min_total_requests", 15)
+            if total < min_total:
+                return False
+        except Exception:
+            return False
+
+    return True
+
+
+def mark_upgrade_prompt_shown(user_id: str):
+    """Record that the upgrade prompt was shown to this user."""
+    _upgrade_prompt_shown[user_id] = time.time()
+

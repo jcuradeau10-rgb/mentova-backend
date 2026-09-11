@@ -1,94 +1,70 @@
 # Mentova - Professional Crypto Learning Platform
 
 ## Architecture
-- **Frontend**: React Native (Expo) Web Export -> Netlify
-- **Backend**: FastAPI -> Render  
+- **Frontend**: React Native (Expo) Web → Netlify
+- **Backend**: FastAPI → Render
 - **Database**: MongoDB Atlas / localhost
 - **AI**: OpenAI GPT-5.6 Terra (native SDK)
-- **Payments**: Stripe Live ($21.99/month VIP)
-- **Crypto Data**: CoinGecko Pro API
+- **Payments**: Stripe Live ($21.99/month)
 
-## VIP System — COMPLETE (Sept 11, 2026)
+## VIP System — FINAL (Sept 11, 2026)
 
-### Backend Services
-- `services/vip_permissions.py` — Centralized FREE/VIP permissions (extensible PLANS dict)
-- `services/atlas_protection.py` — Invisible rate limiting, anti-abuse, cost tracking (NO visible quotas)
-- `services/stripe_service.py` — Full subscription lifecycle (checkout, portal, webhook)
+### The 6 VIP Features
+1. **Memory** — Atlas retains user preferences, level, goals between sessions
+2. **Chart Analysis** — Image upload in Atlas chat for technical analysis
+3. **Market Intelligence** — Atlas injects real-time news + prices into context
+4. **Personalized Learning** — Adaptive education based on user profile
+5. **Daily Briefing** — AI-generated market summary (GPT-5.6 Terra, cached 4h, FR/EN/ES)
+6. **Advanced Tools** — Rainbow Chart, Halving countdown, alerts, virtual portfolio
 
-### VIP Features (ALL Working)
-1. **Atlas AI Premium** — VIP gets memory, personalization, 40-msg history, enhanced prompts
-2. **Atlas Memory** — Persistent memories saved/loaded between conversations (VIP only)
-3. **Chart Analysis** — Image upload in Atlas chat (VIP), analyzed via OpenAI Vision
-4. **Daily Briefing** — AI-generated market summary (GPT-5.6 Terra, cached 4h, FR/EN/ES)
-5. **Fear & Greed Index** — Real-time market sentiment
-6. **Bitcoin Halving** — Countdown tracker
-7. **Rainbow Chart** — BTC price zone visualization
-8. **Price Alerts** — Custom crypto alerts
-9. **Virtual Portfolio** — Investment simulation
-10. **Professional Tools** — ETH Gas, Liquidations, BTC Dominance, etc.
-11. **Premium Learning** — Advanced modules, adaptive quizzes
+### NOT Included (by specification)
+- ❌ Fear & Greed (removed from all UI, API, and AI prompts)
+- ❌ Voice/vocal features
+- ❌ Visible message counters/quotas
 
-### Stripe Configuration
-- Account: 51UEKux... (LIVE)
-- Product: Mentova VIP (auto-created via API)
-- Price: $21.99/month (price_1UEV6kAdwzWILqbUTTxVYjsQ)
-- Webhook: POST /api/webhook/stripe
+### Smart Upgrade Prompt
+- Backend tracks FREE user usage invisibly
+- After 15+ lifetime + 8+ session requests, `upgrade_prompt: true` in chat response
+- Frontend shows elegant VIP suggestion (dismissible, non-blocking)
+- 24h cooldown between prompts
+- VIP users never see it
 
-### Protection System (Invisible)
-- No visible quotas, counters, or "X remaining" messages
-- Rate limits: per-minute (6 FREE/12 VIP), per-hour (40/80), burst (4/10s)
-- Anomaly detection: soft (150/500 daily) + hard (500/2000) thresholds
-- Cost tracking: every request logged (tokens, cost, duration, plan)
+### Protection System
+- Invisible rate limiting (no counters, no quotas shown)
+- Anti-abuse: burst detection, concurrent limits, anomaly thresholds
+- Cost tracking: every request logged (tokens, cost, duration)
 - All configurable via admin API
 
-### API Endpoints
-- `GET /api/vip/permissions` — User permissions
-- `POST /api/vip/checkout` — Stripe checkout
-- `POST /api/vip/portal` — Subscription management
-- `GET /api/vip/subscription` — Subscription details
-- `GET /api/vip/daily-briefing?lang=fr` — AI daily briefing
-- `POST /api/vip/ai/analyze` — Text analysis
-- `POST /api/vip/ai/analyze-image` — Chart/image analysis (Vision)
-- `GET /api/vip/tools/fear-greed` — Fear & Greed Index
-- `GET /api/vip/tools/halving` — Halving countdown
-- `GET /api/admin/vip-stats` — Subscriber analytics
-- `GET /api/admin/atlas-usage` — Cost analytics
-- `GET/PUT /api/admin/protection-config` — Protection thresholds
+### Stripe
+- Product: Mentova VIP (auto-created)
+- Price: $21.99/month (price_1UEV6kAdwzWILqbUTTxVYjsQ)
+- Full lifecycle: checkout, portal, webhooks (created/updated/deleted/paid/failed)
+- Webhook URL: POST /api/webhook/stripe
 
 ### Frontend Pages
-- `/vip` — VIP sales page ($21.99, 8 features, Stripe checkout)
-- `/vip/hub` — VIP Hub (briefing, F&G, halving, tools grid)
-- `/vip/success` — Post-payment confirmation
-- Profile: VIP badge + VIP Hub/Upgrade menu
+- `/vip` — Sales page (6 features, $21.99, Stripe checkout)
+- `/vip/hub` — VIP Hub (briefing, 6 feature cards, Open Atlas CTA)
+- `/vip/success` — Post-payment
+- Profile: VIP badge + VIP Hub menu
 - Home: VIP badge in header
-- Atlas chat: Image upload button (VIP only)
-
-### Navigation (5 tabs)
-1. Atlas AI (first tab) → Chat, Modules, Progress
-2. Home → Dashboard
-3. Market → Crypto prices
-4. News → Articles
-5. Profile → Settings, VIP, Support
+- Atlas: Image upload (VIP), Smart Upgrade Prompt (FREE)
 
 ## Credentials
 - Super Admin: jcuradeau.7@gmail.com / Crypto2026!
-- Stripe SK: backend/.env
-- OpenAI: backend/.env
 
 ## Backlog
 ### P0
-- Configure Stripe webhook in dashboard + STRIPE_WEBHOOK_SECRET in Render
+- Configure Stripe webhook URL + STRIPE_WEBHOOK_SECRET in Render
+- Deploy updated backend to Render
 
 ### P1
-- Deploy updated backend to Render (openai SDK changes)
-- CoinGecko API key renewal (401 errors)
+- CoinGecko API key renewal (401)
+- PWA install prompt overlapping chat input
 
 ### P2
-- Community forum with VIP badges
-- Referral/affiliate system
-- Push notifications
+- Community forum
+- Referral system
 
 ### P3
 - Technical indicators (RSI, Bollinger)
 - reCAPTCHA on auth forms
-- Refactor server.py (12k lines → modular routers)

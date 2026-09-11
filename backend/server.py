@@ -4256,15 +4256,17 @@ async def get_daily_briefing(lang: str = "en", user: dict = Depends(require_vip)
                 fng_resp = await http_client.get("https://api.alternative.me/fng/?limit=1")
                 if fng_resp.status_code == 200:
                     fng_data = fng_resp.json().get("data", [{}])[0]
-                    market_data["fear_greed"] = {"value": fng_data.get("value"), "label": fng_data.get("value_classification")}
+                    # Store raw value for internal use only, NOT sent to AI prompt
+                    market_data["_internal_sentiment_score"] = fng_data.get("value")
             except Exception:
-                market_data["fear_greed"] = {}
+                pass
         
         from openai import AsyncOpenAI as _OpenAI
         _client = _OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
         
         system_prompt = f"""You are a professional crypto market analyst providing a daily briefing.
 You MUST respond entirely in {target_lang}.
+IMPORTANT: Do NOT mention "Fear & Greed" or "Fear & Greed Index" by name. Use "market sentiment" or "risk appetite" instead.
 Respond in valid JSON with this structure:
 {{"market_summary": "2-3 sentence overview", "btc_analysis": "1-2 sentences about Bitcoin", "eth_analysis": "1-2 sentences about Ethereum", "sentiment": "bullish/bearish/neutral", "sentiment_reason": "1 sentence why", "key_events": ["event 1", "event 2", "event 3"], "opportunity": "1-2 sentences about opportunity", "risk_alert": "1 sentence about main risk"}}
 Keep it concise and professional. All text in {target_lang}, sentiment keywords in English."""
@@ -4285,6 +4287,16 @@ Keep it concise and professional. All text in {target_lang}, sentiment keywords 
             briefing_data = json.loads(json_match.group())
         else:
             briefing_data = {"market_summary": response_text, "sentiment": "neutral", "key_events": [], "btc_analysis": "", "eth_analysis": "", "sentiment_reason": "", "opportunity": "", "risk_alert": ""}
+        
+        # Sanitize: remove any Fear & Greed references
+        def _sanitize_fg(text):
+            if not isinstance(text, str): return text
+            return text.replace("Fear & Greed Index", "sentiment de marche").replace("Fear & Greed", "sentiment de marche").replace("Fear and Greed", "sentiment de marche")
+        for k in ["market_summary", "btc_analysis", "eth_analysis", "sentiment_reason", "opportunity", "risk_alert"]:
+            if k in briefing_data:
+                briefing_data[k] = _sanitize_fg(briefing_data[k])
+        if "key_events" in briefing_data and isinstance(briefing_data["key_events"], list):
+            briefing_data["key_events"] = [_sanitize_fg(e) for e in briefing_data["key_events"]]
         
         briefing_data["date"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         briefing_data["generated_at"] = datetime.now(timezone.utc).isoformat()
