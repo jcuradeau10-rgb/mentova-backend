@@ -42,7 +42,7 @@ export default function RegisterScreen() {
     if (password.length < 8) { setError(t('pwHint', lang)); return; }
     setLoading(true); setError('');
     try {
-      await register(name.trim(), email.trim(), password);
+      await register(email.trim(), password, name.trim());
       router.replace('/(tabs)/learn');
     } catch (e: any) {
       setError(e.message || 'Registration failed');
