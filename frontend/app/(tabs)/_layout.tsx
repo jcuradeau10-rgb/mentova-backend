@@ -163,7 +163,9 @@ export default function TabLayout() {
   }, [desktopCollapsed]);
 
   const handleNavigate = (route: string) => {
-    router.push(`/(tabs)/${route}` as any);
+    // In Expo Router, 'index' maps to '/' not '/index'
+    const path = route === 'index' ? '/(tabs)/' : `/(tabs)/${route}`;
+    router.push(path as any);
     if (isMobile) setSidebarOpen(false);
   };
 
@@ -173,26 +175,6 @@ export default function TabLayout() {
 
   return (
     <View style={[st.container, { backgroundColor: c.bg }]}>
-      {/* Mobile hamburger */}
-      {isMobile && !sidebarOpen && (
-        <TouchableOpacity style={[st.mobileHamburger, { backgroundColor: c.surface, borderColor: c.border }]} onPress={() => setSidebarOpen(true)} testID="sidebar-toggle">
-          <Ionicons name="menu" size={22} color={c.primary} />
-        </TouchableOpacity>
-      )}
-
-      {/* Mobile overlay */}
-      {isMobile && sidebarOpen && (
-        <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-          <Pressable style={st.overlay} onPress={() => setSidebarOpen(false)} />
-          <View style={[st.sidebar, { width: 280, backgroundColor: c.bgSecondary, borderRightColor: c.border }]}>
-            <TouchableOpacity style={[st.closeBtn, { backgroundColor: c.surfaceHover }]} onPress={() => setSidebarOpen(false)}>
-              <Ionicons name="close" size={18} color={c.textMuted} />
-            </TouchableOpacity>
-            <SidebarContent onNavigate={handleNavigate} />
-          </View>
-        </View>
-      )}
-
       {/* Desktop sidebar — animated width */}
       {!isMobile && (
         <Animated.View style={[st.sidebar, { width: sidebarAnim, backgroundColor: c.bgSecondary, borderRightColor: c.border, overflow: 'hidden' }]}>
@@ -200,7 +182,7 @@ export default function TabLayout() {
         </Animated.View>
       )}
 
-      {/* Desktop collapse toggle — floating button at sidebar edge */}
+      {/* Desktop collapse toggle */}
       {!isMobile && (
         <TouchableOpacity
           style={[st.collapseBtn, { backgroundColor: c.surface, borderColor: c.border, left: desktopCollapsed ? 4 : 248 }]}
@@ -228,6 +210,30 @@ export default function TabLayout() {
           <Tabs.Screen name="mentors" options={{ href: null }} />
         </Tabs>
       </View>
+
+      {/* Mobile hamburger — rendered LAST to be on top */}
+      {isMobile && !sidebarOpen && (
+        <TouchableOpacity
+          style={[st.mobileHamburger, { backgroundColor: c.surface, borderColor: c.border }]}
+          onPress={() => setSidebarOpen(true)}
+          testID="sidebar-toggle"
+        >
+          <Ionicons name="menu" size={22} color={c.primary} />
+        </TouchableOpacity>
+      )}
+
+      {/* Mobile overlay — rendered LAST with highest z-index */}
+      {isMobile && sidebarOpen && (
+        <>
+          <Pressable style={st.mobileOverlay} onPress={() => setSidebarOpen(false)} testID="sidebar-overlay" />
+          <View style={[st.mobileSidebar, { backgroundColor: c.bgSecondary, borderRightColor: c.border }]}>
+            <TouchableOpacity style={[st.closeBtn, { backgroundColor: c.surfaceHover }]} onPress={() => setSidebarOpen(false)}>
+              <Ionicons name="close" size={18} color={c.textMuted} />
+            </TouchableOpacity>
+            <SidebarContent onNavigate={handleNavigate} />
+          </View>
+        </>
+      )}
     </View>
   );
 }
@@ -235,6 +241,8 @@ export default function TabLayout() {
 const st = StyleSheet.create({
   container: { flex: 1, flexDirection: 'row' },
   mobileHamburger: { position: 'absolute', top: Platform.OS === 'web' ? 12 : 50, left: 12, zIndex: 100, width: 42, height: 42, borderRadius: 12, justifyContent: 'center', alignItems: 'center', borderWidth: 1 },
+  mobileOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 998 },
+  mobileSidebar: { position: 'absolute', top: 0, left: 0, bottom: 0, width: 280, borderRightWidth: 1, paddingTop: Platform.OS === 'web' ? 16 : 50, zIndex: 999 },
   overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 998 },
   sidebar: { borderRightWidth: 1, paddingTop: Platform.OS === 'web' ? 16 : 50, zIndex: 999 },
   closeBtn: { position: 'absolute', top: Platform.OS === 'web' ? 16 : 50, right: 12, width: 32, height: 32, borderRadius: 8, justifyContent: 'center', alignItems: 'center', zIndex: 1 },
