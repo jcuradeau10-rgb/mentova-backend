@@ -1,0 +1,49 @@
+{
+  "summary": "Backend + frontend testing of the full VIP system (iteration 86). All 6 backend tests pass (auth, daily-briefing via native openai gpt-5.6-terra, vip/ai/analyze, tools/fear-greed, tools/halving, unauthorized). Frontend visually renders every VIP feature correctly for the super admin: golden VIP badge + VIP Hub menu on profile, Daily Briefing with live AI-generated content, Fear & Greed + Halving stat cards, Pro Tools grid on VIP Hub, image upload icon in Atlas chat, $21.99 pricing + Become VIP button on /vip. Only issue: the data-testid attributes referenced in the spec (vip-badge, vip-tool-*, chart-upload-btn) are NOT present in the DOM, so automated selector-based tests cannot target them.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "GET /api/vip/daily-briefing", "issue": "Review spec says POST but endpoint is implemented as GET (works fine with query param lang=fr). Update spec or add POST alias for consistency."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "profile.tsx (VIP badge)", "issue": "Golden VIP badge renders correctly but is missing data-testid=\"vip-badge\"", "selector": "[data-testid=\"vip-badge\"]", "priority": "MEDIUM"},
+      {"component": "vip/hub.tsx (tool cards)", "issue": "Pro Tools grid renders correctly but tool cards are missing data-testid=\"vip-tool-{id}\"", "selector": "[data-testid^=\"vip-tool-\"]", "priority": "MEDIUM"},
+      {"component": "(tabs)/learn.tsx (Atlas chart upload)", "issue": "Image/camera upload icon is visible for VIP on web (bottom-left of message input) but is missing data-testid=\"chart-upload-btn\"", "selector": "[data-testid=\"chart-upload-btn\"]", "priority": "MEDIUM"},
+      {"component": "(tabs)/index.tsx (home VIP badge)", "issue": "Root URL '/' shows the onboarding/marketing page even for authenticated users; could not visually verify a VIP badge on the actual home tab. Also no data-testid=\"vip-badge\" found anywhere at '/'.", "selector": "[data-testid=\"vip-badge\"]", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "All web pages", "issues": ["React Native Web console errors: 'Invalid style property animationName. Did you mean animationKeyframes?' (persists from iteration 85 - not yet fixed)", "'shadow*' style props deprecated warnings", "'props.pointerEvents is deprecated. Use style.pointerEvents' warning"]},
+      {"screen": "PWA install prompt", "issues": ["The PWA install bottom sheet overlaps chat input area on /learn and /(tabs) - should be dismissible or shown only once per session"]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_vip_iter86.py",
+    "/app/test_reports/pytest/iter86.xml"
+  ],
+  "action_items": [
+    "Add data-testid=\"vip-badge\" to the VIP badge TouchableOpacity in profile.tsx and to the home header badge in (tabs)/index.tsx",
+    "Add data-testid=\"vip-tool-{id}\" to the tool grid cards in vip/hub.tsx",
+    "Add data-testid=\"chart-upload-btn\" to the image upload TouchableOpacity in (tabs)/learn.tsx (Atlas chat)",
+    "Fix RN-Web console errors: replace 'animationName' with 'animationKeyframes', 'shadow*' props with boxShadow, and props.pointerEvents with style.pointerEvents",
+    "Clarify /vip/daily-briefing verb - spec says POST, code is GET (currently works via GET with ?lang=fr)"
+  ],
+  "critical_code_review_comments": [
+    "server.py still 12k+ lines - split into routers (auth/vip/admin/atlas)",
+    "daily-briefing writes market_data (with cache_key) then reads it back including cache_key - fine but ensure _id is excluded (already handled via projection)",
+    "vip_ai_analyze uses query as a query-string parameter for a POST endpoint; better to accept a Pydantic body model (like ImageAnalysisRequest) for consistency and larger payloads",
+    "openai calls in daily-briefing / analyze use reasoning_effort=\"none\" which is a gpt-5.x specific param - ensure client SDK version supports it (works today)"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_vip_iter86.py"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "85%"},
+  "test_credentials": "Super admin (VIP permanent): jcuradeau.7@gmail.com / Crypto2026!",
+  "seed_data_creation": "None. Backend tests use only the existing super admin account. daily-briefing cache row upserted in db.daily_briefings for cache_key 'YYYY-MM-DD_fr'.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Backend pytest file: /app/backend/tests/test_vip_iter86.py (6 tests, all pass in ~14s). Daily-briefing endpoint uses native openai AsyncOpenAI SDK with model gpt-5.6-terra (emergentintegrations removed) and 4h per-language cache in db.daily_briefings. All VIP UI features render correctly for super admin (VIP badge, VIP Hub menu on profile, Daily Briefing card with real AI content, F&G + Halving stats, Pro Tools grid, Atlas chart upload icon, /vip sales page at $21.99). Missing pieces are ONLY data-testid attributes on: vip-badge, vip-tool-{id}, chart-upload-btn. Root URL '/' shows onboarding for authenticated users - if home tab is the intended landing, add auth redirect.",
+  "rca of the issue": "N/A - no functional bugs. The 'features not found' during automation was purely due to missing data-testid attributes (elements are present and functional in DOM/screenshots)."
+}

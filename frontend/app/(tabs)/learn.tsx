@@ -103,7 +103,14 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
   const [loading, setLoading] = useState(false);
   const [loadingConvos, setLoadingConvos] = useState(true);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [isVip, setIsVip] = useState(false);
+  const [imageAnalyzing, setImageAnalyzing] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    fetch(`${API}/api/vip/permissions`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json()).then(d => setIsVip(!!d.is_vip)).catch(() => {});
+  }, [token]);
 
   const loadConversations = useCallback(async () => {
     try {
@@ -177,6 +184,42 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
     setActiveConvId(null);
     setMessages([]);
     setShowSidebar(false);
+  };
+
+  const handleImageUpload = async () => {
+    if (!isVip || imageAnalyzing) return;
+    // Web file picker
+    if (Platform.OS === 'web') {
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.onchange = async (e: any) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setImageAnalyzing(true);
+        setMessages(prev => [...prev, { role: 'user', content: `[Image: ${file.name}] ${input.trim() || 'Analyse ce graphique'}` }]);
+        try {
+          const reader = new FileReader();
+          reader.onload = async () => {
+            const base64 = (reader.result as string).split(',')[1];
+            const res = await fetch(`${API}/api/vip/ai/analyze-image`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ query: input.trim() || 'Analyse ce graphique de trading', image_base64: base64, analysis_type: 'chart_analysis' }),
+            });
+            const data = await res.json();
+            setMessages(prev => [...prev, { role: 'assistant', content: data.data?.analysis || data.detail || 'Erreur d\'analyse' }]);
+            setImageAnalyzing(false);
+            setInput('');
+          };
+          reader.readAsDataURL(file);
+        } catch (e) {
+          setMessages(prev => [...prev, { role: 'assistant', content: 'Erreur lors de l\'analyse de l\'image' }]);
+          setImageAnalyzing(false);
+        }
+      };
+      fileInput.click();
+    }
   };
 
   const deleteConversation = async (convId: string) => {
@@ -278,6 +321,16 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
 
       {/* Input */}
       <View style={s.inputBar}>
+        {isVip && Platform.OS === 'web' && (
+          <TouchableOpacity
+            style={s.imageBtn}
+            onPress={handleImageUpload}
+            disabled={imageAnalyzing}
+            data-testid="chart-upload-btn"
+          >
+            <Ionicons name={imageAnalyzing ? 'hourglass' : 'image'} size={20} color={imageAnalyzing ? '#6B7280' : '#7C3AED'} />
+          </TouchableOpacity>
+        )}
         <TextInput
           style={s.input}
           value={input}
@@ -685,6 +738,7 @@ const s = StyleSheet.create({
   input: { flex: 1, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, color: '#E2E8F0', fontSize: 16, maxHeight: 100 },
   sendBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#7C3AED', alignItems: 'center', justifyContent: 'center' },
   sendBtnDisabled: { backgroundColor: 'rgba(255,255,255,0.06)' },
+  imageBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(124,58,237,0.12)', alignItems: 'center', justifyContent: 'center' },
 
   // Sidebar
   sidebarWrap: { flex: 1, backgroundColor: '#0B0914' },

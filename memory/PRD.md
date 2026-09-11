@@ -1,113 +1,94 @@
 # Mentova - Professional Crypto Learning Platform
 
 ## Architecture
-- **Frontend**: React Native (Expo) Web Export -> Netlify (app.mentova-academy.com)
-- **Static Site**: HTML/CSS -> Netlify (mentova-academy.com)
-- **Backend**: FastAPI -> Render (mentova-api.onrender.com)
-- **Database**: MongoDB Atlas (production) / localhost (preview)
-- **AI**: OpenAI GPT-5.6 Terra (user's own API key)
-- **Payments**: Stripe Live ($21.99/month VIP subscription)
-- **Crypto Data**: CoinGecko Pro API (zero user-call architecture)
+- **Frontend**: React Native (Expo) Web Export -> Netlify
+- **Backend**: FastAPI -> Render  
+- **Database**: MongoDB Atlas / localhost
+- **AI**: OpenAI GPT-5.6 Terra (native SDK)
+- **Payments**: Stripe Live ($21.99/month VIP)
+- **Crypto Data**: CoinGecko Pro API
 
-## Current State (Sept 11, 2026)
+## VIP System — COMPLETE (Sept 11, 2026)
 
-### VIP System — COMPLETE (Phase 1)
+### Backend Services
+- `services/vip_permissions.py` — Centralized FREE/VIP permissions (extensible PLANS dict)
+- `services/atlas_protection.py` — Invisible rate limiting, anti-abuse, cost tracking (NO visible quotas)
+- `services/stripe_service.py` — Full subscription lifecycle (checkout, portal, webhook)
 
-#### Backend Services
-- `/services/vip_permissions.py` — Centralized FREE/VIP permission system
-  - PLANS dict with feature flags (atlas_premium, atlas_memory, chart_analysis, etc.)
-  - `get_user_plan()`, `get_permissions()`, `has_permission()` functions
-  - Extensible: add new plans by adding to PLANS dict
-  
-- `/services/atlas_protection.py` — Invisible protection + cost tracking
-  - NO visible quotas, NO message counters, NO "X remaining"
-  - Rate limiting: per-minute, per-hour, burst detection, concurrent limits
-  - Soft/hard daily thresholds for anomaly detection
-  - Cost estimation per request (input/output tokens)
-  - `atlas_usage_logs` collection for analytics
-  - All thresholds configurable via CONFIG dict + admin API
-
-- `/services/stripe_service.py` — Stripe subscription lifecycle
-  - Product "Mentova VIP" + Price $21.99/month (auto-created)
-  - Checkout session creation with customer management
-  - Customer Portal for subscription management
-  - Webhook handling: checkout.completed, subscription.created/updated/deleted, invoice.paid/failed
-  - Idempotent event processing via stripe_events collection
-
-#### API Endpoints (New)
-- `GET /api/vip/permissions` — Centralized permissions for current user
-- `POST /api/vip/checkout` — Create Stripe checkout session
-- `POST /api/vip/portal` — Create Stripe customer portal session
-- `GET /api/vip/subscription` — Detailed subscription info
-- `GET /api/admin/vip-stats` — VIP subscriber statistics
-- `GET /api/admin/atlas-usage` — Atlas cost/usage analytics (by_plan, daily, top_users)
-- `GET /api/admin/protection-config` — View protection thresholds
-- `PUT /api/admin/protection-config` — Update protection thresholds (super_admin only)
-
-#### Atlas v3 Integration
-- Chat endpoint now checks VIP permissions
-- VIP: full memory context, 40 message history, save_memory tool, enhanced system prompt
-- FREE: basic profile only, 10 message history, no memory persistence, clean system prompt
-- Every request logged to atlas_usage_logs (tokens, cost, duration, plan)
-- Invisible burst/rate protection (no counters shown)
-
-#### Frontend
-- `/app/vip/index.tsx` — New VIP page with:
-  - Hero with Mentova VIP branding
-  - "Why VIP?" explanation card
-  - $21.99/month pricing with gold CTA
-  - 8 feature cards (Atlas AI, Memory, Chart Analysis, Briefing, Crypto Data, News, Tools, Learning)
-  - Stripe checkout integration
-  - VIP active badge + subscription management portal link
-  - Full FR/EN/ES translations
-
-### Atlas-Centric 5-Tab Navigation (DONE)
-- **Atlas AI** (1st tab) - Persistent AI mentor
-- **Home** - Dashboard
-- **Market** - Real-time prices
-- **News** - Articles FR/EN/ES
-- **Profile** - Settings (no VIP/Pro remnants)
+### VIP Features (ALL Working)
+1. **Atlas AI Premium** — VIP gets memory, personalization, 40-msg history, enhanced prompts
+2. **Atlas Memory** — Persistent memories saved/loaded between conversations (VIP only)
+3. **Chart Analysis** — Image upload in Atlas chat (VIP), analyzed via OpenAI Vision
+4. **Daily Briefing** — AI-generated market summary (GPT-5.6 Terra, cached 4h, FR/EN/ES)
+5. **Fear & Greed Index** — Real-time market sentiment
+6. **Bitcoin Halving** — Countdown tracker
+7. **Rainbow Chart** — BTC price zone visualization
+8. **Price Alerts** — Custom crypto alerts
+9. **Virtual Portfolio** — Investment simulation
+10. **Professional Tools** — ETH Gas, Liquidations, BTC Dominance, etc.
+11. **Premium Learning** — Advanced modules, adaptive quizzes
 
 ### Stripe Configuration
-- Account: 51UEKux... (NEW - live mode)
-- Product: Mentova VIP (auto-created)
+- Account: 51UEKux... (LIVE)
+- Product: Mentova VIP (auto-created via API)
 - Price: $21.99/month (price_1UEV6kAdwzWILqbUTTxVYjsQ)
-- Webhook: POST /api/webhook/stripe (needs whsec_ configured on Stripe dashboard)
+- Webhook: POST /api/webhook/stripe
 
-### Protection System Config (DEFAULT)
-```
-free_max_per_minute: 6, free_max_per_hour: 40, free_max_concurrent: 2
-vip_max_per_minute: 12, vip_max_per_hour: 80, vip_max_concurrent: 4
-burst_window: 10s, burst_max: 4
-free_soft_daily: 150, free_hard_daily: 500
-vip_soft_daily: 500, vip_hard_daily: 2000
-cooldown: 30s
-```
+### Protection System (Invisible)
+- No visible quotas, counters, or "X remaining" messages
+- Rate limits: per-minute (6 FREE/12 VIP), per-hour (40/80), burst (4/10s)
+- Anomaly detection: soft (150/500 daily) + hard (500/2000) thresholds
+- Cost tracking: every request logged (tokens, cost, duration, plan)
+- All configurable via admin API
 
-## Key Credentials
+### API Endpoints
+- `GET /api/vip/permissions` — User permissions
+- `POST /api/vip/checkout` — Stripe checkout
+- `POST /api/vip/portal` — Subscription management
+- `GET /api/vip/subscription` — Subscription details
+- `GET /api/vip/daily-briefing?lang=fr` — AI daily briefing
+- `POST /api/vip/ai/analyze` — Text analysis
+- `POST /api/vip/ai/analyze-image` — Chart/image analysis (Vision)
+- `GET /api/vip/tools/fear-greed` — Fear & Greed Index
+- `GET /api/vip/tools/halving` — Halving countdown
+- `GET /api/admin/vip-stats` — Subscriber analytics
+- `GET /api/admin/atlas-usage` — Cost analytics
+- `GET/PUT /api/admin/protection-config` — Protection thresholds
+
+### Frontend Pages
+- `/vip` — VIP sales page ($21.99, 8 features, Stripe checkout)
+- `/vip/hub` — VIP Hub (briefing, F&G, halving, tools grid)
+- `/vip/success` — Post-payment confirmation
+- Profile: VIP badge + VIP Hub/Upgrade menu
+- Home: VIP badge in header
+- Atlas chat: Image upload button (VIP only)
+
+### Navigation (5 tabs)
+1. Atlas AI (first tab) → Chat, Modules, Progress
+2. Home → Dashboard
+3. Market → Crypto prices
+4. News → Articles
+5. Profile → Settings, VIP, Support
+
+## Credentials
 - Super Admin: jcuradeau.7@gmail.com / Crypto2026!
-- Stripe SK: In backend/.env (sk_live_51UEKux...)
-- OpenAI API Key: In backend/.env
-- Netlify Token: nfp_et6ZSodb7Wj2mHSGNY4JrRnvrEYFxJVR3b9e
+- Stripe SK: backend/.env
+- OpenAI: backend/.env
 
 ## Backlog
-
 ### P0
-- Configure Stripe webhook URL in Stripe Dashboard (https://mentova-api.onrender.com/api/webhook/stripe)
-- Configure STRIPE_WEBHOOK_SECRET in Render env vars
+- Configure Stripe webhook in dashboard + STRIPE_WEBHOOK_SECRET in Render
 
 ### P1
-- Chart analysis: image upload to Atlas for VIP users
-- Daily briefing endpoint enhancement (personalized content)
-- Profile page: show VIP badge and subscription info
-- Home page: VIP status indicator
+- Deploy updated backend to Render (openai SDK changes)
+- CoinGecko API key renewal (401 errors)
 
 ### P2
-- Re-enable professional tools UI gated behind VIP
-- Premium learning modules with VIP-only content
-- Community forum with VIP badge
+- Community forum with VIP badges
+- Referral/affiliate system
+- Push notifications
 
 ### P3
-- Technical indicators (RSI, Bollinger) on charts
+- Technical indicators (RSI, Bollinger)
 - reCAPTCHA on auth forms
-- Refactor server.py into modular routers
+- Refactor server.py (12k lines → modular routers)

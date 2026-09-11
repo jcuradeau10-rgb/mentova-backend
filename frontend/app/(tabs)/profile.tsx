@@ -42,6 +42,10 @@ const profileI18n: Record<string, Record<string, string>> = {
   'p.prepareInvest': { fr: 'Preparer ton investissement', en: 'Prepare your investment', es: 'Prepara tu inversion' },
   'p.achievements': { fr: 'Reussites', en: 'Achievements', es: 'Logros' },
   'p.selectLanguage': { fr: 'Choisir la langue', en: 'Select language', es: 'Elegir idioma' },
+  'p.vipHub': { fr: 'Espace VIP', en: 'VIP Hub', es: 'Espacio VIP' },
+  'p.vipHubDesc': { fr: 'Briefing, outils, analyses', en: 'Briefing, tools, analyses', es: 'Briefing, herramientas, analisis' },
+  'p.vip': { fr: 'Devenir VIP', en: 'Become VIP', es: 'Ser VIP' },
+  'p.vipDesc': { fr: 'Debloquez Atlas premium', en: 'Unlock premium Atlas', es: 'Desbloquea Atlas premium' },
 };
 
 function tp(key: string, lang: string): string {
@@ -56,12 +60,14 @@ export default function ProfileScreen() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [atlasProfile, setAtlasProfile] = useState<any>(null);
+  const [isVip, setIsVip] = useState(false);
 
   useEffect(() => { loadLanguage(); }, []);
 
   useEffect(() => {
     if (token) {
       api('/api/atlas/profile', token).then(d => { if (d) setAtlasProfile(d); });
+      api('/api/vip/permissions', token).then(d => { if (d) setIsVip(!!d.is_vip); });
     }
   }, [token]);
 
@@ -103,6 +109,12 @@ export default function ProfileScreen() {
               <Text style={s.roleBadgeText}>{user.role === 'super_admin' ? 'Super Admin' : 'Admin'}</Text>
             </View>
           )}
+          {isVip && (
+            <View style={[s.roleBadge, { backgroundColor: 'rgba(255,215,0,0.12)', borderColor: 'rgba(255,215,0,0.25)', borderWidth: 1 }]} data-testid="vip-badge">
+              <Ionicons name="diamond" size={12} color="#FFD700" />
+              <Text style={[s.roleBadgeText, { color: '#FFD700' }]}>VIP</Text>
+            </View>
+          )}
           <View style={[s.levelBadge, { backgroundColor: lvl.color + '20' }]}>
             <Text style={[s.levelBadgeText, { color: lvl.color }]}>{tp('p.level', lang)} : {lvl.label}</Text>
           </View>
@@ -138,6 +150,13 @@ export default function ProfileScreen() {
 
         {/* Menu */}
         <View style={s.menuWrap}>
+          {/* VIP Hub or Become VIP */}
+          {isVip ? (
+            <MenuItem icon="diamond-outline" color="#FFD700" label={tp('p.vipHub', lang)} subtitle={tp('p.vipHubDesc', lang)} onPress={() => router.push('/vip/hub')} testId="vip-hub-btn" />
+          ) : (
+            <MenuItem icon="diamond-outline" color="#FFD700" label={tp('p.vip', lang)} subtitle={tp('p.vipDesc', lang)} onPress={() => router.push('/vip')} testId="vip-upgrade-btn" />
+          )}
+
           {/* Admin */}
           {isAdmin && (
             <MenuItem icon="shield-checkmark-outline" color="#EF4444" label={tp('p.admin', lang)} subtitle={isSuperAdmin ? 'Super Admin' : 'Admin'} onPress={() => router.push('/admin')} />

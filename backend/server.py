@@ -4200,50 +4200,22 @@ async def vip_ai_analyze(
     analysis_type: str = "general",
     user: dict = Depends(require_vip)
 ):
-    """Advanced AI analysis for VIP users (unlimited, no daily limit)"""
+    """Advanced AI analysis for VIP users"""
     try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
-        
-        llm_key = os.environ.get("EMERGENT_LLM_KEY")
-        if not llm_key:
-            raise HTTPException(status_code=500, detail="LLM key not configured")
-        
-        # Create unique session for this analysis
-        session_id = f"vip-text-{user['id']}-{uuid.uuid4().hex[:8]}"
-        
-        system_prompt = f"""Tu es un analyste crypto expert VIP. Tu fournis des analyses détaillées et professionnelles.
-Type d'analyse demandée: {analysis_type}
-{"Crypto analysée: " + crypto_symbol if crypto_symbol else ""}
-
-Réponds de manière structurée avec:
-1. 📊 Résumé exécutif
-2. 📈 Analyse technique (si applicable)
-3. 💡 Analyse fondamentale (si applicable)
-4. ⚠️ Risques identifiés
-5. 🎯 Recommandation finale
-
-Utilise des données récentes et sois précis dans ton analyse."""
-        
-        # Initialize chat with GPT-4o
-        chat = LlmChat(
-            api_key=llm_key,
-            session_id=session_id,
-            system_message=system_prompt
-        ).with_model("openai", "gpt-4o")
-        
-        # Send message
-        user_message = UserMessage(text=query)
-        response = await chat.send_message(user_message)
-        
-        return {
-            "success": True,
-            "data": {
-                "analysis": response,
-                "analysis_type": analysis_type,
-                "crypto_symbol": crypto_symbol,
-                "timestamp": datetime.now(timezone.utc).isoformat()
-            }
-        }
+        from openai import AsyncOpenAI as _OpenAI
+        _client = _OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
+        system_prompt = f"""Tu es un analyste crypto expert VIP. Tu fournis des analyses detaillees et professionnelles.
+Type d'analyse demandee: {analysis_type}
+{"Crypto analysee: " + crypto_symbol if crypto_symbol else ""}
+Reponds de maniere structuree avec: Resume executif, Analyse technique, Analyse fondamentale, Risques identifies, Recommandation finale.
+IMPORTANT: Ne jamais donner de conseil financier direct. Toujours rappeler les risques."""
+        resp = await _client.chat.completions.create(
+            model="gpt-5.6-terra", messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": query},
+            ], reasoning_effort="none",
+        )
+        return {"success": True, "data": {"analysis": resp.choices[0].message.content, "analysis_type": analysis_type, "crypto_symbol": crypto_symbol, "timestamp": datetime.now(timezone.utc).isoformat()}}
         
     except Exception as e:
         logger.error(f"VIP AI Analysis error: {e}")
@@ -4260,35 +4232,26 @@ class ImageAnalysisRequest(BaseModel):
 async def get_daily_briefing(lang: str = "en", user: dict = Depends(require_vip)):
     """Generate AI daily market briefing for VIP users"""
     try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
-        
         lang_map = {"fr": "French", "es": "Spanish", "en": "English"}
         target_lang = lang_map.get(lang, "English")
         
         # Check cache first (briefing valid for 4 hours, per language)
         cache_key = f"{datetime.now(timezone.utc).strftime('%Y-%m-%d')}_{lang}"
-        cached = await db.daily_briefings.find_one(
-            {"cache_key": cache_key},
-            {"_id": 0}
-        )
+        cached = await db.daily_briefings.find_one({"cache_key": cache_key}, {"_id": 0})
         if cached and cached.get("generated_at"):
             cache_age = (datetime.now(timezone.utc) - datetime.fromisoformat(cached["generated_at"])).total_seconds()
-            if cache_age < 14400:  # 4 hours
+            if cache_age < 14400:
                 return {"success": True, "data": cached}
         
         # Fetch real market data
         market_data = {}
         async with httpx.AsyncClient(timeout=10) as http_client:
             try:
-                prices_resp = await http_client.get(
-                    "https://api.coingecko.com/api/v3/simple/price",
-                    params={"ids": "bitcoin,ethereum,solana,ripple", "vs_currencies": "usd", "include_24hr_change": "true", "include_market_cap": "true"}
-                )
+                prices_resp = await http_client.get("https://api.coingecko.com/api/v3/simple/price", params={"ids": "bitcoin,ethereum,solana,ripple", "vs_currencies": "usd", "include_24hr_change": "true", "include_market_cap": "true"})
                 if prices_resp.status_code == 200:
                     market_data["prices"] = prices_resp.json()
             except Exception:
                 market_data["prices"] = {"bitcoin": {"usd": 67000, "usd_24h_change": 1.5}, "ethereum": {"usd": 3200, "usd_24h_change": 0.8}}
-            
             try:
                 fng_resp = await http_client.get("https://api.alternative.me/fng/?limit=1")
                 if fng_resp.status_code == 200:
@@ -4297,67 +4260,42 @@ async def get_daily_briefing(lang: str = "en", user: dict = Depends(require_vip)
             except Exception:
                 market_data["fear_greed"] = {}
         
-        llm_key = os.environ.get("EMERGENT_LLM_KEY")
-        if not llm_key:
-            raise HTTPException(status_code=500, detail="LLM key not configured")
+        from openai import AsyncOpenAI as _OpenAI
+        _client = _OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
         
-        session_id = f"daily-briefing-{datetime.now(timezone.utc).strftime('%Y%m%d')}"
-        
-        system_prompt = f"""You are a professional crypto market analyst providing a daily briefing. 
+        system_prompt = f"""You are a professional crypto market analyst providing a daily briefing.
 You MUST respond entirely in {target_lang}.
-You must respond in valid JSON format with this exact structure:
-{{
-  "market_summary": "2-3 sentence overview of today's market in {target_lang}",
-  "btc_analysis": "1-2 sentences about Bitcoin's current state in {target_lang}",
-  "eth_analysis": "1-2 sentences about Ethereum's current state in {target_lang}",
-  "sentiment": "bullish" or "bearish" or "neutral",
-  "sentiment_reason": "1 sentence explaining why in {target_lang}",
-  "key_events": ["event 1 in {target_lang}", "event 2", "event 3"],
-  "opportunity": "1-2 sentences about a potential opportunity today in {target_lang}",
-  "risk_alert": "1 sentence about the main risk to watch in {target_lang}"
-}}
-Keep it concise, professional, and actionable. No disclaimers in the JSON. The sentiment field must stay as english keywords (bullish/bearish/neutral), but all text content must be in {target_lang}."""
+Respond in valid JSON with this structure:
+{{"market_summary": "2-3 sentence overview", "btc_analysis": "1-2 sentences about Bitcoin", "eth_analysis": "1-2 sentences about Ethereum", "sentiment": "bullish/bearish/neutral", "sentiment_reason": "1 sentence why", "key_events": ["event 1", "event 2", "event 3"], "opportunity": "1-2 sentences about opportunity", "risk_alert": "1 sentence about main risk"}}
+Keep it concise and professional. All text in {target_lang}, sentiment keywords in English."""
         
-        chat = LlmChat(
-            api_key=llm_key,
-            session_id=session_id,
-            system_message=system_prompt
-        ).with_model("openai", "gpt-4o")
-        
-        user_msg = UserMessage(
-            text=f"""Generate today's daily crypto briefing based on this real market data:
-{json.dumps(market_data, indent=2)}
-Date: {datetime.now(timezone.utc).strftime('%B %d, %Y')}"""
+        resp = await _client.chat.completions.create(
+            model="gpt-5.6-terra",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Generate today's daily crypto briefing based on this real market data:\n{json.dumps(market_data, indent=2)}\nDate: {datetime.now(timezone.utc).strftime('%B %d, %Y')}"},
+            ],
+            reasoning_effort="none",
         )
+        response_text = resp.choices[0].message.content or ""
         
-        response = await chat.send_message(user_msg)
-        response_text = response.text if hasattr(response, 'text') else str(response)
-        
-        # Parse JSON from response
         import re
         json_match = re.search(r'\{[\s\S]*\}', response_text)
         if json_match:
             briefing_data = json.loads(json_match.group())
         else:
-            briefing_data = {"market_summary": response.text, "sentiment": "neutral", "key_events": [], "btc_analysis": "", "eth_analysis": "", "sentiment_reason": "", "opportunity": "", "risk_alert": ""}
+            briefing_data = {"market_summary": response_text, "sentiment": "neutral", "key_events": [], "btc_analysis": "", "eth_analysis": "", "sentiment_reason": "", "opportunity": "", "risk_alert": ""}
         
-        # Add metadata
         briefing_data["date"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         briefing_data["generated_at"] = datetime.now(timezone.utc).isoformat()
         briefing_data["market_data"] = market_data
         briefing_data["cache_key"] = cache_key
         
-        # Cache in DB
-        await db.daily_briefings.update_one(
-            {"cache_key": cache_key},
-            {"$set": briefing_data},
-            upsert=True
-        )
-        
+        await db.daily_briefings.update_one({"cache_key": cache_key}, {"$set": briefing_data}, upsert=True)
         return {"success": True, "data": briefing_data}
         
     except json.JSONDecodeError:
-        return {"success": True, "data": {"market_summary": response.text if 'response' in dir() else "Unable to generate briefing", "sentiment": "neutral", "key_events": [], "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"), "generated_at": datetime.now(timezone.utc).isoformat()}}
+        return {"success": True, "data": {"market_summary": response_text if 'response_text' in dir() else "Unable to generate briefing", "sentiment": "neutral", "key_events": [], "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"), "generated_at": datetime.now(timezone.utc).isoformat()}}
     except Exception as e:
         logger.error(f"Daily briefing error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -4367,88 +4305,53 @@ async def vip_ai_analyze_image(
     request: ImageAnalysisRequest,
     user: dict = Depends(require_vip)
 ):
-    """Advanced AI image analysis for VIP users - analyze crypto charts, portfolios, etc."""
+    """Advanced AI image/chart analysis for VIP users using OpenAI Vision"""
     try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
-        
-        llm_key = os.environ.get("EMERGENT_LLM_KEY")
-        if not llm_key:
-            raise HTTPException(status_code=500, detail="LLM key not configured")
-        
-        session_id = f"vip-image-{user['id']}-{uuid.uuid4().hex[:8]}"
+        from openai import AsyncOpenAI as _OpenAI
+        _client = _OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
         
         is_chart = request.analysis_type == "chart_analysis"
         
         if is_chart:
-            system_prompt = """Tu es un analyste technique crypto expert de niveau institutionnel. Tu analyses les graphiques de trading (TradingView, Binance, etc.) envoyés par les utilisateurs.
-
-Pour chaque graphique, tu DOIS fournir une analyse structurée au format suivant (utilise EXACTEMENT ces balises) :
-
-[SIGNAL]
-Achat / Vente / Attendre
-[/SIGNAL]
-
-[ENTRY]
-Prix d'entrée recommandé (en USD)
-[/ENTRY]
-
-[STOPLOSS]
-Prix du Stop Loss recommandé (en USD)
-[/STOPLOSS]
-
-[TAKEPROFIT]
-TP1: prix
-TP2: prix  
-TP3: prix (optionnel)
-[/TAKEPROFIT]
-
-[RATIO]
-Ratio Risque/Récompense (ex: 1:2.5)
-[/RATIO]
-
-[ANALYSE]
-Explication détaillée de l'analyse technique : patterns identifiés, supports/résistances, indicateurs (RSI, MACD, volumes, moyennes mobiles), tendance générale.
-[/ANALYSE]
-
-[NEWS]
-Contexte des actualités récentes qui expliquent pourquoi le marché est bullish ou bearish. Mentionne les événements macro-économiques, régulations, mouvements institutionnels ou techniques pertinents.
-[/NEWS]
-
-[SENTIMENT]
-bullish / bearish / neutral
-[/SENTIMENT]
-
-Sois précis sur les prix. Si tu ne peux pas identifier la crypto ou le timeframe exactement, demande des précisions mais fournis quand même une analyse basée sur ce que tu vois.
-"""
+            system_prompt = """Tu es un analyste technique crypto expert. Tu analyses les graphiques de trading.
+Pour chaque graphique, fournis:
+- TENDANCE: haussiere/baissiere/neutre
+- SUPPORTS: niveaux de support identifies
+- RESISTANCES: niveaux de resistance identifies
+- INDICATEURS: ce que montrent les indicateurs visibles (RSI, MACD, volumes, moyennes mobiles)
+- STRUCTURE: patterns identifies (triangles, canaux, tete-epaules, etc.)
+- ANALYSE: explication detaillee
+- RISQUES: points d'attention
+IMPORTANT: Ne jamais presenter l'analyse comme une certitude ou une garantie de profit. Rappeler les risques."""
         else:
-            system_prompt = """Tu es un analyste crypto expert VIP spécialisé dans l'analyse visuelle.
-Tu analyses les graphiques, captures d'écran de portfolios, et images liées aux cryptomonnaies.
-
-Pour chaque image, fournis:
-1. Description détaillée de ce que tu vois
-2. Analyse technique (tendances, patterns, supports/résistances si c'est un graphique)
-3. Insights et observations importantes
-4. Points d'attention ou risques identifiés
-5. Recommandations pratiques
-
-Sois précis, professionnel et utile dans ton analyse."""
+            system_prompt = """Tu es un analyste crypto expert VIP specialise dans l'analyse visuelle.
+Analyse l'image fournie et donne:
+1. Description de ce que tu vois
+2. Analyse technique si c'est un graphique
+3. Insights importants
+4. Risques identifies
+5. Recommandations
+Sois precis et professionnel."""
         
-        chat = LlmChat(
-            api_key=llm_key,
-            session_id=session_id,
-            system_message=system_prompt
-        ).with_model("openai", "gpt-4o")
+        # Build message with image
+        image_data = request.image_base64
+        if not image_data.startswith("data:"):
+            image_data = f"data:image/jpeg;base64,{image_data}"
         
-        image_content = ImageContent(image_base64=request.image_base64)
-        
-        user_message = UserMessage(
-            text=request.query or ("Analyse ce graphique de trading et donne-moi tes recommandations avec points d'entrée, stop loss et take profit." if is_chart else "Analyse cette image en détail et donne-moi tes insights."),
-            file_contents=[image_content]
+        resp = await _client.chat.completions.create(
+            model="gpt-5.6-terra",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": [
+                    {"type": "text", "text": request.query or ("Analyse ce graphique de trading." if is_chart else "Analyse cette image.")},
+                    {"type": "image_url", "image_url": {"url": image_data}},
+                ]},
+            ],
+            reasoning_effort="none",
         )
+        analysis = resp.choices[0].message.content or ""
         
-        response = await chat.send_message(user_message)
-        
-        # Store analysis in history
+        # Store analysis
         await db.ai_analyses.insert_one({
             "id": str(uuid.uuid4()),
             "user_id": user["id"],
@@ -4456,20 +4359,11 @@ Sois précis, professionnel et utile dans ton analyse."""
             "analysis_type": request.analysis_type,
             "has_image": True,
             "is_chart": is_chart,
-            "response": response,
+            "response": analysis,
             "created_at": datetime.now(timezone.utc).isoformat()
         })
         
-        return {
-            "success": True,
-            "data": {
-                "analysis": response,
-                "analysis_type": request.analysis_type,
-                "has_image": True,
-                "is_chart": is_chart,
-                "timestamp": datetime.now(timezone.utc).isoformat()
-            }
-        }
+        return {"success": True, "data": {"analysis": analysis, "analysis_type": request.analysis_type, "has_image": True, "is_chart": is_chart, "timestamp": datetime.now(timezone.utc).isoformat()}}
         
     except Exception as e:
         logger.error(f"VIP AI Image Analysis error: {e}")

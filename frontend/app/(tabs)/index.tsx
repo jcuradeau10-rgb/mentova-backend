@@ -133,6 +133,7 @@ export default function HomeScreen() {
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
   const [showNewsModal, setShowNewsModal] = useState(false);
   const [bookmarkedNews, setBookmarkedNews] = useState<Set<string>>(new Set());
+  const [isVip, setIsVip] = useState(false);
 
   const scrollY = useRef(new Animated.Value(0)).current;
   const headerScale = scrollY.interpolate({
@@ -141,9 +142,15 @@ export default function HomeScreen() {
     extrapolate: 'clamp',
   });
 
-  // Load language on mount
+  // Load language on mount + VIP status
   useEffect(() => {
     loadLanguage();
+    const token = useAuthStore.getState().token;
+    if (token) {
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+      fetch(`${backendUrl}/api/vip/permissions`, { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.json()).then(d => setIsVip(!!d.is_vip)).catch(() => {});
+    }
   }, []);
 
   const fetchData = async () => {
@@ -373,10 +380,10 @@ export default function HomeScreen() {
               
               <View style={styles.levelRow}>
                 <PulseAnimation duration={2000} maxScale={1.05}>
-                  <View style={styles.levelBadge}>
-                    <Ionicons name="trophy" size={16} color="#FFD700" />
-                    <Text style={styles.levelText}>{getLevelText()}</Text>
-                  </View>
+                  <TouchableOpacity style={isVip ? styles.vipLevelBadge : styles.levelBadge} onPress={() => router.push(isVip ? '/vip/hub' : '/vip')}>
+                    <Ionicons name={isVip ? "diamond" : "trophy"} size={16} color="#FFD700" />
+                    <Text style={styles.levelText}>{isVip ? 'VIP' : getLevelText()}</Text>
+                  </TouchableOpacity>
                 </PulseAnimation>
                 <View style={styles.progressMini}>
                   <Text style={styles.progressMiniText}>{getProgressPercentage()}% {t('home.completed')}</Text>
@@ -961,6 +968,17 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     gap: 6,
+  },
+  vipLevelBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 215, 0, 0.2)',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 215, 0, 0.4)',
   },
   levelText: {
     color: '#FFD700',
