@@ -85,15 +85,20 @@ export default function UserIntelligencePage() {
   const [activeSection, setActiveSection] = useState<Section>('overview');
   const [timelineFilter, setTimelineFilter] = useState('All');
   const [downloading, setDownloading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     if (!userId) return;
     setLoading(true);
+    setError(null);
     try {
       const resp = await adminAPI.getUserIntelligence(userId, period);
       setData(resp.data?.data || resp.data);
-    } catch (e) {
+    } catch (e: any) {
       console.error('Intelligence load error:', e);
+      setError(e?.response?.status === 404 
+        ? 'User Intelligence endpoint not found on server. Please redeploy the backend.'
+        : `Error loading data: ${e?.message || 'Unknown error'}`);
     }
     setLoading(false);
   }, [userId, period]);
@@ -142,7 +147,7 @@ export default function UserIntelligencePage() {
     );
   }
 
-  if (loading || !data) {
+  if (loading || (!data && !error)) {
     return (
       <SafeAreaView style={s.container}>
         <View style={s.topBar}>
@@ -153,6 +158,27 @@ export default function UserIntelligencePage() {
           <View style={{ width: 22 }} />
         </View>
         <ActivityIndicator size="large" color="#7C3AED" style={{ marginTop: 80 }} />
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={s.container}>
+        <View style={s.topBar}>
+          <TouchableOpacity onPress={() => router.back()} testID="intel-back-btn">
+            <Ionicons name="arrow-back" size={22} color="#E2E8F0" />
+          </TouchableOpacity>
+          <Text style={s.topTitle}>User Intelligence</Text>
+          <View style={{ width: 22 }} />
+        </View>
+        <View style={{ alignItems: 'center', paddingTop: 80, paddingHorizontal: 20 }}>
+          <Ionicons name="alert-circle" size={48} color="#EF4444" />
+          <Text style={{ color: '#EF4444', fontSize: 16, fontWeight: '700', marginTop: 12, textAlign: 'center' }}>{error}</Text>
+          <TouchableOpacity onPress={loadData} style={{ marginTop: 20, backgroundColor: '#7C3AED', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10 }}>
+            <Text style={{ color: '#FFF', fontWeight: '600' }}>Retry</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     );
   }

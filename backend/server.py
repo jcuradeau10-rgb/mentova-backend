@@ -11881,14 +11881,20 @@ set_analytics_db(db)
 app.include_router(analytics_router, prefix="/api")
 
 # User Intelligence router
-from routes.user_intelligence import router as intelligence_router, set_intelligence_deps, ensure_intelligence_indexes
-set_intelligence_deps(db)
-app.include_router(intelligence_router, prefix="/api")
+try:
+    from routes.user_intelligence import router as intelligence_router, set_intelligence_deps, ensure_intelligence_indexes
+    set_intelligence_deps(db)
+    app.include_router(intelligence_router, prefix="/api")
+    logger.info("User Intelligence router loaded successfully")
+except Exception as intel_err:
+    logger.error(f"Failed to load User Intelligence router: {intel_err}")
+    ensure_intelligence_indexes = None
 
 @app.on_event("startup")
 async def start_analytics_flush():
     asyncio.create_task(_flush_loop())
-    await ensure_intelligence_indexes()
+    if ensure_intelligence_indexes:
+        await ensure_intelligence_indexes()
     logger.info("Analytics flush loop started — persisting to MongoDB every 30s")
 
 
