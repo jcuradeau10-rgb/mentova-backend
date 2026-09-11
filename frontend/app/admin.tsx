@@ -960,6 +960,13 @@ export default function AdminScreen() {
             </View>
             <View style={styles.userActions}>
               <TouchableOpacity 
+                style={[styles.actionBtnSmall, { backgroundColor: 'rgba(124,58,237,0.2)' }]}
+                onPress={() => router.push(`/user/intelligence?userId=${u.id}`)}
+                data-testid={`user-intel-${u.id}`}
+              >
+                <Ionicons name="analytics" size={16} color="#7C3AED" />
+              </TouchableOpacity>
+              <TouchableOpacity 
                 style={[styles.actionBtnSmall, u.is_banned ? styles.actionBtnSuccess : styles.actionBtnDanger]}
                 onPress={() => handleBanUser(u)}
               >

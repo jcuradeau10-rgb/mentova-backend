@@ -30,6 +30,8 @@ const tr: Record<string, Record<string, string>> = {
   dailyBriefingDesc: { fr: 'Resume quotidien des marches', en: 'Daily market summary', es: 'Resumen diario de los mercados' },
   tools: { fr: 'Outils avances', en: 'Advanced Tools', es: 'Herramientas avanzadas' },
   toolsDesc: { fr: 'Rainbow Chart, Halving, alertes, portefeuille', en: 'Rainbow Chart, Halving, alerts, portfolio', es: 'Rainbow Chart, Halving, alertas, portafolio' },
+  earlyAccess: { fr: 'Acces anticipé', en: 'Early Access', es: 'Acceso anticipado' },
+  earlyAccessDesc: { fr: 'Testez les nouvelles fonctionnalites avant tout le monde', en: 'Test new features before everyone else', es: 'Prueba las nuevas funciones antes que nadie' },
   premiumMsg: { fr: 'Vous avez acces a la meilleure version d\'Atlas', en: 'You have access to the best version of Atlas', es: 'Tienes acceso a la mejor version de Atlas' },
   premiumDesc: { fr: 'Memoire personnalisee, intelligence de marche, apprentissage adapte a votre niveau, briefing quotidien et analyse de graphiques — Atlas VIP est concu pour vous accompagner comme un vrai mentor.', en: 'Personalized memory, market intelligence, learning adapted to your level, daily briefing and chart analysis — Atlas VIP is designed to guide you like a real mentor.', es: 'Memoria personalizada, inteligencia de mercado, aprendizaje adaptado a tu nivel, briefing diario y analisis de graficos — Atlas VIP esta disenado para guiarte como un verdadero mentor.' },
   openAtlas: { fr: 'Ouvrir Atlas', en: 'Open Atlas', es: 'Abrir Atlas' },
@@ -98,6 +100,8 @@ export default function VIPHubScreen() {
     { key: 'market', icon: 'globe', color: '#10B981', action: () => router.push('/(tabs)/learn') },
     { key: 'learning', icon: 'school', color: '#F59E0B', action: () => router.push('/(tabs)/learn') },
     { key: 'dailyBriefing', icon: 'today', color: '#EF4444', action: loadBriefing },
+    { key: 'tools', icon: 'construct', color: '#6366F1', action: () => router.push('/(tabs)/learn') },
+    { key: 'earlyAccess', icon: 'rocket', color: '#EC4899', action: () => {} },
   ];
 
   return (

@@ -19,6 +19,7 @@ PLANS = {
         "personalized_learning": False,
         "daily_briefing": False,
         "advanced_tools": False,
+        "early_access": False,
         "atlas_model": "gpt-5.6-terra",
         "atlas_max_context_messages": 10,
     },
@@ -30,6 +31,7 @@ PLANS = {
         "personalized_learning": True,
         "daily_briefing": True,
         "advanced_tools": True,
+        "early_access": True,
         "atlas_model": "gpt-5.6-terra",
         "atlas_max_context_messages": 40,
     },
@@ -85,6 +87,7 @@ async def get_user_permissions_response(user: dict, db=None) -> Dict[str, Any]:
         "personalized_learning": perms["personalized_learning"],
         "daily_briefing": perms["daily_briefing"],
         "advanced_tools": perms["advanced_tools"],
+        "early_access": perms["early_access"],
     }
     if plan == "vip":
         vip_expires = user.get("vip_expires_at")
