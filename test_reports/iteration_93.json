@@ -1,0 +1,33 @@
+{
+  "summary": "Retest of static-site language translations. Validated HTML content of /app/static-site/{index.html, es/index.html, fr/index.html}. Logo hrefs, nav-cta CSS, and lang attributes all pass. FR page unchanged (no regression). However, EN and ES pages STILL contain French text in TWO sections that the main agent claimed to have fixed: (1) the animated chat demo slide 4 (as-quiz + as-adapt + as-module), and (2) the market/news features side card. Chat language picker in the app not re-tested (already verified in iteration_92 per instructions).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "static-site/index.html (EN) - animated chat demo slide 4", "issue": "French text remains: line 321 'Quiz rapide', line 322 'Quel mécanisme Ethereum utilise-t-il ?', line 329 '+15 XP, progression mise à jour', line 337 'Module suivant : Yield Farming'. Must be translated to English.", "selector": ".as-quiz-label, .as-quiz-q, .as-adapt, .as-module-text", "priority": "HIGH"},
+      {"component": "static-site/index.html (EN) - market/news features card", "issue": "French text remains: line 480 'BlackRock augmente ses positions BTC', line 481/489 'Haussier' (should be 'Bullish'), line 484 \"L'UE finalise le cadre MiCA\" (should be 'EU finalizes MiCA framework'), line 485 'Neutre' (should be 'Neutral'), line 488 'Ethereum complete la mise a jour Pectra' (should be 'Ethereum completes Pectra upgrade').", "selector": "market/news feature card divs at lines 478-490", "priority": "HIGH"},
+      {"component": "static-site/es/index.html (ES) - animated chat demo slide 4", "issue": "Same French text as EN at lines 321, 322, 329, 337. Must be translated to Spanish (e.g. 'Quiz rápido', '¿Qué mecanismo usa Ethereum?', '+15 XP, progreso actualizado', 'Siguiente módulo: Yield Farming').", "selector": ".as-quiz-label, .as-quiz-q, .as-adapt, .as-module-text", "priority": "HIGH"},
+      {"component": "static-site/es/index.html (ES) - market/news features card", "issue": "Same French text as EN at lines 480, 481, 484, 485, 488, 489. Must be translated to Spanish (e.g. 'Alcista', 'Neutral', 'BlackRock aumenta sus posiciones BTC', 'La UE finaliza el marco MiCA', 'Ethereum completa la actualización Pectra').", "selector": "market/news feature card divs at lines 478-490", "priority": "HIGH"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Translate EN index.html lines 321, 322, 329, 337 (animated demo slide 4) to English",
+    "Translate EN index.html lines 480, 481, 484, 485, 488, 489 (market/news features) to English",
+    "Translate ES es/index.html lines 321, 322, 329, 337 (animated demo slide 4) to Spanish",
+    "Translate ES es/index.html lines 480, 481, 484, 485, 488, 489 (market/news features) to Spanish",
+    "Do NOT touch fr/index.html - it correctly remains in French"
+  ],
+  "critical_code_review_comments": [
+    "The three index.html files are largely duplicated (660 lines each). Consider a build-time template + i18n strings map to prevent this class of cross-language leakage bug from recurring.",
+    "Main agent's previous fix was incomplete: while FAQ, CTA-final, footer, roadmap, vision, and story were translated, the animated chat demo slide 4 (as-quiz/as-adapt/as-module) and the market/news feature card (lines 478-490) were missed on BOTH EN and ES pages."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "65%"},
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Only 2 remaining French pockets in EN and ES: (1) animated chat demo slide 4 at lines 321,322,329,337 and (2) market/news features at lines 478-490. Verify these are translated. FR page is fine. Logo hrefs, nav-cta CSS, and lang attributes were verified OK. Chat language picker was already validated in iteration_92 and instructions said no need to re-test.",
+  "rca of the issue": "Main agent translated most sections but missed the animated chat demo slide 4 (Quiz/Adapt/Module elements) and the market/news feature card in EN and ES. Both blocks are cloned from FR verbatim and were overlooked during the translation pass."
+}

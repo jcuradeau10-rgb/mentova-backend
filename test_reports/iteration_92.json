@@ -1,0 +1,43 @@
+{
+  "summary": "Frontend-only testing per request. Verified Atlas chat language picker (dropdown FR/EN/ES) works end-to-end. Validated static-site HTML files at /app/static-site/{index,fr/index,es/index}.html for logo links, nav CTA styling, nav-lang switcher, hero content and cross-language leakage. Chat language picker is fully functional. Static sites have translation issues remaining (EN has major French leakage in FAQ + CTA + footer; ES has minor French leakage in stats section).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "/app/static-site/index.html (EN marketing page)",
+        "issues": [
+          "FAQ section (lines 593-600) is ENTIRELY in French - all 7 Q&A items should be English. Q examples: \"L'accès est vraiment ouvert ?\", \"Comment fonctionne Atlas IA ?\", \"Quelles cryptos sont disponibles ?\", \"Disponible hors du Canada ?\", \"Il y aura un abonnement payant ?\", \"L'app est sur iPhone et Android ?\".",
+          "CTA-final paragraph (line ~605) in French: \"Crée ton compte en 30 secondes. Aucune carte de credit requise.\" - should be English.",
+          "Footer tagline (line ~614) in French: \"Apprendre la crypto, simplement.\" - should be English.",
+          "Footer column headings/links in French: \"Produit\", \"App Web\", \"Histoire\", \"Feuille de route\", \"Conditions\", \"Confidentialité\" - should be English."
+        ]
+      },
+      {
+        "screen": "/app/static-site/es/index.html (ES marketing page)",
+        "issues": [
+          "Stats card at line 363: \"Français, anglais, espagnol\" is still French - should be Spanish (e.g. \"Frances, ingles, espanol\").",
+          "Stats card at line 373: \"Inscription gratuite\" is French - should be Spanish (e.g. \"Registro gratuito\")."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Translate the EN static site (/app/static-site/index.html) FAQ section, cta-final <p>, footer tagline, and footer nav labels from French to English.",
+    "Fix 2 French strings in ES static site (/app/static-site/es/index.html) stats section lines 363 and 373."
+  ],
+  "critical_code_review_comments": [
+    "Static HTML pages appear to have been copy-pasted from FR and only partially translated. Recommend a systematic grep for common French words (Français, Ouvrir, Crée, gratuit, Histoire, Feuille, Conditions, Confidentialité, Découvre, bientôt) in EN/ES files as a QA gate before deploy.",
+    "learn.tsx language picker is well-implemented (proper testID, active state highlight with checkmark, persists to localStorage via zustand). No issues."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "Chat language picker: 100% pass. Static sites: FR 100%, ES ~98% (2 French leaks), EN ~70% (FAQ+CTA+footer in French)"},
+  "test_credentials": "Used jcuradeau.7@gmail.com / Crypto2026! successfully",
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Chat language picker (testID chat-lang-picker + chat-lang-fr/en/es) is verified working - button label updates, dropdown active state highlights with purple checkmark, languageStore persists to localStorage. Static sites are located at /app/static-site/ - EN page needs FAQ+CTA+footer translated from French; ES page has 2 residual French strings at lines 363,373. Logo hrefs verified: EN=\"/\", FR=\"/fr/\", ES=\"/es/\". Nav CTA is styled color:#fff on background:#7C3AED (correct white on purple). Nav-lang switcher links (/, /fr/, /es/) verified correct on all 3 pages.",
+  "rca of the issue": "The EN and ES pages were likely created by copying the FR template and only partial content was translated. FAQ, footer, and CTA sections in EN were left as original French copy. In ES, 2 stats subtitles were missed during translation."
+}

@@ -123,8 +123,10 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
   const [imageAnalyzing, setImageAnalyzing] = useState(false);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [modelDegraded, setModelDegraded] = useState(false);
+  const [showLangPicker, setShowLangPicker] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const router = useRouter();
+  const { setLanguage } = useTranslation();
 
   // Listen to sidebar navigation store
   const { selectedConversationId, triggerNewChat } = useAtlasNavStore();
@@ -354,9 +356,13 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
           <Text style={s.chatHeaderTitle}>Atlas AI</Text>
           <View style={s.onlineDot} />
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          {/* Language Picker */}
+          <TouchableOpacity onPress={() => setShowLangPicker(!showLangPicker)} testID="chat-lang-picker" style={s.langBtn}>
+            <Text style={s.langBtnText}>{lang.toUpperCase()}</Text>
+          </TouchableOpacity>
           {isVip && (
-            <TouchableOpacity onPress={() => { setInput("Quelles sont les dernieres nouvelles et tendances du marche crypto ?"); }} testID="market-intel-btn">
+            <TouchableOpacity onPress={() => { setInput(tAtlas('sug.market', lang) || "Quelles sont les dernieres nouvelles et tendances du marche crypto ?"); }} testID="market-intel-btn">
               <Ionicons name="globe" size={20} color="#10B981" />
             </TouchableOpacity>
           )}
@@ -365,6 +371,22 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
           </TouchableOpacity>
         </View>
       </View>
+      {/* Language dropdown */}
+      {showLangPicker && (
+        <View style={s.langDropdown}>
+          {[{code: 'fr', label: 'Francais'}, {code: 'en', label: 'English'}, {code: 'es', label: 'Espanol'}].map(l => (
+            <TouchableOpacity
+              key={l.code}
+              style={[s.langOption, lang === l.code && s.langOptionActive]}
+              onPress={() => { setLanguage(l.code as any); setShowLangPicker(false); }}
+              testID={`chat-lang-${l.code}`}
+            >
+              <Text style={[s.langOptionText, lang === l.code && { color: '#7C3AED', fontWeight: '700' }]}>{l.label}</Text>
+              {lang === l.code && <Ionicons name="checkmark" size={16} color="#7C3AED" />}
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
 
       {/* Messages */}
       <ScrollView
@@ -899,6 +921,13 @@ const s = StyleSheet.create({
   sendBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#7C3AED', alignItems: 'center', justifyContent: 'center' },
   sendBtnDisabled: { backgroundColor: 'rgba(255,255,255,0.06)' },
   imageBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(124,58,237,0.12)', alignItems: 'center', justifyContent: 'center' },
+  // Language Picker
+  langBtn: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(124,58,237,0.3)', backgroundColor: 'rgba(124,58,237,0.08)' },
+  langBtnText: { fontSize: 12, fontWeight: '700', color: '#C4B5FD' },
+  langDropdown: { position: 'absolute', top: 95, right: 16, backgroundColor: '#1A1028', borderRadius: 12, borderWidth: 1, borderColor: 'rgba(124,58,237,0.2)', zIndex: 100, minWidth: 140, overflow: 'hidden' },
+  langOption: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.04)' },
+  langOptionActive: { backgroundColor: 'rgba(124,58,237,0.1)' },
+  langOptionText: { fontSize: 14, color: '#E2E8F0', fontWeight: '500' },
   // Smart Upgrade Prompt
   upgradePrompt: { marginHorizontal: 12, marginBottom: 8, backgroundColor: 'rgba(255,215,0,0.06)', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: 'rgba(255,215,0,0.2)' },
   upgradePromptContent: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 10 },
