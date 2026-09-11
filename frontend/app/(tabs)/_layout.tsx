@@ -32,6 +32,7 @@ export default function TabLayout() {
   return (
     <View style={styles.container}>
       <InstallPWAPrompt />
+      <View style={styles.desktopWrapper}>
       <Tabs
         key={`tabs-${language}`}
         screenOptions={{
@@ -128,6 +129,7 @@ export default function TabLayout() {
         <Tabs.Screen name="ai" options={{ href: null }} />
         <Tabs.Screen name="mentors" options={{ href: null }} />
       </Tabs>
+      </View>
     </View>
   );
 }
@@ -136,6 +138,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
+    backgroundColor: '#06060F',
+    ...(Platform.OS === 'web' ? { alignItems: 'center' } : {}),
+  },
+  desktopWrapper: {
+    flex: 1,
+    width: '100%',
+    maxWidth: Platform.OS === 'web' ? 560 : undefined,
+    ...(Platform.OS === 'web' ? { 
+      borderLeftWidth: 1, 
+      borderRightWidth: 1, 
+      borderColor: 'rgba(124, 58, 237, 0.08)',
+    } : {}),
   },
   tabBar: {
     backgroundColor: '#06060F',
