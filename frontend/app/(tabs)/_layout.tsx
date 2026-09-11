@@ -134,93 +134,75 @@ function Sidebar({ state, navigation }: any) {
         {showLabels && <Text style={[st.newChatText, { color: c.primary }]}>{t('nav.newChat') || 'New Chat'}</Text>}
       </TouchableOpacity>
 
-      {/* Conversations — flexible height, scrollable only if many */}
-      {showLabels && convGroups.length > 0 && (
-        <View style={st.convSection}>
-          {convGroups.map((group) => (
-            <View key={group.label}>
-              <Text style={[st.convGroupLabel, { color: c.textMuted }]}>{group.label}</Text>
-              {group.items.slice(0, 10).map((conv) => (
-                <TouchableOpacity
-                  key={conv.id}
-                  style={[st.convItem, selectedConversationId === conv.id && { backgroundColor: c.surfaceHover }]}
-                  onPress={() => handleSelectConv(conv.id)}
-                  testID={`sidebar-conv-${conv.id}`}
-                >
-                  <Ionicons name="chatbubble-outline" size={14} color={selectedConversationId === conv.id ? c.primary : c.textMuted} />
-                  <Text style={[st.convTitle, { color: selectedConversationId === conv.id ? c.text : c.textSecondary }]} numberOfLines={1}>{conv.title}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          ))}
-        </View>
-      )}
+      {/* Middle: scrollable conversations */}
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+        {showLabels && convGroups.length > 0 && (
+          <View style={st.convSection}>
+            {convGroups.map((group) => (
+              <View key={group.label}>
+                <Text style={[st.convGroupLabel, { color: c.textMuted }]}>{group.label}</Text>
+                {group.items.slice(0, 15).map((conv) => (
+                  <TouchableOpacity
+                    key={conv.id}
+                    style={[st.convItem, selectedConversationId === conv.id && { backgroundColor: c.surfaceHover }]}
+                    onPress={() => handleSelectConv(conv.id)}
+                    testID={`sidebar-conv-${conv.id}`}
+                  >
+                    <Ionicons name="chatbubble-outline" size={14} color={selectedConversationId === conv.id ? c.primary : c.textMuted} />
+                    <Text style={[st.convTitle, { color: selectedConversationId === conv.id ? c.text : c.textSecondary }]} numberOfLines={1}>{conv.title}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            ))}
+          </View>
+        )}
+        {!showLabels && (
+          <TouchableOpacity
+            style={[st.navItem, activeIndex === 0 && { backgroundColor: c.surfaceHover }]}
+            onPress={() => handleNav('learn')}
+            testID="sidebar-nav-learn"
+          >
+            <Ionicons name={activeIndex === 0 ? 'planet' : 'planet-outline'} size={20} color={activeIndex === 0 ? c.primary : c.textMuted} />
+          </TouchableOpacity>
+        )}
+      </ScrollView>
 
-      {/* Collapsed: just show Atlas icon */}
-      {!showLabels && (
-        <TouchableOpacity
-          style={[st.navItem, activeIndex === 0 && { backgroundColor: c.surfaceHover }]}
-          onPress={() => handleNav('learn')}
-          testID="sidebar-nav-learn"
-        >
-          <Ionicons name={activeIndex === 0 ? 'planet' : 'planet-outline'} size={20} color={activeIndex === 0 ? c.primary : c.textMuted} />
-        </TouchableOpacity>
-      )}
-
-      {/* Separator */}
-      {showLabels && <View style={[st.separator, { borderBottomColor: c.borderSubtle }]} />}
-
-      {/* Nav Items — always visible, not inside scroll */}
-      <View>
+      {/* Bottom: Nav + VIP + Theme + User — always visible */}
+      <View style={[st.bottomNav, { borderTopColor: c.borderSubtle }]}>
         {state.routes.map((route: any, i: number) => {
           const nav = NAV_ITEMS.find(n => n.name === route.name);
           if (!nav) return null;
           const active = activeIndex === i;
           return (
-            <TouchableOpacity
-              key={route.key}
-              style={[st.navItem, active && { backgroundColor: c.surfaceHover }]}
-              onPress={() => handleNav(route.name)}
-              testID={`sidebar-nav-${nav.name}`}
-            >
+            <TouchableOpacity key={route.key} style={[st.navItem, active && { backgroundColor: c.surfaceHover }]} onPress={() => handleNav(route.name)} testID={`sidebar-nav-${nav.name}`}>
               <Ionicons name={(active ? nav.icon : `${nav.icon}-outline`) as any} size={20} color={active ? c.primary : c.textMuted} />
-              {showLabels && (
-                <Text style={[st.navLabel, { color: active ? c.text : c.textSecondary }, active && { fontWeight: '600' }]}>
-                  {t(nav.labelKey) || nav.label}
-                </Text>
-              )}
+              {showLabels && <Text style={[st.navLabel, { color: active ? c.text : c.textSecondary }, active && { fontWeight: '600' }]}>{t(nav.labelKey) || nav.label}</Text>}
             </TouchableOpacity>
           );
         })}
 
-        {/* VIP */}
-        <TouchableOpacity
-          style={[st.navItem, st.vipItem, { borderTopColor: c.borderSubtle }]}
-          onPress={() => { router.push(isVip ? '/vip/hub' : '/vip'); if (isMobile) setOpen(false); }}
-          testID="sidebar-vip-button"
-        >
+        <TouchableOpacity style={[st.navItem, { marginTop: 4 }]} onPress={() => { router.push(isVip ? '/vip/hub' : '/vip'); if (isMobile) setOpen(false); }} testID="sidebar-vip-button">
           <Ionicons name="diamond" size={20} color="#FFD700" />
           {showLabels && <Text style={[st.navLabel, { color: '#FFD700' }]}>{isVip ? 'VIP Hub' : 'VIP'}</Text>}
         </TouchableOpacity>
-      </View>
 
-      {/* Bottom */}
-      <View style={[st.sideBottom, { borderTopColor: c.borderSubtle }]}>
-        <TouchableOpacity style={st.themeRow} onPress={toggleTheme} testID="theme-toggle">
-          <Ionicons name={mode === 'dark' ? 'sunny-outline' : 'moon-outline'} size={18} color={c.textMuted} />
-          {showLabels && <Text style={[st.themeLabel, { color: c.textMuted }]}>{mode === 'dark' ? 'Light' : 'Dark'}</Text>}
-        </TouchableOpacity>
-        <TouchableOpacity style={st.userRow} onPress={() => handleNav('profile')} testID="sidebar-user-profile">
-          <View style={[st.userAvatar, { backgroundColor: c.surfaceHover, borderColor: isVip ? '#FFD700' : c.primary + '50' }]}>
-            <Text style={[st.userInitial, { color: c.primary }]}>{(user?.name || user?.email || 'U')[0].toUpperCase()}</Text>
-          </View>
-          {showLabels && (
-            <View style={{ flex: 1 }}>
-              <Text style={[st.userName, { color: c.text }]} numberOfLines={1}>{user?.name || 'User'}</Text>
-              <Text style={[st.userPlan, { color: c.textMuted }]}>{isVip ? 'VIP' : 'Free'}</Text>
+        <View style={[st.userSection, { borderTopColor: c.borderSubtle }]}>
+          <TouchableOpacity style={st.themeRow} onPress={toggleTheme} testID="theme-toggle">
+            <Ionicons name={mode === 'dark' ? 'sunny-outline' : 'moon-outline'} size={18} color={c.textMuted} />
+            {showLabels && <Text style={[st.themeLabel, { color: c.textMuted }]}>{mode === 'dark' ? 'Light' : 'Dark'}</Text>}
+          </TouchableOpacity>
+          <TouchableOpacity style={st.userRow} onPress={() => handleNav('profile')} testID="sidebar-user-profile">
+            <View style={[st.userAvatar, { backgroundColor: c.surfaceHover, borderColor: isVip ? '#FFD700' : c.primary + '50' }]}>
+              <Text style={[st.userInitial, { color: c.primary }]}>{(user?.name || user?.email || 'U')[0].toUpperCase()}</Text>
             </View>
-          )}
-        </TouchableOpacity>
+            {showLabels && (
+              <View style={{ flex: 1 }}>
+                <Text style={[st.userName, { color: c.text }]} numberOfLines={1}>{user?.name || 'User'}</Text>
+                <Text style={[st.userPlan, { color: c.textMuted }]}>{isVip ? 'VIP' : 'Free'}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -265,7 +247,7 @@ const st = StyleSheet.create({
   container: { flex: 1, flexDirection: 'row' },
   mobileHamburger: { position: 'absolute', top: Platform.OS === 'web' ? 12 : 50, left: 12, zIndex: 100, width: 42, height: 42, borderRadius: 12, justifyContent: 'center', alignItems: 'center', borderWidth: 1 },
   overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 998 },
-  sidebar: { borderRightWidth: 1, paddingTop: Platform.OS === 'web' ? 16 : 50, paddingBottom: 12, zIndex: 999 },
+  sidebar: { borderRightWidth: 1, paddingTop: Platform.OS === 'web' ? 16 : 50, zIndex: 999, flex: 1 },
   sideTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, marginBottom: 12, minHeight: 32 },
   logo: { fontSize: 20, fontWeight: '800', letterSpacing: -0.5 },
   toggleBtn: { width: 32, height: 32, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
@@ -279,13 +261,13 @@ const st = StyleSheet.create({
   convTitle: { fontSize: 13, fontWeight: '400', flex: 1 },
   separator: { borderBottomWidth: 1, marginHorizontal: 8, marginVertical: 8 },
 
-  navItem: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 12, marginHorizontal: 6, marginBottom: 2, borderRadius: 10 },
+  bottomNav: { borderTopWidth: 1, paddingTop: 8, paddingBottom: 8 },
+  navItem: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8, paddingHorizontal: 12, marginHorizontal: 6, marginBottom: 1, borderRadius: 10 },
   navLabel: { fontSize: 14, fontWeight: '500' },
-  vipItem: { marginTop: 8, borderTopWidth: 1, paddingTop: 12 },
-  sideBottom: { borderTopWidth: 1, paddingTop: 8, paddingHorizontal: 8 },
-  themeRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6, paddingHorizontal: 4, marginBottom: 2 },
+  userSection: { borderTopWidth: 1, paddingTop: 6, marginTop: 4 },
+  themeRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6, paddingHorizontal: 12 },
   themeLabel: { fontSize: 13, fontWeight: '500' },
-  userRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6, paddingHorizontal: 4 },
+  userRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6, paddingHorizontal: 12 },
   userAvatar: { width: 32, height: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center', borderWidth: 1.5 },
   userInitial: { fontSize: 13, fontWeight: '700' },
   userName: { fontSize: 13, fontWeight: '600' },

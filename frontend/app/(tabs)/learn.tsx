@@ -75,6 +75,7 @@ const i18n: Record<string, Record<string, string>> = {
   'sug.2': { fr: 'Explique-moi la DeFi simplement', en: 'Explain DeFi in simple terms', es: 'Explicame DeFi de forma sencilla' },
   'sug.3': { fr: 'Quelle est la difference entre un token et un coin ?', en: 'What is the difference between a token and a coin?', es: 'Cual es la diferencia entre un token y una moneda?' },
   'sug.4': { fr: 'Comment lire un graphique de trading ?', en: 'How to read a trading chart?', es: 'Como leer un grafico de trading?' },
+  'sug.market': { fr: 'Quelles sont les dernieres nouvelles et tendances du marche crypto ?', en: "What's happening in the crypto market today?", es: 'Cuales son las ultimas noticias y tendencias del mercado crypto?' },
   // Levels
   'level.unknown': { fr: 'Non évalué', en: 'Not evaluated', es: 'No evaluado' },
   'level.beginner': { fr: 'Débutant', en: 'Beginner', es: 'Principiante' },
@@ -305,17 +306,24 @@ function ChatView({ token, lang }: { token: string; lang: string }) {
   // Main chat view
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#06060F' }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={100}>
-      {/* Header — with left padding for mobile hamburger */}
+      {/* Header */}
       <View style={s.chatHeader}>
-        <View style={{ width: 50 }} />{/* Space for hamburger on mobile */}
+        <View style={{ width: 50 }} />
         <View style={s.chatHeaderCenter}>
           <View style={s.atlasAvatar}><Text style={s.atlasAvatarText}>A</Text></View>
           <Text style={s.chatHeaderTitle}>Atlas AI</Text>
           <View style={s.onlineDot} />
         </View>
-        <TouchableOpacity onPress={newConversation} testID="new-chat-btn">
-          <Ionicons name="create-outline" size={22} color="#E2E8F0" />
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          {isVip && (
+            <TouchableOpacity onPress={() => { setInput("Quelles sont les dernieres nouvelles et tendances du marche crypto ?"); }} testID="market-intel-btn">
+              <Ionicons name="globe" size={20} color="#10B981" />
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity onPress={newConversation} testID="new-chat-btn">
+            <Ionicons name="create-outline" size={20} color="#E2E8F0" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Messages */}
@@ -731,8 +739,28 @@ export default function LearnScreen() {
 
   return (
     <SafeAreaView style={s.container} edges={[]}>
-      {/* Direct chat — no sub-tabs for cleaner mobile experience */}
-      <ChatView token={token} lang={language || 'fr'} />
+      {/* Sub-nav: Chat | Modules | Progress — compact pills */}
+      <View style={s.subNav}>
+        {([
+          { key: 'chat' as Tab, icon: 'chatbubbles', label: tAtlas('tab.chat', lang) },
+          { key: 'modules' as Tab, icon: 'library', label: tAtlas('tab.modules', lang) },
+          { key: 'progress' as Tab, icon: 'stats-chart', label: tAtlas('tab.progress', lang) },
+        ]).map(item => (
+          <TouchableOpacity
+            key={item.key}
+            style={[s.subNavItem, tab === item.key && s.subNavActive]}
+            onPress={() => setTab(item.key)}
+            testID={`atlas-tab-${item.key}`}
+          >
+            <Ionicons name={(tab === item.key ? item.icon : item.icon + '-outline') as any} size={14} color={tab === item.key ? '#7C3AED' : '#64748B'} />
+            <Text style={[s.subNavText, tab === item.key && s.subNavTextActive]}>{item.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {tab === 'chat' && <ChatView token={token} lang={language || 'fr'} />}
+      {tab === 'modules' && <ModulesView token={token} lang={language || 'fr'} />}
+      {tab === 'progress' && <ProgressView token={token} lang={language || 'fr'} />}
     </SafeAreaView>
   );
 }
@@ -740,6 +768,11 @@ export default function LearnScreen() {
 // ============ STYLES ============
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0B0914' },
+  subNav: { flexDirection: 'row', paddingLeft: 56, paddingRight: 12, paddingVertical: 6, gap: 4, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.04)' },
+  subNavItem: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
+  subNavActive: { backgroundColor: 'rgba(124,58,237,0.12)' },
+  subNavText: { fontSize: 12, color: '#64748B', fontWeight: '500' },
+  subNavTextActive: { color: '#7C3AED', fontWeight: '600' },
 
   // Top tabs
   subTabRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 14, paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.04)', justifyContent: 'flex-end' },
