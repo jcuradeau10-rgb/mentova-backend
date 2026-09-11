@@ -167,31 +167,36 @@ function SidebarContent({ onNavigate }: { onNavigate: (route: string) => void })
                           maxLength={200}
                           testID="rename-input"
                         />
-                        <TouchableOpacity onPress={submitRename} testID="rename-confirm">
+                        <TouchableOpacity onPress={submitRename} testID="rename-confirm" style={{ padding: 8 }}>
                           <Ionicons name="checkmark" size={18} color={c.primary} />
                         </TouchableOpacity>
                       </View>
                     ) : (
-                      <TouchableOpacity style={st.convItem} onPress={() => handleSelectConv(conv.id)} activeOpacity={0.7}>
+                      <Pressable style={st.convItem} onPress={() => handleSelectConv(conv.id)}>
                         <Ionicons name="chatbubble-outline" size={14} color={selectedConversationId === conv.id ? c.primary : c.textMuted} />
                         <Text style={[st.convTitle, { color: selectedConversationId === conv.id ? c.text : c.textSecondary }]} numberOfLines={1}>{conv.title}</Text>
-                      </TouchableOpacity>
+                      </Pressable>
                     )}
                     {renaming !== conv.id && (
-                      <TouchableOpacity style={st.convMenuBtn} onPress={(e) => { e.stopPropagation?.(); setConvMenu(convMenu === conv.id ? null : conv.id); }} testID={`conv-menu-${conv.id}`}>
-                        <Ionicons name="ellipsis-horizontal" size={14} color={c.textMuted} />
-                      </TouchableOpacity>
+                      <Pressable
+                        style={st.convMenuBtn}
+                        onPress={() => setConvMenu(convMenu === conv.id ? null : conv.id)}
+                        testID={`conv-menu-${conv.id}`}
+                        hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                      >
+                        <Ionicons name="ellipsis-horizontal" size={16} color={c.textMuted} />
+                      </Pressable>
                     )}
                     {convMenu === conv.id && (
                       <View style={[st.convDropdown, { backgroundColor: c.surface, borderColor: c.borderSubtle }]}>
-                        <TouchableOpacity style={st.convDropItem} onPress={(e) => { e.stopPropagation?.(); startRename(conv); }} testID={`conv-rename-${conv.id}`}>
+                        <Pressable style={st.convDropItem} onPress={() => { startRename(conv); }} testID={`conv-rename-${conv.id}`}>
                           <Ionicons name="pencil" size={14} color={c.text} />
                           <Text style={[st.convDropText, { color: c.text }]}>Rename</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={st.convDropItem} onPress={(e) => { e.stopPropagation?.(); deleteConv(conv.id); }} testID={`conv-delete-${conv.id}`}>
+                        </Pressable>
+                        <Pressable style={st.convDropItem} onPress={() => { deleteConv(conv.id); }} testID={`conv-delete-${conv.id}`}>
                           <Ionicons name="trash" size={14} color="#EF4444" />
                           <Text style={[st.convDropText, { color: '#EF4444' }]}>Delete</Text>
-                        </TouchableOpacity>
+                        </Pressable>
                       </View>
                     )}
                   </View>
@@ -352,10 +357,10 @@ const st = StyleSheet.create({
   convItem: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 8, borderRadius: 8, marginBottom: 1, flex: 1 },
   convTitle: { fontSize: 13, flex: 1 },
   convItemWrap: { flexDirection: 'row', alignItems: 'center', borderRadius: 8, marginBottom: 1, position: 'relative' as const },
-  convMenuBtn: { padding: 6, marginRight: 2 },
-  convDropdown: { position: 'absolute' as const, right: 0, top: 34, borderRadius: 10, borderWidth: 1, zIndex: 100, minWidth: 130, overflow: 'hidden' as const },
-  convDropItem: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 10, paddingHorizontal: 14 },
-  convDropText: { fontSize: 13, fontWeight: '500' },
+  convMenuBtn: { padding: 10, marginRight: 0, zIndex: 10 },
+  convDropdown: { position: 'absolute' as const, right: 0, top: 40, borderRadius: 10, borderWidth: 1, zIndex: 200, minWidth: 150, overflow: 'hidden' as const, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 10 },
+  convDropItem: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 14, paddingHorizontal: 16 },
+  convDropText: { fontSize: 14, fontWeight: '500' },
   renameRow: { flexDirection: 'row', alignItems: 'center', flex: 1, gap: 6, paddingHorizontal: 8, paddingVertical: 4 },
   renameInput: { flex: 1, fontSize: 13, borderWidth: 1, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4 },
   bottomNav: { borderTopWidth: 1, paddingTop: 8, paddingBottom: 8 },
