@@ -1,88 +1,143 @@
 {
-  "project_name": "Mentova - Crypto AI Learning Platform",
-  "archetype": "Electric & Neon / Hybrid ChatGPT-Claude Crypto AI Workspace",
-  "theme": {
-    "default_mode": "dark",
-    "background_primary": "#06060F",
-    "background_secondary": "#0A0A1A",
-    "surface_card": "#120E26",
-    "surface_glass": "rgba(18, 14, 38, 0.75)",
-    "border_subtle": "rgba(124, 58, 237, 0.2)",
-    "border_glow": "rgba(124, 58, 237, 0.5)"
+  "project_name": "Mentova Academy - Premium Redesign",
+  "archetype": "LUXURY_CRYPTO_AI",
+  "theme": "Dark Void Luxury (#0B0A10)",
+  "context_type": "MARKETING_AND_SEO",
+  "typography": {
+    "headings": {
+      "font_family": "Syne, sans-serif",
+      "font_weights": ["600", "700", "800"],
+      "letter_spacing": "-0.04em",
+      "line_height": "1.05",
+      "h1": "text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight",
+      "h3": "text-xl sm:text-2xl font-bold",
+      "h4": "text-lg sm:text-xl font-semibold"
+    },
+    "body": {
+      "font_family": "Plus Jakarta Sans, sans-serif",
+      "font_weights": ["300", "400", "500", "600"],
+      "text_base": "text-base leading-relaxed text-slate-300",
+      "text_sm": "text-sm text-slate-400"
+    },
+    "data_mono": {
+      "font_family": "JetBrains Mono, monospace",
+      "font_weights": ["400", "500", "600"],
+      "usage": "Labels, metrics, tickers, level percentages, code blocks, timestamps"
+    }
   },
-  "color_palette": {
-    "primary_violet": "#7C3AED",
-    "primary_violet_hover": "#9333EA",
-    "primary_violet_glow": "rgba(124, 58, 237, 0.4)",
-    "vip_gold": "#FFD700",
-    "vip_gold_gradient": "linear-gradient(135deg, #FFD700 0%, #B8860B 100%)",
-    "neon_cyan": "#06B6D4",
-    "bullish_green": "#10B981",
-    "bearish_red": "#EF4444",
+  "colors": {
+    "background_base": "#0B0A10",
+    "background_card": "#151322",
+    "background_card_elevated": "#1E1A34",
+    "border_subtle": "rgba(255, 255, 255, 0.08)",
+    "border_active": "rgba(139, 92, 246, 0.35)",
+    "primary_violet": "#8B5CF6",
+    "primary_violet_glow": "rgba(139, 92, 246, 0.25)",
+    "accent_cyan": "#00E5FF",
+    "accent_emerald": "#10B981",
+    "accent_amber": "#F59E0B",
     "text_primary": "#F8FAFC",
     "text_secondary": "#94A3B8",
-    "text_muted": "#64748B"
+    "text_muted": "#64748B",
+    "forbidden_colors": ["#7351B7", "#1B93A4"]
   },
-  "typography": {
-    "heading_font": "Outfit, sans-serif",
-    "body_font": "Inter, sans-serif",
-    "mono_font": "JetBrains Mono, monospace",
-    "scale": {
-      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tight font-bold",
-      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight font-semibold",
-      "h3": "text-xl sm:text-2xl font-semibold",
-      "body": "text-base leading-relaxed",
-      "small": "text-sm text-slate-400"
-    }
-  },
-  "layout_and_structure": {
-    "desktop_max_width": "max-w-[520px] md:max-w-full mx-auto md:mx-0",
-    "sidebar": {
-      "type": "Collapsible ChatGPT/Claude Style Sidebar",
-      "expanded_width": "w-72",
-      "collapsed_width": "w-16",
-      "items": [
-        "New Chat (+ Atlas AI)",
-        "Conversation History (Today, Yesterday, Last 7 Days)",
-        "Market Data (Live Prices & Tickers)",
-        "Crypto News (AI Sentiment Feed)",
-        "VIP Hub ($21.99/month Daily Briefing & Chart Upload)",
-        "Profile & Settings (Translations EN/FR/ES, 2FA)",
-        "Language Selector Toggle"
-      ]
-    },
-    "main_chat_canvas": {
-      "header": "Atlas AI v3 Pro Header with Model Switcher & Status",
-      "welcome_suggestions": [
-        "Analyze BTC $95K Breakout Potential",
-        "What is Liquid Staking Derivatives (LSD)?",
-        "Explain Fed Rate Decision impact on Crypto",
-        "Scan chart pattern for ETH/USDT (VIP Upload)"
-      ],
-      "message_bubbles": {
-        "user": "Right-aligned or subtle container with violet accent border",
-        "atlas": "Left-aligned with glowing Atlas avatar, rich markdown text, key metric badges, chart inline previews, citation sources"
-      },
-      "bottom_prompt_bar": "Floating glowing glass bar with text input, image upload button (VIP feature), voice input button, model badge, send button"
-    }
-  },
-  "key_views": {
-    "onboarding": "High impact intro to Atlas AI, interactive prompt preview, VIP feature teaser, CTAs for Register/Login",
-    "auth": "Login & Register forms with violet glass background, tab switching, social auth, password validation, 2FA modal trigger",
-    "market": "Real-time ticker list, 24h gainers/losers, interactive sparkline charts, sentiment gauge, quick 'Ask Atlas about token' button",
-    "news": "Realtime news feed, AI sentiment tags (Bullish/Bearish/Neutral), source badges, 'Explain with Atlas' quick trigger",
-    "vip_hub": "Gold metallic styled card ($21.99/mo), Daily Briefing preview with translation support, Chart Image Analysis upload box, Alpha Alerts toggle",
-    "profile": "User information, Subscription status, Language switcher (EN, FR, ES), Security settings, Dark mode persistence"
+  "visual_enhancers": {
+    "glassmorphism": "backdrop-blur-xl bg-black/60 border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]",
+    "tracing_beam": "1px animated or static glowing border gradient from #8B5CF6 to transparent",
+    "noise_overlay": "Subtle grain overlay (2% opacity) to eliminate digital flatness",
+    "mesh_gradients": "Subtle ambient radial blur lights (#8B5CF6 at 15% opacity, #00E5FF at 10% opacity)"
   },
   "image_urls": {
-    "atlas_avatar": "https://images.unsplash.com/photo-1728112265403-a4aebd5859a5?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA6OTV8MHwxfHNlYXJjaHw0fHxmdXR1cmlzdGljJTIwQUklMjBhdmF0YXIlMjBwb3J0cmFpdCUyMHB1cnBsZSUyMGdsb3d8ZW58MHx8fHwxNzg5MTM4OTQ1fDA&ixlib=rb-4.1.0&q=85",
-    "crypto_chart_bg": "https://images.unsplash.com/photo-1762279389042-9439bfb6c155?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwxfHxjcnlwdG8lMjBtYXJrZXQlMjB0cmFkaW5nJTIwY2hhcnQlMjBkYXJrJTIwdmlvbGV0JTIwbmVvbnxlbnwwfHx8fDE3ODkxMzg5MzJ8MA&ixlib=rb-4.1.0&q=85",
-    "crypto_glow_lines": "https://images.unsplash.com/photo-1762278804772-6f5bb8eea759?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHw0fHxjcnlwdG8lMjBtYXJrZXQlMjB0cmFkaW5nJTIwY2hhcnQlMjBkYXJrJTIwdmlvbGV0JTIwbmVvbnxlbnwwfHx8fDE3ODkxMzg5MzJ8MA&ixlib=rb-4.1.0&q=85"
+    "real_app_screenshots": [
+      {
+        "url": "/screenshots/app_screen_1.png",
+        "description": "Atlas AI chat interface with sidebar, conversation history, and real-time mentor response",
+        "category": "Hero & AI Feature"
+      },
+      {
+        "url": "/screenshots/app_screen_2.png",
+        "description": "Learning module card with progress percentage and interactive step-by-step roadmap",
+        "category": "Personalized Modules"
+      },
+      {
+        "url": "/screenshots/app_screen_3.png",
+        "description": "Progress dashboard with skills radar scored out of 10 across Crypto, Blockchain, Trading, Finance, Risk",
+        "category": "Skill Radar & Continuity"
+      },
+      {
+        "url": "/screenshots/app_screen_4.png",
+        "description": "Adaptive quiz evaluation screen showing real-time feedback and XP reward",
+        "category": "Teaching Loop & Quizzes"
+      }
+    ],
+    "stock_enhancements": [
+      {
+        "url": "https://images.unsplash.com/photo-1674027444485-cec3da58eef4?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Abstract AI neural sphere background element",
+        "category": "Background & Hero Glow"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1622630998477-20aa696ecb05?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "3D metallic crypto emblem for market showcase",
+        "category": "Market & Ecosystem"
+      }
+    ]
   },
-  "UNIVERSAL GUIDELINES FOR MAIN AGENT": {
-    "data_testid_rule": "ALL interactive components (buttons, inputs, sidebar links, tabs, dropdowns, modals) MUST include descriptive data-testid attributes (e.g. data-testid='sidebar-new-chat-button', data-testid='vip-upgrade-button', data-testid='chat-image-upload-input').",
-    "i18n_support": "Ensure all text strings support translation via language store / translation hooks (English default, French, Spanish).",
-    "no_transparent_headers": "Always use glassmorphism backdrop-blur-xl with solid dark overlay backgrounds (bg-[#06060F]/80 backdrop-blur-md) for sticky headers and dropdowns to avoid content collisions.",
-    "micro_interactions": "Incorporate subtle hover states (scale-102, bg-violet-600/20, border-violet-500/40), smooth CSS transitions for sidebar expansion/collapse, and typing indicator for Atlas responses."
-  }
+  "structure_and_pages": {
+    "homepage_sections": [
+      "Navigation with Logo, Links, EN/FR/ES Switcher, CTA 'Open the App'",
+      "Hero Section: Meet Atlas (Human-founded AI mentor, real app preview, instant interactive preview)",
+      "Problem Section: Broken Crypto Education (scams, paywalls, noise vs structured AI learning)",
+      "Why Atlas Exists: Human-founded story by Justin, Canada, open access philosophy",
+      "Personalization Engine: 5 Skill Radar (Crypto, Blockchain, Trading, Finance, Risk)",
+      "Continuity Arc: Day 1 (Assessment) -> Day 7 (Modules & Quizzes) -> Day 30 (Mastery & On-chain tools)",
+      "Teaching Loop: Ask -> Analyze -> Adaptive Module -> Quiz -> Skill Score Update",
+      "Ecosystem & Live Market: Top 20 cryptos + Multi-language AI news with sentiment analysis",
+      "Why Mentova: Human mentors + AI synergy, Canada founded, zero-scam guarantee",
+      "Interactive FAQ Accordion",
+      "Final High-Conversion CTA Banner",
+      "Comprehensive Multi-Column Footer with Legal & Socials"
+    ],
+    "strategic_seo_pages": [
+      {
+        "path": "/atlas-ai.html",
+        "title": "Atlas AI - The Personal Crypto & Financial AI Mentor",
+        "description": "Meet Atlas AI by Mentova: GPT-5.6 Terra powered mentor that remembers your progress and builds custom crypto paths."
+      },
+      {
+        "path": "/ai-crypto-mentor.html",
+        "title": "AI Crypto Mentor - 24/7 Personalized Education",
+        "description": "Why AI is replacing static crypto courses. Real-time feedback, adaptive quizzes, and zero paywalls."
+      },
+      {
+        "path": "/personalized-crypto-learning.html",
+        "title": "Personalized Crypto Learning Path | Mentova Academy",
+        "description": "Assess your skills in crypto, blockchain, trading, finance, and risk management with custom AI paths."
+      },
+      {
+        "path": "/how-atlas-works.html",
+        "title": "How Atlas AI Works - Step-by-Step Learning Engine",
+        "description": "Discover the 5-step teaching loop behind Atlas AI: assessment, modular generation, interactive quiz, persistent memory."
+      },
+      {
+        "path": "/why-mentova.html",
+        "title": "Why Mentova Academy - Human-Founded, AI-Driven",
+        "description": "Built in Canada by Justin. Our mission to democratize financial literacy with open access education."
+      }
+    ],
+    "languages_supported": ["EN", "FR", "ES"]
+  },
+  "testing_and_accessibility": {
+    "data_testid_rules": "All buttons, links, hero CTAs, navigation elements, quiz buttons, FAQ headers, and language switchers MUST have kebab-case data-testid attributes.",
+    "aria_labels": "All icons and interactive elements must have proper accessibility roles and aria labels.",
+    "contrast": "Minimum 4.5:1 text contrast for body, 3:1 for large display headers against dark void background."
+  },
+  "instructions_to_main_agent": [
+    "Ensure all HTML/CSS files maintain strict responsiveness, mobile-first design, and clean semantics.",
+    "Utilize real screenshots from /screenshots/app_screen_1.png through app_screen_4.png in feature showcases.",
+    "Include robots.txt, sitemap.xml, and JSON-LD structured data for maximal SEO quality.",
+    "Maintain language coherence across / (EN), /fr/ (FR), and /es/ (ES).",
+    "Never use raw transparent header without blur; use glassmorphism backdrop-filter for navigation."
+  ]
 }
