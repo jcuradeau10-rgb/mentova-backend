@@ -3,574 +3,387 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mentova Academy — Educacion Crypto y Financiera Personalizada Con Atlas AI</title>
-<meta name="description" content="Aprende crypto y finanzas con Atlas AI, your personal AI mentor. Aprendizaje personalizado paths, adaptive modules, and continuous progress tracking. Start free.">
+<title>Mentova Academy — Educacion Crypto y Financiera Personalizada con Atlas AI</title>
+<meta name="description" content="Learn crypto and finance with Atlas AI, your personal AI mentor. Personalized learning paths, adaptive modules, and continuous progress tracking. Start free.">
 <link rel="canonical" href="https://mentova-academy.com/es/">
 <meta name="robots" content="index, follow">
-
-<!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="Mentova Academy — Learn Crypto With Atlas AI">
-<meta property="og:description" content="Your personal AI mentor for crypto and finance. Atlas learns how you learn, adapts to your level, and builds your path forward.">
+<meta property="og:description" content="Your personal AI mentor for crypto and finance. Atlas learns how you learn.">
 <meta property="og:url" content="https://mentova-academy.com/">
 <meta property="og:site_name" content="Mentova Academy">
-<meta property="og:image" content="https://mentova-academy.com/screenshots/app_screen_1.png">
 <meta property="og:locale" content="es_ES">
 <meta property="og:locale:alternate" content="fr_FR">
 <meta property="og:locale:alternate" content="es_ES">
-
-<!-- Twitter -->
-<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mentova Academy — Learn Crypto With Atlas AI">
-<meta name="twitter:description" content="Your personal AI mentor for crypto and finance.">
-<meta name="twitter:image" content="https://mentova-academy.com/screenshots/app_screen_1.png">
-
-<!-- Hreflang -->
 <link rel="alternate" hreflang="en" href="https://mentova-academy.com/es/">
 <link rel="alternate" hreflang="fr" href="https://mentova-academy.com/fr/">
 <link rel="alternate" hreflang="es" href="https://mentova-academy.com/es/">
 <link rel="alternate" hreflang="x-default" href="https://mentova-academy.com/es/">
-
-<!-- Structured Data -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Mentova Academy",
-  "url": "https://mentova-academy.com",
-  "logo": "https://mentova-academy.com/screenshots/app_screen_1.png",
-  "description": "Personalized crypto and financial education platform powered by Atlas AI.",
-  "email": "info@mentova-academy.com",
-  "sameAs": []
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Atlas AI by Mentova",
-  "applicationCategory": "EducationalApplication",
-  "operatingSystem": "Web",
-  "description": "A personal AI mentor for crypto and financial education. Atlas adapts to your level, builds personalized learning paths, and tracks your progress over time.",
-  "url": "https://app.mentova-academy.com",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD",
-    "description": "Free access to core learning features"
-  }
-}
-</script>
-
-<!-- Fonts -->
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Mentova Academy","url":"https://mentova-academy.com","description":"Personalized crypto and financial education platform powered by Atlas AI.","email":"info@mentova-academy.com"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Atlas AI by Mentova","applicationCategory":"EducationalApplication","operatingSystem":"Web","url":"https://app.mentova-academy.com","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* === RESET & BASE === */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:#0B0A10;color:#F8FAFC;line-height:1.7;overflow-x:hidden}
-img{max-width:100%;height:auto;display:block}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',sans-serif;background:#09090b;color:#e4e4e7;line-height:1.7;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
+::selection{background:#7c3aed;color:#fff}
 
-/* === CSS VARIABLES === */
 :root{
-  --bg:#0B0A10;--card:#151322;--card-up:#1E1A34;
-  --violet:#8B5CF6;--violet-glow:rgba(139,92,246,0.25);
-  --cyan:#00E5FF;--emerald:#10B981;--amber:#F59E0B;
-  --text:#F8FAFC;--text2:#94A3B8;--text3:#64748B;
-  --border:rgba(255,255,255,0.08);--border-a:rgba(139,92,246,0.35);
-  --font-h:'Syne',sans-serif;--font-b:'Plus Jakarta Sans',sans-serif;--font-m:'JetBrains Mono',monospace;
-  --max:1200px;--gap:clamp(60px,10vw,120px);
+  --bg:#09090b;--surface:#18181b;--surface2:#27272a;
+  --accent:#a78bfa;--accent2:#7c3aed;
+  --text:#fafafa;--text2:#a1a1aa;--text3:#71717a;
+  --border:#27272a;
+  --font-h:'Space Grotesk',sans-serif;
+  --font-b:'Inter',sans-serif;
+  --font-m:'JetBrains Mono',monospace;
+  --w:1080px;
 }
 
-/* === NOISE OVERLAY === */
-body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.02;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 24px}
+.n-bar{max-width:var(--w);margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;border-bottom:1px solid transparent;transition:border-color .3s}
+nav.scrolled .n-bar{border-color:var(--border)}
+nav.scrolled{background:rgba(9,9,11,.85);backdrop-filter:blur(12px)}
+.n-logo{font-family:var(--font-h);font-weight:700;font-size:19px;letter-spacing:-.02em}
+.n-logo b{color:var(--accent)}
+.n-right{display:flex;align-items:center;gap:24px}
+.n-right a{font-size:13px;color:var(--text3);transition:color .2s}
+.n-right a:hover{color:var(--text)}
+.n-cta{color:var(--text)!important;font-weight:500;border:1px solid var(--border);padding:7px 18px;border-radius:8px;transition:all .2s}
+.n-cta:hover{border-color:var(--accent);color:var(--accent)!important}
+.n-lang{font-family:var(--font-m);font-size:11px;color:var(--text3);display:flex;gap:8px}
+.n-lang a.active{color:var(--accent)}
+.n-mob{display:none;background:none;border:none;cursor:pointer;color:var(--text)}
+@media(max-width:768px){.n-right{display:none}.n-mob{display:block}}
 
-/* === NAV === */
-.nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 24px;transition:background .3s}
-.nav.scrolled{background:rgba(11,10,16,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
-.nav-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.nav-logo{font-family:var(--font-h);font-weight:800;font-size:22px;letter-spacing:-.03em;color:var(--text)}
-.nav-logo span{color:var(--violet)}
-.nav-links{display:flex;align-items:center;gap:28px}
-.nav-links a{font-size:14px;font-weight:500;color:var(--text2);transition:color .2s}
-.nav-links a:hover{color:var(--text)}
-.nav-cta{font-size:13px;font-weight:600;color:#fff;background:var(--violet);padding:10px 22px;border-radius:10px;transition:all .2s}
-.nav-cta:hover{background:#7C3AED;transform:translateY(-1px)}
-.nav-lang{display:flex;gap:4px;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-left:4px}
-.nav-lang a{padding:6px 10px;font-size:12px;font-weight:600;color:var(--text3);transition:all .2s}
-.nav-lang a:hover,.nav-lang a.active{background:var(--violet);color:#fff}
-.nav-hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px}
-.nav-hamburger svg{width:24px;height:24px;stroke:var(--text);stroke-width:2}
+/* SPACING */
+.s{padding:0 24px}
+.si{max-width:var(--w);margin:0 auto}
 
-/* === SECTIONS === */
-.section{padding:var(--gap) 24px}
-.section-inner{max-width:var(--max);margin:0 auto}
-.section-label{font-family:var(--font-m);font-size:12px;font-weight:500;color:var(--violet);letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px}
-.section-h2{font-family:var(--font-h);font-size:clamp(28px,5vw,48px);font-weight:700;letter-spacing:-.03em;line-height:1.1;color:var(--text);margin-bottom:20px}
-.section-desc{font-size:17px;color:var(--text2);max-width:620px;line-height:1.7}
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:140px 24px 100px;max-width:var(--w);margin:0 auto}
+.hero-over{font-family:var(--font-m);font-size:12px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:40px}
+.hero h1{font-family:var(--font-h);font-size:clamp(32px,7vw,72px);font-weight:700;letter-spacing:-.04em;line-height:1;color:var(--text);max-width:900px}
+.hero h1 span{color:var(--accent)}
+.hero-p{font-size:18px;color:var(--text2);max-width:520px;margin:32px 0 40px;line-height:1.8;font-weight:300}
+.hero-acts{display:flex;gap:16px;align-items:center}
+.btn-p{font-family:var(--font-h);font-size:14px;font-weight:600;color:#09090b;background:var(--accent);padding:13px 28px;border-radius:8px;transition:all .2s;display:inline-block}
+.btn-p:hover{background:#8b5cf6;transform:translateY(-1px)}
+.btn-s{font-family:var(--font-h);font-size:14px;font-weight:500;color:var(--text2);padding:13px 0;transition:color .2s}
+.btn-s:hover{color:var(--text)}
+.hero-line{width:48px;height:1px;background:var(--border);margin-top:80px}
 
-/* === HERO === */
-.hero{min-height:100vh;display:flex;align-items:center;padding:120px 24px 80px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,var(--violet-glow) 0%,transparent 70%);pointer-events:none;opacity:.6}
-.hero-inner{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;z-index:1}
-.hero-text{max-width:540px}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border-a);border-radius:100px;padding:6px 16px 6px 8px;margin-bottom:28px;font-size:13px;font-weight:500;color:var(--text2)}
-.hero-badge-dot{width:8px;height:8px;border-radius:50%;background:var(--emerald);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.hero h1{font-family:var(--font-h);font-size:clamp(36px,6vw,60px);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:24px}
-.hero h1 em{font-style:normal;color:var(--violet)}
-.hero-sub{font-size:18px;color:var(--text2);line-height:1.7;margin-bottom:36px;max-width:460px}
-.hero-actions{display:flex;gap:14px;flex-wrap:wrap}
-.btn-primary{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-b);font-size:15px;font-weight:600;color:#fff;background:var(--violet);padding:14px 28px;border-radius:12px;transition:all .25s;border:none;cursor:pointer}
-.btn-primary:hover{background:#7C3AED;transform:translateY(-2px);box-shadow:0 8px 30px var(--violet-glow)}
-.btn-ghost{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-b);font-size:15px;font-weight:500;color:var(--text2);background:transparent;padding:14px 24px;border-radius:12px;border:1px solid var(--border);transition:all .25s;cursor:pointer}
-.btn-ghost:hover{color:var(--text);border-color:var(--text3)}
-.hero-visual{position:relative}
-.hero-img{border-radius:16px;border:1px solid var(--border);box-shadow:0 24px 80px rgba(0,0,0,.5)}
+/* EDITORIAL TEXT BLOCK */
+.ed{padding:100px 24px}
+.ed-inner{max-width:var(--w);margin:0 auto;display:grid;grid-template-columns:280px 1fr;gap:80px;align-items:start}
+.ed-label{font-family:var(--font-m);font-size:11px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;position:sticky;top:100px}
+.ed-body h2{font-family:var(--font-h);font-size:clamp(24px,4vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;color:var(--text);margin-bottom:24px}
+.ed-body p{font-size:16px;color:var(--text2);line-height:1.8;margin-bottom:20px;font-weight:300}
+.ed-body p strong{color:var(--text);font-weight:500}
+@media(max-width:768px){.ed-inner{grid-template-columns:1fr;gap:24px}.ed-label{position:static}}
 
-/* === PROBLEM === */
-.problem{background:var(--card)}
-.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
-.problem-topics{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
-.problem-tag{font-family:var(--font-m);font-size:12px;font-weight:500;padding:8px 16px;border-radius:8px;background:var(--card-up);border:1px solid var(--border);color:var(--text3)}
+/* DIVIDER */
+.div-line{max-width:var(--w);margin:0 auto;height:1px;background:var(--border)}
 
-/* === PERSONALIZATION === */
-.persona-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
-.persona-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;transition:border-color .3s}
-.persona-card:hover{border-color:var(--border-a)}
-.persona-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:20px}
-.persona-card h3{font-family:var(--font-h);font-size:18px;font-weight:700;margin-bottom:10px}
-.persona-card p{font-size:14px;color:var(--text2);line-height:1.6}
+/* NUMBERED LIST */
+.nl{padding:100px 24px}
+.nl-inner{max-width:var(--w);margin:0 auto}
+.nl h2{font-family:var(--font-h);font-size:clamp(24px,4vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;color:var(--text);margin-bottom:60px;max-width:600px}
+.nl-items{display:flex;flex-direction:column;gap:0}
+.nl-item{display:grid;grid-template-columns:60px 1fr;gap:32px;padding:32px 0;border-top:1px solid var(--border)}
+.nl-num{font-family:var(--font-m);font-size:13px;color:var(--accent);padding-top:2px}
+.nl-item h3{font-family:var(--font-h);font-size:18px;font-weight:600;color:var(--text);margin-bottom:8px;letter-spacing:-.01em}
+.nl-item p{font-size:15px;color:var(--text2);line-height:1.7;font-weight:300;max-width:560px}
 
-/* === CONTINUITY === */
-.timeline{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
-.timeline-item{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;position:relative}
-.timeline-day{font-family:var(--font-m);font-size:13px;font-weight:600;color:var(--violet);margin-bottom:12px}
-.timeline-item h3{font-family:var(--font-h);font-size:17px;font-weight:700;margin-bottom:10px}
-.timeline-item p{font-size:14px;color:var(--text2);line-height:1.6}
+/* CONTINUITY */
+.cont{padding:100px 24px;background:var(--surface)}
+.cont-inner{max-width:var(--w);margin:0 auto}
+.cont h2{font-family:var(--font-h);font-size:clamp(24px,4vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;color:var(--text);margin-bottom:16px;max-width:640px}
+.cont>div>p{font-size:16px;color:var(--text2);max-width:520px;margin-bottom:60px;font-weight:300;line-height:1.8}
+.tl{position:relative;padding-left:40px}
+.tl::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:1px;background:var(--border)}
+.tl-item{position:relative;padding-bottom:48px}
+.tl-item:last-child{padding-bottom:0}
+.tl-dot{position:absolute;left:-36px;top:4px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg)}
+.tl-day{font-family:var(--font-m);font-size:12px;color:var(--accent);margin-bottom:8px;letter-spacing:.04em}
+.tl-item h3{font-family:var(--font-h);font-size:17px;font-weight:600;color:var(--text);margin-bottom:6px}
+.tl-item p{font-size:14px;color:var(--text2);line-height:1.7;font-weight:300;max-width:480px}
 
-/* === TEACHING === */
-.teach-flow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:32px}
-.teach-step{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 20px;font-size:14px;font-weight:500;color:var(--text2)}
-.teach-step .num{font-family:var(--font-m);font-size:12px;font-weight:600;color:var(--violet);width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:rgba(139,92,246,.12);border-radius:8px}
-.teach-arrow{color:var(--text3);font-size:18px}
+/* TEACH */
+.teach{padding:100px 24px}
+.teach-inner{max-width:var(--w);margin:0 auto}
+.teach h2{font-family:var(--font-h);font-size:clamp(24px,4vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;color:var(--text);margin-bottom:16px}
+.teach>div>p{font-size:16px;color:var(--text2);max-width:520px;margin-bottom:48px;font-weight:300;line-height:1.8}
+.teach-conv{max-width:600px;display:flex;flex-direction:column;gap:16px}
+.t-msg{padding:16px 20px;border-radius:12px;font-size:14px;line-height:1.6}
+.t-user{background:var(--surface2);color:var(--text);align-self:flex-end;max-width:80%;border-bottom-right-radius:4px}
+.t-atlas{background:var(--surface);border:1px solid var(--border);color:var(--text2);align-self:flex-start;max-width:85%;border-bottom-left-radius:4px}
+.t-atlas strong{color:var(--text);font-weight:500}
+.t-sys{font-family:var(--font-m);font-size:11px;color:var(--accent);text-align:center;padding:8px 0;letter-spacing:.04em}
 
-/* === ECOSYSTEM === */
-.eco-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:40px}
-.eco-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;display:flex;gap:20px;align-items:flex-start;transition:border-color .3s}
-.eco-card:hover{border-color:var(--border-a)}
-.eco-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.eco-card h3{font-family:var(--font-h);font-size:17px;font-weight:700;margin-bottom:8px}
-.eco-card p{font-size:14px;color:var(--text2);line-height:1.6}
+/* PRINCIPLES */
+.princ{padding:100px 24px;background:var(--surface)}
+.princ-inner{max-width:var(--w);margin:0 auto}
+.princ h2{font-family:var(--font-h);font-size:clamp(24px,4vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;color:var(--text);margin-bottom:60px;text-align:center}
+.princ-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.princ-item{background:var(--surface);padding:40px 32px}
+.princ-item h3{font-family:var(--font-h);font-size:17px;font-weight:600;color:var(--text);margin-bottom:12px}
+.princ-item p{font-size:14px;color:var(--text2);line-height:1.7;font-weight:300}
+@media(max-width:768px){.princ-row{grid-template-columns:1fr}}
 
-/* === WHY MENTOVA === */
-.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
-.why-card{text-align:center;padding:32px 24px}
-.why-card h3{font-family:var(--font-h);font-size:20px;font-weight:700;margin-bottom:12px}
-.why-card p{font-size:14px;color:var(--text2);line-height:1.6}
+/* FAQ */
+.faq{padding:100px 24px}
+.faq-inner{max-width:640px;margin:0 auto}
+.faq h2{font-family:var(--font-h);font-size:clamp(22px,3.5vw,32px);font-weight:700;letter-spacing:-.02em;color:var(--text);margin-bottom:48px}
+.fq{border-top:1px solid var(--border);padding:20px 0}
+.fq-q{cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:var(--font-h);font-size:15px;font-weight:500;color:var(--text)}
+.fq-q svg{width:16px;height:16px;stroke:var(--text3);transition:transform .3s;flex-shrink:0;margin-left:16px}
+.fq.open .fq-q svg{transform:rotate(180deg)}
+.fq-a{max-height:0;overflow:hidden;transition:max-height .35s ease;font-size:14px;color:var(--text2);line-height:1.7;font-weight:300}
+.fq.open .fq-a{max-height:300px;padding-top:12px}
 
-/* === FAQ === */
-.faq-list{max-width:720px;margin:40px auto 0}
-.faq-item{border-bottom:1px solid var(--border);padding:20px 0}
-.faq-q{display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-family:var(--font-h);font-size:16px;font-weight:600;color:var(--text)}
-.faq-q svg{width:20px;height:20px;stroke:var(--text3);transition:transform .3s;flex-shrink:0}
-.faq-item.open .faq-q svg{transform:rotate(180deg)}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .3s;font-size:14px;color:var(--text2);line-height:1.7}
-.faq-item.open .faq-a{max-height:400px;padding-top:12px}
+/* CTA */
+.cta-end{padding:120px 24px;text-align:center}
+.cta-end h2{font-family:var(--font-h);font-size:clamp(28px,5vw,48px);font-weight:700;letter-spacing:-.03em;color:var(--text);margin-bottom:16px}
+.cta-end p{font-size:16px;color:var(--text2);margin-bottom:36px;font-weight:300}
 
-/* === FINAL CTA === */
-.final-cta{text-align:center;padding:var(--gap) 24px;position:relative}
-.final-cta::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(circle,var(--violet-glow) 0%,transparent 70%);pointer-events:none;opacity:.4}
-.final-cta .section-h2{max-width:600px;margin:0 auto 16px}
-.final-cta p{color:var(--text2);font-size:17px;margin-bottom:32px}
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:48px 24px 32px}
+.ft-inner{max-width:var(--w);margin:0 auto;display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:32px}
+.ft-brand{font-family:var(--font-h);font-weight:700;font-size:17px;margin-bottom:8px}
+.ft-brand b{color:var(--accent)}
+.ft-tag{font-size:12px;color:var(--text3);line-height:1.6;max-width:220px}
+.ft-col h4{font-family:var(--font-m);font-size:10px;font-weight:500;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px}
+.ft-col a{display:block;font-size:13px;color:var(--text3);margin-bottom:8px;transition:color .2s}
+.ft-col a:hover{color:var(--text)}
+.ft-bottom{max-width:var(--w);margin:32px auto 0;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text3)}
+.ft-langs{font-family:var(--font-m);display:flex;gap:8px;font-size:11px}
+.ft-langs a{color:var(--text3);transition:color .2s}
+.ft-langs a:hover,.ft-langs a.active{color:var(--accent)}
+@media(max-width:768px){.ft-inner{grid-template-columns:1fr 1fr}.ft-bottom{flex-direction:column;gap:8px}}
+@media(max-width:480px){.ft-inner{grid-template-columns:1fr}}
 
-/* === FOOTER === */
-.footer{border-top:1px solid var(--border);padding:60px 24px 40px}
-.footer-inner{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
-.footer-brand{font-family:var(--font-h);font-size:20px;font-weight:800;margin-bottom:12px}
-.footer-brand span{color:var(--violet)}
-.footer-tagline{font-size:13px;color:var(--text3);line-height:1.6;max-width:260px}
-.footer-col h4{font-family:var(--font-h);font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px;letter-spacing:.03em;text-transform:uppercase}
-.footer-col a{display:block;font-size:13px;color:var(--text3);margin-bottom:10px;transition:color .2s}
-.footer-col a:hover{color:var(--text)}
-.footer-bottom{max-width:var(--max);margin:40px auto 0;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text3)}
-
-/* === RESPONSIVE === */
-@media(max-width:900px){
-  .hero-inner,.problem-grid{grid-template-columns:1fr}
-  .hero-visual{order:-1}
-  .persona-cards,.timeline,.eco-grid,.why-grid{grid-template-columns:1fr}
-  .footer-inner{grid-template-columns:1fr 1fr}
-  .nav-links{display:none}
-  .nav-hamburger{display:block}
-  .teach-flow{flex-direction:column;align-items:flex-start}
-  .teach-arrow{transform:rotate(90deg)}
-}
-@media(max-width:600px){
-  .footer-inner{grid-template-columns:1fr}
-  .footer-bottom{flex-direction:column;gap:12px;text-align:center}
-}
-
-/* === ANIMATIONS === */
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
-.reveal.visible{opacity:1;transform:translateY(0)}
+/* REVEAL */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s}
+.rv.v{opacity:1;transform:none}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
-  <div class="nav-inner">
-    <a href="/" class="nav-logo" data-testid="nav-logo">Mentova<span>.</span></a>
-    <div class="nav-links" id="nav-links">
-      <a href="#features" data-testid="nav-features">Funciones</a>
-      <a href="#how" data-testid="nav-how">Como funciona</a>
-      <a href="/mentors.html">Ser Mentor</a>
-      <a href="/ambassadors.html">Embajadores</a>
-      <a href="#faq" data-testid="nav-faq">FAQ</a>
-      <div class="nav-lang" data-testid="nav-lang">
-        <a href="/">EN</a>
-        <a href="/fr/">FR</a>
-        <a href="/es/" class="active">ES</a>
-      </div>
-      <a href="https://app.mentova-academy.com" class="nav-cta" data-testid="nav-cta">Abrir la App</a>
-    </div>
-    <button class="nav-hamburger" id="hamburger" aria-label="Menu" data-testid="nav-hamburger">
-      <svg viewBox="0 0 24 24" fill="none"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
+<nav id="nav">
+<div class="n-bar">
+  <a href="/" class="n-logo">Mentova<b>.</b></a>
+  <div class="n-right">
+    <a href="#how">Como funciona</a>
+    <a href="#faq">FAQ</a>
+    <div class="n-lang"><a href="/">EN</a><a href="/fr/">FR</a><a href="/es/" class="active">ES</a></div>
+    <a href="https://app.mentova-academy.com" class="n-cta">Abrir la app</a>
   </div>
+  <button class="n-mob" id="hmb" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="17" x2="21" y2="17"/></svg></button>
+</div>
 </nav>
 
-<!-- HERO -->
-<section class="hero" id="top">
-  <div class="hero-inner">
-    <div class="hero-text">
-      <div class="hero-badge"><span class="hero-badge-dot"></span> Educacion IA Personalizada</div>
-      <h1>Conoce a <em>Atlas</em>.<br>Tu mentor IA personal para crypto y finanzas.</h1>
-      <p class="hero-sub">Atlas identifica tu nivel, entiende a donde quieres llegar y te ayuda a construir el conocimiento para lograrlo. A tu ritmo.</p>
-      <div class="hero-actions">
-        <a href="https://app.mentova-academy.com" class="btn-primary" data-testid="hero-cta-primary">Conocer Atlas</a>
-        <a href="#how" class="btn-ghost" data-testid="hero-cta-secondary">Como funciona</a>
-      </div>
-    </div>
-    <div class="hero-visual">
-      <img src="/screenshots/app_screen_1.png" alt="Atlas AI chat interface - Your personal crypto mentor" class="hero-img" width="600" height="375" loading="eager">
-    </div>
+<header class="hero">
+  <p class="hero-over">Mentova Academy</p>
+  <h1>Aprende crypto y finanzas<br>con una IA que realmente<br>te <span>conoce</span>.</h1>
+  <p class="hero-p">Atlas es un mentor IA personal. Evalua tu nivel, identifica lo que no entiendes, construye tu camino de aprendizaje y se adapta a medida que progresas. No es un chatbot. Es un mentor.</p>
+  <div class="hero-acts">
+    <a href="https://app.mentova-academy.com" class="btn-p">Conocer Atlas</a>
+    <a href="#how" class="btn-s">Como funciona &darr;</a>
   </div>
+  <div class="hero-line"></div>
+</header>
+
+<div class="s"><div class="div-line"></div></div>
+
+<section class="ed">
+<div class="ed-inner rv">
+  <div class="ed-label">El problema</div>
+  <div class="ed-body">
+    <h2>No falta informacion sobre crypto. Lo que falta es comprension.</h2>
+    <p>Bitcoin, blockchain, wallets, DeFi, trading, staking, security, tokenomics. The amount of information available is enormous. But <strong>access to information is not the same as understanding</strong>.</p>
+    <p>Most people don't know where to start. They don't know what they need to learn. They don't know if they actually understood something or just think they did. And every resource treats them the same way, regardless of what they already know.</p>
+    <p>Mentova was built to fix that.</p>
+  </div>
+</div>
 </section>
 
-<!-- PROBLEM -->
-<section class="section problem" id="features">
-  <div class="section-inner reveal">
-    <div class="problem-grid">
+<div class="s"><div class="div-line"></div></div>
+
+<section class="nl" id="how">
+<div class="nl-inner rv">
+  <h2>Atlas no te da un curso.<br>Construye uno alrededor de ti.</h2>
+  <div class="nl-items">
+    <div class="nl-item">
+      <div class="nl-num">01</div>
       <div>
-        <div class="section-label">El problema</div>
-        <h2 class="section-h2">La crypto no deberia ser tan complicada.</h2>
-        <p class="section-desc">Existe una cantidad enorme de informacion sobre Bitcoin, blockchain, billeteras, DeFi, trading, seguridad, tokenomics y mercados. Pero tener acceso a la informacion no crea automaticamente comprension.</p>
-        <p class="section-desc" style="margin-top:16px">La mayoria de las personas no saben por donde empezar, que necesitan realmente aprender, o si verdaderamente entendieron algo. Mentova existe para hacer el proceso de aprendizaje mas claro y personal.</p>
+        <h3>It starts by listening</h3>
+        <p>Atlas evaluates your current knowledge, your goals, and what you're curious about. It doesn't assume anything.</p>
       </div>
+    </div>
+    <div class="nl-item">
+      <div class="nl-num">02</div>
       <div>
-        <div class="problem-topics">
-          <span class="problem-tag">Bitcoin</span>
-          <span class="problem-tag">Blockchain</span>
-          <span class="problem-tag">Wallets</span>
-          <span class="problem-tag">DeFi</span>
-          <span class="problem-tag">Trading</span>
-          <span class="problem-tag">Security</span>
-          <span class="problem-tag">Tokenomics</span>
-          <span class="problem-tag">Markets</span>
-          <span class="problem-tag">Risk Management</span>
-          <span class="problem-tag">Staking</span>
-          <span class="problem-tag">NFTs</span>
-          <span class="problem-tag">Smart Contracts</span>
-        </div>
+        <h3>It finds what you're missing</h3>
+        <p>Through conversation, Atlas identifies gaps in your understanding. Things you might not even know you don't know.</p>
+      </div>
+    </div>
+    <div class="nl-item">
+      <div class="nl-num">03</div>
+      <div>
+        <h3>It builds your path</h3>
+        <p>Based on what it learns about you, Atlas creates a sequence of concepts, exercises, and objectives designed for your level.</p>
+      </div>
+    </div>
+    <div class="nl-item">
+      <div class="nl-num">04</div>
+      <div>
+        <h3>It explains, then verifies</h3>
+        <p>Atlas teaches a concept, gives you examples, then tests whether you actually understood it. If you didn't, it tries a different approach.</p>
+      </div>
+    </div>
+    <div class="nl-item">
+      <div class="nl-num">05</div>
+      <div>
+        <h3>It adapts to your progress</h3>
+        <p>What comes next depends on what happened before. Your learning path changes based on real understanding, not arbitrary schedules.</p>
       </div>
     </div>
   </div>
+</div>
 </section>
 
-<!-- WHY ATLAS -->
-<section class="section" style="padding-bottom:0">
-  <div class="section-inner reveal">
-    <div class="section-label">Por que existe Atlas</div>
-    <h2 class="section-h2">La informacion esta en todas partes.<br>La comprension, no.</h2>
-    <p class="section-desc">Puedes buscar cualquier tema crypto y encontrar miles de resultados. El verdadero desafio no es el acceso a la informacion. Es saber que importa para ti, ahora mismo, a tu nivel. Eso es lo que Atlas esta disenado para resolver.</p>
+<section class="cont">
+<div class="cont-inner rv">
+  <h2>Tu aprendizaje no se reinicia cada vez que vuelves.</h2>
+  <p>Atlas remembers. Your level, your progress, what you struggled with, what you've already mastered. Every session builds on the last.</p>
+  <div class="tl">
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-day">Dia 1</div>
+      <h3>Atlas discovers your level</h3>
+      <p>Through conversation, it understands what you know and where you want to go. It starts building your learning profile.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-day">Dia 7</div>
+      <h3>Atlas knows your weak spots</h3>
+      <p>After several sessions, it has identified the concepts that give you trouble. Your path adjusts automatically.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-day">Dia 30</div>
+      <h3>Your path has evolved</h3>
+      <p>Based on accumulated progress, Atlas is now building advanced modules tailored to your growing knowledge. You've moved far from where you started.</p>
+    </div>
   </div>
+</div>
 </section>
 
-<!-- PERSONALIZATION -->
-<section class="section" id="how">
-  <div class="section-inner reveal">
-    <div class="section-label">Aprendizaje personalizado</div>
-    <h2 class="section-h2">Una IA que aprende como aprendes.</h2>
-    <p class="section-desc">Cada persona empieza en un punto diferente. Atlas evalua tu nivel, identifica las lagunas y construye un camino que realmente tenga sentido para ti.</p>
-    <div class="persona-cards">
-      <div class="persona-card">
-        <div class="persona-icon" style="background:rgba(139,92,246,.12)">1</div>
-        <h3>Comprenderte</h3>
-        <p>Atlas evaluates your current level, your goals, and your interests. No assumptions, no one-size-fits-all.</p>
-      </div>
-      <div class="persona-card">
-        <div class="persona-icon" style="background:rgba(0,229,255,.12);color:var(--cyan)">2</div>
-        <h3>Encontrar las lagunas</h3>
-        <p>Atlas identifies what you understand and where you need more work. It spots blind spots you might not even know about.</p>
-      </div>
-      <div class="persona-card">
-        <div class="persona-icon" style="background:rgba(16,185,129,.12);color:var(--emerald)">3</div>
-        <h3>Construir tu camino</h3>
-        <p>Based on what it learns, Atlas creates a learning sequence designed specifically for your progress.</p>
-      </div>
-      <div class="persona-card">
-        <div class="persona-icon" style="background:rgba(245,158,11,.12);color:var(--amber)">4</div>
-        <h3>Explicar</h3>
-        <p>Atlas explains concepts at your level. If you're a beginner, it starts simple. If you're advanced, it goes deeper.</p>
-      </div>
-      <div class="persona-card">
-        <div class="persona-icon" style="background:rgba(139,92,246,.12)">5</div>
-        <h3>Practicar y evaluar</h3>
-        <p>Atlas uses exercises, scenarios, and quizzes to verify you actually understood. Not just memorized.</p>
-      </div>
-      <div class="persona-card">
-        <div class="persona-icon" style="background:rgba(0,229,255,.12);color:var(--cyan)">6</div>
-        <h3>Progresar</h3>
-        <p>Atlas adapts what comes next based on your results. Your journey evolves as you do.</p>
-      </div>
-    </div>
+<section class="teach">
+<div class="teach-inner rv">
+  <h2>Atlas no solo responde preguntas.<br>Ensena.</h2>
+  <p>When you ask something, Atlas creates a learning experience around it. Here's what that looks like.</p>
+  <div class="teach-conv">
+    <div class="t-msg t-user">What exactly is a liquidity pool?</div>
+    <div class="t-msg t-atlas"><strong>A liquidity pool is a collection of funds locked in a smart contract.</strong> Instead of a traditional order book, decentralized exchanges use these pools so people can trade directly against the available liquidity. Users who contribute funds earn a portion of the trading fees.</div>
+    <div class="t-msg t-atlas">Let me give you a concrete example. Imagine you and a friend each put $500 into a shared pot. Anyone who wants to exchange tokens can use your pot, and you both earn a small fee every time they do.</div>
+    <div class="t-sys">Quiz generated</div>
+    <div class="t-msg t-atlas">Quick check: In a liquidity pool, who provides the funds that traders use?<br><br>A. The exchange company<br>B. Regular users who deposit tokens<br>C. Banks<br>D. Miners</div>
+    <div class="t-msg t-user">B</div>
+    <div class="t-msg t-atlas"><strong>Correct.</strong> You understood the core concept. Regular users, called liquidity providers, deposit token pairs into the pool. Ready for the next concept: impermanent loss?</div>
+    <div class="t-sys">Mastery confirmed &mdash; Moving to next concept</div>
   </div>
+</div>
 </section>
 
-<!-- CONTINUITY -->
-<section class="section" style="background:var(--card)">
-  <div class="section-inner reveal">
-    <div class="section-label">Continuidad</div>
-    <h2 class="section-h2">Tu camino no se reinicia cuando vuelves.</h2>
-    <p class="section-desc">Atlas remembers where you left off, what you struggled with, and what you've already mastered. Every session builds on the last.</p>
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="timeline-day">Dia 1</div>
-        <h3>Atlas descubre tu nivel</h3>
-        <p>Through conversation, Atlas learns what you know and what you're trying to understand. It starts building your profile.</p>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-day">Dia 7</div>
-        <h3>Atlas conoce tus debilidades</h3>
-        <p>After a few sessions, Atlas identifies which concepts you struggle with and adjusts your learning path accordingly.</p>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-day">Dia 30</div>
-        <h3>Atlas adapta tu camino</h3>
-        <p>Based on accumulated progress and understanding, Atlas builds more advanced modules tailored to your evolving knowledge.</p>
-      </div>
+<div class="s"><div class="div-line"></div></div>
+
+<section class="princ">
+<div class="princ-inner rv">
+  <h2>Sobre que esta construido Mentova.</h2>
+  <div class="princ-row">
+    <div class="princ-item">
+      <h3>Personal</h3>
+      <p>Your learning journey is yours. Atlas adapts to your level, your pace, and how you think. Not a curriculum designed for the average person.</p>
     </div>
-    <div style="margin-top:40px">
-      <img src="/screenshots/app_screen_4.png" alt="Mentova Progress dashboard - Skills tracking over time" style="border-radius:16px;border:1px solid var(--border);box-shadow:0 16px 60px rgba(0,0,0,.4);max-width:800px;width:100%" loading="lazy">
+    <div class="princ-item">
+      <h3>Progresivo</h3>
+      <p>You move forward based on verified understanding, not arbitrary timelines. Each concept builds on what you've actually learned.</p>
+    </div>
+    <div class="princ-item">
+      <h3>Honesto</h3>
+      <p>Mentova is an education platform. We don't sell signals, promise returns, or predict markets. We help you understand so you can think for yourself.</p>
     </div>
   </div>
+</div>
 </section>
 
-<!-- TEACHING -->
-<section class="section">
-  <div class="section-inner reveal">
-    <div class="section-label">Como ensena Atlas</div>
-    <h2 class="section-h2">Atlas no solo responde. Ensena.</h2>
-    <p class="section-desc">When you ask Atlas a question, it doesn't just give you an answer. It creates a complete learning experience around it.</p>
-    <div class="teach-flow">
-      <div class="teach-step"><span class="num">1</span> Explain</div>
-      <span class="teach-arrow">&rarr;</span>
-      <div class="teach-step"><span class="num">2</span> Example</div>
-      <span class="teach-arrow">&rarr;</span>
-      <div class="teach-step"><span class="num">3</span> Practice</div>
-      <span class="teach-arrow">&rarr;</span>
-      <div class="teach-step"><span class="num">4</span> Quiz</div>
-      <span class="teach-arrow">&rarr;</span>
-      <div class="teach-step"><span class="num">5</span> Feedback</div>
-      <span class="teach-arrow">&rarr;</span>
-      <div class="teach-step"><span class="num">6</span> Mastery</div>
-    </div>
-    <div style="margin-top:40px">
-      <img src="/screenshots/app_screen_2.png" alt="Atlas AI teaching a detailed lesson about chart reading" style="border-radius:16px;border:1px solid var(--border);box-shadow:0 16px 60px rgba(0,0,0,.4);max-width:800px;width:100%" loading="lazy">
-    </div>
-  </div>
+<section class="faq" id="faq">
+<div class="faq-inner rv">
+  <h2>Preguntas.</h2>
+  <div class="fq" onclick="this.classList.toggle('open')"><div class="fq-q">What is Mentova?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div><div class="fq-a">A personalized crypto and financial education platform. Atlas AI evaluates your level, creates adaptive learning paths, and tracks your progress over time.</div></div>
+  <div class="fq" onclick="this.classList.toggle('open')"><div class="fq-q">Is Atlas a financial advisor?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div><div class="fq-a">No. Mentova is strictly educational. Atlas does not provide financial advice, trading signals, or investment recommendations.</div></div>
+  <div class="fq" onclick="this.classList.toggle('open')"><div class="fq-q">Is Mentova a crypto exchange?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div><div class="fq-a">No. Mentova does not buy, sell, store, or trade cryptocurrency. It is purely an education platform.</div></div>
+  <div class="fq" onclick="this.classList.toggle('open')"><div class="fq-q">Does Atlas remember my progress?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div><div class="fq-a">Yes. Atlas maintains a learning profile that includes your level, completed modules, quiz results, and knowledge gaps. Your journey continues from where you left off.</div></div>
+  <div class="fq" onclick="this.classList.toggle('open')"><div class="fq-q">Is it suitable for complete beginners?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div><div class="fq-a">Yes. Atlas adapts to any level. Beginners get foundational explanations. Experienced users get advanced content. It adjusts based on what it learns about you.</div></div>
+  <div class="fq" onclick="this.classList.toggle('open')"><div class="fq-q">What languages are available?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div><div class="fq-a">English, French, and Spanish. The entire experience, including Atlas and all modules, is available in all three languages.</div></div>
+  <div class="fq" onclick="this.classList.toggle('open')"><div class="fq-q">Is Mentova free?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div><div class="fq-a">Core features are free. A VIP subscription provides unlimited Atlas access, chart analysis, daily briefings, and early access to new features.</div></div>
+</div>
 </section>
 
-<!-- ECOSYSTEM -->
-<section class="section" style="background:var(--card)">
-  <div class="section-inner reveal">
-    <div class="section-label">La experiencia Mentova</div>
-    <h2 class="section-h2">Todo lo que necesitas. Nada que no.</h2>
-    <div class="eco-grid">
-      <div class="eco-card">
-        <div class="eco-icon" style="background:rgba(139,92,246,.12);color:var(--violet)">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        </div>
-        <div>
-          <h3>Aprende con Atlas</h3>
-          <p>Conversations that adapt to your level. Ask anything about crypto, blockchain, or finance. Atlas remembers context and builds on previous lessons.</p>
-        </div>
-      </div>
-      <div class="eco-card">
-        <div class="eco-icon" style="background:rgba(0,229,255,.12);color:var(--cyan)">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        </div>
-        <div>
-          <h3>Modulos estructurados</h3>
-          <p>Organized learning paths from beginner to advanced. Each module includes lessons, exercises, and quizzes to verify understanding.</p>
-        </div>
-      </div>
-      <div class="eco-card">
-        <div class="eco-icon" style="background:rgba(16,185,129,.12);color:var(--emerald)">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
-        </div>
-        <div>
-          <h3>Mercado y noticias</h3>
-          <p>Follow crypto markets and read analyzed news in your language. Understand what's happening and what it means for your learning.</p>
-        </div>
-      </div>
-      <div class="eco-card">
-        <div class="eco-icon" style="background:rgba(245,158,11,.12);color:var(--amber)">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        <div>
-          <h3>Sigue tu progreso</h3>
-          <p>See your skills grow across Crypto, Blockchain, Trading, Finance, and Risk Management. Know exactly where you stand.</p>
-        </div>
-      </div>
-    </div>
-    <div style="margin-top:40px">
-      <img src="/screenshots/app_screen_3.png" alt="Learning modules with progress tracking" style="border-radius:16px;border:1px solid var(--border);box-shadow:0 16px 60px rgba(0,0,0,.4);max-width:800px;width:100%" loading="lazy">
-    </div>
-  </div>
+<div class="s"><div class="div-line"></div></div>
+
+<section class="cta-end">
+<div class="rv">
+  <h2>Empieza a aprender.</h2>
+  <p>Conoce a Atlas. Construye tu comprension a tu ritmo.</p>
+  <a href="https://app.mentova-academy.com" class="btn-p">Abrir Mentova</a>
+</div>
 </section>
 
-<!-- WHY MENTOVA -->
-<section class="section">
-  <div class="section-inner reveal" style="text-align:center">
-    <div class="section-label" style="text-align:center">Por que Mentova</div>
-    <h2 class="section-h2" style="text-align:center;max-width:500px;margin:0 auto 20px">Construido sobre tres principios.</h2>
-    <div class="why-grid">
-      <div class="why-card">
-        <h3>Personal</h3>
-        <p>Your learning journey is yours. Not a curriculum designed for everyone. Atlas adapts specifically to how you think and what you need.</p>
-      </div>
-      <div class="why-card">
-        <h3>Progresivo</h3>
-        <p>You move forward based on actual understanding, not arbitrary schedules. Each step builds on verified knowledge.</p>
-      </div>
-      <div class="why-card">
-        <h3>Humano</h3>
-        <p>Technology should make learning more human, not more complicated. Mentova is designed to feel like working with a patient mentor.</p>
-      </div>
-    </div>
+<footer>
+<div class="ft-inner">
+  <div>
+    <div class="ft-brand">Mentova<b>.</b></div>
+    <p class="ft-tag">Educacion crypto y financiera personalizada, impulsada por Atlas AI. Creado en Canada.</p>
   </div>
-</section>
-
-<!-- FAQ -->
-<section class="section" id="faq" style="background:var(--card)">
-  <div class="section-inner reveal">
-    <div class="section-label" style="text-align:center">FAQ</div>
-    <h2 class="section-h2" style="text-align:center;max-width:500px;margin:0 auto 12px">Preguntas frecuentes.</h2>
-    <div class="faq-list">
-      <div class="faq-item" data-testid="faq-1">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What is Mentova?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <div class="faq-a">Mentova Academy is a personalized crypto and financial education platform. It uses Atlas AI to create adaptive learning experiences based on each user's level, goals, and progress.</div>
-      </div>
-      <div class="faq-item" data-testid="faq-2">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What is Atlas AI?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <div class="faq-a">Atlas is an AI mentor designed specifically for crypto and financial education. It adapts to your level, remembers your progress, creates personalized modules, and tests your understanding through exercises and quizzes.</div>
-      </div>
-      <div class="faq-item" data-testid="faq-3">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is Atlas a financial advisor?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <div class="faq-a">No. Mentova is strictly an educational platform. Atlas does not provide financial advice, trading signals, or investment recommendations. It teaches concepts so you can make more informed decisions on your own.</div>
-      </div>
-      <div class="faq-item" data-testid="faq-4">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is Mentova a crypto exchange?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <div class="faq-a">No. Mentova does not buy, sell, store, or trade cryptocurrency. It is purely an educational platform that helps you understand the crypto and financial ecosystem.</div>
-      </div>
-      <div class="faq-item" data-testid="faq-5">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is Mentova suitable for beginners?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <div class="faq-a">Yes. Atlas is specifically designed to adapt to any level. Complete beginners will get foundational explanations, while more experienced users will receive advanced content. Atlas adjusts based on what it learns about you.</div>
-      </div>
-      <div class="faq-item" data-testid="faq-6">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Does Atlas remember my progress?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <div class="faq-a">Yes. Atlas maintains a learning profile that includes your level, completed modules, quiz results, knowledge gaps, and learning objectives. Your journey continues from where you left off.</div>
-      </div>
-      <div class="faq-item" data-testid="faq-7">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What languages are supported?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <div class="faq-a">Mentova is available in English, French, and Spanish. The entire experience including Atlas, modules, and interface is translated.</div>
-      </div>
-      <div class="faq-item" data-testid="faq-8">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is Mentova free?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <div class="faq-a">Core learning features are accessible for free. A VIP subscription provides additional features including unlimited Atlas access, chart analysis, daily briefings, and priority to new features.</div>
-      </div>
-    </div>
+  <div class="ft-col">
+    <h4>Producto</h4>
+    <a href="https://app.mentova-academy.com">Abrir la app</a>
+    <a href="/atlas-ai.html">Atlas AI</a>
+    <a href="/how-atlas-works.html">Como funciona</a>
   </div>
-</section>
-
-<!-- FINAL CTA -->
-<section class="final-cta">
-  <div class="reveal" style="position:relative;z-index:1">
-    <h2 class="section-h2">Tu camino comienza aqui.</h2>
-    <p>Meet Atlas. Learn crypto and finance at your own pace, with an AI that adapts to you.</p>
-    <a href="https://app.mentova-academy.com" class="btn-primary" data-testid="final-cta-btn">Empezar a aprender</a>
+  <div class="ft-col">
+    <h4>Empresa</h4>
+    <a href="/why-mentova.html">Por que Mentova</a>
+    <a href="/ambassadors.html">Embajadores</a>
+    <a href="mailto:info@mentova-academy.com">Contacto</a>
   </div>
-</section>
-
-<!-- FOOTER -->
-<footer class="footer" role="contentinfo">
-  <div class="footer-inner">
-    <div>
-      <div class="footer-brand">Mentova<span>.</span></div>
-      <p class="footer-tagline">Educacion crypto y financiera personalizada, impulsada por Atlas AI. Creado en Canada.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Producto</h4>
-      <a href="/atlas-ai.html">Atlas AI</a>
-      <a href="/how-atlas-works.html">Como funciona</a>
-      <a href="/personalized-crypto-learning.html">Aprendizaje personalizado</a>
-      <a href="https://app.mentova-academy.com">Abrir la App</a>
-    </div>
-    <div class="footer-col">
-      <h4>Empresa</h4>
-      <a href="/why-mentova.html">Por que Mentova</a>
-      <a href="/mentors.html">Ser Mentor</a>
-      <a href="/ambassadors.html">Embajadores</a>
-      <a href="mailto:info@mentova-academy.com">Contact</a>
-    </div>
-    <div class="footer-col">
-      <h4>Legal</h4>
-      <a href="/terms.html">Terms of Service</a>
-      <a href="/privacy.html">Privacy Policy</a>
-      <a href="/cookies.html">Cookie Policy</a>
-      <a href="/disclaimer.html">Disclaimer</a>
-    </div>
+  <div class="ft-col">
+    <h4>Legal</h4>
+    <a href="/terms.html">Terminos</a>
+    <a href="/privacy.html">Privacidad</a>
+    <a href="/disclaimer.html">Aviso legal</a>
   </div>
-  <div class="footer-bottom">
-    <span>&copy; 2026 Mentova Academy. Todos los derechos reservados.</span>
-    <div class="nav-lang" style="border-color:var(--border)">
-      <a href="/">EN</a>
-      <a href="/fr/">FR</a>
-      <a href="/es/" class="active">ES</a>
-    </div>
-  </div>
+</div>
+<div class="ft-bottom">
+  <span>2026 Mentova Academy</span>
+  <div class="ft-langs"><a href="/">EN</a><a href="/fr/">FR</a><a href="/es/" class="active">ES</a></div>
+</div>
 </footer>
 
 <script>
-// Nav scroll effect
-const nav=document.getElementById('nav');
-window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>60)});
-// Hamburger
-const hamburger=document.getElementById('hamburger');
-const navLinks=document.getElementById('nav-links');
-hamburger.addEventListener('click',()=>{navLinks.style.display=navLinks.style.display==='flex'?'none':'flex';navLinks.style.flexDirection='column';navLinks.style.position='fixed';navLinks.style.top='60px';navLinks.style.left='0';navLinks.style.right='0';navLinks.style.background='rgba(11,10,16,.98)';navLinks.style.padding='24px';navLinks.style.borderBottom='1px solid rgba(255,255,255,0.08)';navLinks.style.zIndex='999'});
-// Reveal on scroll
-const revealEls=document.querySelectorAll('.reveal');
-const revealObs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target)}})},{threshold:0.1});
-revealEls.forEach(el=>revealObs.observe(el));
+const n=document.getElementById('nav');
+window.addEventListener('scroll',()=>n.classList.toggle('scrolled',scrollY>40));
+document.getElementById('hmb').addEventListener('click',()=>{const r=document.querySelector('.n-right');r.style.display=r.style.display==='flex'?'none':'flex';r.style.position='fixed';r.style.top='64px';r.style.left='0';r.style.right='0';r.style.flexDirection='column';r.style.padding='24px';r.style.background='rgba(9,9,11,.97)';r.style.borderBottom='1px solid #27272a';r.style.gap='16px';r.style.zIndex='99'});
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
 </script>
-
 </body>
 </html>
