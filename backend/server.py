@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, UploadFile, File, Form, Body
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, UploadFile, File, Form, Body, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import Response
@@ -11852,6 +11852,11 @@ async def list_conversions(admin: dict = Depends(get_admin_user)):
 # Include the router in the main app
 app.include_router(api_router)
 
+# ===== USER INTELLIGENCE ROUTER =====
+from fastapi import APIRouter as _IntR
+intel_router = _IntR()
+
+
 # Include pre-registration router
 from routes.preregister import preregister_router, set_db as set_preregister_db, start_scheduler as start_email_scheduler
 set_preregister_db(db)
@@ -11880,21 +11885,318 @@ from routes.analytics import router as analytics_router, set_analytics_db, track
 set_analytics_db(db)
 app.include_router(analytics_router, prefix="/api")
 
-# User Intelligence router
-try:
-    from routes.user_intelligence import router as intelligence_router, set_intelligence_deps, ensure_intelligence_indexes
-    set_intelligence_deps(db)
-    app.include_router(intelligence_router, prefix="/api")
-    logger.info("User Intelligence router loaded successfully")
-except Exception as intel_err:
-    logger.error(f"Failed to load User Intelligence router: {intel_err}")
-    ensure_intelligence_indexes = None
+# Include the router in the main app
+app.include_router(api_router)
+
+def _safe_iso_intel(val):
+    if val is None: return None
+    if isinstance(val, datetime): return val.isoformat()
+    return str(val)
+
+def _parse_dt_intel(val):
+    if val is None: return None
+    if isinstance(val, datetime): return val if val.tzinfo else val.replace(tzinfo=timezone.utc)
+    if isinstance(val, str):
+        try:
+            dt = datetime.fromisoformat(val.replace('Z', '+00:00'))
+            return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+        except Exception: return None
+    return None
+
+def _calc_engagement(data):
+    score = 0
+    s = min(25, data.get("total_sessions", 0) * 2)
+    score += s
+    a = min(25, data.get("atlas_conversations", 0) * 3 + data.get("atlas_messages", 0) * 0.5)
+    score += a
+    l = min(20, data.get("modules_completed", 0) * 5 + data.get("quizzes_completed", 0) * 2)
+    score += l
+    ds = data.get("days_since_last_activity", 999)
+    r = 15 if ds <= 1 else 12 if ds <= 7 else 8 if ds <= 30 else 4 if ds <= 90 else 0
+    score += r
+    f = min(15, data.get("features_used_count", 0) * 3)
+    score += f
+    score = min(100, round(score))
+    level = "Very High" if score >= 80 else "High" if score >= 60 else "Moderate" if score >= 40 else "Low" if score >= 20 else "Very Low"
+    return {"score": score, "level": level}
+
+@intel_router.get("/admin/users/{user_id}/intelligence")
+async def get_user_intelligence(user_id: str, period: str = "all", current_user: dict = Depends(get_current_user)):
+    if current_user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Admin only")
+    user = await db.users.find_one({"id": user_id}, {"_id": 0, "password_hash": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    now = datetime.now(timezone.utc)
+    pf = None
+    if period == "7": pf = now - timedelta(days=7)
+    elif period == "30": pf = now - timedelta(days=30)
+    elif period == "90": pf = now - timedelta(days=90)
+
+    created_at = _parse_dt_intel(user.get("created_at"))
+    last_active = _parse_dt_intel(user.get("last_active"))
+    user_info = {
+        "user_id": user.get("id"), "name": user.get("name", "N/A"), "email": user.get("email", "N/A"),
+        "created_at": _safe_iso_intel(user.get("created_at")), "country": user.get("country", "N/A"),
+        "language": user.get("language", user.get("preferred_language", "N/A")),
+        "is_vip": user.get("is_vip", False), "vip_permanent": user.get("vip_permanent", False),
+        "vip_expires_at": _safe_iso_intel(user.get("vip_expires_at")), "role": user.get("role", "user"),
+        "is_banned": user.get("is_banned", False), "last_active": _safe_iso_intel(last_active),
+        "account_age_days": (now - created_at).days if created_at else 0,
+    }
+
+    # Sessions
+    sq = {"user_id": user_id}
+    if pf: sq["started_at"] = {"$gte": pf}
+    sessions = await db.user_sessions.find(sq).to_list(10000)
+    total_sessions = len(sessions)
+    total_time = sum(s.get("duration_seconds", 0) for s in sessions)
+    avg_session = total_time / max(1, total_sessions)
+    active_days = len({_parse_dt_intel(s.get("started_at")).date() for s in sessions if _parse_dt_intel(s.get("started_at"))})
+    days_since = (now - last_active).days if last_active else 999
+
+    engagement = {
+        "total_sessions": total_sessions, "total_time_seconds": round(total_time),
+        "total_time_formatted": f"{int(total_time // 3600)}h {int((total_time % 3600) // 60)}m",
+        "average_session_seconds": round(avg_session),
+        "average_session_formatted": f"{int(avg_session // 60)}m {int(avg_session % 60)}s",
+        "active_days": active_days, "days_since_last_activity": days_since,
+    }
+
+    # Atlas
+    cq = {"user_id": user_id}
+    if pf: cq["created_at"] = {"$gte": pf.isoformat()}
+    conversations = await db.atlas_conversations.find(cq, {"_id": 0}).to_list(10000)
+    total_convos = len(conversations)
+    total_msgs = sum(len(c.get("messages", [])) for c in conversations)
+    conv_dates = sorted([_parse_dt_intel(c.get("created_at")) for c in conversations if _parse_dt_intel(c.get("created_at"))])
+    vip_feats = set()
+    for e in await db.user_events.find({"user_id": user_id, "event_type": "feature_use"}).to_list(10000):
+        vip_feats.add(e.get("feature", "unknown"))
+    atlas = {
+        "total_conversations": total_convos, "total_messages": total_msgs,
+        "average_messages_per_conversation": round(total_msgs / max(1, total_convos), 1),
+        "first_interaction": _safe_iso_intel(conv_dates[0]) if conv_dates else None,
+        "last_interaction": _safe_iso_intel(conv_dates[-1]) if conv_dates else None,
+        "vip_features_used": list(vip_feats),
+    }
+
+    # Learning
+    lp = await db.user_learning_profiles.find_one({"user_id": user_id}, {"_id": 0})
+    modules = await db.learning_modules.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+    quizzes = await db.quiz_attempts.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+    ms = len(modules)
+    mc = sum(1 for m in modules if m.get("status") in ["completed", "mastered"])
+    qc = len(quizzes)
+    aq = sum(q.get("score", 0) for q in quizzes) / max(1, qc)
+    bq = max((q.get("score", 0) for q in quizzes), default=0)
+    learning = {
+        "overall_level": lp.get("overall_level", "unknown") if lp else "unknown",
+        "modules_started": ms, "modules_completed": mc,
+        "completion_percentage": round((mc / max(1, ms)) * 100, 1),
+        "quizzes_completed": qc, "average_quiz_score": round(aq, 1), "best_quiz_score": round(bq, 1),
+        "skills": {"crypto": lp.get("crypto_level", 0) if lp else 0, "blockchain": lp.get("blockchain_level", 0) if lp else 0,
+                   "trading": lp.get("trading_level", 0) if lp else 0, "finance": lp.get("finance_level", 0) if lp else 0,
+                   "risk_management": lp.get("risk_management_level", 0) if lp else 0},
+    }
+
+    # Feature usage
+    eq = {"user_id": user_id}
+    if pf: eq["timestamp"] = {"$gte": pf}
+    all_events = await db.user_events.find(eq).to_list(50000)
+    fc = {}
+    for ev in all_events:
+        feat = ev.get("feature", "general")
+        if feat not in fc: fc[feat] = {"total": 0, "last_7d": 0, "last_30d": 0, "last_used": None}
+        fc[feat]["total"] += 1
+        ts = _parse_dt_intel(ev.get("timestamp"))
+        if ts:
+            if not fc[feat]["last_used"] or ts > _parse_dt_intel(fc[feat]["last_used"]):
+                fc[feat]["last_used"] = _safe_iso_intel(ts)
+            if (now - ts).days <= 7: fc[feat]["last_7d"] += 1
+            if (now - ts).days <= 30: fc[feat]["last_30d"] += 1
+    feature_usage = [{"feature": k, **v} for k, v in sorted(fc.items(), key=lambda x: -x[1]["total"])]
+
+    # Revenue
+    subs = await db.subscriptions.find({"user_id": user_id}, {"_id": 0}).to_list(100)
+    payments = await db.payment_transactions.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+    ts_amt = sum(p.get("amount", 0) for p in payments if p.get("status") == "completed")
+    lp2 = payments[-1] if payments else None
+    revenue = {
+        "current_plan": "VIP" if user.get("is_vip") else "Free",
+        "subscription_status": "active" if user.get("is_vip") else "inactive",
+        "subscription_start": _safe_iso_intel(subs[0].get("created_at")) if subs else None,
+        "renewal_date": _safe_iso_intel(user.get("vip_expires_at")),
+        "total_payments": len(payments), "total_spent": round(ts_amt, 2), "currency": "USD",
+        "last_payment_amount": lp2.get("amount", 0) if lp2 else 0,
+        "last_payment_date": _safe_iso_intel(lp2.get("created_at")) if lp2 else None,
+    }
+
+    # Timeline
+    timeline = []
+    for s in await db.user_sessions.find({"user_id": user_id}).sort("started_at", -1).limit(30).to_list(30):
+        timeline.append({"timestamp": _safe_iso_intel(s.get("started_at")), "type": "session", "action": "Session started", "detail": f"Duration: {int(s.get('duration_seconds', 0) // 60)}m"})
+    for c in await db.atlas_conversations.find({"user_id": user_id}).sort("created_at", -1).limit(20).to_list(20):
+        timeline.append({"timestamp": _safe_iso_intel(c.get("created_at")), "type": "atlas", "action": "Atlas conversation", "detail": c.get("title", "")})
+    for q in await db.quiz_attempts.find({"user_id": user_id}).sort("created_at", -1).limit(15).to_list(15):
+        timeline.append({"timestamp": _safe_iso_intel(q.get("created_at")), "type": "learning", "action": "Quiz completed", "detail": f"Score: {q.get('score', 0)}%"})
+    timeline.sort(key=lambda x: x.get("timestamp") or "", reverse=True)
+
+    # Score
+    sc = _calc_engagement({"total_sessions": total_sessions, "atlas_conversations": total_convos, "atlas_messages": total_msgs,
+                           "modules_completed": mc, "quizzes_completed": qc, "days_since_last_activity": days_since, "features_used_count": len(fc)})
+    engagement["engagement_score"] = sc["score"]
+    engagement["engagement_level"] = sc["level"]
+
+    # Summary
+    plan = "VIP" if user.get("is_vip") else "Free"
+    lvl = sc["level"]
+    parts = [f"{'Highly engaged' if lvl in ['Very High','High'] else 'Moderately engaged' if lvl=='Moderate' else 'Low engagement'} {plan} user."]
+    if total_convos > 10: parts.append(f"Frequent Atlas AI user ({total_convos} conversations).")
+    elif total_convos > 0: parts.append(f"Has used Atlas AI ({total_convos} conversation{'s' if total_convos > 1 else ''}).")
+    if ms > 0: parts.append(f"Completed {round((mc/max(1,ms))*100)}% of started modules ({mc}/{ms}).")
+    if days_since <= 1: parts.append("Active within the last 24 hours.")
+    elif days_since <= 7: parts.append(f"Last active {days_since} days ago.")
+    elif days_since <= 30: parts.append(f"Inactive for {days_since} days.")
+
+    return {"success": True, "data": {"summary": " ".join(parts), "user_info": user_info, "engagement": engagement,
+            "atlas": atlas, "learning": learning, "feature_usage": feature_usage, "revenue": revenue, "timeline": timeline[:100]}}
+
+@intel_router.get("/admin/users/{user_id}/intelligence/pdf")
+async def export_intelligence_pdf(user_id: str, current_user: dict = Depends(get_current_user)):
+    if current_user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Admin only")
+    from fpdf import FPDF
+    intel = await get_user_intelligence(user_id, "all", current_user)
+    d = intel["data"]; info = d["user_info"]; eng = d["engagement"]; atl = d["atlas"]; lrn = d["learning"]; rev = d["revenue"]
+
+    class P(FPDF):
+        def _s(self, t):
+            s = str(t) if t is not None else "N/A"
+            return s.encode('latin-1', errors='replace').decode('latin-1')
+        def header(self):
+            self.set_font('Helvetica','B',20); self.set_text_color(124,58,237); self.cell(0,10,'MENTOVA ACADEMY',new_x="LMARGIN",new_y="NEXT")
+            self.set_font('Helvetica','',10); self.set_text_color(100,100,100); self.cell(0,6,'User Intelligence Report',new_x="LMARGIN",new_y="NEXT"); self.line(10,self.get_y()+2,200,self.get_y()+2); self.ln(6)
+        def footer(self):
+            self.set_y(-15); self.set_font('Helvetica','I',8); self.set_text_color(150,150,150); self.cell(0,10,f'Page {self.page_no()} | Generated {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")} | Confidential',align='C')
+        def sec(self, t):
+            self.set_font('Helvetica','B',13); self.set_text_color(15,23,42); self.set_fill_color(243,244,246); self.cell(0,9,f'  {t}',new_x="LMARGIN",new_y="NEXT",fill=True); self.ln(3)
+        def row(self, l, v):
+            self.set_font('Helvetica','',9); self.set_text_color(100,100,100); self.cell(60,6,self._s(l),new_x="RIGHT")
+            self.set_text_color(15,23,42); self.set_font('Helvetica','B',9); self.cell(0,6,self._s(v),new_x="LMARGIN",new_y="NEXT")
+
+    pdf = P(); pdf.add_page()
+    pdf.set_font('Helvetica','I',10); pdf.set_text_color(60,60,60); pdf.multi_cell(0,5,pdf._s(d["summary"])); pdf.ln(4)
+    pdf.set_font('Helvetica','B',14); pdf.set_text_color(124,58,237); pdf.cell(0,8,f'Engagement Score: {eng.get("engagement_score",0)}/100 ({eng.get("engagement_level","N/A")})',new_x="LMARGIN",new_y="NEXT"); pdf.ln(4)
+    pdf.sec('USER INFORMATION')
+    for k,v in [('User ID',info.get('user_id')),('Name',info.get('name')),('Email',info.get('email')),('Country',info.get('country')),('Plan','VIP' if info.get('is_vip') else 'Free'),('Created',str(info.get('created_at',''))[:10])]:
+        pdf.row(k,v)
+    pdf.ln(3); pdf.sec('ENGAGEMENT')
+    for k,v in [('Sessions',eng.get('total_sessions')),('Total Time',eng.get('total_time_formatted')),('Avg Session',eng.get('average_session_formatted')),('Active Days',eng.get('active_days')),('Score',f'{eng.get("engagement_score",0)}/100')]:
+        pdf.row(k,v)
+    pdf.ln(3); pdf.sec('ATLAS AI')
+    for k,v in [('Conversations',atl.get('total_conversations')),('Messages',atl.get('total_messages')),('Avg Msgs/Conv',atl.get('average_messages_per_conversation'))]:
+        pdf.row(k,v)
+    pdf.ln(3); pdf.sec('LEARNING')
+    for k,v in [('Modules Started',lrn.get('modules_started')),('Completed',lrn.get('modules_completed')),('Quizzes',lrn.get('quizzes_completed')),('Avg Score',f'{lrn.get("average_quiz_score")}%')]:
+        pdf.row(k,v)
+    pdf.ln(3); pdf.sec('REVENUE')
+    for k,v in [('Plan',rev.get('current_plan')),('Total Spent',f'${rev.get("total_spent",0):.2f}'),('Payments',rev.get('total_payments'))]:
+        pdf.row(k,v)
+    pdf.ln(6); pdf.set_font('Helvetica','I',7); pdf.set_text_color(150,150,150)
+    pdf.multi_cell(0,4,'This report contains analytics from Mentova Academy internal systems. Confidential.')
+    pdf_bytes = pdf.output()
+    name = info.get("name","user").replace(" ","_")
+    return Response(content=bytes(pdf_bytes), media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="mentova_{name}_{datetime.now(timezone.utc).strftime("%Y%m%d")}.pdf"'})
+
+@intel_router.get("/admin/users/{user_id}/full-export")
+async def export_full_user_data(user_id: str, current_user: dict = Depends(get_current_user)):
+    if current_user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Admin only")
+    user = await db.users.find_one({"id": user_id}, {"_id": 0, "password_hash": 0})
+    if not user: raise HTTPException(status_code=404, detail="User not found")
+    now = datetime.now(timezone.utc)
+    def ser(docs):
+        return [{k: v.isoformat() if isinstance(v, datetime) else v for k, v in d.items() if k != "_id"} for d in docs]
+    for k, v in user.items():
+        if isinstance(v, datetime): user[k] = v.isoformat()
+    export = {
+        "_metadata": {"export_type": "full_user_data_export", "user_id": user_id, "exported_at": now.isoformat(), "exported_by": current_user.get("email")},
+        "user_account": user,
+        "atlas_conversations": ser(await db.atlas_conversations.find({"user_id": user_id}, {"_id": 0}).to_list(10000)),
+        "atlas_memories": ser(await db.atlas_memories.find({"user_id": user_id}, {"_id": 0}).to_list(10000)),
+        "learning_modules": ser(await db.learning_modules.find({"user_id": user_id}, {"_id": 0}).to_list(1000)),
+        "module_progress": ser(await db.module_progress.find({"user_id": user_id}, {"_id": 0}).to_list(1000)),
+        "quiz_attempts": ser(await db.quiz_attempts.find({"user_id": user_id}, {"_id": 0}).to_list(1000)),
+        "user_sessions": ser(await db.user_sessions.find({"user_id": user_id}, {"_id": 0}).to_list(10000)),
+        "user_events": ser(await db.user_events.find({"user_id": user_id}, {"_id": 0}).to_list(50000)),
+        "subscriptions": ser(await db.subscriptions.find({"user_id": user_id}, {"_id": 0}).to_list(100)),
+        "payment_transactions": ser(await db.payment_transactions.find({"user_id": user_id}, {"_id": 0}).to_list(1000)),
+    }
+    return Response(content=json.dumps(export, indent=2, default=str, ensure_ascii=False).encode("utf-8"),
+                    media_type="application/json", headers={"Content-Disposition": f'attachment; filename="mentova_export_{user_id}_{now.strftime("%Y%m%d")}.json"'})
+
+@intel_router.post("/track/session")
+async def track_session_inline(action: str, session_id: str = None, authorization: str = Header(None)):
+    uid = None
+    if authorization and authorization.startswith("Bearer "):
+        try:
+            payload = jwt.decode(authorization[7:], JWT_SECRET, algorithms=["HS256"])
+            uid = payload.get("user_id")
+        except Exception: pass
+    if not uid: return {"success": False}
+    now = datetime.now(timezone.utc)
+    if action == "start":
+        sid = str(uuid.uuid4())
+        await db.user_sessions.insert_one({"id": sid, "user_id": uid, "started_at": now, "ended_at": None, "duration_seconds": 0})
+        await db.users.update_one({"id": uid}, {"$set": {"last_active": now.isoformat()}})
+        return {"success": True, "session_id": sid}
+    elif action == "end" and session_id:
+        s = await db.user_sessions.find_one({"id": session_id, "user_id": uid})
+        if s and s.get("started_at"):
+            started = _parse_dt_intel(s["started_at"])
+            if started:
+                dur = min((now - started).total_seconds(), 14400)
+                await db.user_sessions.update_one({"id": session_id}, {"$set": {"ended_at": now, "duration_seconds": dur}})
+    return {"success": True}
+
+@intel_router.post("/track/event")
+async def track_event_inline(event_type: str, feature: str = "general", authorization: str = Header(None)):
+    uid = None
+    if authorization and authorization.startswith("Bearer "):
+        try:
+            payload = jwt.decode(authorization[7:], JWT_SECRET, algorithms=["HS256"])
+            uid = payload.get("user_id")
+        except Exception: pass
+    if not uid: return {"success": False}
+    await db.user_events.insert_one({"id": str(uuid.uuid4()), "user_id": uid, "event_type": event_type, "feature": feature, "metadata": {}, "timestamp": datetime.now(timezone.utc)})
+    return {"success": True}
+
+@intel_router.get("/admin/intelligence/global")
+async def get_global_intelligence(current_user: dict = Depends(get_current_user)):
+    if current_user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Admin only")
+    tu = await db.users.count_documents({}); vu = await db.users.count_documents({"is_vip": True})
+    ts = await db.user_sessions.count_documents({}); tc = await db.atlas_conversations.count_documents({})
+    return {"success": True, "data": {"total_users": tu, "vip_users": vu, "free_users": tu - vu,
+            "vip_conversion_rate": round((vu / max(1, tu)) * 100, 1), "total_sessions": ts, "total_conversations": tc}}
+
+# Remove the old separate router import
+logger.info("User Intelligence routes loaded inline in server.py")
+app.include_router(intel_router, prefix="/api")
+
 
 @app.on_event("startup")
 async def start_analytics_flush():
     asyncio.create_task(_flush_loop())
-    if ensure_intelligence_indexes:
-        await ensure_intelligence_indexes()
+    # Create intelligence indexes
+    try:
+        await db.user_events.create_index("user_id")
+        await db.user_events.create_index([("user_id", 1), ("event_type", 1)])
+        await db.user_sessions.create_index("user_id")
+        await db.user_sessions.create_index("started_at")
+    except Exception as e:
+        logger.warning(f"Index creation: {e}")
     logger.info("Analytics flush loop started — persisting to MongoDB every 30s")
 
 
