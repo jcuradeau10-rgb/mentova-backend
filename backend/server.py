@@ -19,7 +19,7 @@ from datetime import datetime, timedelta, timezone
 import bcrypt
 import jwt
 import httpx
-import resend
+import sib_api_v3_sdk
 import base64
 import shutil
 import socketio
@@ -93,7 +93,7 @@ else:
     db = None
 
 # Resend Configuration
-resend.api_key = os.environ.get('RESEND_API_KEY', 're_Q64syrwQ_Lv1oZwJe6TXrofrtwLg5jHYg')
+resend_placeholder = None  # Email now handled by services/email_service.py (Brevo)
 
 # Stripe Configuration
 SUPER_ADMIN_EMAIL = os.environ.get('SUPER_ADMIN_EMAIL', 'jcuradeau.7@gmail.com')
@@ -812,12 +812,12 @@ def send_reset_email(to_email: str, reset_code: str) -> bool:
         </html>
         """
 
-        response = resend.Emails.send({
-            "from": "Mentova Academy <noreply@mentova-academy.com>",
-            "to": [to_email],
-            "subject": "Votre code de reinitialisation - Mentova",
-            "html": html_content
-        })
+        from services.email_service import send_mentova_email
+        response = send_mentova_email(
+            to_email=to_email,
+            subject="Votre code de reinitialisation - Mentova",
+            html_content=html_content,
+        )
 
         logger.info(f"Password reset email sent to {to_email}, response: {response}")
         return True
@@ -5071,13 +5071,13 @@ async def send_session_access_email(
         </html>
         """
         
-        # Send email via Resend (using onboarding@resend.dev for free tier)
-        response = resend.Emails.send({
-            "from": "Mentova Academy <noreply@mentova-academy.com>",
-            "to": [user_email],
-            "subject": f"Vos accès à {offer_title} - Mentova",
-            "html": html_content
-        })
+        # Send email via Brevo
+        from services.email_service import send_mentova_email
+        response = send_mentova_email(
+            to_email=user_email,
+            subject=f"Vos accès à {offer_title} - Mentova",
+            html_content=html_content,
+        )
         
         logger.info(f"Session access email sent to {user_email} for purchase {purchase_id}")
         return True

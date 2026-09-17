@@ -426,8 +426,6 @@ async def ambassador_apply(data: AmbassadorApplyRequest):
 
     # Send notification email to admin
     try:
-        import resend
-        resend.api_key = os.environ.get("RESEND_API_KEY")
 
         content = f"""
 <h2 style="margin:0 0 16px 0;color:#1A1A2E;font-size:20px;font-weight:700;">New Ambassador Application</h2>
@@ -447,19 +445,13 @@ async def ambassador_apply(data: AmbassadorApplyRequest):
 </td></tr></table>
 """
 
-        resend.Emails.send({
-            "from": "Mentova Academy <noreply@mentova-academy.com>",
-            "to": ["info@mentova-academy.com"],
-            "subject": f"New Ambassador Application — {data.name}",
-            "html": email_wrap(content),
-        })
+        from services.email_service import send_mentova_email
+        send_mentova_email(to_email="info@mentova-academy.com", subject=f"New Ambassador Application — {data.name}", html_content=email_wrap(content))
     except Exception as e:
         logger.error(f"Failed to send ambassador notification: {e}")
 
     # Send confirmation email to applicant
     try:
-        import resend
-        resend.api_key = os.environ.get("RESEND_API_KEY", "re_Q64syrwQ_Lv1oZwJe6TXrofrtwLg5jHYg")
 
         lang = (data.language or "EN").upper()
         t = {
@@ -507,13 +499,9 @@ async def ambassador_apply(data: AmbassadorApplyRequest):
 </td></tr></table>
 <p style="color:#A1A1AA;font-size:12px;text-align:center;">{tr["questions"]}</p>
 """
-        resend.Emails.send({
-            "from": "Mentova Academy <noreply@mentova-academy.com>",
-            "to": [email],
-            "reply_to": "info@mentova-academy.com",
-            "subject": tr["subject"],
-            "html": email_wrap(confirm_content),
-        })
+        from services.email_service import send_mentova_email
+
+        send_mentova_email(to_email=email, subject=tr["subject"], html_content=email_wrap(confirm_content))
     except Exception as e:
         logger.error(f"Failed to send ambassador confirmation to applicant: {e}")
 
@@ -554,8 +542,6 @@ async def mentor_apply(data: MentorApplyRequest):
 
     # Send notification email to admin
     try:
-        import resend
-        resend.api_key = os.environ.get("RESEND_API_KEY")
 
         socials = data.social_links or {}
         social_html = ''.join([f'<tr><td style="padding:4px 12px 4px 0;color:#6B6B7E;font-size:12px;">{k}</td><td style="padding:4px 0;font-size:12px;"><a href="{v}" style="color:#7C3AED;">{v[:40]}...</a></td></tr>' for k, v in socials.items() if v])
@@ -585,19 +571,13 @@ async def mentor_apply(data: MentorApplyRequest):
 {f'<p style="font-size:12px;color:#6B6B7E;">Sample: <a href="{data.sample_link}" style="color:#7C3AED;">{data.sample_link}</a></p>' if data.sample_link else ''}
 """
 
-        resend.Emails.send({
-            "from": "Mentova Academy <noreply@mentova-academy.com>",
-            "to": ["info@mentova-academy.com"],
-            "subject": f"New Mentor Application: {data.name} ({data.specialty})",
-            "html": email_wrap(content),
-        })
+        from services.email_service import send_mentova_email
+        send_mentova_email(to_email="info@mentova-academy.com", subject=f"New Mentor Application: {data.name} ({data.specialty})", html_content=email_wrap(content))
     except Exception as e:
         logger.error(f"Failed to send mentor notification: {e}")
 
     # Send confirmation email to applicant
     try:
-        import resend
-        resend.api_key = os.environ.get("RESEND_API_KEY", "re_Q64syrwQ_Lv1oZwJe6TXrofrtwLg5jHYg")
 
         lang = (data.language or "EN").upper()
         t = {
@@ -645,13 +625,9 @@ async def mentor_apply(data: MentorApplyRequest):
 </td></tr></table>
 <p style="color:#A1A1AA;font-size:12px;text-align:center;">{tr["questions"]}</p>
 """
-        resend.Emails.send({
-            "from": "Mentova Academy <noreply@mentova-academy.com>",
-            "to": [email],
-            "reply_to": "info@mentova-academy.com",
-            "subject": tr["subject"],
-            "html": email_wrap(confirm_content),
-        })
+        from services.email_service import send_mentova_email
+
+        send_mentova_email(to_email=email, subject=tr["subject"], html_content=email_wrap(confirm_content))
     except Exception as e:
         logger.error(f"Failed to send mentor confirmation to applicant: {e}")
 
@@ -687,8 +663,6 @@ def email_wrap(content: str) -> str:
 # --- Email Functions ---
 
 async def send_confirmation_email(email: str, founder_number: int, wave: int, referral_code: str, language: str):
-    import resend
-    resend.api_key = os.environ.get("RESEND_API_KEY")
 
     launch_date = LAUNCH_DATE[:10]
     total = 500 if wave == 1 else 1000
@@ -727,17 +701,13 @@ async def send_confirmation_email(email: str, founder_number: int, wave: int, re
 <p style="color:#A1A1AA;font-size:13px;text-align:center;margin:0;">Launch date: {launch_date} — Your activation link arrives that day.</p>
 """
 
-    resend.Emails.send({
-        "from": "Mentova Academy <noreply@mentova-academy.com>",
-        "to": [email],
-        "subject": subject,
-        "html": email_wrap(content),
-    })
+    from services.email_service import send_mentova_email
+
+
+    send_mentova_email(to_email=email, subject=subject, html_content=email_wrap(content))
 
 
 async def send_referral_progress_email(email: str, language: str, count: int):
-    import resend
-    resend.api_key = os.environ.get("RESEND_API_KEY")
 
     progress = count % REFERRALS_PER_REWARD
     member = await db.pre_registrations.find_one({"email": email})
@@ -769,17 +739,11 @@ async def send_referral_progress_email(email: str, language: str, count: int):
 </td></tr></table>
 """
 
-    resend.Emails.send({
-        "from": "Mentova Academy <noreply@mentova-academy.com>",
-        "to": [email],
-        "subject": f"{progress}/{REFERRALS_PER_REWARD} referrals toward your free month — Mentova",
-        "html": email_wrap(content),
-    })
+    from services.email_service import send_mentova_email
+    send_mentova_email(to_email=email, subject=f"{progress}/{REFERRALS_PER_REWARD} referrals toward your free month — Mentova", html_content=email_wrap(content))
 
 
 async def send_referral_reward_email(email: str, language: str, count: int):
-    import resend
-    resend.api_key = os.environ.get("RESEND_API_KEY")
 
     months = count // REFERRALS_PER_REWARD
     member = await db.pre_registrations.find_one({"email": email})
@@ -813,20 +777,14 @@ async def send_referral_reward_email(email: str, language: str, count: int):
 </td></tr></table>
 """
 
-    resend.Emails.send({
-        "from": "Mentova Academy <noreply@mentova-academy.com>",
-        "to": [email],
-        "subject": f"🎉 {months} free VIP month(s) earned — Mentova Academy",
-        "html": email_wrap(content),
-    })
+    from services.email_service import send_mentova_email
+    send_mentova_email(to_email=email, subject=f"🎉 {months} free VIP month(s) earned — Mentova Academy", html_content=email_wrap(content))
 
 
 # --- Launch Day & Reminder Emails ---
 
 async def send_launch_day_email(member: dict):
     """EMAIL 5 — Sent on launch day"""
-    import resend
-    resend.api_key = os.environ.get("RESEND_API_KEY")
 
     email = member["email"]
     num = member["founder_number"]
@@ -870,18 +828,12 @@ async def send_launch_day_email(member: dict):
 </td></tr></table>
 """
 
-    resend.Emails.send({
-        "from": "Mentova Academy <noreply@mentova-academy.com>",
-        "to": [email],
-        "subject": f"🚀 Mentova is LIVE — Activate your VIP now, #{num}",
-        "html": email_wrap(content),
-    })
+    from services.email_service import send_mentova_email
+    send_mentova_email(to_email=email, subject=f"🚀 Mentova is LIVE — Activate your VIP now, #{num}", html_content=email_wrap(content))
 
 
 async def send_price_lock_reminder_7days(member: dict):
     """EMAIL 6 — Sent 7 days before price lock expires"""
-    import resend
-    resend.api_key = os.environ.get("RESEND_API_KEY")
 
     email = member["email"]
 
@@ -903,18 +855,14 @@ async def send_price_lock_reminder_7days(member: dict):
 </td></tr></table>
 """
 
-    resend.Emails.send({
-        "from": "Mentova Academy <noreply@mentova-academy.com>",
-        "to": [email],
-        "subject": "⚠️ Your $9.99 rate expires in 7 days — Mentova",
-        "html": email_wrap(content),
-    })
+    from services.email_service import send_mentova_email
+
+
+    send_mentova_email(to_email=email, subject="⚠️ Your $9.99 rate expires in 7 days — Mentova", html_content=email_wrap(content))
 
 
 async def send_price_lock_reminder_1day(member: dict):
     """EMAIL 7 — Sent 1 day before price lock expires"""
-    import resend
-    resend.api_key = os.environ.get("RESEND_API_KEY")
 
     email = member["email"]
 
@@ -938,12 +886,10 @@ async def send_price_lock_reminder_1day(member: dict):
 </td></tr></table>
 """
 
-    resend.Emails.send({
-        "from": "Mentova Academy <noreply@mentova-academy.com>",
-        "to": [email],
-        "subject": "⚠️ Last chance — $9.99 rate expires tomorrow",
-        "html": email_wrap(content),
-    })
+    from services.email_service import send_mentova_email
+
+
+    send_mentova_email(to_email=email, subject="⚠️ Last chance — $9.99 rate expires tomorrow", html_content=email_wrap(content))
 
 
 # --- Email Scheduler ---
@@ -1135,8 +1081,6 @@ async def review_application(app_type: str, app_id: str, data: ReviewApplication
     language = app_doc.get("language", "EN")
 
     try:
-        import resend
-        resend.api_key = os.environ.get("RESEND_API_KEY", "re_Q64syrwQ_Lv1oZwJe6TXrofrtwLg5jHYg")
 
         if data.decision == "approved":
             subject_map = {
@@ -1183,13 +1127,10 @@ async def review_application(app_type: str, app_id: str, data: ReviewApplication
 <p style="color:#A1A1AA;font-size:12px;text-align:center;margin:24px 0 0 0;">This email was sent from Mentova Academy. Reply directly to reach us.</p>
 '''
 
-        resend.Emails.send({
-            "from": "Mentova Academy <noreply@mentova-academy.com>",
-            "to": [applicant_email],
-            "reply_to": "info@mentova-academy.com",
-            "subject": subject,
-            "html": email_wrap(content),
-        })
+        from services.email_service import send_mentova_email
+
+
+        send_mentova_email(to_email=applicant_email, subject=subject, html_content=email_wrap(content))
     except Exception as e:
         logger.error(f"Failed to send review email: {e}")
 
