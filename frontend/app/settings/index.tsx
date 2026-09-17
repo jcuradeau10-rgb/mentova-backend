@@ -31,10 +31,14 @@ export default function SettingsScreen() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState('');
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [feedbackSent, setFeedbackSent] = useState(false);
+  const [feedbackType, setFeedbackType] = useState<'rating'|'feature'|'bug'|'other'>('rating');
+  const [feedbackRating, setFeedbackRating] = useState(0);
 
   // Password change form
   const [currentPassword, setCurrentPassword] = useState('');
@@ -246,38 +250,38 @@ export default function SettingsScreen() {
   };
 
   const handleDeleteAccount = async () => {
-    Alert.alert(
-      t('settings.deleteAccount'),
-      t('settings.deleteAccountConfirm'),
-      [
-        { text: t('settings.cancel'), style: 'cancel' },
-        {
-          text: t('settings.delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await api.delete('/users/me');
-              await logout();
-              router.replace('/');
-            } catch (error) {
-              Alert.alert(t('settings.error'), t('settings.deleteError'));
-            }
-          },
-        },
-      ]
-    );
+    setShowDeleteAccountModal(true);
+  };
+
+  const confirmDeleteAccount = async () => {
+    setDeleteLoading(true);
+    try {
+      await api.delete('/users/me');
+      await logout();
+      router.replace('/');
+    } catch (error) {
+      setDeleteLoading(false);
+    }
   };
 
   const handleSubmitFeedback = async () => {
-    if (!feedbackMessage.trim()) return;
+    if (feedbackType === 'rating' && feedbackRating === 0) return;
+    if (feedbackType !== 'rating' && !feedbackMessage.trim()) return;
     setFeedbackLoading(true);
     try {
-      await api.post('/feedback', { type: 'improvement', message: feedbackMessage.trim() });
+      const payload = {
+        type: feedbackType,
+        message: feedbackType === 'rating'
+          ? `Rating: ${feedbackRating}/5${feedbackMessage.trim() ? ` — ${feedbackMessage.trim()}` : ''}`
+          : feedbackMessage.trim(),
+        rating: feedbackType === 'rating' ? feedbackRating : undefined,
+      };
+      await api.post('/feedback', payload);
       setFeedbackSent(true);
       setFeedbackMessage('');
-      setTimeout(() => { setFeedbackSent(false); setShowFeedbackModal(false); }, 2000);
+      setFeedbackRating(0);
+      setTimeout(() => { setFeedbackSent(false); setShowFeedbackModal(false); setFeedbackType('rating'); }, 2000);
     } catch {
-      Alert.alert('Error', 'Failed to send feedback');
     } finally { setFeedbackLoading(false); }
   };
 
@@ -469,14 +473,14 @@ export default function SettingsScreen() {
       {/* Feedback Modal */}
       <Modal visible={showFeedbackModal} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
+          <View style={[styles.modalContainer, { maxHeight: '90%' }]}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{t('settings.helpUsImprove') || 'Help us improve'}</Text>
-              <TouchableOpacity onPress={() => { setShowFeedbackModal(false); setFeedbackSent(false); }} style={styles.modalCloseBtn}>
+              <TouchableOpacity onPress={() => { setShowFeedbackModal(false); setFeedbackSent(false); setFeedbackType('rating'); }} style={styles.modalCloseBtn}>
                 <Ionicons name="close" size={24} color="#8B8B9E" />
               </TouchableOpacity>
             </View>
-            <View style={styles.modalContent}>
+            <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
               {feedbackSent ? (
                 <View style={{ alignItems: 'center', paddingVertical: 32 }}>
                   <Ionicons name="checkmark-circle" size={56} color="#10B981" />
@@ -485,10 +489,79 @@ export default function SettingsScreen() {
                 </View>
               ) : (
                 <>
-                  <Text style={{ color: '#9CA3AF', fontSize: 14, marginBottom: 16, lineHeight: 20 }}>{t('settings.feedbackDesc') || 'Tell us what you think. Your feedback is sent directly to our team in real-time.'}</Text>
+                  {/* Category tabs */}
+                  <View style={{ flexDirection: 'row', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+                    {([
+                      { key: 'rating' as const, icon: 'star', label: t('settings.fbRating') || 'Rate us', color: '#F59E0B' },
+                      { key: 'feature' as const, icon: 'bulb', label: t('settings.fbFeature') || 'Suggest feature', color: '#7C3AED' },
+                      { key: 'bug' as const, icon: 'bug', label: t('settings.fbBug') || 'Report bug', color: '#EF4444' },
+                      { key: 'other' as const, icon: 'chatbubble-ellipses', label: t('settings.fbOther') || 'Other', color: '#3B82F6' },
+                    ]).map(tab => (
+                      <TouchableOpacity
+                        key={tab.key}
+                        onPress={() => setFeedbackType(tab.key)}
+                        style={{
+                          flexDirection: 'row', alignItems: 'center', gap: 6,
+                          paddingVertical: 10, paddingHorizontal: 14, borderRadius: 10,
+                          backgroundColor: feedbackType === tab.key ? `${tab.color}18` : 'rgba(255,255,255,0.04)',
+                          borderWidth: 1, borderColor: feedbackType === tab.key ? `${tab.color}50` : 'rgba(255,255,255,0.06)',
+                        }}
+                        data-testid={`feedback-tab-${tab.key}`}
+                      >
+                        <Ionicons name={tab.icon as any} size={16} color={feedbackType === tab.key ? tab.color : '#64748B'} />
+                        <Text style={{ fontSize: 13, fontWeight: '600', color: feedbackType === tab.key ? tab.color : '#64748B' }}>{tab.label}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+
+                  {/* Star rating */}
+                  {feedbackType === 'rating' && (
+                    <View style={{ marginBottom: 20 }}>
+                      <Text style={{ color: '#9CA3AF', fontSize: 14, marginBottom: 12 }}>{t('settings.fbRateQuestion') || 'How would you rate Mentova?'}</Text>
+                      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 8 }}>
+                        {[1, 2, 3, 4, 5].map(star => (
+                          <TouchableOpacity key={star} onPress={() => setFeedbackRating(star)} data-testid={`feedback-star-${star}`}>
+                            <Ionicons
+                              name={star <= feedbackRating ? 'star' : 'star-outline'}
+                              size={40}
+                              color={star <= feedbackRating ? '#F59E0B' : '#475569'}
+                            />
+                          </TouchableOpacity>
+                        ))}
+                      </View>
+                      {feedbackRating > 0 && (
+                        <Text style={{ textAlign: 'center', color: '#F59E0B', fontSize: 13, marginTop: 8, fontWeight: '600' }}>
+                          {feedbackRating}/5
+                        </Text>
+                      )}
+                    </View>
+                  )}
+
+                  {/* Bug report specific */}
+                  {feedbackType === 'bug' && (
+                    <View style={{ backgroundColor: 'rgba(239,68,68,0.06)', borderRadius: 10, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: 'rgba(239,68,68,0.15)' }}>
+                      <Text style={{ color: '#EF4444', fontSize: 13, fontWeight: '600', marginBottom: 4 }}>{t('settings.fbBugHint') || 'Describe the bug'}</Text>
+                      <Text style={{ color: '#9CA3AF', fontSize: 12, lineHeight: 18 }}>{t('settings.fbBugHintSub') || 'Tell us what happened, what you expected, and the steps to reproduce it.'}</Text>
+                    </View>
+                  )}
+
+                  {/* Feature request specific */}
+                  {feedbackType === 'feature' && (
+                    <View style={{ backgroundColor: 'rgba(124,58,237,0.06)', borderRadius: 10, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: 'rgba(124,58,237,0.15)' }}>
+                      <Text style={{ color: '#A78BFA', fontSize: 13, fontWeight: '600', marginBottom: 4 }}>{t('settings.fbFeatureHint') || 'Propose a feature'}</Text>
+                      <Text style={{ color: '#9CA3AF', fontSize: 12, lineHeight: 18 }}>{t('settings.fbFeatureHintSub') || 'Describe the feature you would like and how it would help you.'}</Text>
+                    </View>
+                  )}
+
+                  {/* Message input */}
                   <TextInput
                     style={[styles.modalInput, { height: 120, textAlignVertical: 'top', paddingTop: 14 }]}
-                    placeholder={t('settings.feedbackPlaceholder') || 'Your suggestion or idea...'}
+                    placeholder={
+                      feedbackType === 'rating' ? (t('settings.fbRatingPlaceholder') || 'Any additional comments? (optional)') :
+                      feedbackType === 'bug' ? (t('settings.fbBugPlaceholder') || 'Describe the bug in detail...') :
+                      feedbackType === 'feature' ? (t('settings.fbFeaturePlaceholder') || 'Describe the feature you want...') :
+                      (t('settings.feedbackPlaceholder') || 'Your message...')
+                    }
                     placeholderTextColor="#475569"
                     value={feedbackMessage}
                     onChangeText={setFeedbackMessage}
@@ -497,10 +570,15 @@ export default function SettingsScreen() {
                     data-testid="feedback-input"
                   />
                   <Text style={{ color: '#475569', fontSize: 11, alignSelf: 'flex-end', marginTop: 4 }}>{feedbackMessage.length}/1000</Text>
+
+                  {/* Submit */}
                   <TouchableOpacity
-                    style={[styles.saveBtn, !feedbackMessage.trim() && { opacity: 0.5 }]}
+                    style={[styles.saveBtn, {
+                      opacity: (feedbackType === 'rating' && feedbackRating === 0) || (feedbackType !== 'rating' && !feedbackMessage.trim()) ? 0.5 : 1,
+                      backgroundColor: feedbackType === 'bug' ? '#EF4444' : feedbackType === 'feature' ? '#7C3AED' : '#F59E0B',
+                    }]}
                     onPress={handleSubmitFeedback}
-                    disabled={feedbackLoading || !feedbackMessage.trim()}
+                    disabled={feedbackLoading || (feedbackType === 'rating' && feedbackRating === 0) || (feedbackType !== 'rating' && !feedbackMessage.trim())}
                     data-testid="feedback-submit-btn"
                   >
                     {feedbackLoading ? <ActivityIndicator color="#fff" /> : (
@@ -512,6 +590,54 @@ export default function SettingsScreen() {
                   </TouchableOpacity>
                 </>
               )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Delete Account Modal */}
+      <Modal visible={showDeleteAccountModal} animationType="fade" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContainer, { maxWidth: 400 }]}>
+            <View style={{ alignItems: 'center', paddingTop: 24, paddingHorizontal: 24 }}>
+              <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(239,68,68,0.1)', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
+                <Ionicons name="warning" size={32} color="#EF4444" />
+              </View>
+              <Text style={{ fontSize: 20, fontWeight: '700', color: '#F8FAFC', marginBottom: 8, textAlign: 'center' }}>{t('settings.deleteAccount')}</Text>
+              <Text style={{ fontSize: 14, color: '#9CA3AF', lineHeight: 22, textAlign: 'center', marginBottom: 20 }}>
+                {t('settings.deleteAccountWarning') || 'This action is permanent and cannot be undone. All your data, progress, messages, and subscriptions will be permanently deleted.'}
+              </Text>
+              <Text style={{ fontSize: 13, color: '#EF4444', fontWeight: '600', marginBottom: 8 }}>
+                {t('settings.deleteTypeConfirm') || 'Type DELETE to confirm:'}
+              </Text>
+              <TextInput
+                style={[styles.modalInput, { textAlign: 'center', fontSize: 16, fontWeight: '700', letterSpacing: 2, borderColor: deleteConfirmText === 'DELETE' ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.06)' }]}
+                placeholder="DELETE"
+                placeholderTextColor="#475569"
+                value={deleteConfirmText}
+                onChangeText={setDeleteConfirmText}
+                autoCapitalize="characters"
+                data-testid="delete-account-confirm-input"
+              />
+            </View>
+            <View style={{ flexDirection: 'row', gap: 12, padding: 24 }}>
+              <TouchableOpacity
+                style={{ flex: 1, paddingVertical: 14, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.06)', alignItems: 'center' }}
+                onPress={() => { setShowDeleteAccountModal(false); setDeleteConfirmText(''); }}
+                data-testid="delete-account-cancel-btn"
+              >
+                <Text style={{ fontSize: 15, fontWeight: '600', color: '#9CA3AF' }}>{t('settings.cancel') || 'Cancel'}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ flex: 1, paddingVertical: 14, borderRadius: 12, backgroundColor: deleteConfirmText === 'DELETE' ? '#EF4444' : 'rgba(239,68,68,0.2)', alignItems: 'center', opacity: deleteConfirmText === 'DELETE' ? 1 : 0.5 }}
+                onPress={confirmDeleteAccount}
+                disabled={deleteLoading || deleteConfirmText !== 'DELETE'}
+                data-testid="delete-account-confirm-btn"
+              >
+                {deleteLoading ? <ActivityIndicator color="#fff" size="small" /> : (
+                  <Text style={{ fontSize: 15, fontWeight: '700', color: '#fff' }}>{t('settings.delete') || 'Delete'}</Text>
+                )}
+              </TouchableOpacity>
             </View>
           </View>
         </View>
