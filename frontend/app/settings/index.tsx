@@ -473,89 +473,118 @@ export default function SettingsScreen() {
       {/* Feedback Modal */}
       <Modal visible={showFeedbackModal} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContainer, { maxHeight: '90%' }]}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{t('settings.helpUsImprove') || 'Help us improve'}</Text>
-              <TouchableOpacity onPress={() => { setShowFeedbackModal(false); setFeedbackSent(false); setFeedbackType('rating'); }} style={styles.modalCloseBtn}>
-                <Ionicons name="close" size={24} color="#8B8B9E" />
-              </TouchableOpacity>
+          <View style={[styles.modalContainer, { maxHeight: '92%' }]}>
+            {/* Header with gradient accent */}
+            <View style={{ borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.04)' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, paddingBottom: 16 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                  <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: 'rgba(167,139,250,0.1)', justifyContent: 'center', alignItems: 'center' }}>
+                    <Ionicons name="sparkles" size={18} color="#A78BFA" />
+                  </View>
+                  <Text style={{ fontSize: 18, fontWeight: '700', color: '#F8FAFC' }}>{t('settings.helpUsImprove') || 'Help us improve'}</Text>
+                </View>
+                <TouchableOpacity onPress={() => { setShowFeedbackModal(false); setFeedbackSent(false); setFeedbackType('rating'); }} style={{ padding: 4 }}>
+                  <Ionicons name="close" size={22} color="#64748B" />
+                </TouchableOpacity>
+              </View>
             </View>
-            <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
+
+            <ScrollView style={{ padding: 20 }} showsVerticalScrollIndicator={false}>
               {feedbackSent ? (
-                <View style={{ alignItems: 'center', paddingVertical: 32 }}>
-                  <Ionicons name="checkmark-circle" size={56} color="#10B981" />
-                  <Text style={{ color: '#10B981', fontSize: 18, fontWeight: '700', marginTop: 12 }}>{t('settings.feedbackSent') || 'Thank you!'}</Text>
-                  <Text style={{ color: '#9CA3AF', fontSize: 14, marginTop: 6, textAlign: 'center' }}>{t('settings.feedbackSentSub') || 'Your feedback has been sent to our team.'}</Text>
+                <View style={{ alignItems: 'center', paddingVertical: 40 }}>
+                  <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(16,185,129,0.12)', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
+                    <Ionicons name="checkmark-circle" size={48} color="#10B981" />
+                  </View>
+                  <Text style={{ color: '#F8FAFC', fontSize: 20, fontWeight: '700', marginBottom: 6 }}>{t('settings.feedbackSent') || 'Thank you!'}</Text>
+                  <Text style={{ color: '#9CA3AF', fontSize: 14, textAlign: 'center', lineHeight: 20 }}>{t('settings.feedbackSentSub') || 'Your feedback has been sent to our team.'}</Text>
                 </View>
               ) : (
                 <>
-                  {/* Category tabs */}
-                  <View style={{ flexDirection: 'row', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+                  {/* Category cards — 2x2 grid */}
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 24 }}>
                     {([
-                      { key: 'rating' as const, icon: 'star', label: t('settings.fbRating') || 'Rate us', color: '#F59E0B' },
-                      { key: 'feature' as const, icon: 'bulb', label: t('settings.fbFeature') || 'Suggest feature', color: '#7C3AED' },
-                      { key: 'bug' as const, icon: 'bug', label: t('settings.fbBug') || 'Report bug', color: '#EF4444' },
-                      { key: 'other' as const, icon: 'chatbubble-ellipses', label: t('settings.fbOther') || 'Other', color: '#3B82F6' },
+                      { key: 'rating' as const, icon: 'star', label: t('settings.fbRating') || 'Rate us', color: '#F59E0B', bg: 'rgba(245,158,11,0.08)' },
+                      { key: 'feature' as const, icon: 'bulb', label: t('settings.fbFeature') || 'Suggest feature', color: '#A78BFA', bg: 'rgba(167,139,250,0.08)' },
+                      { key: 'bug' as const, icon: 'bug', label: t('settings.fbBug') || 'Report bug', color: '#F87171', bg: 'rgba(248,113,113,0.08)' },
+                      { key: 'other' as const, icon: 'chatbubble-ellipses', label: t('settings.fbOther') || 'Other', color: '#60A5FA', bg: 'rgba(96,165,250,0.08)' },
                     ]).map(tab => (
                       <TouchableOpacity
                         key={tab.key}
                         onPress={() => setFeedbackType(tab.key)}
                         style={{
-                          flexDirection: 'row', alignItems: 'center', gap: 6,
-                          paddingVertical: 10, paddingHorizontal: 14, borderRadius: 10,
-                          backgroundColor: feedbackType === tab.key ? `${tab.color}18` : 'rgba(255,255,255,0.04)',
-                          borderWidth: 1, borderColor: feedbackType === tab.key ? `${tab.color}50` : 'rgba(255,255,255,0.06)',
+                          width: '48%', flexGrow: 1,
+                          alignItems: 'center', gap: 8,
+                          paddingVertical: 16, paddingHorizontal: 10, borderRadius: 14,
+                          backgroundColor: feedbackType === tab.key ? tab.bg : 'rgba(255,255,255,0.02)',
+                          borderWidth: 1.5,
+                          borderColor: feedbackType === tab.key ? `${tab.color}40` : 'rgba(255,255,255,0.04)',
                         }}
                         data-testid={`feedback-tab-${tab.key}`}
                       >
-                        <Ionicons name={tab.icon as any} size={16} color={feedbackType === tab.key ? tab.color : '#64748B'} />
-                        <Text style={{ fontSize: 13, fontWeight: '600', color: feedbackType === tab.key ? tab.color : '#64748B' }}>{tab.label}</Text>
+                        <View style={{
+                          width: 40, height: 40, borderRadius: 12,
+                          backgroundColor: feedbackType === tab.key ? `${tab.color}15` : 'rgba(255,255,255,0.04)',
+                          justifyContent: 'center', alignItems: 'center',
+                        }}>
+                          <Ionicons name={tab.icon as any} size={20} color={feedbackType === tab.key ? tab.color : '#64748B'} />
+                        </View>
+                        <Text style={{ fontSize: 12, fontWeight: '600', color: feedbackType === tab.key ? tab.color : '#64748B', textAlign: 'center' }}>{tab.label}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
 
                   {/* Star rating */}
                   {feedbackType === 'rating' && (
-                    <View style={{ marginBottom: 20 }}>
-                      <Text style={{ color: '#9CA3AF', fontSize: 14, marginBottom: 12 }}>{t('settings.fbRateQuestion') || 'How would you rate Mentova?'}</Text>
-                      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 8 }}>
+                    <View style={{ alignItems: 'center', marginBottom: 20, backgroundColor: 'rgba(245,158,11,0.04)', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: 'rgba(245,158,11,0.08)' }}>
+                      <Text style={{ color: '#D1D5DB', fontSize: 15, marginBottom: 16, fontWeight: '500' }}>{t('settings.fbRateQuestion') || 'How would you rate Mentova?'}</Text>
+                      <View style={{ flexDirection: 'row', gap: 6 }}>
                         {[1, 2, 3, 4, 5].map(star => (
-                          <TouchableOpacity key={star} onPress={() => setFeedbackRating(star)} data-testid={`feedback-star-${star}`}>
+                          <TouchableOpacity key={star} onPress={() => setFeedbackRating(star)} style={{ padding: 4 }} data-testid={`feedback-star-${star}`}>
                             <Ionicons
                               name={star <= feedbackRating ? 'star' : 'star-outline'}
-                              size={40}
-                              color={star <= feedbackRating ? '#F59E0B' : '#475569'}
+                              size={36}
+                              color={star <= feedbackRating ? '#F59E0B' : '#374151'}
                             />
                           </TouchableOpacity>
                         ))}
                       </View>
                       {feedbackRating > 0 && (
-                        <Text style={{ textAlign: 'center', color: '#F59E0B', fontSize: 13, marginTop: 8, fontWeight: '600' }}>
-                          {feedbackRating}/5
+                        <Text style={{ color: '#F59E0B', fontSize: 14, marginTop: 10, fontWeight: '700' }}>
+                          {feedbackRating}/5 {feedbackRating >= 4 ? '!' : ''}
                         </Text>
                       )}
                     </View>
                   )}
 
-                  {/* Bug report specific */}
+                  {/* Context hints */}
                   {feedbackType === 'bug' && (
-                    <View style={{ backgroundColor: 'rgba(239,68,68,0.06)', borderRadius: 10, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: 'rgba(239,68,68,0.15)' }}>
-                      <Text style={{ color: '#EF4444', fontSize: 13, fontWeight: '600', marginBottom: 4 }}>{t('settings.fbBugHint') || 'Describe the bug'}</Text>
+                    <View style={{ backgroundColor: 'rgba(248,113,113,0.04)', borderRadius: 12, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: 'rgba(248,113,113,0.1)' }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                        <Ionicons name="bug" size={14} color="#F87171" />
+                        <Text style={{ color: '#F87171', fontSize: 13, fontWeight: '600' }}>{t('settings.fbBugHint') || 'Describe the bug'}</Text>
+                      </View>
                       <Text style={{ color: '#9CA3AF', fontSize: 12, lineHeight: 18 }}>{t('settings.fbBugHintSub') || 'Tell us what happened, what you expected, and the steps to reproduce it.'}</Text>
                     </View>
                   )}
-
-                  {/* Feature request specific */}
                   {feedbackType === 'feature' && (
-                    <View style={{ backgroundColor: 'rgba(124,58,237,0.06)', borderRadius: 10, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: 'rgba(124,58,237,0.15)' }}>
-                      <Text style={{ color: '#A78BFA', fontSize: 13, fontWeight: '600', marginBottom: 4 }}>{t('settings.fbFeatureHint') || 'Propose a feature'}</Text>
+                    <View style={{ backgroundColor: 'rgba(167,139,250,0.04)', borderRadius: 12, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: 'rgba(167,139,250,0.1)' }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                        <Ionicons name="bulb" size={14} color="#A78BFA" />
+                        <Text style={{ color: '#A78BFA', fontSize: 13, fontWeight: '600' }}>{t('settings.fbFeatureHint') || 'Propose a feature'}</Text>
+                      </View>
                       <Text style={{ color: '#9CA3AF', fontSize: 12, lineHeight: 18 }}>{t('settings.fbFeatureHintSub') || 'Describe the feature you would like and how it would help you.'}</Text>
                     </View>
                   )}
 
                   {/* Message input */}
                   <TextInput
-                    style={[styles.modalInput, { height: 120, textAlignVertical: 'top', paddingTop: 14 }]}
+                    style={{
+                      height: 110, borderRadius: 14,
+                      backgroundColor: 'rgba(255,255,255,0.03)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
+                      padding: 14, paddingTop: 14,
+                      fontSize: 14, color: '#F8FAFC', textAlignVertical: 'top',
+                      ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
+                    }}
                     placeholder={
                       feedbackType === 'rating' ? (t('settings.fbRatingPlaceholder') || 'Any additional comments? (optional)') :
                       feedbackType === 'bug' ? (t('settings.fbBugPlaceholder') || 'Describe the bug in detail...') :
@@ -569,23 +598,25 @@ export default function SettingsScreen() {
                     maxLength={1000}
                     data-testid="feedback-input"
                   />
-                  <Text style={{ color: '#475569', fontSize: 11, alignSelf: 'flex-end', marginTop: 4 }}>{feedbackMessage.length}/1000</Text>
+                  <Text style={{ color: '#374151', fontSize: 11, alignSelf: 'flex-end', marginTop: 4 }}>{feedbackMessage.length}/1000</Text>
 
                   {/* Submit */}
                   <TouchableOpacity
-                    style={[styles.saveBtn, {
-                      opacity: (feedbackType === 'rating' && feedbackRating === 0) || (feedbackType !== 'rating' && !feedbackMessage.trim()) ? 0.5 : 1,
-                      backgroundColor: feedbackType === 'bug' ? '#EF4444' : feedbackType === 'feature' ? '#7C3AED' : '#F59E0B',
-                    }]}
+                    style={{
+                      flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+                      paddingVertical: 15, borderRadius: 14, marginTop: 12, marginBottom: 8,
+                      backgroundColor: feedbackType === 'bug' ? '#EF4444' : feedbackType === 'feature' ? '#7C3AED' : feedbackType === 'rating' ? '#F59E0B' : '#3B82F6',
+                      opacity: (feedbackType === 'rating' && feedbackRating === 0) || (feedbackType !== 'rating' && !feedbackMessage.trim()) ? 0.4 : 1,
+                    }}
                     onPress={handleSubmitFeedback}
                     disabled={feedbackLoading || (feedbackType === 'rating' && feedbackRating === 0) || (feedbackType !== 'rating' && !feedbackMessage.trim())}
                     data-testid="feedback-submit-btn"
                   >
                     {feedbackLoading ? <ActivityIndicator color="#fff" /> : (
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <>
                         <Ionicons name="send" size={16} color="#fff" />
-                        <Text style={styles.saveBtnText}>{t('settings.sendFeedback') || 'Send'}</Text>
-                      </View>
+                        <Text style={{ fontSize: 15, fontWeight: '700', color: '#fff' }}>{t('settings.sendFeedback') || 'Send'}</Text>
+                      </>
                     )}
                   </TouchableOpacity>
                 </>
