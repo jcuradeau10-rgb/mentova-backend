@@ -10,27 +10,28 @@ const API = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
 const tr: Record<string, Record<string, string>> = {
   title: { fr: 'Mentova VIP', en: 'Mentova VIP', es: 'Mentova VIP' },
-  subtitle: { fr: 'L\'expérience Caufid complete', en: 'The complete Caufid experience', es: 'La experiencia Caufid completa' },
+  subtitle: { fr: "L'expérience Caufid complète", en: 'The complete Caufid experience', es: 'La experiencia Caufid completa' },
   price: { fr: '21,99', en: '21.99', es: '21.99' },
   perMonth: { fr: '$ USD / mois', en: '$ USD / month', es: '$ USD / mes' },
-  cta: { fr: 'Passer a VIP', en: 'Upgrade to VIP', es: 'Pasar a VIP' },
-  manage: { fr: 'Gerer mon abonnement', en: 'Manage subscription', es: 'Gestionar suscripcion' },
+  cta: { fr: 'Passer à VIP', en: 'Upgrade to VIP', es: 'Pasar a VIP' },
+  manage: { fr: 'Gérer mon abonnement', en: 'Manage subscription', es: 'Gestionar suscripción' },
   active: { fr: 'VIP Actif', en: 'VIP Active', es: 'VIP Activo' },
-  activeDesc: { fr: 'Votre experience premium est active', en: 'Your premium experience is active', es: 'Tu experiencia premium esta activa' },
-  cancel: { fr: 'Annulable a tout moment', en: 'Cancel anytime', es: 'Cancela cuando quieras' },
-  secure: { fr: 'Paiement securise par Stripe', en: 'Secure payment by Stripe', es: 'Pago seguro con Stripe' },
-  why: { fr: 'Pourquoi VIP ?', en: 'Why VIP?', es: 'Por que VIP?' },
-  whyDesc: { fr: 'Le VIP transforme Caufid en votre mentor personnel. Il se souvient de vous, s\'adapte a votre niveau, et vous accompagne avec des outils et des donnees que les utilisateurs gratuits n\'ont pas.', en: 'VIP transforms Caufid into your personal mentor. It remembers you, adapts to your level, and accompanies you with tools and data that free users don\'t have.', es: 'VIP transforma Caufid en tu mentor personal. Te recuerda, se adapta a tu nivel y te acompana con herramientas y datos que los usuarios gratuitos no tienen.' },
+  activeDesc: { fr: 'Votre expérience premium est active', en: 'Your premium experience is active', es: 'Tu experiencia premium está activa' },
+  cancel: { fr: 'Annulable à tout moment', en: 'Cancel anytime', es: 'Cancela cuando quieras' },
+  secure: { fr: 'Paiement sécurisé par Stripe', en: 'Secure payment by Stripe', es: 'Pago seguro con Stripe' },
+  why: { fr: 'Pourquoi VIP ?', en: 'Why VIP?', es: '¿Por qué VIP?' },
+  whyDesc: { fr: "Le VIP transforme Caufid en votre mentor personnel. Il se souvient de vous, s'adapte à votre niveau, et vous accompagne avec des outils et des données que les utilisateurs gratuits n'ont pas.", en: "VIP transforms Caufid into your personal mentor. It remembers you, adapts to your level, and accompanies you with tools and data that free users don't have.", es: 'VIP transforma Caufid en tu mentor personal. Te recuerda, se adapta a tu nivel y te acompaña con herramientas y datos que los usuarios gratuitos no tienen.' },
+  error: { fr: 'Erreur lors du paiement. Réessayez.', en: 'Payment error. Please try again.', es: 'Error de pago. Inténtalo de nuevo.' },
 };
 
 const FEATURES: Record<string, Array<{icon: string; color: string; title: string; desc: string}>> = {
   fr: [
-    { icon: 'cloud', color: '#7C3AED', title: 'Memoire d\'Atlas', desc: 'Caufid retient vos preferences, votre niveau et vos objectifs. Il devient progressivement votre mentor personnel.' },
-    { icon: 'bar-chart', color: '#3B82F6', title: 'Analyse de graphiques', desc: 'Envoyez une image de graphique a Caufid pour une analyse technique adaptee a votre niveau.' },
-    { icon: 'globe', color: '#10B981', title: 'Intelligence de marche', desc: 'Caufid utilise les actualites et donnees de marche en temps reel pour contextualiser ses reponses.' },
-    { icon: 'school', color: '#F59E0B', title: 'Apprentissage personnalise', desc: 'Caufid adapte ses explications a votre niveau et evolue avec votre progression.' },
-    { icon: 'today', color: '#EF4444', title: 'Briefing quotidien', desc: 'Chaque jour, un resume personnalise des evenements importants du marche crypto.' },
-    { icon: 'rocket', color: '#EC4899', title: 'Acces anticipe', desc: 'Soyez les premiers a tester les nouvelles fonctionnalites de Mentova avant tout le monde.' },
+    { icon: 'cloud', color: '#7C3AED', title: 'Mémoire de Caufid', desc: 'Caufid retient vos préférences, votre niveau et vos objectifs. Il devient progressivement votre mentor personnel.' },
+    { icon: 'bar-chart', color: '#3B82F6', title: 'Analyse de graphiques', desc: 'Envoyez une image de graphique à Caufid pour une analyse technique adaptée à votre niveau.' },
+    { icon: 'globe', color: '#10B981', title: 'Intelligence de marché', desc: 'Caufid utilise les actualités et données de marché en temps réel pour contextualiser ses réponses.' },
+    { icon: 'school', color: '#F59E0B', title: 'Apprentissage personnalisé', desc: "Caufid adapte ses explications à votre niveau et évolue avec votre progression." },
+    { icon: 'today', color: '#EF4444', title: 'Briefing quotidien', desc: "Chaque jour, un résumé personnalisé des événements importants du marché crypto." },
+    { icon: 'rocket', color: '#EC4899', title: 'Accès anticipé', desc: "Soyez les premiers à tester les nouvelles fonctionnalités de Mentova avant tout le monde." },
   ],
   en: [
     { icon: 'cloud', color: '#7C3AED', title: 'Caufid Memory', desc: 'Caufid remembers your preferences, level, and goals. It progressively becomes your personal mentor.' },
@@ -42,11 +43,11 @@ const FEATURES: Record<string, Array<{icon: string; color: string; title: string
   ],
   es: [
     { icon: 'cloud', color: '#7C3AED', title: 'Memoria de Caufid', desc: 'Caufid recuerda tus preferencias, nivel y objetivos. Se convierte progresivamente en tu mentor personal.' },
-    { icon: 'bar-chart', color: '#3B82F6', title: 'Analisis de graficos', desc: 'Envia una imagen de grafico a Caufid para un analisis tecnico adaptado a tu nivel.' },
+    { icon: 'bar-chart', color: '#3B82F6', title: 'Análisis de gráficos', desc: 'Envía una imagen de gráfico a Caufid para un análisis técnico adaptado a tu nivel.' },
     { icon: 'globe', color: '#10B981', title: 'Inteligencia de mercado', desc: 'Caufid usa noticias y datos de mercado en tiempo real para contextualizar sus respuestas.' },
     { icon: 'school', color: '#F59E0B', title: 'Aprendizaje personalizado', desc: 'Caufid adapta sus explicaciones a tu nivel y evoluciona con tu progreso.' },
-    { icon: 'today', color: '#EF4444', title: 'Briefing diario', desc: 'Cada dia, un resumen personalizado de los eventos importantes del mercado crypto.' },
-    { icon: 'rocket', color: '#EC4899', title: 'Acceso anticipado', desc: 'Se el primero en probar las nuevas funciones de Mentova antes que nadie.' },
+    { icon: 'today', color: '#EF4444', title: 'Briefing diario', desc: 'Cada día, un resumen personalizado de los eventos importantes del mercado crypto.' },
+    { icon: 'rocket', color: '#EC4899', title: 'Acceso anticipado', desc: 'Sé el primero en probar las nuevas funciones de Mentova antes que nadie.' },
   ],
 };
 
@@ -62,6 +63,7 @@ export default function VIPPage() {
   const [loading, setLoading] = useState(false);
   const [perms, setPerms] = useState<any>(null);
   const [loadingPerms, setLoadingPerms] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (token) {
@@ -73,18 +75,28 @@ export default function VIPPage() {
   const handleCheckout = async () => {
     if (!token) { router.push('/login'); return; }
     setLoading(true);
+    setError('');
     try {
       const origin = Platform.OS === 'web' ? window.location.origin : 'https://app.mentova-academy.com';
       const res = await fetch(`${API}/api/vip/checkout`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ origin_url: origin }),
       });
       const data = await res.json();
       if (data.checkout_url) {
-        if (Platform.OS === 'web') window.open(data.checkout_url, '_self');
-        else Linking.openURL(data.checkout_url);
+        if (Platform.OS === 'web') {
+          window.location.href = data.checkout_url;
+        } else {
+          await Linking.openURL(data.checkout_url);
+        }
+      } else {
+        setError(data.detail || t('error', lang));
       }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error('Checkout error:', e);
+      setError(t('error', lang));
+    }
     finally { setLoading(false); }
   };
 
@@ -96,7 +108,7 @@ export default function VIPPage() {
         body: JSON.stringify({ return_url: `${origin}/vip` }),
       });
       const data = await res.json();
-      if (data.url) { if (Platform.OS === 'web') window.open(data.url, '_blank'); else Linking.openURL(data.url); }
+      if (data.url) { if (Platform.OS === 'web') window.location.href = data.url; else Linking.openURL(data.url); }
     } catch (e) { console.error(e); }
   };
 
@@ -141,9 +153,10 @@ export default function VIPPage() {
                 <Text style={s.priceAmount}>{t('price', lang)}</Text>
                 <Text style={s.pricePeriod}>{t('perMonth', lang)}</Text>
               </View>
-              <TouchableOpacity style={s.ctaBtn} onPress={handleCheckout} disabled={loading} data-testid="vip-checkout-btn">
+              <TouchableOpacity style={[s.ctaBtn, loading && { opacity: 0.7 }]} onPress={handleCheckout} disabled={loading} data-testid="vip-checkout-btn">
                 {loading ? <ActivityIndicator color="#0A0A1A" /> : <><Ionicons name="diamond" size={18} color="#0A0A1A" /><Text style={s.ctaText}>{t('cta', lang)}</Text></>}
               </TouchableOpacity>
+              {error ? <Text style={s.errorText}>{error}</Text> : null}
               <View style={s.guaranteeRow}><Ionicons name="shield-checkmark" size={14} color="#6B7280" /><Text style={s.guaranteeText}>{t('secure', lang)}</Text></View>
               <View style={s.guaranteeRow}><Ionicons name="close-circle" size={14} color="#6B7280" /><Text style={s.guaranteeText}>{t('cancel', lang)}</Text></View>
             </View>
@@ -205,6 +218,7 @@ const s = StyleSheet.create({
   pricePeriod: { fontSize: 16, color: '#9CA3AF', marginLeft: 6 },
   ctaBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: '#FFD700', borderRadius: 14, paddingVertical: 16, paddingHorizontal: 32, width: '100%', marginBottom: 16 },
   ctaText: { fontSize: 16, fontWeight: '700', color: '#0A0A1A' },
+  errorText: { fontSize: 12, color: '#EF4444', textAlign: 'center', marginBottom: 10 },
   guaranteeRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
   guaranteeText: { fontSize: 12, color: '#6B7280' },
   featuresSection: { paddingHorizontal: 16, gap: 10 },
