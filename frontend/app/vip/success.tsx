@@ -62,23 +62,50 @@ export default function VIPSuccessScreen() {
 
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
+  const [authReady, setAuthReady] = useState(false);
+  const [resolvedToken, setResolvedToken] = useState<string | null>(null);
+
+  // Wait for auth to be ready — restore token from storage if needed
+  useEffect(() => {
+    const resolveAuth = async () => {
+      if (token) {
+        setResolvedToken(token);
+        setAuthReady(true);
+        return;
+      }
+      // Token not in state yet — try to get it from AsyncStorage
+      try {
+        const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
+        const stored = await AsyncStorage.getItem('token');
+        if (stored) {
+          setResolvedToken(stored);
+          setAuthReady(true);
+          return;
+        }
+      } catch {}
+      // No token at all
+      setAuthReady(true);
+    };
+    resolveAuth();
+  }, [token, isAuthenticated]);
 
   useEffect(() => {
+    if (!authReady) return;
     setMessage(t('checking', lang));
     const sessionId = params.session_id as string;
-    if (sessionId && isAuthenticated && token) {
+    if (sessionId && resolvedToken) {
       checkPayment(sessionId);
-    } else if (!isAuthenticated) {
+    } else if (!resolvedToken) {
       setStatus('error');
       setMessage(t('loginNeeded', lang));
     }
-  }, [params.session_id, isAuthenticated]);
+  }, [authReady, resolvedToken, params.session_id]);
 
   const checkPayment = async (sessionId: string) => {
     try {
-      for (let i = 0; i < 8; i++) {
+      for (let i = 0; i < 10; i++) {
         const res = await fetch(`${API}/api/vip/checkout/status/${sessionId}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${resolvedToken}` },
         });
         const data = await res.json();
 
