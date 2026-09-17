@@ -78,7 +78,7 @@ ROOT_DIR = Path(__file__).parent
 UPLOADS_DIR = ROOT_DIR / "uploads"
 UPLOADS_DIR.mkdir(exist_ok=True)
 
-load_dotenv(ROOT_DIR / '.env', override=True)
+load_dotenv(ROOT_DIR / '.env')
 
 # Socket.IO server for real-time notifications
 sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*', logger=False)
