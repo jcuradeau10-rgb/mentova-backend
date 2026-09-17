@@ -50,3 +50,93 @@ def send_mentova_email(to_email: str, subject: str, html_content: str) -> dict:
         subject=subject,
         html_content=html_content,
     )
+
+
+def send_vip_welcome_email(to_email: str, user_name: str, lang: str = "fr") -> dict:
+    """Send VIP welcome email with all premium features listed."""
+    tr = {
+        "fr": {
+            "subject": "Bienvenue dans le VIP Mentova!",
+            "title": "Bienvenue dans le VIP!",
+            "greeting": f"Bonjour {user_name},",
+            "intro": "Votre abonnement VIP Mentova est maintenant actif. Vous beneficiez de toutes les fonctionnalites premium :",
+            "features": [
+                ("Memoire de Caufid", "Caufid retient vos preferences, votre niveau et vos objectifs."),
+                ("Analyse de graphiques", "Envoyez une image de graphique pour une analyse technique adaptee."),
+                ("Intelligence de marche", "Donnees et actualites en temps reel pour contextualiser vos echanges."),
+                ("Apprentissage personnalise", "Caufid adapte ses explications a votre niveau et evolue avec vous."),
+                ("Briefing quotidien", "Chaque jour, un resume personnalise des evenements importants du marche."),
+                ("Acces anticipe", "Soyez les premiers a tester les nouvelles fonctionnalites."),
+            ],
+            "cta": "Ouvrir Mentova",
+            "outro": "Merci pour votre confiance. Bonne exploration!",
+            "team": "L'equipe Mentova Academy",
+        },
+        "en": {
+            "subject": "Welcome to Mentova VIP!",
+            "title": "Welcome to VIP!",
+            "greeting": f"Hello {user_name},",
+            "intro": "Your Mentova VIP subscription is now active. You have access to all premium features:",
+            "features": [
+                ("Caufid Memory", "Caufid remembers your preferences, level and goals."),
+                ("Chart Analysis", "Send a chart image for technical analysis adapted to your level."),
+                ("Market Intelligence", "Real-time data and news to contextualize your conversations."),
+                ("Personalized Learning", "Caufid adapts its explanations to your level and evolves with you."),
+                ("Daily Briefing", "Every day, a personalized summary of important market events."),
+                ("Early Access", "Be the first to test new features before everyone else."),
+            ],
+            "cta": "Open Mentova",
+            "outro": "Thank you for your trust. Happy exploring!",
+            "team": "The Mentova Academy team",
+        },
+        "es": {
+            "subject": "Bienvenido al VIP de Mentova!",
+            "title": "Bienvenido al VIP!",
+            "greeting": f"Hola {user_name},",
+            "intro": "Tu suscripcion VIP de Mentova esta activa. Tienes acceso a todas las funciones premium:",
+            "features": [
+                ("Memoria de Caufid", "Caufid recuerda tus preferencias, nivel y objetivos."),
+                ("Analisis de graficos", "Envia una imagen de grafico para un analisis tecnico adaptado."),
+                ("Inteligencia de mercado", "Datos y noticias en tiempo real para contextualizar tus conversaciones."),
+                ("Aprendizaje personalizado", "Caufid adapta sus explicaciones a tu nivel y evoluciona contigo."),
+                ("Briefing diario", "Cada dia, un resumen personalizado de los eventos importantes del mercado."),
+                ("Acceso anticipado", "Se el primero en probar las nuevas funciones."),
+            ],
+            "cta": "Abrir Mentova",
+            "outro": "Gracias por tu confianza. Buena exploracion!",
+            "team": "El equipo de Mentova Academy",
+        },
+    }
+    t = tr.get(lang, tr["en"])
+
+    features_html = ""
+    colors = ["#7C3AED", "#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#EC4899"]
+    for i, (name, desc) in enumerate(t["features"]):
+        c = colors[i % len(colors)]
+        features_html += f"""
+        <tr><td style="padding:10px 0;">
+            <div style="display:inline-block;width:8px;height:8px;border-radius:4px;background:{c};margin-right:10px;vertical-align:middle;"></div>
+            <strong style="color:#fafafa;">{name}</strong>
+            <div style="color:#a1a1aa;font-size:13px;margin-top:2px;padding-left:18px;">{desc}</div>
+        </td></tr>"""
+
+    html = f"""
+    <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#09090b;color:#e4e4e7;border-radius:16px;overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#7C3AED,#4F46E5);padding:32px;text-align:center;">
+            <div style="font-size:36px;margin-bottom:8px;">&#9670;</div>
+            <h1 style="color:#FFD700;font-size:26px;margin:0;">{t["title"]}</h1>
+        </div>
+        <div style="padding:32px;">
+            <p style="font-size:16px;color:#e4e4e7;margin-bottom:8px;">{t["greeting"]}</p>
+            <p style="font-size:15px;color:#a1a1aa;line-height:1.6;margin-bottom:24px;">{t["intro"]}</p>
+            <table style="width:100%;border-collapse:collapse;">{features_html}</table>
+            <div style="text-align:center;margin:32px 0;">
+                <a href="https://app.mentova-academy.com" style="background:#7C3AED;color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px;display:inline-block;">{t["cta"]}</a>
+            </div>
+            <p style="font-size:14px;color:#a1a1aa;margin-bottom:4px;">{t["outro"]}</p>
+            <p style="font-size:13px;color:#71717a;">{t["team"]}</p>
+        </div>
+    </div>
+    """
+    return send_mentova_email(to_email=to_email, subject=t["subject"], html_content=html)
+

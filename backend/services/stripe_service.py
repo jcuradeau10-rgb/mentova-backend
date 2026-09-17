@@ -220,6 +220,8 @@ async def _handle_checkout_completed(obj: dict, db):
     subscription_id = obj.get("subscription")
 
     if user_id and customer_id:
+        user = await db.users.find_one({"id": user_id})
+        was_vip = user.get("is_vip", False) if user else False
         await db.users.update_one(
             {"id": user_id},
             {"$set": {
@@ -231,6 +233,13 @@ async def _handle_checkout_completed(obj: dict, db):
             }}
         )
         logger.info(f"VIP activated for user {user_id} via checkout")
+        # Send welcome email if user was not already VIP
+        if not was_vip and user:
+            try:
+                from services.email_service import send_vip_welcome_email
+                send_vip_welcome_email(user.get("email", ""), user.get("name", ""), user.get("language", "fr"))
+            except Exception as e:
+                logger.error(f"Failed to send VIP welcome email via webhook: {e}")
 
 
 async def _handle_subscription_update(obj: dict, db, action: str):

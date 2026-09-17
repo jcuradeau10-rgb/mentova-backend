@@ -1921,6 +1921,13 @@ async def get_checkout_status(
             
             logger.info(f"VIP activated for user {current_user['id']} until {vip_expires}")
             
+            # Send VIP welcome email
+            try:
+                from services.email_service import send_vip_welcome_email
+                send_vip_welcome_email(current_user["email"], current_user.get("name", ""), current_user.get("language", "fr"))
+            except Exception as we:
+                logger.error(f"Failed to send VIP welcome email: {we}")
+            
             return {
                 "status": "complete",
                 "payment_status": "paid",
