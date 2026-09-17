@@ -40,8 +40,92 @@ X-Content-Type-Options = "nosniff"
 Referrer-Policy = "strict-origin-when-cross-origin"
 
 [[redirects]]
-from = "/mentors"
-to = "/mentors.html"
+from = "/blog.html"
+to = "/"
+status = 301.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/member.html"
+to = "/"
+status = 301.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/admin.html"
+to = "/"
+status = 301.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/fr/blog.html"
+to = "/fr/"
+status = 301.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/fr/member.html"
+to = "/fr/"
+status = 301.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/es/blog.html"
+to = "/es/"
+status = 301.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/es/member.html"
+to = "/es/"
+status = 301.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/atlas-ai"
+to = "/atlas-ai.html"
 status = 200.0
 force = false
 
@@ -52,8 +136,8 @@ force = false
 [redirects.headers]
 
 [[redirects]]
-from = "/fr/member"
-to = "/fr/member.html"
+from = "/how-atlas-works"
+to = "/how-atlas-works.html"
 status = 200.0
 force = false
 
@@ -64,8 +148,8 @@ force = false
 [redirects.headers]
 
 [[redirects]]
-from = "/fr/blog"
-to = "/fr/blog.html"
+from = "/why-mentova"
+to = "/why-mentova.html"
 status = 200.0
 force = false
 
@@ -76,8 +160,8 @@ force = false
 [redirects.headers]
 
 [[redirects]]
-from = "/fr/ambassadeurs"
-to = "/fr/ambassadors.html"
+from = "/ai-crypto-mentor"
+to = "/ai-crypto-mentor.html"
 status = 200.0
 force = false
 
@@ -88,8 +172,8 @@ force = false
 [redirects.headers]
 
 [[redirects]]
-from = "/fr/mentors"
-to = "/fr/mentors.html"
+from = "/personalized-crypto-learning"
+to = "/personalized-crypto-learning.html"
 status = 200.0
 force = false
 
@@ -100,8 +184,8 @@ force = false
 [redirects.headers]
 
 [[redirects]]
-from = "/es/member"
-to = "/es/member.html"
+from = "/comparatif-plateformes-apprentissage-crypto"
+to = "/comparatif-plateformes-apprentissage-crypto.html"
 status = 200.0
 force = false
 
@@ -112,8 +196,8 @@ force = false
 [redirects.headers]
 
 [[redirects]]
-from = "/es/blog"
-to = "/es/blog.html"
+from = "/mentova-vs-binance-academy"
+to = "/mentova-vs-binance-academy.html"
 status = 200.0
 force = false
 
@@ -124,20 +208,8 @@ force = false
 [redirects.headers]
 
 [[redirects]]
-from = "/es/embajadores"
-to = "/es/ambassadors.html"
-status = 200.0
-force = false
-
-[redirects.query]
-
-[redirects.conditions]
-
-[redirects.headers]
-
-[[redirects]]
-from = "/es/mentores"
-to = "/es/mentors.html"
+from = "/about"
+to = "/about.html"
 status = 200.0
 force = false
 

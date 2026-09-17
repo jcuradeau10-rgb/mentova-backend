@@ -1,12 +1,18 @@
-/member    /member.html    200
-/ambassadors    /ambassadors.html    200
-/mentors    /mentors.html    200
-/blog    /blog.html    200
-/fr/member    /fr/member.html    200
-/fr/blog    /fr/blog.html    200
-/fr/ambassadeurs    /fr/ambassadors.html    200
-/fr/mentors    /fr/mentors.html    200
-/es/member    /es/member.html    200
-/es/blog    /es/blog.html    200
-/es/embajadores    /es/ambassadors.html    200
-/es/mentores    /es/mentors.html    200
+# Legacy redirects
+/blog.html / 301
+/member.html / 301
+/admin.html / 301
+/fr/blog.html /fr/ 301
+/fr/member.html /fr/ 301
+/es/blog.html /es/ 301
+/es/member.html /es/ 301
+
+# Clean URLs for new SEO pages
+/atlas-ai /atlas-ai.html 200
+/how-atlas-works /how-atlas-works.html 200
+/why-mentova /why-mentova.html 200
+/ai-crypto-mentor /ai-crypto-mentor.html 200
+/personalized-crypto-learning /personalized-crypto-learning.html 200
+/comparatif-plateformes-apprentissage-crypto /comparatif-plateformes-apprentissage-crypto.html 200
+/mentova-vs-binance-academy /mentova-vs-binance-academy.html 200
+/about /about.html 200

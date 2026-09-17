@@ -11951,6 +11951,22 @@ async def get_user_intelligence(user_id: str, period: str = "all", current_user:
     sessions = await db.user_sessions.find(sq).to_list(10000)
     total_sessions = len(sessions)
     total_time = sum(s.get("duration_seconds", 0) for s in sessions)
+    
+    # If sessions have no real duration data, estimate from activity
+    if total_time < 60:
+        est_convos = await db.atlas_conversations.count_documents({"user_id": user_id})
+        est_quizzes = await db.quiz_attempts.count_documents({"user_id": user_id})
+        est_modules = await db.learning_modules.count_documents({"user_id": user_id})
+        estimated_time = (est_convos * 300) + (est_quizzes * 180) + (est_modules * 600)
+        if estimated_time > 0:
+            total_time = estimated_time
+            total_sessions = max(total_sessions, est_convos)
+            time_note = "estimated"
+        else:
+            time_note = "no_data"
+    else:
+        time_note = "tracked"
+    
     avg_session = total_time / max(1, total_sessions)
     active_days = len({_parse_dt_intel(s.get("started_at")).date() for s in sessions if _parse_dt_intel(s.get("started_at"))})
     days_since = (now - last_active).days if last_active else 999
@@ -11961,6 +11977,7 @@ async def get_user_intelligence(user_id: str, period: str = "all", current_user:
         "average_session_seconds": round(avg_session),
         "average_session_formatted": f"{int(avg_session // 60)}m {int(avg_session % 60)}s",
         "active_days": active_days, "days_since_last_activity": days_since,
+        "time_tracking": time_note,
     }
 
     # Atlas

@@ -302,7 +302,7 @@ export default function UserIntelligencePage() {
             <SectionHeader title="Engagement Analytics" icon="pulse" />
             <View style={s.card}>
               <DataRow label="Total Sessions" value={eng.total_sessions} />
-              <DataRow label="Total Time" value={eng.total_time_formatted} />
+              <DataRow label="Total Time" value={`${eng.total_time_formatted}${eng.time_tracking === 'estimated' ? ' (estimated)' : ''}`} />
               <DataRow label="Average Session" value={eng.average_session_formatted} />
               <DataRow label="Active Days" value={eng.active_days} />
               <DataRow label="Days Since Last Activity" value={eng.days_since_last_activity} />
