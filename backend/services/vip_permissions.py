@@ -91,6 +91,8 @@ async def get_user_permissions_response(user: dict, db=None) -> Dict[str, Any]:
     }
     if plan == "vip":
         vip_expires = user.get("vip_expires_at")
+        result["vip_status"] = user.get("vip_status", "active")
+        result["cancel_at_period_end"] = user.get("vip_cancel_at_period_end", False)
         if vip_expires and not user.get("vip_permanent"):
             if isinstance(vip_expires, str):
                 try:

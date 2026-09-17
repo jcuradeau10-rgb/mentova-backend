@@ -1459,6 +1459,52 @@ async def create_vip_portal(
         logger.error(f"Portal error: {e}")
         raise HTTPException(status_code=500, detail="Erreur lors de la creation du portail")
 
+@api_router.post("/vip/cancel")
+async def cancel_vip_subscription(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Cancel VIP subscription at end of current period"""
+    current_user = await get_current_user(credentials)
+    sub_id = current_user.get("stripe_subscription_id")
+    if not sub_id:
+        raise HTTPException(status_code=400, detail="Aucun abonnement actif")
+    try:
+        import stripe as stripe_direct
+        stripe_direct.api_key = STRIPE_API_KEY
+        sub = stripe_direct.Subscription.modify(sub_id, cancel_at_period_end=True)
+        # Update user record
+        await db.users.update_one(
+            {"id": current_user["id"]},
+            {"$set": {"vip_cancel_at_period_end": True, "vip_status": "canceling"}}
+        )
+        period_end = datetime.fromtimestamp(sub.current_period_end, tz=timezone.utc).isoformat() if sub.current_period_end else None
+        return {"success": True, "cancel_at_period_end": True, "current_period_end": period_end}
+    except Exception as e:
+        logger.error(f"Cancel subscription error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/vip/reactivate")
+async def reactivate_vip_subscription(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Reactivate a subscription that was set to cancel at period end"""
+    current_user = await get_current_user(credentials)
+    sub_id = current_user.get("stripe_subscription_id")
+    if not sub_id:
+        raise HTTPException(status_code=400, detail="Aucun abonnement actif")
+    try:
+        import stripe as stripe_direct
+        stripe_direct.api_key = STRIPE_API_KEY
+        stripe_direct.Subscription.modify(sub_id, cancel_at_period_end=False)
+        await db.users.update_one(
+            {"id": current_user["id"]},
+            {"$set": {"vip_cancel_at_period_end": False, "vip_status": "active"}}
+        )
+        return {"success": True, "cancel_at_period_end": False}
+    except Exception as e:
+        logger.error(f"Reactivate error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/vip/subscription")
 async def get_vip_subscription(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Get detailed subscription info"""
@@ -1560,6 +1606,25 @@ async def admin_activate_vip(user_id: str, current_user: dict = Depends(get_supe
         }}
     )
     return {"success": True, "message": f"VIP activated for {user.get('email')} until {vip_expires.isoformat()}"}
+
+
+@api_router.post("/admin/deactivate-vip/{user_id}")
+async def admin_deactivate_vip(user_id: str, current_user: dict = Depends(get_super_admin_user)):
+    """Super admin endpoint to manually deactivate VIP for a user."""
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {
+            "is_vip": False,
+            "vip_status": "canceled",
+            "stripe_subscription_id": None,
+            "stripe_customer_id": None,
+        }}
+    )
+    return {"success": True, "message": f"VIP deactivated for {user.get('email')}"}
+
 
 
 @api_router.get("/vip/checkout/status/{session_id}")

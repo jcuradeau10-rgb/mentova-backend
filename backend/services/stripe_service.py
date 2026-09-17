@@ -204,6 +204,12 @@ async def handle_webhook_event(payload: bytes, signature: str, db) -> dict:
     elif event_type == "invoice.payment_failed":
         await _handle_invoice_failed(obj, db)
 
+    elif event_type == "charge.refunded":
+        await _handle_refund(obj, db)
+
+    elif event_type == "charge.dispute.created":
+        await _handle_dispute(obj, db)
+
     return {"received": True}
 
 
@@ -348,6 +354,54 @@ async def _handle_invoice_failed(obj: dict, db):
             }}
         )
     logger.warning(f"Invoice payment failed for subscription {sub_id}")
+
+
+
+async def _handle_refund(obj: dict, db):
+    """Charge refunded — immediately revoke VIP."""
+    customer_id = obj.get("customer")
+    if customer_id:
+        user = await db.users.find_one({"stripe_customer_id": customer_id})
+        if user:
+            await db.users.update_one(
+                {"id": user["id"]},
+                {"$set": {
+                    "is_vip": False,
+                    "vip_status": "refunded",
+                    "vip_cancel_at_period_end": False,
+                }}
+            )
+            logger.info(f"VIP revoked for user {user['id']} due to refund")
+
+
+async def _handle_dispute(obj: dict, db):
+    """Charge disputed (chargeback) — immediately revoke VIP."""
+    charge_id = obj.get("charge")
+    if charge_id:
+        charge = stripe.Charge.retrieve(charge_id)
+        customer_id = charge.customer if charge else None
+    else:
+        customer_id = None
+    if customer_id:
+        user = await db.users.find_one({"stripe_customer_id": customer_id})
+        if user:
+            # Cancel the subscription immediately
+            sub_id = user.get("stripe_subscription_id")
+            if sub_id:
+                try:
+                    stripe.Subscription.cancel(sub_id)
+                except Exception:
+                    pass
+            await db.users.update_one(
+                {"id": user["id"]},
+                {"$set": {
+                    "is_vip": False,
+                    "vip_status": "disputed",
+                    "vip_cancel_at_period_end": False,
+                }}
+            )
+            logger.info(f"VIP revoked for user {user['id']} due to chargeback/dispute")
+
 
 
 async def get_subscription_info(user: dict, db) -> dict:

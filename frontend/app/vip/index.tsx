@@ -19,6 +19,14 @@ const tr: Record<string, Record<string, string>> = {
   activeDesc: { fr: 'Votre expérience premium est active', en: 'Your premium experience is active', es: 'Tu experiencia premium está activa' },
   cancel: { fr: 'Annulable à tout moment', en: 'Cancel anytime', es: 'Cancela cuando quieras' },
   secure: { fr: 'Paiement sécurisé par Stripe', en: 'Secure payment by Stripe', es: 'Pago seguro con Stripe' },
+  cancelSub: { fr: 'Annuler mon abonnement', en: 'Cancel subscription', es: 'Cancelar suscripción' },
+  cancelConfirmTitle: { fr: 'Annuler votre abonnement ?', en: 'Cancel your subscription?', es: '¿Cancelar tu suscripción?' },
+  cancelConfirmDesc: { fr: "Vous conserverez votre accès VIP jusqu'à la fin de votre période en cours. Aucun remboursement ne sera effectué pour la période déjà payée.", en: "You'll keep your VIP access until the end of your current period. No refund will be issued for the already paid period.", es: 'Mantendrás tu acceso VIP hasta el final de tu período actual. No se realizará ningún reembolso por el período ya pagado.' },
+  cancelConfirm: { fr: 'Confirmer l\'annulation', en: 'Confirm cancellation', es: 'Confirmar cancelación' },
+  cancelKeep: { fr: 'Garder mon VIP', en: 'Keep my VIP', es: 'Mantener mi VIP' },
+  canceling: { fr: 'Annulation en cours...', en: 'Cancellation pending...', es: 'Cancelación pendiente...' },
+  cancelingDesc: { fr: "Votre VIP restera actif jusqu'à la fin de la période en cours", en: 'Your VIP will remain active until the end of the current period', es: 'Tu VIP permanecerá activo hasta el final del período actual' },
+  reactivate: { fr: 'Réactiver mon abonnement', en: 'Reactivate subscription', es: 'Reactivar suscripción' },
   why: { fr: 'Pourquoi VIP ?', en: 'Why VIP?', es: '¿Por qué VIP?' },
   whyDesc: { fr: "Le VIP transforme Caufid en votre mentor personnel. Il se souvient de vous, s'adapte à votre niveau, et vous accompagne avec des outils et des données que les utilisateurs gratuits n'ont pas.", en: "VIP transforms Caufid into your personal mentor. It remembers you, adapts to your level, and accompanies you with tools and data that free users don't have.", es: 'VIP transforma Caufid en tu mentor personal. Te recuerda, se adapta a tu nivel y te acompaña con herramientas y datos que los usuarios gratuitos no tienen.' },
   error: { fr: 'Erreur lors du paiement. Réessayez.', en: 'Payment error. Please try again.', es: 'Error de pago. Inténtalo de nuevo.' },
@@ -64,6 +72,8 @@ export default function VIPPage() {
   const [perms, setPerms] = useState<any>(null);
   const [loadingPerms, setLoadingPerms] = useState(true);
   const [error, setError] = useState('');
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -112,7 +122,37 @@ export default function VIPPage() {
     } catch (e) { console.error(e); }
   };
 
+  const handleCancel = async () => {
+    setCancelLoading(true);
+    try {
+      const res = await fetch(`${API}/api/vip/cancel`, {
+        method: 'POST', headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPerms((p: any) => ({ ...p, cancel_at_period_end: true, vip_status: 'canceling' }));
+        setShowCancelModal(false);
+      }
+    } catch (e) { console.error(e); }
+    finally { setCancelLoading(false); }
+  };
+
+  const handleReactivate = async () => {
+    setCancelLoading(true);
+    try {
+      const res = await fetch(`${API}/api/vip/reactivate`, {
+        method: 'POST', headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPerms((p: any) => ({ ...p, cancel_at_period_end: false, vip_status: 'active' }));
+      }
+    } catch (e) { console.error(e); }
+    finally { setCancelLoading(false); }
+  };
+
   const isVip = perms?.is_vip;
+  const isCanceling = perms?.cancel_at_period_end;
   const features = FEATURES[lang] || FEATURES.fr;
 
   if (loadingPerms) return <SafeAreaView style={s.container} edges={['top']}><View style={s.center}><ActivityIndicator size="large" color="#7C3AED" /></View></SafeAreaView>;
@@ -132,12 +172,22 @@ export default function VIPPage() {
           <Text style={s.heroSubtitle}>{t('subtitle', lang)}</Text>
         </View>
 
-        {isVip && (
+        {isVip && !isCanceling && (
           <View style={s.activeCard} data-testid="vip-active-badge">
             <Ionicons name="checkmark-circle" size={28} color="#10B981" />
             <View style={{ flex: 1, marginLeft: 12 }}>
               <Text style={s.activeTitle}>{t('active', lang)}</Text>
               <Text style={s.activeDesc}>{t('activeDesc', lang)}</Text>
+            </View>
+          </View>
+        )}
+
+        {isVip && isCanceling && (
+          <View style={[s.activeCard, { borderColor: 'rgba(245,158,11,0.3)', backgroundColor: 'rgba(245,158,11,0.08)' }]} data-testid="vip-canceling-badge">
+            <Ionicons name="time" size={28} color="#F59E0B" />
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <Text style={[s.activeTitle, { color: '#F59E0B' }]}>{t('canceling', lang)}</Text>
+              <Text style={s.activeDesc}>{t('cancelingDesc', lang)}</Text>
             </View>
           </View>
         )}
@@ -184,10 +234,39 @@ export default function VIPPage() {
               <Ionicons name="apps" size={18} color="#FFD700" />
               <Text style={s.hubBtnText}>VIP Hub</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={s.manageBtn} onPress={handleManage} data-testid="vip-manage-btn">
-              <Ionicons name="settings-outline" size={18} color="#7C3AED" />
-              <Text style={s.manageBtnText}>{t('manage', lang)}</Text>
-            </TouchableOpacity>
+            {isCanceling ? (
+              <TouchableOpacity style={[s.manageBtn, { borderColor: 'rgba(16,185,129,0.3)', backgroundColor: 'rgba(16,185,129,0.08)' }]} onPress={handleReactivate} disabled={cancelLoading} data-testid="vip-reactivate-btn">
+                <Ionicons name="refresh" size={18} color="#10B981" />
+                <Text style={[s.manageBtnText, { color: '#10B981' }]}>{t('reactivate', lang)}</Text>
+              </TouchableOpacity>
+            ) : (
+              <>
+                <TouchableOpacity style={s.manageBtn} onPress={handleManage} data-testid="vip-manage-btn">
+                  <Ionicons name="settings-outline" size={18} color="#7C3AED" />
+                  <Text style={s.manageBtnText}>{t('manage', lang)}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[s.manageBtn, { borderColor: 'rgba(239,68,68,0.2)', backgroundColor: 'rgba(239,68,68,0.05)' }]} onPress={() => setShowCancelModal(true)} data-testid="vip-cancel-btn">
+                  <Ionicons name="close-circle-outline" size={18} color="#EF4444" />
+                  <Text style={[s.manageBtnText, { color: '#EF4444' }]}>{t('cancelSub', lang)}</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        )}
+
+        {showCancelModal && (
+          <View style={s.modalOverlay}>
+            <View style={s.modalCard} data-testid="vip-cancel-modal">
+              <Ionicons name="warning" size={40} color="#F59E0B" style={{ marginBottom: 12 }} />
+              <Text style={s.modalTitle}>{t('cancelConfirmTitle', lang)}</Text>
+              <Text style={s.modalDesc}>{t('cancelConfirmDesc', lang)}</Text>
+              <TouchableOpacity style={s.modalConfirmBtn} onPress={handleCancel} disabled={cancelLoading} data-testid="vip-cancel-confirm-btn">
+                {cancelLoading ? <ActivityIndicator color="#fff" size="small" /> : <Text style={s.modalConfirmText}>{t('cancelConfirm', lang)}</Text>}
+              </TouchableOpacity>
+              <TouchableOpacity style={s.modalKeepBtn} onPress={() => setShowCancelModal(false)} data-testid="vip-cancel-keep-btn">
+                <Text style={s.modalKeepText}>{t('cancelKeep', lang)}</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
         <View style={{ height: 40 }} />
@@ -232,4 +311,12 @@ const s = StyleSheet.create({
   hubBtnText: { fontSize: 15, fontWeight: '700', color: '#FFD700' },
   manageBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(124,58,237,0.3)', backgroundColor: 'rgba(124,58,237,0.08)' },
   manageBtnText: { fontSize: 14, fontWeight: '600', color: '#7C3AED' },
+  modalOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', zIndex: 100, paddingHorizontal: 24 },
+  modalCard: { backgroundColor: '#18181B', borderRadius: 20, padding: 28, alignItems: 'center', width: '100%', maxWidth: 380, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
+  modalTitle: { fontSize: 20, fontWeight: '700', color: '#E2E8F0', marginBottom: 12, textAlign: 'center' },
+  modalDesc: { fontSize: 14, color: '#9CA3AF', lineHeight: 22, textAlign: 'center', marginBottom: 24 },
+  modalConfirmBtn: { width: '100%', paddingVertical: 14, borderRadius: 12, backgroundColor: '#EF4444', alignItems: 'center', marginBottom: 10 },
+  modalConfirmText: { fontSize: 15, fontWeight: '700', color: '#fff' },
+  modalKeepBtn: { width: '100%', paddingVertical: 14, borderRadius: 12, backgroundColor: 'rgba(124,58,237,0.12)', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(124,58,237,0.3)' },
+  modalKeepText: { fontSize: 15, fontWeight: '700', color: '#7C3AED' },
 });
