@@ -93,3 +93,6 @@ memory/test_credentials.md
 credentials.json
 *.key
 .credentials
+frontend/.metro-cache/
+test_venv/
+**/__pycache__/
