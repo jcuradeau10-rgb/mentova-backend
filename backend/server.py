@@ -78,7 +78,10 @@ ROOT_DIR = Path(__file__).parent
 UPLOADS_DIR = ROOT_DIR / "uploads"
 UPLOADS_DIR.mkdir(exist_ok=True)
 
-load_dotenv(ROOT_DIR / '.env')
+load_dotenv(ROOT_DIR / '.env', override=True)
+# Also try .env.render as fallback (for production without .env)
+if not os.environ.get('MONGO_URL'):
+    load_dotenv(ROOT_DIR / '.env.render', override=True)
 
 # Socket.IO server for real-time notifications
 sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*', logger=False)
