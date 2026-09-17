@@ -19,7 +19,7 @@ from datetime import datetime, timedelta, timezone
 import bcrypt
 import jwt
 import httpx
-import sib_api_v3_sdk
+# Email handled by services/email_service.py
 import base64
 import shutil
 import socketio
