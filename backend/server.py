@@ -936,73 +936,38 @@ def generate_reset_code():
     """Generate a 6-digit reset code"""
     return ''.join(random.choices(string.digits, k=6))
 
-def send_reset_email(to_email: str, reset_code: str) -> bool:
-    """Send password reset email via Resend"""
+def send_reset_email(to_email: str, reset_code: str, lang: str = "fr") -> bool:
+    """Send password reset email via Brevo, translated."""
     try:
+        tr = {
+            "fr": {"subject": "Votre code de reinitialisation - Mentova", "sub": "Votre plateforme crypto", "title": "Reinitialisation de mot de passe", "text": "Vous avez demande la reinitialisation de votre mot de passe. Voici votre code de verification :", "expires": "Ce code expire dans <strong style=\"color:#FFFFFF;\">15 minutes</strong>.", "ignore": "Si vous n'avez pas fait cette demande, ignorez cet email. Votre compte reste securise.", "footer": "Mentova Academy &mdash; Ne partagez jamais ce code avec personne."},
+            "en": {"subject": "Your reset code - Mentova", "sub": "Your crypto platform", "title": "Password reset", "text": "You requested a password reset. Here is your verification code:", "expires": "This code expires in <strong style=\"color:#FFFFFF;\">15 minutes</strong>.", "ignore": "If you didn't make this request, ignore this email. Your account remains secure.", "footer": "Mentova Academy &mdash; Never share this code with anyone."},
+            "es": {"subject": "Tu codigo de reinicio - Mentova", "sub": "Tu plataforma crypto", "title": "Reinicio de contrasena", "text": "Solicitaste un reinicio de contrasena. Aqui esta tu codigo de verificacion:", "expires": "Este codigo expira en <strong style=\"color:#FFFFFF;\">15 minutos</strong>.", "ignore": "Si no hiciste esta solicitud, ignora este email. Tu cuenta permanece segura.", "footer": "Mentova Academy &mdash; Nunca compartas este codigo con nadie."},
+        }
+        t = tr.get(lang, tr["en"])
         html_content = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="margin:0;padding:0;background-color:#0A0A1A;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0A0A1A;padding:40px 20px;">
-                <tr>
-                    <td align="center">
-                        <table width="480" cellpadding="0" cellspacing="0" style="background-color:#1A1A2E;border-radius:16px;overflow:hidden;">
-                            <tr>
-                                <td style="background:linear-gradient(135deg,#7C3AED,#5B21B6);padding:32px;text-align:center;">
-                                    <h1 style="margin:0;color:#FFFFFF;font-size:28px;font-weight:700;">Mentova</h1>
-                                    <p style="margin:8px 0 0;color:rgba(255,255,255,0.8);font-size:14px;">Votre plateforme crypto</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding:32px;">
-                                    <h2 style="margin:0 0 16px;color:#FFFFFF;font-size:20px;font-weight:600;">Reinitialisation de mot de passe</h2>
-                                    <p style="margin:0 0 24px;color:#8B8B9E;font-size:15px;line-height:1.6;">
-                                        Vous avez demande la reinitialisation de votre mot de passe. Voici votre code de verification :
-                                    </p>
-                                    <table width="100%" cellpadding="0" cellspacing="0">
-                                        <tr>
-                                            <td align="center" style="padding:24px 0;">
-                                                <div style="display:inline-block;background-color:#0A0A1A;border:2px solid #7C3AED;border-radius:12px;padding:16px 40px;">
-                                                    <span style="color:#FFFFFF;font-size:36px;font-weight:700;letter-spacing:12px;">{reset_code}</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                    <p style="margin:24px 0 0;color:#8B8B9E;font-size:13px;line-height:1.5;">
-                                        Ce code expire dans <strong style="color:#FFFFFF;">15 minutes</strong>.
-                                    </p>
-                                    <p style="margin:8px 0 0;color:#8B8B9E;font-size:13px;line-height:1.5;">
-                                        Si vous n'avez pas fait cette demande, ignorez cet email. Votre compte reste securise.
-                                    </p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding:0 32px 24px;">
-                                    <hr style="border:none;border-top:1px solid #2A2A4E;margin:0 0 16px;">
-                                    <p style="margin:0;color:#5A5A6E;font-size:12px;text-align:center;">
-                                        Mentova Academy &mdash; Ne partagez jamais ce code avec personne.
-                                    </p>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </body>
-        </html>
+        <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#1A1A2E;border-radius:16px;overflow:hidden;">
+            <div style="background:linear-gradient(135deg,#7C3AED,#5B21B6);padding:32px;text-align:center;">
+                <h1 style="margin:0;color:#FFFFFF;font-size:28px;font-weight:700;">Mentova</h1>
+                <p style="margin:8px 0 0;color:rgba(255,255,255,0.8);font-size:14px;">{t["sub"]}</p>
+            </div>
+            <div style="padding:32px;">
+                <h2 style="margin:0 0 16px;color:#FFFFFF;font-size:20px;font-weight:600;">{t["title"]}</h2>
+                <p style="margin:0 0 24px;color:#8B8B9E;font-size:15px;line-height:1.6;">{t["text"]}</p>
+                <div style="text-align:center;padding:24px 0;">
+                    <div style="display:inline-block;background-color:#0A0A1A;border:2px solid #7C3AED;border-radius:12px;padding:16px 40px;">
+                        <span style="color:#FFFFFF;font-size:36px;font-weight:700;letter-spacing:12px;">{reset_code}</span>
+                    </div>
+                </div>
+                <p style="margin:24px 0 0;color:#8B8B9E;font-size:13px;line-height:1.5;">{t["expires"]}</p>
+                <p style="margin:8px 0 0;color:#8B8B9E;font-size:13px;line-height:1.5;">{t["ignore"]}</p>
+                <hr style="border:none;border-top:1px solid #2A2A4E;margin:24px 0 16px;">
+                <p style="margin:0;color:#5A5A6E;font-size:12px;text-align:center;">{t["footer"]}</p>
+            </div>
+        </div>
         """
-
         from services.email_service import send_mentova_email
-        response = send_mentova_email(
-            to_email=to_email,
-            subject="Votre code de reinitialisation - Mentova",
-            html_content=html_content,
-        )
-
+        response = send_mentova_email(to_email=to_email, subject=t["subject"], html_content=html_content)
         logger.info(f"Password reset email sent to {to_email}, response: {response}")
         return True
     except Exception as e:
@@ -1018,8 +983,10 @@ async def forgot_password(request: ForgotPasswordRequest):
     if not user:
         return ForgotPasswordResponse(
             success=True,
-            message="Si cet email existe, un code de réinitialisation a été envoyé"
+            message="If this email exists, a reset code has been sent"
         )
+    
+    lang = user.get("language", "fr")
     
     # Generate reset code
     reset_code = generate_reset_code()
@@ -1034,8 +1001,8 @@ async def forgot_password(request: ForgotPasswordRequest):
         "created_at": datetime.utcnow()
     })
     
-    # Send email via Resend
-    email_sent = send_reset_email(request.email, reset_code)
+    # Send email via Brevo
+    email_sent = send_reset_email(request.email, reset_code, user.get("language", "fr"))
     
     if email_sent:
         logger.info(f"Password reset email sent to {request.email}")
