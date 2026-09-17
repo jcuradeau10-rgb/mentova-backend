@@ -40,6 +40,13 @@ export default function LoginScreen() {
       router.replace('/(tabs)/learn');
     } catch (e: any) {
       const detail = e?.response?.data?.detail || e?.message || 'Login failed';
+      if (detail === 'email_not_verified') {
+        // Redirect to verification page
+        const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
+        await AsyncStorage.setItem('pending_verify_email', email.trim());
+        router.replace('/verify-email');
+        return;
+      }
       const errorMap: Record<string, Record<string, string>> = {
         'Invalid email or password': { fr: 'Email ou mot de passe incorrect', en: 'Invalid email or password', es: 'Email o contrasena incorrectos' },
         'Account is locked': { fr: 'Compte verrouille', en: 'Account is locked', es: 'Cuenta bloqueada' },

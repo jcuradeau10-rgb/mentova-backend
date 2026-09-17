@@ -447,6 +447,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     name: str
+    language: Optional[str] = "fr"
     captcha_token: Optional[str] = None
 
 class UserLogin(BaseModel):
@@ -610,7 +611,14 @@ async def register(user_data: UserCreate):
             logger.warning(f"CAPTCHA verification failed for registration: {user_data.email}")
     else:
         logger.warning(f"No CAPTCHA token provided for registration: {user_data.email}")
-    
+
+    # Password validation: 8+ chars + at least 1 special character
+    if len(user_data.password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    import re as _re
+    if not _re.search(r'[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>/?`~]', user_data.password):
+        raise HTTPException(status_code=400, detail="Password must contain at least one special character")
+
     # Check if user exists
     existing_user = await db.users.find_one({"email": user_data.email})
     if existing_user:
@@ -618,9 +626,16 @@ async def register(user_data: UserCreate):
     
     # Determine role - super_admin for the designated email
     role = "super_admin" if user_data.email == SUPER_ADMIN_EMAIL else "user"
+
+    # Generate email verification code
+    import random
+    verify_code = str(random.randint(100000, 999999))
     
-    # Create user
+    # Create user (email_verified = False)
     user_id = str(uuid.uuid4())
+    lang = (user_data.language or "fr").lower()
+    if lang not in ("fr", "en", "es"):
+        lang = "fr"
     user_doc = {
         "id": user_id,
         "email": user_data.email,
@@ -630,6 +645,10 @@ async def register(user_data: UserCreate):
         "role": role,
         "is_banned": False,
         "community_score": 0,
+        "language": lang,
+        "email_verified": False,
+        "email_verify_code": verify_code,
+        "email_verify_sent_at": datetime.now(timezone.utc).isoformat(),
         "progress": {
             "modules_completed": [],
             "current_level": "beginner",
@@ -637,6 +656,30 @@ async def register(user_data: UserCreate):
         }
     }
     await db.users.insert_one(user_doc)
+
+    # Send verification email
+    try:
+        from services.email_service import send_mentova_email
+        email_tr = {
+            "fr": {"subject": "Confirmez votre email - Mentova Academy", "title": "Bienvenue sur Mentova!", "text": "Voici votre code de vérification:", "footer": "Si vous n'avez pas créé de compte, ignorez cet email."},
+            "en": {"subject": "Confirm your email - Mentova Academy", "title": "Welcome to Mentova!", "text": "Here is your verification code:", "footer": "If you didn't create an account, ignore this email."},
+            "es": {"subject": "Confirma tu email - Mentova Academy", "title": "¡Bienvenido a Mentova!", "text": "Aqui esta tu codigo de verificacion:", "footer": "Si no creaste una cuenta, ignora este email."},
+        }
+        et = email_tr.get(lang, email_tr["en"])
+        html = f"""
+        <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#09090b;color:#e4e4e7;padding:40px 32px;border-radius:16px;">
+            <h1 style="color:#a78bfa;font-size:24px;margin-bottom:8px;">{et["title"]}</h1>
+            <p style="font-size:16px;color:#a1a1aa;margin-bottom:24px;">{et["text"]}</p>
+            <div style="background:#18181b;border:2px solid #7c3aed;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
+                <span style="font-size:36px;font-weight:800;letter-spacing:8px;color:#fafafa;">{verify_code}</span>
+            </div>
+            <p style="font-size:12px;color:#71717a;text-align:center;">{et["footer"]}</p>
+        </div>
+        """
+        send_mentova_email(to_email=user_data.email, subject=et["subject"], html_content=html)
+        logger.info(f"Verification email sent to {user_data.email}")
+    except Exception as e:
+        logger.error(f"Failed to send verification email: {e}")
     
     token = create_token(user_id)
     return TokenResponse(
@@ -651,6 +694,69 @@ async def register(user_data: UserCreate):
             is_banned=False
         )
     )
+
+
+@api_router.post("/auth/verify-email")
+async def verify_email(body: dict = Body(...)):
+    """Verify email with 6-digit code."""
+    email = body.get("email", "").strip().lower()
+    code = body.get("code", "").strip()
+    if not email or not code:
+        raise HTTPException(status_code=400, detail="Email and code required")
+    user = await db.users.find_one({"email": email})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if user.get("email_verified"):
+        return {"success": True, "message": "Email already verified"}
+    if user.get("email_verify_code") != code:
+        raise HTTPException(status_code=400, detail="Invalid verification code")
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"email_verified": True}, "$unset": {"email_verify_code": "", "email_verify_sent_at": ""}}
+    )
+    return {"success": True, "message": "Email verified successfully"}
+
+@api_router.post("/auth/resend-verification")
+async def resend_verification(body: dict = Body(...)):
+    """Resend email verification code."""
+    email = body.get("email", "").strip().lower()
+    if not email:
+        raise HTTPException(status_code=400, detail="Email required")
+    user = await db.users.find_one({"email": email})
+    if not user:
+        return {"success": True}  # Don't reveal if email exists
+    if user.get("email_verified"):
+        return {"success": True, "message": "Already verified"}
+    import random
+    verify_code = str(random.randint(100000, 999999))
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"email_verify_code": verify_code, "email_verify_sent_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    try:
+        from services.email_service import send_mentova_email
+        lang = user.get("language", "fr")
+        email_tr = {
+            "fr": {"subject": "Nouveau code de vérification - Mentova", "title": "Nouveau code", "text": "Voici votre nouveau code:", "footer": "Si vous n'avez pas demandé ce code, ignorez cet email."},
+            "en": {"subject": "New verification code - Mentova", "title": "New code", "text": "Here is your new code:", "footer": "If you didn't request this code, ignore this email."},
+            "es": {"subject": "Nuevo codigo de verificacion - Mentova", "title": "Nuevo codigo", "text": "Aqui esta tu nuevo codigo:", "footer": "Si no solicitaste este codigo, ignora este email."},
+        }
+        et = email_tr.get(lang, email_tr["en"])
+        html = f"""
+        <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#09090b;color:#e4e4e7;padding:40px 32px;border-radius:16px;">
+            <h1 style="color:#a78bfa;font-size:24px;margin-bottom:8px;">{et["title"]}</h1>
+            <p style="font-size:16px;color:#a1a1aa;margin-bottom:24px;">{et["text"]}</p>
+            <div style="background:#18181b;border:2px solid #7c3aed;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
+                <span style="font-size:36px;font-weight:800;letter-spacing:8px;color:#fafafa;">{verify_code}</span>
+            </div>
+            <p style="font-size:12px;color:#71717a;text-align:center;">{et["footer"]}</p>
+        </div>
+        """
+        send_mentova_email(to_email=email, subject=et["subject"], html_content=html)
+    except Exception as e:
+        logger.error(f"Failed to resend verification email: {e}")
+    return {"success": True}
+
 
 @api_router.post("/auth/login")
 async def login(credentials: UserLogin):
@@ -672,6 +778,10 @@ async def login(credentials: UserLogin):
     
     if not verify_password(credentials.password, stored_hash):
         raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Check email verification (skip for super_admin)
+    if not user.get("email_verified") and user.get("email") != SUPER_ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="email_not_verified")
     
     # Check if user is banned
     if user.get("is_banned", False):
