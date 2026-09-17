@@ -1737,6 +1737,17 @@ async def admin_deactivate_vip(user_id: str, current_user: dict = Depends(get_su
 
 
 
+@api_router.post("/admin/migrate-verify-existing")
+async def migrate_verify_existing(current_user: dict = Depends(get_super_admin_user)):
+    """One-time migration: mark all existing users without email_verified as verified."""
+    result = await db.users.update_many(
+        {"email_verified": {"$exists": False}},
+        {"$set": {"email_verified": True}}
+    )
+    return {"success": True, "modified": result.modified_count}
+
+
+
 @api_router.get("/vip/checkout/status/{session_id}")
 async def get_checkout_status(
     session_id: str,
