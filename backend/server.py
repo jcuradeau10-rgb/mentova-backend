@@ -763,6 +763,7 @@ async def resend_verification(body: dict = Body(...)):
 
 @api_router.post("/auth/login")
 async def login(credentials: UserLogin):
+  try:
     # Verify CAPTCHA (non-blocking: log warning if missing but allow login)
     if credentials.captcha_token:
         captcha_valid = await verify_recaptcha(credentials.captcha_token)
@@ -829,6 +830,11 @@ async def login(credentials: UserLogin):
             founding_member=user.get("founding_member", False)
         )
     )
+  except HTTPException:
+    raise
+  except Exception as e:
+    logger.error(f"Login error for {credentials.email}: {type(e).__name__}: {e}")
+    raise HTTPException(status_code=500, detail=f"Login error: {str(e)}")
 
 @api_router.get("/auth/me", response_model=UserResponse)
 async def get_me(current_user: dict = Depends(get_current_user)):
