@@ -649,21 +649,21 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
         </TouchableOpacity>
         <ScrollView style={{ flex: 1 }}>
           {conversations.map(c => (
-            <TouchableOpacity key={c.id} style={[s.convItem, activeConvId === c.id && s.convItemActive]} onPress={() => loadConversation(c.id)} data-testid={`conv-${c.id}`}>
-              <View style={{ flex: 1 }}>
+            <View key={c.id} style={[s.convItem, activeConvId === c.id && s.convItemActive]}>
+              <TouchableOpacity style={{ flex: 1 }} onPress={() => loadConversation(c.id)} data-testid={`conv-${c.id}`}>
                 {renamingConvId === c.id ? (
                   <TextInput style={[s.convTitle, { borderBottomWidth: 1, borderBottomColor: '#A78BFA', paddingVertical: 2 }]} value={renameText} onChangeText={setRenameText} autoFocus onSubmitEditing={() => renameConversation(c.id)} onBlur={() => renameConversation(c.id)} maxLength={200} />
                 ) : (
                   <><Text style={s.convTitle} numberOfLines={1}>{c.title}</Text><Text style={s.convMeta}>{c.message_count} {tAtlas("chat.messages", lang)}</Text></>
                 )}
-              </View>
+              </TouchableOpacity>
               {renamingConvId !== c.id && (
-                <View style={{ flexDirection: 'row', gap: 8 }}>
-                  <TouchableOpacity onPress={() => { setRenamingConvId(c.id); setRenameText(c.title); }} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}><Ionicons name="pencil-outline" size={16} color="#475569" /></TouchableOpacity>
-                  <TouchableOpacity onPress={() => deleteConversation(c.id)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}><Ionicons name="trash-outline" size={16} color="#475569" /></TouchableOpacity>
+                <View style={{ flexDirection: 'row', gap: 12, paddingLeft: 8 }}>
+                  <TouchableOpacity onPress={() => { setRenamingConvId(c.id); setRenameText(c.title); }} style={{ padding: 6 }} data-testid={`conv-rename-${c.id}`}><Ionicons name="pencil-outline" size={18} color="#475569" /></TouchableOpacity>
+                  <TouchableOpacity onPress={() => deleteConversation(c.id)} style={{ padding: 6 }} data-testid={`conv-delete-${c.id}`}><Ionicons name="trash-outline" size={18} color="#EF4444" /></TouchableOpacity>
                 </View>
               )}
-            </TouchableOpacity>
+            </View>
           ))}
           {conversations.length === 0 && !loadingConvos && <Text style={s.emptyText}>{tAtlas("chat.empty", lang)}</Text>}
         </ScrollView>

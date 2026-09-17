@@ -27,6 +27,8 @@ const typeIcons: Record<string, { icon: string; color: string }> = {
   vip_activated: { icon: 'diamond', color: '#B8860B' },
   price_alert: { icon: 'trending-up', color: '#8B5CF6' },
   story_reaction: { icon: 'star', color: '#F59E0B' },
+  streak_reminder: { icon: 'flame', color: '#F97316' },
+  feedback_received: { icon: 'chatbubble-ellipses', color: '#7C3AED' },
   default: { icon: 'notifications', color: '#7C3AED' },
 };
 

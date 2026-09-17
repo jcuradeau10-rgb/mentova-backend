@@ -5097,6 +5097,86 @@ async def mark_notifications_as_read(
     return {"success": True}
 
 
+@api_router.post("/cron/streak-reminders")
+async def send_streak_reminders(secret: str = ""):
+    """Send push notifications to remind users about their daily streaks.
+    Called by an external cron job (e.g., Render cron at ~18:00 UTC daily)."""
+    cron_secret = os.environ.get("CRON_SECRET", "mentova-cron-2026")
+    if secret != cron_secret:
+        raise HTTPException(status_code=403, detail="Invalid cron secret")
+
+    from routes.atlas_v3 import _compute_streak
+    today = datetime.now(timezone.utc).date()
+    sent_count = 0
+
+    # Find all users with push tokens
+    active_tokens = await db.push_tokens.find({"is_active": True}).to_list(5000)
+    user_ids_with_tokens = list(set(t["user_id"] for t in active_tokens))
+
+    for user_id in user_ids_with_tokens:
+        user = await db.users.find_one({"id": user_id})
+        if not user or user.get("is_banned"):
+            continue
+        lang = user.get("language", "fr")
+
+        # Compute streak
+        quiz_dates = []
+        async for doc in db.quiz_attempts.find({"user_id": user_id}, {"created_at": 1}):
+            ca = doc.get("created_at")
+            if isinstance(ca, str):
+                try:
+                    ca = datetime.fromisoformat(ca.replace("Z", "+00:00"))
+                except ValueError:
+                    continue
+            if isinstance(ca, datetime):
+                quiz_dates.append(ca)
+
+        streak = _compute_streak(quiz_dates)
+
+        # Check if user already did a quiz today
+        has_today = any(
+            (d.date() if isinstance(d, datetime) else d) == today
+            for d in quiz_dates
+        )
+
+        if has_today:
+            continue  # Already active today, no reminder needed
+
+        # Craft message based on streak status
+        if streak > 0:
+            # User has an active streak but hasn't practiced today — at risk of losing it
+            msgs = {
+                "fr": {"title": f"Streak de {streak} jour{'s' if streak > 1 else ''}!", "body": f"Ne perdez pas votre streak de {streak} jour{'s' if streak > 1 else ''}! Un petit quiz avec Caufid pour continuer?"},
+                "en": {"title": f"{streak}-day streak!", "body": f"Don't lose your {streak}-day streak! A quick quiz with Caufid to keep it going?"},
+                "es": {"title": f"Racha de {streak} dia{'s' if streak > 1 else ''}!", "body": f"No pierdas tu racha de {streak} dia{'s' if streak > 1 else ''}! Un quiz rapido con Caufid?"},
+            }
+        else:
+            # User has no active streak — encourage them to start one
+            msgs = {
+                "fr": {"title": "Commencez votre streak!", "body": "Un quiz par jour pour progresser en crypto. Caufid vous attend!"},
+                "en": {"title": "Start your streak!", "body": "One quiz a day to progress in crypto. Caufid is waiting for you!"},
+                "es": {"title": "Empieza tu racha!", "body": "Un quiz al dia para progresar en crypto. Caufid te espera!"},
+            }
+
+        msg = msgs.get(lang, msgs["en"])
+        try:
+            await send_notification_to_user(
+                user_id=user_id,
+                title=msg["title"],
+                body=msg["body"],
+                notification_type="streak_reminder",
+                data={"action": "open_quiz"}
+            )
+            sent_count += 1
+        except Exception as e:
+            logger.error(f"Failed to send streak reminder to {user_id}: {e}")
+
+    logger.info(f"Streak reminders sent: {sent_count}/{len(user_ids_with_tokens)}")
+    return {"success": True, "sent": sent_count, "total_users": len(user_ids_with_tokens)}
+
+
+
+
 async def send_notification_to_user(
     user_id: str,
     body: str,

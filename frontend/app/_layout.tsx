@@ -5,6 +5,7 @@ import { View, ActivityIndicator, Platform } from 'react-native';
 import { useAuthStore } from '../store/authStore';
 import { useLanguageStore } from '../store/languageStore';
 import { useThemeStore } from '../store/themeStore';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 
 // Inject CSS keyframes for aurora animations (web only)
 if (Platform.OS === 'web' && typeof document !== 'undefined') {
@@ -48,6 +49,9 @@ export default function RootLayout() {
     };
     initApp();
   }, []);
+
+  // Register for push notifications
+  usePushNotifications();
 
   // Wait for language to be loaded before rendering
   if (!appReady) {
