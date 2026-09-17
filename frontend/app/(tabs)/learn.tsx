@@ -74,6 +74,9 @@ const i18n: Record<string, Record<string, string>> = {
   'gam.days': { fr: 'jours', en: 'days', es: 'días' },
   'gam.badges': { fr: 'Badges', en: 'Badges', es: 'Insignias' },
   'gam.earned': { fr: 'obtenus', en: 'earned', es: 'obtenidas' },
+  'gam.unlocked': { fr: 'Nouveau badge !', en: 'Badge unlocked!', es: 'Nueva insignia!' },
+  'gam.congrats': { fr: 'Félicitations !', en: 'Congratulations!', es: 'Felicidades!' },
+  'gam.keep_going': { fr: 'Continue comme ça !', en: 'Keep it up!', es: 'Sigue asi!' },
   'prog.in_progress': { fr: 'En cours', en: 'In progress', es: 'En curso' },
   'prog.mastered': { fr: 'Maîtrisés', en: 'Mastered', es: 'Dominados' },
   'prog.onboarding_hint': { fr: 'Discute avec Caufid pour évaluer ton niveau', en: 'Chat with Caufid to evaluate your level', es: 'Habla con Caufid para evaluar tu nivel' },
@@ -138,6 +141,72 @@ function api(path: string, token: string, opts: any = {}) {
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, ...(opts.headers || {}) },
   }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); });
 }
+
+// ============ BADGE CELEBRATION ============
+function BadgeCelebration({ badge, lang, onClose }: { badge: any; lang: string; onClose: () => void }) {
+  const scale = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  const shine = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.sequence([
+      Animated.parallel([
+        Animated.spring(scale, { toValue: 1, friction: 4, tension: 80, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 1, duration: 300, useNativeDriver: true }),
+      ]),
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(shine, { toValue: 1, duration: 1500, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+          Animated.timing(shine, { toValue: 0, duration: 1500, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        ])
+      ),
+    ]).start();
+    const timer = setTimeout(onClose, 4500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const badgeName = badge?.name?.[lang] || badge?.name?.en || '';
+
+  return (
+    <Animated.View style={[{
+      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.65)', justifyContent: 'center', alignItems: 'center', zIndex: 200,
+    }, { opacity }]} data-testid="badge-celebration">
+      <Animated.View style={{
+        transform: [{ scale }],
+        alignItems: 'center', backgroundColor: '#0F0A1E', borderRadius: 24,
+        padding: 36, borderWidth: 1, borderColor: 'rgba(167,139,250,0.25)',
+        minWidth: 260, maxWidth: 340,
+      }}>
+        <Text style={{ fontSize: 12, fontWeight: '700', color: '#A78BFA', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 16 }}>
+          {tAtlas('gam.congrats', lang)}
+        </Text>
+        <Animated.View style={{
+          width: 80, height: 80, borderRadius: 24,
+          backgroundColor: 'rgba(167,139,250,0.15)', borderWidth: 2, borderColor: 'rgba(167,139,250,0.4)',
+          alignItems: 'center', justifyContent: 'center', marginBottom: 16,
+          opacity: shine.interpolate({ inputRange: [0, 1], outputRange: [0.8, 1] }),
+          transform: [{ scale: shine.interpolate({ inputRange: [0, 1], outputRange: [1, 1.05] }) }],
+        }}>
+          <Ionicons name={(badge?.icon || 'ribbon') as any} size={36} color="#A78BFA" />
+        </Animated.View>
+        <Text style={{ fontSize: 18, fontWeight: '800', color: '#F1F5F9', marginBottom: 4, textAlign: 'center' }}>
+          {badgeName}
+        </Text>
+        <Text style={{ fontSize: 13, color: '#64748B', textAlign: 'center', marginBottom: 20 }}>
+          {tAtlas('gam.keep_going', lang)}
+        </Text>
+        <TouchableOpacity onPress={onClose} style={{
+          paddingHorizontal: 24, paddingVertical: 10, borderRadius: 10,
+          backgroundColor: 'rgba(167,139,250,0.15)', borderWidth: 1, borderColor: 'rgba(167,139,250,0.2)',
+        }} data-testid="badge-celebration-close">
+          <Text style={{ fontSize: 13, fontWeight: '600', color: '#A78BFA' }}>OK</Text>
+        </TouchableOpacity>
+      </Animated.View>
+    </Animated.View>
+  );
+}
+
 
 // ============ THINKING ANIMATION ============
 function ThinkingIndicator({ lang, isChart }: { lang: string; isChart?: boolean }) {
@@ -336,6 +405,8 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
   const [renamingConvId, setRenamingConvId] = useState<string | null>(null);
   const [renameText, setRenameText] = useState('');
   const [latestAssistantIdx, setLatestAssistantIdx] = useState<number>(-1);
+  const [celebrationBadge, setCelebrationBadge] = useState<any>(null);
+  const earnedBadgeIdsRef = useRef<Set<string>>(new Set());
   const scrollRef = useRef<ScrollView>(null);
   const router = useRouter();
   const { setLanguage } = useTranslation();
@@ -383,6 +454,26 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
   useEffect(() => {
     fetch(`${API}/api/vip/permissions`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json()).then(d => setIsVip(!!d.is_vip)).catch(() => {});
+    // Load initial badges for comparison
+    fetch(`${API}/api/atlas/gamification`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json()).then(d => {
+        const earned = (d.badges || []).filter((b: any) => b.earned).map((b: any) => b.id);
+        earnedBadgeIdsRef.current = new Set(earned);
+      }).catch(() => {});
+  }, [token]);
+
+  const checkNewBadges = useCallback(async () => {
+    try {
+      const data = await api('/api/atlas/gamification', token);
+      const currentEarned = (data.badges || []).filter((b: any) => b.earned);
+      for (const badge of currentEarned) {
+        if (!earnedBadgeIdsRef.current.has(badge.id)) {
+          earnedBadgeIdsRef.current.add(badge.id);
+          setCelebrationBadge(badge);
+          return;
+        }
+      }
+    } catch { /* silent */ }
   }, [token]);
 
   const loadConversations = useCallback(async () => {
@@ -444,7 +535,9 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
     }
     setLoading(false);
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 200);
-  }, [input, loading, activeConvId, token, lang, loadConversations]);
+    // Check for new badges after each response
+    setTimeout(() => checkNewBadges(), 1500);
+  }, [input, loading, activeConvId, token, lang, loadConversations, checkNewBadges]);
 
   const newConversation = () => { setActiveConvId(null); setMessages([]); setShowSidebar(false); };
 
@@ -694,6 +787,11 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
 
       {/* VIP Modal */}
       <VipUpgradeModal visible={showVipModal} onClose={() => setShowVipModal(false)} lang={lang} token={token} />
+
+      {/* Badge Celebration */}
+      {celebrationBadge && (
+        <BadgeCelebration badge={celebrationBadge} lang={lang} onClose={() => setCelebrationBadge(null)} />
+      )}
     </KeyboardAvoidingView>
   );
 }
