@@ -96,4 +96,3 @@ credentials.json
 frontend/.metro-cache/
 test_venv/
 **/__pycache__/
-backend/.env
