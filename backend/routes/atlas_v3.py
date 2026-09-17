@@ -9,7 +9,7 @@ from typing import Optional, List, Dict, Any
 import os, logging, json, time, uuid
 import sys
 import jwt
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from openai import AsyncOpenAI
 from models.atlas_models import (
     UserLearningProfile, AtlasMemory, AtlasConversation,
@@ -931,3 +931,132 @@ async def get_learning_progress(credentials: HTTPAuthorizationCredentials = Depe
         "recent_quizzes": quizzes[:10],
         "total_quiz_attempts": len(quizzes),
     }
+
+
+# ============ GAMIFICATION: BADGES & STREAKS ============
+
+BADGE_DEFINITIONS = [
+    {"id": "first_quiz", "icon": "ribbon", "threshold": 1, "type": "quiz_count"},
+    {"id": "quiz_5", "icon": "medal", "threshold": 5, "type": "quiz_count"},
+    {"id": "quiz_20", "icon": "trophy", "threshold": 20, "type": "quiz_count"},
+    {"id": "quiz_50", "icon": "star", "threshold": 50, "type": "quiz_count"},
+    {"id": "perfect_score", "icon": "flash", "threshold": 100, "type": "best_score"},
+    {"id": "streak_3", "icon": "flame", "threshold": 3, "type": "streak"},
+    {"id": "streak_7", "icon": "bonfire", "threshold": 7, "type": "streak"},
+    {"id": "streak_30", "icon": "diamond", "threshold": 30, "type": "streak"},
+    {"id": "module_mastered_1", "icon": "school", "threshold": 1, "type": "modules_mastered"},
+    {"id": "module_mastered_5", "icon": "library", "threshold": 5, "type": "modules_mastered"},
+    {"id": "module_mastered_10", "icon": "planet", "threshold": 10, "type": "modules_mastered"},
+]
+
+BADGE_NAMES = {
+    "first_quiz": {"fr": "Premier Quiz", "en": "First Quiz", "es": "Primer Quiz"},
+    "quiz_5": {"fr": "5 Quiz complétés", "en": "5 Quizzes Done", "es": "5 Quiz completados"},
+    "quiz_20": {"fr": "20 Quiz complétés", "en": "20 Quizzes Done", "es": "20 Quiz completados"},
+    "quiz_50": {"fr": "50 Quiz complétés", "en": "50 Quizzes Done", "es": "50 Quiz completados"},
+    "perfect_score": {"fr": "Score parfait", "en": "Perfect Score", "es": "Puntuación perfecta"},
+    "streak_3": {"fr": "Streak 3 jours", "en": "3-Day Streak", "es": "Racha de 3 días"},
+    "streak_7": {"fr": "Streak 7 jours", "en": "7-Day Streak", "es": "Racha de 7 días"},
+    "streak_30": {"fr": "Streak 30 jours", "en": "30-Day Streak", "es": "Racha de 30 días"},
+    "module_mastered_1": {"fr": "Premier module maîtrisé", "en": "First Module Mastered", "es": "Primer módulo dominado"},
+    "module_mastered_5": {"fr": "5 modules maîtrisés", "en": "5 Modules Mastered", "es": "5 módulos dominados"},
+    "module_mastered_10": {"fr": "10 modules maîtrisés", "en": "10 Modules Mastered", "es": "10 módulos dominados"},
+}
+
+
+def _compute_streak(quiz_dates: list) -> int:
+    """Compute current daily streak from quiz attempt dates."""
+    if not quiz_dates:
+        return 0
+    today = datetime.now(timezone.utc).date()
+    unique_days = sorted(set(d.date() if isinstance(d, datetime) else d for d in quiz_dates), reverse=True)
+    if not unique_days:
+        return 0
+    # Check if today or yesterday has activity (streak is still alive)
+    if unique_days[0] < today - timedelta(days=1):
+        return 0
+    streak = 1
+    for i in range(1, len(unique_days)):
+        if unique_days[i] == unique_days[i - 1] - timedelta(days=1):
+            streak += 1
+        else:
+            break
+    return streak
+
+
+@atlas_router.get("/gamification")
+async def get_gamification(credentials: HTTPAuthorizationCredentials = Depends(optional_security)):
+    """Get badges, streaks, and gamification stats for the user."""
+    user_id = await _get_authenticated_user(credentials)
+    db = _get_db()
+    if db is None:
+        return {"streak": 0, "badges": [], "stats": {}}
+
+    # Gather quiz data
+    quiz_dates = []
+    quiz_count = 0
+    best_score = 0
+    async for doc in db.quiz_attempts.find({"user_id": user_id}, {"created_at": 1, "score": 1}):
+        quiz_count += 1
+        if doc.get("score", 0) > best_score:
+            best_score = doc["score"]
+        ca = doc.get("created_at")
+        if ca:
+            if isinstance(ca, str):
+                try:
+                    ca = datetime.fromisoformat(ca.replace("Z", "+00:00"))
+                except ValueError:
+                    continue
+            quiz_dates.append(ca)
+
+    # Modules mastered
+    mastered_count = await db.learning_modules.count_documents({"user_id": user_id, "status": "mastered"})
+
+    # Compute streak
+    streak = _compute_streak(quiz_dates)
+
+    # Compute badges
+    metrics = {
+        "quiz_count": quiz_count,
+        "best_score": best_score,
+        "streak": streak,
+        "modules_mastered": mastered_count,
+    }
+
+    earned_badges = []
+    for badge_def in BADGE_DEFINITIONS:
+        metric_val = metrics.get(badge_def["type"], 0)
+        if metric_val >= badge_def["threshold"]:
+            names = BADGE_NAMES.get(badge_def["id"], {})
+            earned_badges.append({
+                "id": badge_def["id"],
+                "icon": badge_def["icon"],
+                "name": names,
+                "earned": True,
+            })
+
+    # All possible badges for display
+    all_badges = []
+    for badge_def in BADGE_DEFINITIONS:
+        metric_val = metrics.get(badge_def["type"], 0)
+        names = BADGE_NAMES.get(badge_def["id"], {})
+        all_badges.append({
+            "id": badge_def["id"],
+            "icon": badge_def["icon"],
+            "name": names,
+            "earned": metric_val >= badge_def["threshold"],
+            "progress": min(metric_val / badge_def["threshold"], 1.0) if badge_def["threshold"] > 0 else 0,
+        })
+
+    return {
+        "streak": streak,
+        "badges": all_badges,
+        "earned_count": len(earned_badges),
+        "total_badges": len(BADGE_DEFINITIONS),
+        "stats": {
+            "total_quizzes": quiz_count,
+            "best_score": round(best_score, 1),
+            "modules_mastered": mastered_count,
+        },
+    }
+

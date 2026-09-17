@@ -69,6 +69,11 @@ const i18n: Record<string, Record<string, string>> = {
   'prog.categories': { fr: 'Par catégorie', en: 'By category', es: 'Por categoría' },
   'prog.recent_quiz': { fr: 'Derniers quiz', en: 'Recent quizzes', es: 'Últimos quiz' },
   'prog.total': { fr: 'Total', en: 'Total', es: 'Total' },
+  // Gamification
+  'gam.streak': { fr: 'Streak', en: 'Streak', es: 'Racha' },
+  'gam.days': { fr: 'jours', en: 'days', es: 'días' },
+  'gam.badges': { fr: 'Badges', en: 'Badges', es: 'Insignias' },
+  'gam.earned': { fr: 'obtenus', en: 'earned', es: 'obtenidas' },
   'prog.in_progress': { fr: 'En cours', en: 'In progress', es: 'En curso' },
   'prog.mastered': { fr: 'Maîtrisés', en: 'Mastered', es: 'Dominados' },
   'prog.onboarding_hint': { fr: 'Discute avec Caufid pour évaluer ton niveau', en: 'Chat with Caufid to evaluate your level', es: 'Habla con Caufid para evaluar tu nivel' },
@@ -186,7 +191,9 @@ function ThinkingIndicator({ lang, isChart }: { lang: string; isChart?: boolean 
 }
 
 // ============ VIP UPGRADE MODAL ============
-function VipUpgradeModal({ visible, onClose, lang, onUpgrade }: { visible: boolean; onClose: () => void; lang: string; onUpgrade: () => void }) {
+function VipUpgradeModal({ visible, onClose, lang, token }: { visible: boolean; onClose: () => void; lang: string; token: string }) {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const features = [
     { key: 'memory', icon: 'bulb-outline' as const },
     { key: 'chart', icon: 'analytics-outline' as const },
@@ -194,6 +201,33 @@ function VipUpgradeModal({ visible, onClose, lang, onUpgrade }: { visible: boole
     { key: 'learn', icon: 'school-outline' as const },
     { key: 'briefing', icon: 'today-outline' as const },
   ];
+
+  const handleUpgrade = async () => {
+    if (!token) { onClose(); router.push('/login'); return; }
+    setLoading(true);
+    try {
+      const origin = Platform.OS === 'web' ? window.location.origin : 'https://app.mentova-academy.com';
+      const res = await fetch(`${API}/api/vip/checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ origin_url: origin }),
+      });
+      const data = await res.json();
+      if (data.checkout_url) {
+        onClose();
+        if (Platform.OS === 'web') window.open(data.checkout_url, '_self');
+      } else if (data.detail) {
+        // Already VIP or error — navigate to VIP hub
+        onClose();
+        router.push('/vip/hub');
+      }
+    } catch (e) {
+      console.error('Checkout error:', e);
+      onClose();
+      router.push('/vip');
+    }
+    finally { setLoading(false); }
+  };
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -234,9 +268,9 @@ function VipUpgradeModal({ visible, onClose, lang, onUpgrade }: { visible: boole
           </View>
 
           {/* CTA */}
-          <TouchableOpacity style={s.vipCta} onPress={onUpgrade} data-testid="vip-upgrade-btn">
-            <Ionicons name="diamond" size={16} color="#0B0914" />
-            <Text style={s.vipCtaText}>{tAtlas('vip.cta', lang)}</Text>
+          <TouchableOpacity style={[s.vipCta, loading && { opacity: 0.6 }]} onPress={handleUpgrade} disabled={loading} data-testid="vip-upgrade-btn">
+            {loading ? <ActivityIndicator size="small" color="#0B0914" /> : <Ionicons name="diamond" size={16} color="#0B0914" />}
+            <Text style={s.vipCtaText}>{loading ? '...' : tAtlas('vip.cta', lang)}</Text>
           </TouchableOpacity>
           <Text style={s.vipCancel}>{tAtlas('vip.cancel', lang)}</Text>
         </View>
@@ -659,7 +693,7 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
       </View>
 
       {/* VIP Modal */}
-      <VipUpgradeModal visible={showVipModal} onClose={() => setShowVipModal(false)} lang={lang} onUpgrade={() => { setShowVipModal(false); router.push('/vip'); }} />
+      <VipUpgradeModal visible={showVipModal} onClose={() => setShowVipModal(false)} lang={lang} token={token} />
     </KeyboardAvoidingView>
   );
 }
@@ -783,9 +817,15 @@ function ModulesView({ token, lang, onContinueModule }: { token: string; lang: s
 // ============ PROGRESS VIEW ============
 function ProgressView({ token, lang }: { token: string; lang: string }) {
   const [data, setData] = useState<any>(null);
+  const [gamData, setGamData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { api('/api/atlas/progress', token).then(d => { setData(d); setLoading(false); }).catch(() => setLoading(false)); }, [token]);
+  useEffect(() => {
+    Promise.all([
+      api('/api/atlas/progress', token).catch(() => null),
+      api('/api/atlas/gamification', token).catch(() => null),
+    ]).then(([prog, gam]) => { setData(prog); setGamData(gam); setLoading(false); });
+  }, [token]);
 
   if (loading) return <ActivityIndicator size="large" color="#A78BFA" style={{ marginTop: 40 }} />;
   if (!data) return <Text style={{ color: '#64748B', textAlign: 'center', marginTop: 40 }}>{tAtlas('prog.error', lang)}</Text>;
@@ -806,6 +846,39 @@ function ProgressView({ token, lang }: { token: string; lang: string }) {
 
   return (
     <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
+      {/* Streak & Badges */}
+      {gamData && (
+        <>
+          <View style={s.progressCard}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+              <Text style={s.progressCardTitle}>{tAtlas('gam.streak', lang)}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Ionicons name="flame" size={22} color={gamData.streak > 0 ? '#F59E0B' : '#334155'} />
+                <Text style={{ fontSize: 24, fontWeight: '800', color: gamData.streak > 0 ? '#F59E0B' : '#64748B' }}>{gamData.streak}</Text>
+                <Text style={{ fontSize: 12, color: '#64748B' }}>{tAtlas('gam.days', lang)}</Text>
+              </View>
+            </View>
+          </View>
+          <View style={s.progressCard}>
+            <Text style={s.progressCardTitle}>{tAtlas('gam.badges', lang)} ({gamData.earned_count}/{gamData.total_badges} {tAtlas('gam.earned', lang)})</Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 }}>
+              {(gamData.badges || []).map((b: any) => (
+                <View key={b.id} style={{ alignItems: 'center', width: 72, opacity: b.earned ? 1 : 0.3 }} data-testid={`badge-${b.id}`}>
+                  <View style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: b.earned ? 'rgba(167,139,250,0.15)' : 'rgba(255,255,255,0.03)', borderWidth: 1, borderColor: b.earned ? 'rgba(167,139,250,0.3)' : 'rgba(255,255,255,0.05)', alignItems: 'center', justifyContent: 'center', marginBottom: 4 }}>
+                    <Ionicons name={b.icon as any} size={20} color={b.earned ? '#A78BFA' : '#334155'} />
+                  </View>
+                  <Text style={{ fontSize: 9, color: b.earned ? '#E2E8F0' : '#475569', textAlign: 'center', lineHeight: 12 }} numberOfLines={2}>{b.name?.[lang] || b.name?.en || b.id}</Text>
+                  {!b.earned && b.progress > 0 && (
+                    <View style={{ width: 36, height: 2, borderRadius: 1, backgroundColor: 'rgba(255,255,255,0.06)', marginTop: 3 }}>
+                      <View style={{ width: `${Math.round(b.progress * 100)}%`, height: 2, borderRadius: 1, backgroundColor: '#A78BFA' }} />
+                    </View>
+                  )}
+                </View>
+              ))}
+            </View>
+          </View>
+        </>
+      )}
       <View style={s.progressCard}><Text style={s.progressCardTitle}>{tAtlas('prog.level', lang)}</Text><View style={s.levelRow}><View style={[s.levelBadge, { backgroundColor: (levelColors[profile.overall_level] || '#64748B') + '20' }]}><Text style={[s.levelBadgeText, { color: levelColors[profile.overall_level] || '#64748B' }]}>{levelLabels(profile.overall_level || 'unknown')}</Text></View>{!profile.onboarding_completed && <Text style={s.onboardingHint}>{tAtlas('prog.onboarding_hint', lang)}</Text>}</View></View>
       <View style={s.progressCard}><Text style={s.progressCardTitle}>{tAtlas('prog.skills', lang)}</Text>{skillFields.map(sf => { const val = profile[sf.key] || 0; return <View key={sf.key} style={s.skillRow}><Ionicons name={sf.icon as any} size={16} color="#64748B" style={{ width: 24 }} /><Text style={s.skillLabel}>{sf.label}</Text><View style={s.skillBarBg}><View style={[s.skillBarFill, { width: `${val * 10}%` }]} /></View><Text style={s.skillVal}>{val}/10</Text></View>; })}</View>
       <View style={s.progressCard}><Text style={s.progressCardTitle}>{tAtlas('prog.modules', lang)}</Text><View style={s.statsRow}><View style={s.statBox}><Text style={s.statNum}>{summary.total || 0}</Text><Text style={s.statLabel}>{tAtlas('prog.total', lang)}</Text></View><View style={s.statBox}><Text style={[s.statNum, { color: '#3B82F6' }]}>{summary.in_progress || 0}</Text><Text style={s.statLabel}>{tAtlas('prog.in_progress', lang)}</Text></View><View style={s.statBox}><Text style={[s.statNum, { color: '#F59E0B' }]}>{summary.mastered || 0}</Text><Text style={s.statLabel}>{tAtlas('prog.mastered', lang)}</Text></View></View></View>
