@@ -65,7 +65,7 @@ interface MenuItem {
 const getMenuItems = (t: (key: string) => string): MenuItem[] => [
   {
     id: 'learn',
-    title: 'Atlas',
+    title: 'Caufid',
     subtitle: t('home.coursesQuiz'),
     icon: 'planet',
     color: '#7C3AED',
@@ -692,7 +692,7 @@ export default function HomeScreen() {
                 <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(124, 58, 237, 0.15)' }]}>
                   <Ionicons name="planet" size={24} color="#7C3AED" />
                 </View>
-                <Text style={styles.quickActionText}>Atlas IA</Text>
+                <Text style={styles.quickActionText}>Caufid</Text>
               </AnimatedButton>
               
               <AnimatedButton 

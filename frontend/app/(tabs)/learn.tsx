@@ -24,10 +24,10 @@ const i18n: Record<string, Record<string, string>> = {
   'tab.progress': { fr: 'Progression', en: 'Progress', es: 'Progreso' },
   // Auth
   'auth.required': { fr: 'Connexion requise', en: 'Login required', es: 'Inicio de sesión requerido' },
-  'auth.desc': { fr: 'Connecte-toi pour accéder à Atlas IA', en: 'Log in to access Atlas AI', es: 'Inicia sesión para acceder a Atlas IA' },
+  'auth.desc': { fr: 'Connecte-toi pour accéder à Caufid', en: 'Log in to access Caufid', es: 'Inicia sesión para acceder a Caufid' },
   // Chat
   'chat.placeholder': { fr: 'Écris ton message...', en: 'Write your message...', es: 'Escribe tu mensaje...' },
-  'chat.welcome.title': { fr: 'Atlas', en: 'Atlas', es: 'Atlas' },
+  'chat.welcome.title': { fr: "Caufid", en: "Caufid", es: "Caufid" },
   'chat.welcome.desc': { fr: 'Votre mentor personnel en crypto & finance', en: 'Your personal crypto & finance mentor', es: 'Tu mentor personal en crypto y finanzas' },
   'chat.welcome.greeting': { fr: 'Bonjour, comment puis-je vous aider ?', en: 'Hello, how can I help you?', es: 'Hola, como puedo ayudarte?' },
   'chat.error': { fr: 'Erreur de connexion. Réessaie.', en: 'Connection error. Try again.', es: 'Error de conexión. Inténtalo de nuevo.' },
@@ -36,13 +36,13 @@ const i18n: Record<string, Record<string, string>> = {
   'chat.empty': { fr: 'Aucune conversation', en: 'No conversations', es: 'Sin conversaciones' },
   'chat.messages': { fr: 'messages', en: 'messages', es: 'mensajes' },
   // Thinking
-  'chat.thinking': { fr: 'Atlas réfléchit', en: 'Atlas is thinking', es: 'Atlas está reflexionando' },
+  'chat.thinking': { fr: 'Caufid réfléchit', en: 'Caufid is thinking', es: 'Caufid está reflexionando' },
   'chat.analyzing': { fr: 'Analyse du graphique en cours', en: 'Analyzing chart', es: 'Analizando gráfico' },
   // Disclaimer
   'chat.disclaimer': { fr: 'Les réponses ne constituent pas des conseils financiers.', en: 'Responses do not constitute financial advice.', es: 'Las respuestas no constituyen asesoría financiera.' },
   // Modules
   'mod.empty.title': { fr: 'Aucun module', en: 'No modules', es: 'Sin módulos' },
-  'mod.empty.desc': { fr: "Discute avec Atlas pour qu'il crée ton parcours personnalisé !", en: 'Chat with Atlas to create your personalized learning path!', es: '¡Habla con Atlas para que cree tu ruta de aprendizaje personalizada!' },
+  'mod.empty.desc': { fr: "Discute avec Caufid pour qu'il crée ton parcours personnalisé !", en: 'Chat with Caufid to create your personalized learning path!', es: '¡Habla con Caufid para que cree tu ruta de aprendizaje personalizada!' },
   'mod.back': { fr: 'Retour', en: 'Back', es: 'Volver' },
   'mod.mastery': { fr: 'Maîtrise', en: 'Mastery', es: 'Dominio' },
   'mod.understood': { fr: 'Compris', en: 'Understood', es: 'Comprendido' },
@@ -71,14 +71,14 @@ const i18n: Record<string, Record<string, string>> = {
   'prog.total': { fr: 'Total', en: 'Total', es: 'Total' },
   'prog.in_progress': { fr: 'En cours', en: 'In progress', es: 'En curso' },
   'prog.mastered': { fr: 'Maîtrisés', en: 'Mastered', es: 'Dominados' },
-  'prog.onboarding_hint': { fr: 'Discute avec Atlas pour évaluer ton niveau', en: 'Chat with Atlas to evaluate your level', es: 'Habla con Atlas para evaluar tu nivel' },
+  'prog.onboarding_hint': { fr: 'Discute avec Caufid pour évaluer ton niveau', en: 'Chat with Caufid to evaluate your level', es: 'Habla con Caufid para evaluar tu nivel' },
   'prog.error': { fr: 'Erreur de chargement', en: 'Loading error', es: 'Error de carga' },
   // Smart Upgrade Prompt
-  'upgrade.title': { fr: 'Atlas peut aller encore plus loin', en: 'Atlas can go even further', es: 'Atlas puede ir aun mas lejos' },
-  'upgrade.desc': { fr: 'Avec VIP, bénéficiez d\'une mémoire personnalisée, de l\'analyse de graphiques, et d\'une expérience Atlas complète.', en: 'With VIP, get personalized memory, chart analysis, and a complete Atlas experience.', es: 'Con VIP, obtén memoria personalizada, análisis de gráficos y una experiencia Atlas completa.' },
+  'upgrade.title': { fr: 'Caufid peut aller encore plus loin', en: 'Caufid can go even further', es: 'Caufid puede ir aun mas lejos' },
+  'upgrade.desc': { fr: 'Avec VIP, bénéficiez d\'une mémoire personnalisée, de l\'analyse de graphiques, et d\'une expérience Caufid complète.', en: 'With VIP, get personalized memory, chart analysis, and a complete Caufid experience.', es: 'Con VIP, obtén memoria personalizada, análisis de gráficos y una experiencia Caufid completa.' },
   'upgrade.cta': { fr: 'Passer à VIP', en: 'Upgrade to VIP', es: 'Pasar a VIP' },
   'upgrade.badge': { fr: 'Mettre à niveau', en: 'Upgrade', es: 'Mejorar' },
-  'degrade.title': { fr: 'Atlas fonctionne en mode réduit', en: 'Atlas is running in reduced mode', es: 'Atlas está en modo reducido' },
+  'degrade.title': { fr: 'Caufid fonctionne en mode réduit', en: 'Caufid is running in reduced mode', es: 'Caufid está en modo reducido' },
   'degrade.desc': { fr: 'Pour retrouver la version complète, passez à VIP.', en: 'To get the full version, upgrade to VIP.', es: 'Para obtener la versión completa, pasa a VIP.' },
   // Welcome Suggestions
   'sug.1': { fr: 'Qu\'est-ce que le Bitcoin et comment ça fonctionne ?', en: 'What is Bitcoin and how does it work?', es: 'Qué es Bitcoin y cómo funciona?' },
@@ -99,19 +99,19 @@ const i18n: Record<string, Record<string, string>> = {
   'skill.finance': { fr: 'Finance', en: 'Finance', es: 'Finanzas' },
   'skill.risk': { fr: 'Gestion risques', en: 'Risk management', es: 'Gestión de riesgos' },
   // VIP Modal
-  'vip.title': { fr: 'Atlas VIP', en: 'Atlas VIP', es: 'Atlas VIP' },
-  'vip.subtitle': { fr: 'Débloquez toute l\'expérience Atlas.', en: 'Unlock the full Atlas experience.', es: 'Desbloquea toda la experiencia Atlas.' },
+  'vip.title': { fr: 'Caufid VIP', en: 'Caufid VIP', es: 'Caufid VIP' },
+  'vip.subtitle': { fr: 'Débloquez toute l\'expérience Caufid.', en: 'Unlock the full Caufid experience.', es: 'Desbloquea toda la experiencia Caufid.' },
   'vip.price': { fr: '21,99 $ / mois', en: '$21.99 / month', es: '$21.99 / mes' },
   'vip.cta': { fr: 'Mettre à niveau', en: 'Upgrade now', es: 'Mejorar ahora' },
   'vip.cancel': { fr: 'Annulable à tout moment via Stripe', en: 'Cancel anytime via Stripe', es: 'Cancela en cualquier momento vía Stripe' },
   'vip.memory': { fr: 'Mémoire', en: 'Memory', es: 'Memoria' },
-  'vip.memory.desc': { fr: 'Atlas conserve le contexte et comprend mieux votre progression.', en: 'Atlas retains context and better understands your progress.', es: 'Atlas conserva el contexto y comprende mejor tu progreso.' },
+  'vip.memory.desc': { fr: 'Caufid conserve le contexte et comprend mieux votre progression.', en: 'Caufid retains context and better understands your progress.', es: 'Caufid conserva el contexto y comprende mejor tu progreso.' },
   'vip.chart': { fr: 'Analyse de graphiques', en: 'Chart Analysis', es: 'Análisis de gráficos' },
-  'vip.chart.desc': { fr: 'Analysez des graphiques et images directement avec Atlas.', en: 'Analyze charts and images directly with Atlas.', es: 'Analiza gráficos e imágenes directamente con Atlas.' },
+  'vip.chart.desc': { fr: 'Analysez des graphiques et images directement avec Caufid.', en: 'Analyze charts and images directly with Caufid.', es: 'Analiza gráficos e imágenes directamente con Caufid.' },
   'vip.market': { fr: 'Market Intelligence', en: 'Market Intelligence', es: 'Market Intelligence' },
   'vip.market.desc': { fr: 'Accédez aux capacités avancées liées aux marchés.', en: 'Access advanced market-related capabilities.', es: 'Accede a capacidades avanzadas relacionadas con los mercados.' },
   'vip.learn': { fr: 'Apprentissage personnalisé', en: 'Personalized Learning', es: 'Aprendizaje personalizado' },
-  'vip.learn.desc': { fr: 'Atlas adapte davantage l\'expérience à votre niveau et progression.', en: 'Atlas further adapts the experience to your level and progress.', es: 'Atlas adapta aún más la experiencia a tu nivel y progreso.' },
+  'vip.learn.desc': { fr: 'Caufid adapte davantage l\'expérience à votre niveau et progression.', en: 'Caufid further adapts the experience to your level and progress.', es: 'Caufid adapta aún más la experiencia a tu nivel y progreso.' },
   'vip.briefing': { fr: 'Briefing quotidien', en: 'Daily Briefing', es: 'Briefing diario' },
   'vip.briefing.desc': { fr: 'Recevez un briefing personnalisé chaque jour.', en: 'Receive a personalized briefing every day.', es: 'Recibe un briefing personalizado cada día.' },
   'vip.back': { fr: 'Retour', en: 'Back', es: 'Volver' },
@@ -170,7 +170,7 @@ function ThinkingIndicator({ lang, isChart }: { lang: string; isChart?: boolean 
     <View style={s.thinkingWrap} data-testid="thinking-indicator">
       <Animated.View style={[s.thinkingGlow, { opacity: glow }]}>
         <View style={s.thinkingAvatarSmall}>
-          <Text style={s.thinkingAvatarText}>A</Text>
+          <Text style={s.thinkingAvatarText}>C</Text>
         </View>
       </Animated.View>
       <View style={s.thinkingContent}>
@@ -513,10 +513,10 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
       {/* Header — minimal and clean */}
       <View style={[s.chatHeader, { borderBottomColor: colors.borderSubtle }]} data-testid="atlas-chat-header">
         <View style={s.chatHeaderLeft}>
-          <View style={[s.atlasAvatar, { backgroundColor: colors.primaryGlow, borderColor: colors.border }]}><Text style={[s.atlasAvatarText, { color: colors.primary }]}>A</Text></View>
+          <View style={[s.atlasAvatar, { backgroundColor: colors.primaryGlow, borderColor: colors.border }]}><Text style={[s.atlasAvatarText, { color: colors.primary }]}>C</Text></View>
           <View>
             <View style={s.chatHeaderTitleRow}>
-              <Text style={[s.chatHeaderTitle, { color: colors.text }]}>Atlas</Text>
+              <Text style={[s.chatHeaderTitle, { color: colors.text }]}>Caufid</Text>
               <View style={s.onlineDot} />
             </View>
             <Text style={s.chatHeaderSub}>{tAtlas('chat.welcome.desc', lang)}</Text>
@@ -562,7 +562,7 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
         {messages.length === 0 && (
           <View style={s.welcomeWrap}>
             <View style={s.welcomeAvatarWrap}>
-              <View style={[s.welcomeAvatar, { backgroundColor: colors.primaryGlow, borderColor: colors.border }]}><Text style={[s.welcomeAvatarText, { color: colors.primary }]}>A</Text></View>
+              <View style={[s.welcomeAvatar, { backgroundColor: colors.primaryGlow, borderColor: colors.border }]}><Text style={[s.welcomeAvatarText, { color: colors.primary }]}>C</Text></View>
             </View>
             <Text style={[s.welcomeGreeting, { color: colors.text }]}>{tAtlas("chat.welcome.greeting", lang)}</Text>
             <Text style={[s.welcomeDesc, { color: colors.textMuted }]}>{tAtlas("chat.welcome.desc", lang)}</Text>
@@ -581,7 +581,7 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
         {messages.map((m, i) => (
           <FadeInMessage key={i} delay={m.role === 'assistant' ? 80 : 0}>
             <View style={[s.msgRow, m.role === 'user' && s.msgRowUser]} data-testid={`message-${i}`}>
-              {m.role === 'assistant' && <View style={[s.msgAvatar, { backgroundColor: colors.primaryGlow, borderColor: colors.border }]}><Text style={[s.msgAvatarText, { color: colors.primary }]}>A</Text></View>}
+              {m.role === 'assistant' && <View style={[s.msgAvatar, { backgroundColor: colors.primaryGlow, borderColor: colors.border }]}><Text style={[s.msgAvatarText, { color: colors.primary }]}>C</Text></View>}
               <View style={[s.msgBubble, m.role === 'user' ? s.msgBubbleUser : [s.msgBubbleAtlas, { backgroundColor: mode === 'light' ? colors.surface : 'rgba(167,139,250,0.06)', borderColor: mode === 'light' ? colors.border : 'rgba(167,139,250,0.08)' }]]}>
                 {m.role === 'assistant' && i === latestAssistantIdx ? (
                   <TypewriterText text={m.content} style={[s.msgText, { color: colors.text }]} speed={15} />

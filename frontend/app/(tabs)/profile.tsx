@@ -22,8 +22,8 @@ const profileI18n: Record<string, Record<string, string>> = {
   'p.modules': { fr: 'Modules', en: 'Modules', es: 'Modulos' },
   'p.mastered': { fr: 'Maitrise', en: 'Mastered', es: 'Dominado' },
   'p.level': { fr: 'Niveau', en: 'Level', es: 'Nivel' },
-  'p.atlasProgress': { fr: 'Progression Atlas', en: 'Atlas Progress', es: 'Progreso Atlas' },
-  'p.goToAtlas': { fr: 'Continuer avec Atlas', en: 'Continue with Atlas', es: 'Continuar con Atlas' },
+  'p.atlasProgress': { fr: 'Progression Caufid', en: 'Caufid Progress', es: 'Progreso Caufid' },
+  'p.goToAtlas': { fr: 'Continuer avec Caufid', en: 'Continue with Caufid', es: 'Continuar con Caufid' },
   'p.settings': { fr: 'Parametres', en: 'Settings', es: 'Ajustes' },
   'p.language': { fr: 'Langue', en: 'Language', es: 'Idioma' },
   'p.support': { fr: 'Aide et support', en: 'Help & support', es: 'Ayuda y soporte' },
@@ -45,7 +45,7 @@ const profileI18n: Record<string, Record<string, string>> = {
   'p.vipHub': { fr: 'Espace VIP', en: 'VIP Hub', es: 'Espacio VIP' },
   'p.vipHubDesc': { fr: 'Briefing, outils, analyses', en: 'Briefing, tools, analyses', es: 'Briefing, herramientas, analisis' },
   'p.vip': { fr: 'Devenir VIP', en: 'Become VIP', es: 'Ser VIP' },
-  'p.vipDesc': { fr: 'Debloquez Atlas premium', en: 'Unlock premium Atlas', es: 'Desbloquea Atlas premium' },
+  'p.vipDesc': { fr: 'Debloquez Caufid premium', en: 'Unlock premium Caufid', es: 'Desbloquea Caufid premium' },
 };
 
 function tp(key: string, lang: string): string {
@@ -120,7 +120,7 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Atlas Progress Card */}
+        {/* Caufid Progress Card */}
         <View style={s.atlasCard} data-testid="atlas-progress-card">
           <View style={s.atlasCardHeader}>
             <Ionicons name="planet" size={20} color="#7C3AED" />

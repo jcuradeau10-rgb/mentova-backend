@@ -1471,7 +1471,7 @@ async def get_vip_subscription(credentials: HTTPAuthorizationCredentials = Depen
 
 @api_router.get("/admin/atlas-usage")
 async def get_atlas_usage_stats(days: int = 30, current_user: dict = Depends(get_admin_user)):
-    """Admin: Get Atlas AI usage and cost statistics"""
+    """Admin: Get Caufid AI usage and cost statistics"""
     from services.atlas_protection import get_usage_stats
     return await get_usage_stats(db, days)
 
@@ -11862,7 +11862,7 @@ from routes.preregister import preregister_router, set_db as set_preregister_db,
 set_preregister_db(db)
 app.include_router(preregister_router)
 
-# Include Atlas AI router
+# Include Caufid AI router
 from routes.atlas_v3 import atlas_router
 app.include_router(atlas_router)
 
@@ -11980,7 +11980,7 @@ async def get_user_intelligence(user_id: str, period: str = "all", current_user:
         "time_tracking": time_note,
     }
 
-    # Atlas
+    # Caufid
     cq = {"user_id": user_id}
     if pf: cq["created_at"] = {"$gte": pf.isoformat()}
     conversations = await db.atlas_conversations.find(cq, {"_id": 0}).to_list(10000)
@@ -12054,7 +12054,7 @@ async def get_user_intelligence(user_id: str, period: str = "all", current_user:
     for s in await db.user_sessions.find({"user_id": user_id}).sort("started_at", -1).limit(30).to_list(30):
         timeline.append({"timestamp": _safe_iso_intel(s.get("started_at")), "type": "session", "action": "Session started", "detail": f"Duration: {int(s.get('duration_seconds', 0) // 60)}m"})
     for c in await db.atlas_conversations.find({"user_id": user_id}).sort("created_at", -1).limit(20).to_list(20):
-        timeline.append({"timestamp": _safe_iso_intel(c.get("created_at")), "type": "atlas", "action": "Atlas conversation", "detail": c.get("title", "")})
+        timeline.append({"timestamp": _safe_iso_intel(c.get("created_at")), "type": "atlas", "action": "Caufid conversation", "detail": c.get("title", "")})
     for q in await db.quiz_attempts.find({"user_id": user_id}).sort("created_at", -1).limit(15).to_list(15):
         timeline.append({"timestamp": _safe_iso_intel(q.get("created_at")), "type": "learning", "action": "Quiz completed", "detail": f"Score: {q.get('score', 0)}%"})
     timeline.sort(key=lambda x: x.get("timestamp") or "", reverse=True)
@@ -12069,8 +12069,8 @@ async def get_user_intelligence(user_id: str, period: str = "all", current_user:
     plan = "VIP" if user.get("is_vip") else "Free"
     lvl = sc["level"]
     parts = [f"{'Highly engaged' if lvl in ['Very High','High'] else 'Moderately engaged' if lvl=='Moderate' else 'Low engagement'} {plan} user."]
-    if total_convos > 10: parts.append(f"Frequent Atlas AI user ({total_convos} conversations).")
-    elif total_convos > 0: parts.append(f"Has used Atlas AI ({total_convos} conversation{'s' if total_convos > 1 else ''}).")
+    if total_convos > 10: parts.append(f"Frequent Caufid user ({total_convos} conversations).")
+    elif total_convos > 0: parts.append(f"Has used Caufid ({total_convos} conversation{'s' if total_convos > 1 else ''}).")
     if ms > 0: parts.append(f"Completed {round((mc/max(1,ms))*100)}% of started modules ({mc}/{ms}).")
     if days_since <= 1: parts.append("Active within the last 24 hours.")
     elif days_since <= 7: parts.append(f"Last active {days_since} days ago.")
@@ -12475,7 +12475,7 @@ async def seed_public_community_data():
 
 @app.on_event("startup")
 async def migrate_seed_data():
-    """Seed essential data if database is empty (e.g. fresh Atlas deployment)"""
+    """Seed essential data if database is empty (e.g. fresh deployment)"""
     try:
         prereg_count = await db.pre_registrations.count_documents({})
         user_count = await db.users.count_documents({})

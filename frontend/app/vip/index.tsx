@@ -10,7 +10,7 @@ const API = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
 const tr: Record<string, Record<string, string>> = {
   title: { fr: 'Mentova VIP', en: 'Mentova VIP', es: 'Mentova VIP' },
-  subtitle: { fr: 'L\'experience Atlas complete', en: 'The complete Atlas experience', es: 'La experiencia Atlas completa' },
+  subtitle: { fr: 'L\'expérience Caufid complete', en: 'The complete Caufid experience', es: 'La experiencia Caufid completa' },
   price: { fr: '21,99', en: '21.99', es: '21.99' },
   perMonth: { fr: '$ USD / mois', en: '$ USD / month', es: '$ USD / mes' },
   cta: { fr: 'Passer a VIP', en: 'Upgrade to VIP', es: 'Pasar a VIP' },
@@ -20,31 +20,31 @@ const tr: Record<string, Record<string, string>> = {
   cancel: { fr: 'Annulable a tout moment', en: 'Cancel anytime', es: 'Cancela cuando quieras' },
   secure: { fr: 'Paiement securise par Stripe', en: 'Secure payment by Stripe', es: 'Pago seguro con Stripe' },
   why: { fr: 'Pourquoi VIP ?', en: 'Why VIP?', es: 'Por que VIP?' },
-  whyDesc: { fr: 'Le VIP transforme Atlas en votre mentor personnel. Il se souvient de vous, s\'adapte a votre niveau, et vous accompagne avec des outils et des donnees que les utilisateurs gratuits n\'ont pas.', en: 'VIP transforms Atlas into your personal mentor. It remembers you, adapts to your level, and accompanies you with tools and data that free users don\'t have.', es: 'VIP transforma Atlas en tu mentor personal. Te recuerda, se adapta a tu nivel y te acompana con herramientas y datos que los usuarios gratuitos no tienen.' },
+  whyDesc: { fr: 'Le VIP transforme Caufid en votre mentor personnel. Il se souvient de vous, s\'adapte a votre niveau, et vous accompagne avec des outils et des donnees que les utilisateurs gratuits n\'ont pas.', en: 'VIP transforms Caufid into your personal mentor. It remembers you, adapts to your level, and accompanies you with tools and data that free users don\'t have.', es: 'VIP transforma Caufid en tu mentor personal. Te recuerda, se adapta a tu nivel y te acompana con herramientas y datos que los usuarios gratuitos no tienen.' },
 };
 
 const FEATURES: Record<string, Array<{icon: string; color: string; title: string; desc: string}>> = {
   fr: [
-    { icon: 'cloud', color: '#7C3AED', title: 'Memoire d\'Atlas', desc: 'Atlas retient vos preferences, votre niveau et vos objectifs. Il devient progressivement votre mentor personnel.' },
-    { icon: 'bar-chart', color: '#3B82F6', title: 'Analyse de graphiques', desc: 'Envoyez une image de graphique a Atlas pour une analyse technique adaptee a votre niveau.' },
-    { icon: 'globe', color: '#10B981', title: 'Intelligence de marche', desc: 'Atlas utilise les actualites et donnees de marche en temps reel pour contextualiser ses reponses.' },
-    { icon: 'school', color: '#F59E0B', title: 'Apprentissage personnalise', desc: 'Atlas adapte ses explications a votre niveau et evolue avec votre progression.' },
+    { icon: 'cloud', color: '#7C3AED', title: 'Memoire d\'Atlas', desc: 'Caufid retient vos preferences, votre niveau et vos objectifs. Il devient progressivement votre mentor personnel.' },
+    { icon: 'bar-chart', color: '#3B82F6', title: 'Analyse de graphiques', desc: 'Envoyez une image de graphique a Caufid pour une analyse technique adaptee a votre niveau.' },
+    { icon: 'globe', color: '#10B981', title: 'Intelligence de marche', desc: 'Caufid utilise les actualites et donnees de marche en temps reel pour contextualiser ses reponses.' },
+    { icon: 'school', color: '#F59E0B', title: 'Apprentissage personnalise', desc: 'Caufid adapte ses explications a votre niveau et evolue avec votre progression.' },
     { icon: 'today', color: '#EF4444', title: 'Briefing quotidien', desc: 'Chaque jour, un resume personnalise des evenements importants du marche crypto.' },
     { icon: 'rocket', color: '#EC4899', title: 'Acces anticipe', desc: 'Soyez les premiers a tester les nouvelles fonctionnalites de Mentova avant tout le monde.' },
   ],
   en: [
-    { icon: 'cloud', color: '#7C3AED', title: 'Atlas Memory', desc: 'Atlas remembers your preferences, level, and goals. It progressively becomes your personal mentor.' },
-    { icon: 'bar-chart', color: '#3B82F6', title: 'Chart Analysis', desc: 'Send a chart image to Atlas for technical analysis adapted to your level.' },
-    { icon: 'globe', color: '#10B981', title: 'Market Intelligence', desc: 'Atlas uses real-time news and market data to contextualize its responses.' },
-    { icon: 'school', color: '#F59E0B', title: 'Personalized Learning', desc: 'Atlas adapts its explanations to your level and evolves with your progress.' },
+    { icon: 'cloud', color: '#7C3AED', title: 'Caufid Memory', desc: 'Caufid remembers your preferences, level, and goals. It progressively becomes your personal mentor.' },
+    { icon: 'bar-chart', color: '#3B82F6', title: 'Chart Analysis', desc: 'Send a chart image to Caufid for technical analysis adapted to your level.' },
+    { icon: 'globe', color: '#10B981', title: 'Market Intelligence', desc: 'Caufid uses real-time news and market data to contextualize its responses.' },
+    { icon: 'school', color: '#F59E0B', title: 'Personalized Learning', desc: 'Caufid adapts its explanations to your level and evolves with your progress.' },
     { icon: 'today', color: '#EF4444', title: 'Daily Briefing', desc: 'Every day, a personalized summary of important crypto market events.' },
     { icon: 'rocket', color: '#EC4899', title: 'Early Access', desc: 'Be the first to test new Mentova features before everyone else.' },
   ],
   es: [
-    { icon: 'cloud', color: '#7C3AED', title: 'Memoria de Atlas', desc: 'Atlas recuerda tus preferencias, nivel y objetivos. Se convierte progresivamente en tu mentor personal.' },
-    { icon: 'bar-chart', color: '#3B82F6', title: 'Analisis de graficos', desc: 'Envia una imagen de grafico a Atlas para un analisis tecnico adaptado a tu nivel.' },
-    { icon: 'globe', color: '#10B981', title: 'Inteligencia de mercado', desc: 'Atlas usa noticias y datos de mercado en tiempo real para contextualizar sus respuestas.' },
-    { icon: 'school', color: '#F59E0B', title: 'Aprendizaje personalizado', desc: 'Atlas adapta sus explicaciones a tu nivel y evoluciona con tu progreso.' },
+    { icon: 'cloud', color: '#7C3AED', title: 'Memoria de Caufid', desc: 'Caufid recuerda tus preferencias, nivel y objetivos. Se convierte progresivamente en tu mentor personal.' },
+    { icon: 'bar-chart', color: '#3B82F6', title: 'Analisis de graficos', desc: 'Envia una imagen de grafico a Caufid para un analisis tecnico adaptado a tu nivel.' },
+    { icon: 'globe', color: '#10B981', title: 'Inteligencia de mercado', desc: 'Caufid usa noticias y datos de mercado en tiempo real para contextualizar sus respuestas.' },
+    { icon: 'school', color: '#F59E0B', title: 'Aprendizaje personalizado', desc: 'Caufid adapta sus explicaciones a tu nivel y evoluciona con tu progreso.' },
     { icon: 'today', color: '#EF4444', title: 'Briefing diario', desc: 'Cada dia, un resumen personalizado de los eventos importantes del mercado crypto.' },
     { icon: 'rocket', color: '#EC4899', title: 'Acceso anticipado', desc: 'Se el primero en probar las nuevas funciones de Mentova antes que nadie.' },
   ],

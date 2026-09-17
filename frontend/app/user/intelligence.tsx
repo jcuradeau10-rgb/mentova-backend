@@ -196,7 +196,7 @@ export default function UserIntelligencePage() {
   const sections: { key: Section; icon: string; label: string }[] = [
     { key: 'overview', icon: 'person-circle', label: 'Overview' },
     { key: 'engagement', icon: 'pulse', label: 'Engagement' },
-    { key: 'atlas', icon: 'planet', label: 'Atlas AI' },
+    { key: 'atlas', icon: 'planet', label: 'Caufid' },
     { key: 'learning', icon: 'school', label: 'Learning' },
     { key: 'features', icon: 'apps', label: 'Features' },
     { key: 'revenue', icon: 'card', label: 'Revenue' },
@@ -328,7 +328,7 @@ export default function UserIntelligencePage() {
 
         {activeSection === 'atlas' && (
           <>
-            <SectionHeader title="Atlas AI Analytics" icon="planet" />
+            <SectionHeader title="Caufid Analytics" icon="planet" />
             <View style={s.statsGrid}>
               <InfoCard label="Conversations" value={atlas.total_conversations} icon="chatbubbles" color="#7C3AED" />
               <InfoCard label="Messages" value={atlas.total_messages} icon="chatbox" color="#3B82F6" />

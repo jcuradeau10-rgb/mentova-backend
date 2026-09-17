@@ -12,8 +12,8 @@ const { width } = Dimensions.get('window');
 const tr: Record<string, Record<string, string>> = {
   tagline: { en: 'Your AI Crypto Mentor', fr: 'Votre mentor crypto IA', es: 'Tu mentor crypto IA' },
   title1: { en: 'Learn crypto', fr: 'Apprenez la crypto', es: 'Aprende crypto' },
-  title2: { en: 'with Atlas AI', fr: 'avec Atlas AI', es: 'con Atlas AI' },
-  desc: { en: 'Atlas is your personal AI mentor. It adapts to your level, remembers your progress, and guides you through the world of crypto and finance.', fr: 'Atlas est votre mentor IA personnel. Il s\'adapte a votre niveau, retient votre progression, et vous guide dans le monde de la crypto et de la finance.', es: 'Atlas es tu mentor IA personal. Se adapta a tu nivel, recuerda tu progreso y te guia en el mundo de las crypto y las finanzas.' },
+  title2: { en: 'with Caufid', fr: 'avec Caufid', es: 'con Caufid' },
+  desc: { en: 'Caufid is your personal AI mentor. It adapts to your level, remembers your progress, and guides you through the world of crypto and finance.', fr: 'Caufid est votre mentor IA personnel. Il s\'adapte a votre niveau, retient votre progression, et vous guide dans le monde de la crypto et de la finance.', es: 'Caufid es tu mentor IA personal. Se adapta a tu nivel, recuerda tu progreso y te guia en el mundo de las crypto y las finanzas.' },
   start: { en: 'Get Started', fr: 'Commencer', es: 'Comenzar' },
   login: { en: 'I have an account', fr: 'J\'ai deja un compte', es: 'Ya tengo una cuenta' },
   f1: { en: 'Personalized Learning', fr: 'Apprentissage personnalise', es: 'Aprendizaje personalizado' },
@@ -67,7 +67,7 @@ export default function OnboardingPage() {
         <View style={s.glowOrb2} />
 
         <Animated.View style={[s.content, { opacity: fadeIn, transform: [{ translateY: slideUp }] }]}>
-          {/* Atlas Icon */}
+          {/* Caufid Icon */}
           <Animated.View style={[s.iconWrap, { opacity: iconPulse }]}>
             <View style={s.iconCircle}>
               <Ionicons name="planet" size={40} color="#7C3AED" />

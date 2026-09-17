@@ -9,7 +9,7 @@ import { useThemeStore } from '../store/themeStore';
 
 const tr: Record<string, Record<string, string>> = {
   title: { en: 'Create account', fr: 'Creer un compte', es: 'Crear cuenta' },
-  subtitle: { en: 'Start learning crypto with Atlas AI', fr: 'Commencez a apprendre la crypto avec Atlas', es: 'Empieza a aprender crypto con Atlas' },
+  subtitle: { en: 'Start learning crypto with Caufid', fr: 'Commencez a apprendre la crypto avec Caufid', es: 'Empieza a aprender crypto con Caufid' },
   name: { en: 'Full name', fr: 'Nom complet', es: 'Nombre completo' },
   email: { en: 'Email', fr: 'Email', es: 'Email' },
   password: { en: 'Password', fr: 'Mot de passe', es: 'Contrasena' },

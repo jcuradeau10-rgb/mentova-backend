@@ -6,6 +6,11 @@
 - Backend: FastAPI -> Render (mentova-api.onrender.com)
 - DB: MongoDB Atlas
 
+## CRITICAL: Branding
+- The AI mentor is named **Caufid** (not Atlas). All user-facing text says "Caufid".
+- Internal API routes still use `/api/atlas/` for backward compatibility with existing data.
+- MongoDB collections still named `atlas_conversations`, `atlas_memories` etc. for data compatibility.
+
 ## CRITICAL: GitHub Push
 DO NOT use CLI `git push`. Always use "Save to Github" button in Emergent platform.
 
@@ -22,35 +27,34 @@ DO NOT use CLI `git push`. Always use "Save to Github" button in Emergent platfo
 - Session & event tracking
 - PDF Export for User Intelligence
 
-### Atlas UI/UX Redesign (Feb 2026)
-- Premium minimal header with "Atlas" + subtitle
+### Caufid UI/UX (Feb 2026)
+- Premium minimal header with "Caufid" + subtitle
 - VIP upgrade button for FREE users (hidden for VIP)
-- VIP upgrade modal with 5 features + $21.99/mo pricing + Stripe
-- "Atlas réfléchit..." thinking animation (3 dots + pulsation, FR/EN/ES)
-- FadeIn animation for all messages
-- Redesigned welcome state with greeting + suggestion cards
-- Premium floating input bar (rounded, with image upload for VIP)
-- Modern AI-style messages
-- **Typewriter streaming effect** — word-by-word display of latest Atlas response
-- **Dark/Light theme support** — Atlas respects the existing theme toggle
+- VIP upgrade modal with 5 features + $21.99/mo + Stripe
+- "Caufid réfléchit..." thinking animation (FR/EN/ES)
+- FadeIn + Typewriter streaming effect
+- Dark/Light theme support
 - All text translated FR/EN/ES
 
+### Global Rebranding: Atlas → Caufid (Feb 2026)
+- 654+ occurrences found across the project
+- All replaced in: 15 frontend files, 6 backend files, 29 static HTML pages
+- System prompt updated: "You are Caufid"
+- Avatar changed: "A" → "C"
+- SEO meta tags, structured data, FAQ schema all updated
+- 3 languages (FR/EN/ES) fully updated
+- Internal API routes preserved for data compatibility
+
 ### SEO & Marketing (Feb 2026)
-- Editorial marketing homepage EN/FR/ES
-- Legacy cleanup
 - 34 total HTML pages, 34 sitemap URLs
-- SEO Hub: comparatif-plateformes-apprentissage-crypto.html
-- 3 Comparison pages: vs Binance Academy, vs Tutor AI, vs Learning Crypto
-- Brand page: why-mentova.html
-- 7 FR cluster pages (Guide débutant, Bitcoin, DeFi, Sécurité, Trading, Investissement, IA)
-- 7 EN cluster pages (translations with English slugs)
-- 7 ES cluster pages (translations with Spanish slugs)
-- Full internal linking network
-- hreflang tags on all translated pages
-- Updated sitemap.xml with all URLs
+- 3 Comparison pages (vs Binance Academy, vs Tutor AI, vs Learning Crypto)
+- 7 FR + 7 EN + 7 ES cluster pages
+- Full internal linking + hreflang tags
 
 ## Pending
 - User needs to "Save to Github" + deploy Netlify & Render
+- Quiz Gamification (badges & streaks)
 
 ## Backlog
-- P3: Monitor User Intelligence performance with large data sets
+- P2: Quiz Gamification with badges and streaks
+- P3: Backend SSE streaming for true real-time responses

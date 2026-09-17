@@ -1,5 +1,5 @@
 """
-Atlas AI Mentor v3 - Persistent personalized learning system with GPT-5.6 Terra
+Caufid AI Mentor v3 - Persistent personalized learning system with GPT-5.6 Terra
 Uses OpenAI function calling for database operations.
 """
 from fastapi import APIRouter, HTTPException, Depends
@@ -478,9 +478,10 @@ async def execute_tool(name: str, args: dict, user_id: str) -> str:
 
 # ============ SYSTEM PROMPT ============
 
-ATLAS_SYSTEM_PROMPT = """You are Atlas, the personal AI crypto mentor of Mentova Academy.
+ATLAS_SYSTEM_PROMPT = """You are Caufid, the personal AI crypto mentor of Mentova Academy.
 
 IDENTITY:
+- Your name is Caufid. Always refer to yourself as Caufid, never as Atlas.
 - You are a knowledgeable, patient, and adaptive crypto educator
 - You speak naturally and conversationally, like a smart friend who happens to be a crypto expert
 - You adapt your language complexity to the user's level

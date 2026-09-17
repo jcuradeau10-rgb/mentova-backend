@@ -301,7 +301,7 @@ export default function TabLayout() {
           tabBar={() => null}
           screenOptions={{ headerShown: false }}
         >
-          <Tabs.Screen name="learn" options={{ title: 'Atlas' }} />
+          <Tabs.Screen name="learn" options={{ title: 'Caufid' }} />
           <Tabs.Screen name="index" options={{ title: 'Home' }} />
           <Tabs.Screen name="market" options={{ title: 'Market' }} />
           <Tabs.Screen name="news" options={{ title: 'News' }} />

@@ -18,23 +18,23 @@ const tr: Record<string, Record<string, string>> = {
   opportunity: { fr: 'Opportunite', en: 'Opportunity', es: 'Oportunidad' },
   risk: { fr: 'Risque', en: 'Risk', es: 'Riesgo' },
   features: { fr: 'Vos fonctionnalites VIP', en: 'Your VIP Features', es: 'Tus funciones VIP' },
-  memory: { fr: 'Memoire d\'Atlas', en: 'Atlas Memory', es: 'Memoria de Atlas' },
-  memoryDesc: { fr: 'Atlas retient vos informations entre les sessions', en: 'Atlas remembers your info between sessions', es: 'Atlas recuerda tu informacion entre sesiones' },
+  memory: { fr: 'Memoire d\'Atlas', en: 'Caufid Memory', es: 'Memoria de Caufid' },
+  memoryDesc: { fr: 'Caufid retient vos informations entre les sessions', en: 'Caufid remembers your info between sessions', es: 'Caufid recuerda tu informacion entre sesiones' },
   chart: { fr: 'Analyse de graphiques', en: 'Chart Analysis', es: 'Analisis de graficos' },
-  chartDesc: { fr: 'Envoyez une image dans le chat Atlas', en: 'Send an image in Atlas chat', es: 'Envia una imagen en el chat Atlas' },
+  chartDesc: { fr: 'Envoyez une image dans le chat Caufid', en: 'Send an image in Caufid chat', es: 'Envia una imagen en el chat Caufid' },
   market: { fr: 'Intelligence de marche', en: 'Market Intelligence', es: 'Inteligencia de mercado' },
-  marketDesc: { fr: 'Atlas utilise les donnees et actualites en temps reel', en: 'Atlas uses real-time data and news', es: 'Atlas usa datos y noticias en tiempo real' },
+  marketDesc: { fr: 'Caufid utilise les donnees et actualites en temps reel', en: 'Caufid uses real-time data and news', es: 'Caufid usa datos y noticias en tiempo real' },
   learning: { fr: 'Apprentissage personnalise', en: 'Personalized Learning', es: 'Aprendizaje personalizado' },
-  learningDesc: { fr: 'Atlas adapte ses explications a votre niveau', en: 'Atlas adapts explanations to your level', es: 'Atlas adapta sus explicaciones a tu nivel' },
+  learningDesc: { fr: 'Caufid adapte ses explications a votre niveau', en: 'Caufid adapts explanations to your level', es: 'Caufid adapta sus explicaciones a tu nivel' },
   dailyBriefing: { fr: 'Briefing quotidien', en: 'Daily Briefing', es: 'Briefing diario' },
   dailyBriefingDesc: { fr: 'Resume quotidien des marches', en: 'Daily market summary', es: 'Resumen diario de los mercados' },
   tools: { fr: 'Outils avances', en: 'Advanced Tools', es: 'Herramientas avanzadas' },
   toolsDesc: { fr: 'Rainbow Chart, Halving, alertes, portefeuille', en: 'Rainbow Chart, Halving, alerts, portfolio', es: 'Rainbow Chart, Halving, alertas, portafolio' },
   earlyAccess: { fr: 'Acces anticipé', en: 'Early Access', es: 'Acceso anticipado' },
   earlyAccessDesc: { fr: 'Testez les nouvelles fonctionnalites avant tout le monde', en: 'Test new features before everyone else', es: 'Prueba las nuevas funciones antes que nadie' },
-  premiumMsg: { fr: 'Vous avez acces a la meilleure version d\'Atlas', en: 'You have access to the best version of Atlas', es: 'Tienes acceso a la mejor version de Atlas' },
-  premiumDesc: { fr: 'Memoire personnalisee, intelligence de marche, apprentissage adapte a votre niveau, briefing quotidien et analyse de graphiques — Atlas VIP est concu pour vous accompagner comme un vrai mentor.', en: 'Personalized memory, market intelligence, learning adapted to your level, daily briefing and chart analysis — Atlas VIP is designed to guide you like a real mentor.', es: 'Memoria personalizada, inteligencia de mercado, aprendizaje adaptado a tu nivel, briefing diario y analisis de graficos — Atlas VIP esta disenado para guiarte como un verdadero mentor.' },
-  openAtlas: { fr: 'Ouvrir Atlas', en: 'Open Atlas', es: 'Abrir Atlas' },
+  premiumMsg: { fr: 'Vous avez acces a la meilleure version d\'Atlas', en: 'You have access to the best version of Caufid', es: 'Tienes acceso a la mejor version de Caufid' },
+  premiumDesc: { fr: 'Memoire personnalisee, intelligence de marche, apprentissage adapte a votre niveau, briefing quotidien et analyse de graphiques — Caufid VIP est concu pour vous accompagner comme un vrai mentor.', en: 'Personalized memory, market intelligence, learning adapted to your level, daily briefing and chart analysis — Caufid VIP is designed to guide you like a real mentor.', es: 'Memoria personalizada, inteligencia de mercado, aprendizaje adaptado a tu nivel, briefing diario y analisis de graficos — Caufid VIP esta disenado para guiarte como un verdadero mentor.' },
+  openAtlas: { fr: 'Ouvrir Caufid', en: 'Open Caufid', es: 'Abrir Caufid' },
   locked: { fr: 'Passez VIP pour debloquer', en: 'Upgrade to VIP to unlock', es: 'Pase a VIP para desbloquear' },
 };
 
@@ -161,7 +161,7 @@ export default function VIPHubScreen() {
           </View>
         </View>
 
-        {/* Open Atlas CTA */}
+        {/* Open Caufid CTA */}
         <View style={s.section}>
           {/* Premium Message */}
           <View style={s.premiumCard}>

@@ -9,7 +9,7 @@ import { useThemeStore } from '../store/themeStore';
 
 const tr: Record<string, Record<string, string>> = {
   welcome: { en: 'Welcome back', fr: 'Bon retour', es: 'Bienvenido de nuevo' },
-  subtitle: { en: 'Sign in to continue with Atlas', fr: 'Connectez-vous pour continuer avec Atlas', es: 'Inicia sesion para continuar con Atlas' },
+  subtitle: { en: 'Sign in to continue with Caufid', fr: 'Connectez-vous pour continuer avec Caufid', es: 'Inicia sesion para continuar con Caufid' },
   email: { en: 'Email', fr: 'Email', es: 'Email' },
   password: { en: 'Password', fr: 'Mot de passe', es: 'Contrasena' },
   signin: { en: 'Sign In', fr: 'Se connecter', es: 'Iniciar sesion' },
