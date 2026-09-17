@@ -208,6 +208,43 @@ function BadgeCelebration({ badge, lang, onClose }: { badge: any; lang: string; 
 }
 
 
+// ============ UPGRADE BANNER (animated, below header) ============
+function UpgradeBanner({ lang, onPress }: { lang: string; onPress: () => void }) {
+  const pulse = useRef(new Animated.Value(0)).current;
+  const shimmer = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue: 1, duration: 1800, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 0, duration: 1800, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+      ])
+    ).start();
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(shimmer, { toValue: 1, duration: 2500, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        Animated.timing(shimmer, { toValue: 0, duration: 2500, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+      ])
+    ).start();
+  }, []);
+
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.8} data-testid="header-upgrade-btn" style={s.upgradeBanner}>
+      <Animated.View style={[s.upgradeBannerInner, {
+        opacity: shimmer.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] }),
+      }]}>
+        <Animated.View style={{
+          transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.15] }) }],
+        }}>
+          <Ionicons name="diamond" size={14} color="#FFD700" />
+        </Animated.View>
+        <Text style={s.upgradeBannerText}>{tAtlas('upgrade.badge', lang)}</Text>
+        <Ionicons name="arrow-forward" size={12} color="#A78BFA" />
+      </Animated.View>
+    </TouchableOpacity>
+  );
+}
+
 // ============ THINKING ANIMATION ============
 function ThinkingIndicator({ lang, isChart }: { lang: string; isChart?: boolean }) {
   const dot1 = useRef(new Animated.Value(0)).current;
@@ -637,39 +674,35 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
   // Main chat view
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.bg }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={100}>
-      {/* Header — minimal and clean */}
+      {/* Header — compact column layout for mobile */}
       <View style={[s.chatHeader, { borderBottomColor: colors.borderSubtle }]} data-testid="atlas-chat-header">
-        <View style={s.chatHeaderLeft}>
-          <View style={[s.atlasAvatar, { backgroundColor: colors.primaryGlow, borderColor: colors.border }]}><Text style={[s.atlasAvatarText, { color: colors.primary }]}>C</Text></View>
-          <View>
-            <View style={s.chatHeaderTitleRow}>
-              <Text style={[s.chatHeaderTitle, { color: colors.text }]}>Caufid</Text>
-              <View style={s.onlineDot} />
+        <View style={s.chatHeaderRow1}>
+          <View style={s.chatHeaderLeft}>
+            <View style={[s.atlasAvatar, { backgroundColor: colors.primaryGlow, borderColor: colors.border }]}><Text style={[s.atlasAvatarText, { color: colors.primary }]}>C</Text></View>
+            <View>
+              <View style={s.chatHeaderTitleRow}>
+                <Text style={[s.chatHeaderTitle, { color: colors.text }]}>Caufid</Text>
+                <View style={s.onlineDot} />
+              </View>
+              <Text style={[s.chatHeaderSub, { color: colors.textMuted }]}>{tAtlas('chat.welcome.desc', lang)}</Text>
             </View>
-            <Text style={s.chatHeaderSub}>{tAtlas('chat.welcome.desc', lang)}</Text>
+          </View>
+          <View style={s.chatHeaderRight}>
+            <TouchableOpacity onPress={() => setShowLangPicker(!showLangPicker)} testID="chat-lang-picker" style={s.langBtn}>
+              <Text style={s.langBtnText}>{lang.toUpperCase()}</Text>
+            </TouchableOpacity>
+            {isVip && (
+              <TouchableOpacity onPress={() => { setInput(tAtlas('sug.market', lang)); }} testID="market-intel-btn" style={s.headerIconBtn}>
+                <Ionicons name="globe-outline" size={18} color="#10B981" />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity onPress={newConversation} testID="new-chat-btn" style={s.headerIconBtn}>
+              <Ionicons name="create-outline" size={18} color="#94A3B8" />
+            </TouchableOpacity>
           </View>
         </View>
-        <View style={s.chatHeaderRight}>
-          {/* VIP upgrade for FREE users */}
-          {!isVip && (
-            <TouchableOpacity style={s.upgradeHeaderBtn} onPress={() => setShowVipModal(true)} data-testid="header-upgrade-btn">
-              <Ionicons name="diamond-outline" size={14} color="#A78BFA" />
-              <Text style={s.upgradeHeaderText}>{tAtlas('upgrade.badge', lang)}</Text>
-            </TouchableOpacity>
-          )}
-          {/* Language picker */}
-          <TouchableOpacity onPress={() => setShowLangPicker(!showLangPicker)} testID="chat-lang-picker" style={s.langBtn}>
-            <Text style={s.langBtnText}>{lang.toUpperCase()}</Text>
-          </TouchableOpacity>
-          {isVip && (
-            <TouchableOpacity onPress={() => { setInput(tAtlas('sug.market', lang)); }} testID="market-intel-btn" style={s.headerIconBtn}>
-              <Ionicons name="globe-outline" size={18} color="#10B981" />
-            </TouchableOpacity>
-          )}
-          <TouchableOpacity onPress={newConversation} testID="new-chat-btn" style={s.headerIconBtn}>
-            <Ionicons name="create-outline" size={18} color="#94A3B8" />
-          </TouchableOpacity>
-        </View>
+        {/* VIP upgrade banner - below header, animated */}
+        {!isVip && <UpgradeBanner lang={lang} onPress={() => setShowVipModal(true)} />}
       </View>
 
       {/* Language dropdown */}
@@ -1052,8 +1085,9 @@ const s = StyleSheet.create({
   authDesc: { fontSize: 14, color: '#64748B', textAlign: 'center' },
 
   // Chat header — premium minimal
-  chatHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.04)' },
-  chatHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  chatHeader: { paddingHorizontal: 16, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.04)' },
+  chatHeaderRow1: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  chatHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
   chatHeaderTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   chatHeaderTitle: { fontSize: 16, fontWeight: '700', color: '#F1F5F9', letterSpacing: -0.3 },
   chatHeaderSub: { fontSize: 11, color: '#64748B', marginTop: 1 },
@@ -1062,9 +1096,10 @@ const s = StyleSheet.create({
   atlasAvatarText: { color: '#C4B5FD', fontSize: 14, fontWeight: '700' },
   onlineDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#34D399' },
 
-  // Upgrade header button
-  upgradeHeaderBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(167,139,250,0.25)', backgroundColor: 'rgba(167,139,250,0.06)' },
-  upgradeHeaderText: { fontSize: 11, fontWeight: '600', color: '#A78BFA' },
+  // Upgrade banner — animated, below header
+  upgradeBanner: { marginTop: 6, marginHorizontal: 0 },
+  upgradeBannerInner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 8, borderRadius: 8, backgroundColor: 'rgba(167,139,250,0.08)', borderWidth: 1, borderColor: 'rgba(167,139,250,0.18)' },
+  upgradeBannerText: { fontSize: 12, fontWeight: '700', color: '#C4B5FD', letterSpacing: 0.3 },
 
   headerIconBtn: { width: 32, height: 32, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.03)' },
 

@@ -41,16 +41,34 @@ def _ensure_product_and_price() -> str:
     if not STRIPE_SK:
         raise Exception("Stripe not configured")
 
-    # Search for existing product by metadata
-    products = stripe.Product.search(query=f"metadata['{VIP_PRODUCT_METADATA_KEY}']:'{VIP_PRODUCT_METADATA_VALUE}'")
     product_id = None
-    if products.data:
-        product_id = products.data[0].id
-        logger.info(f"Found existing Stripe product: {product_id}")
-    else:
+
+    # Try search first, fall back to list if search fails
+    try:
+        products = stripe.Product.search(query=f"metadata['{VIP_PRODUCT_METADATA_KEY}']:'{VIP_PRODUCT_METADATA_VALUE}'")
+        if products.data:
+            product_id = products.data[0].id
+            logger.info(f"Found existing Stripe product via search: {product_id}")
+    except Exception as search_err:
+        logger.warning(f"Product.search failed ({search_err}), falling back to list")
+
+    # Fallback: list all products and find by name
+    if not product_id:
+        try:
+            all_products = stripe.Product.list(limit=100, active=True)
+            for p in all_products.data:
+                if p.metadata.get(VIP_PRODUCT_METADATA_KEY) == VIP_PRODUCT_METADATA_VALUE or p.name == VIP_PRODUCT_NAME:
+                    product_id = p.id
+                    logger.info(f"Found existing Stripe product via list: {product_id}")
+                    break
+        except Exception as list_err:
+            logger.warning(f"Product.list also failed: {list_err}")
+
+    # Create if not found
+    if not product_id:
         product = stripe.Product.create(
             name=VIP_PRODUCT_NAME,
-            description="Mentova VIP - Caufid Premium, mémoire persistante, briefing quotidien, outils pro",
+            description="Mentova VIP - Caufid Premium",
             metadata={VIP_PRODUCT_METADATA_KEY: VIP_PRODUCT_METADATA_VALUE},
         )
         product_id = product.id
