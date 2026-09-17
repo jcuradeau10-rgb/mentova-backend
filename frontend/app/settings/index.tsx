@@ -31,6 +31,10 @@ export default function SettingsScreen() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [feedbackSent, setFeedbackSent] = useState(false);
 
   // Password change form
   const [currentPassword, setCurrentPassword] = useState('');
@@ -264,6 +268,19 @@ export default function SettingsScreen() {
     );
   };
 
+  const handleSubmitFeedback = async () => {
+    if (!feedbackMessage.trim()) return;
+    setFeedbackLoading(true);
+    try {
+      await api.post('/feedback', { type: 'improvement', message: feedbackMessage.trim() });
+      setFeedbackSent(true);
+      setFeedbackMessage('');
+      setTimeout(() => { setFeedbackSent(false); setShowFeedbackModal(false); }, 2000);
+    } catch {
+      Alert.alert('Error', 'Failed to send feedback');
+    } finally { setFeedbackLoading(false); }
+  };
+
   const SettingsItem = ({ icon, iconColor, title, subtitle, onPress, rightElement, danger = false }: any) => (
     <TouchableOpacity
       style={[styles.settingsItem, danger && styles.settingsItemDanger]}
@@ -386,6 +403,19 @@ export default function SettingsScreen() {
           />
         </View>
 
+        {/* Feedback */}
+        <SectionHeader title={t('settings.helpUs') || 'Feedback'} />
+        <View style={styles.section}>
+          <SettingsItem
+            icon="chatbubble-ellipses"
+            iconColor="#F59E0B"
+            title={t('settings.helpUsImprove') || 'Help us improve'}
+            subtitle={t('settings.helpUsSub') || 'Share your ideas and suggestions'}
+            onPress={() => setShowFeedbackModal(true)}
+            data-testid="settings-feedback-btn"
+          />
+        </View>
+
         {/* Danger Zone */}
         <SectionHeader title={t('settings.dangerZone')} />
         <View style={styles.section}>
@@ -433,6 +463,59 @@ export default function SettingsScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
+
+      {/* Language Modal */}
+
+      {/* Feedback Modal */}
+      <Modal visible={showFeedbackModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{t('settings.helpUsImprove') || 'Help us improve'}</Text>
+              <TouchableOpacity onPress={() => { setShowFeedbackModal(false); setFeedbackSent(false); }} style={styles.modalCloseBtn}>
+                <Ionicons name="close" size={24} color="#8B8B9E" />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.modalContent}>
+              {feedbackSent ? (
+                <View style={{ alignItems: 'center', paddingVertical: 32 }}>
+                  <Ionicons name="checkmark-circle" size={56} color="#10B981" />
+                  <Text style={{ color: '#10B981', fontSize: 18, fontWeight: '700', marginTop: 12 }}>{t('settings.feedbackSent') || 'Thank you!'}</Text>
+                  <Text style={{ color: '#9CA3AF', fontSize: 14, marginTop: 6, textAlign: 'center' }}>{t('settings.feedbackSentSub') || 'Your feedback has been sent to our team.'}</Text>
+                </View>
+              ) : (
+                <>
+                  <Text style={{ color: '#9CA3AF', fontSize: 14, marginBottom: 16, lineHeight: 20 }}>{t('settings.feedbackDesc') || 'Tell us what you think. Your feedback is sent directly to our team in real-time.'}</Text>
+                  <TextInput
+                    style={[styles.modalInput, { height: 120, textAlignVertical: 'top', paddingTop: 14 }]}
+                    placeholder={t('settings.feedbackPlaceholder') || 'Your suggestion or idea...'}
+                    placeholderTextColor="#475569"
+                    value={feedbackMessage}
+                    onChangeText={setFeedbackMessage}
+                    multiline
+                    maxLength={1000}
+                    data-testid="feedback-input"
+                  />
+                  <Text style={{ color: '#475569', fontSize: 11, alignSelf: 'flex-end', marginTop: 4 }}>{feedbackMessage.length}/1000</Text>
+                  <TouchableOpacity
+                    style={[styles.saveBtn, !feedbackMessage.trim() && { opacity: 0.5 }]}
+                    onPress={handleSubmitFeedback}
+                    disabled={feedbackLoading || !feedbackMessage.trim()}
+                    data-testid="feedback-submit-btn"
+                  >
+                    {feedbackLoading ? <ActivityIndicator color="#fff" /> : (
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <Ionicons name="send" size={16} color="#fff" />
+                        <Text style={styles.saveBtnText}>{t('settings.sendFeedback') || 'Send'}</Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* Language Modal */}
       <Modal visible={showLanguageModal} animationType="slide" transparent>

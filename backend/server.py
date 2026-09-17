@@ -853,6 +853,80 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         founding_member=current_user.get("founding_member", False)
     )
 
+
+@api_router.delete("/users/me")
+async def delete_my_account(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Permanently delete the current user's account and all associated data."""
+    current_user = await get_current_user(credentials)
+    user_id = current_user["id"]
+    user_email = current_user.get("email", "")
+    user_name = current_user.get("name", "")
+    lang = current_user.get("language", "fr")
+
+    # Cancel Stripe subscription if active
+    sub_id = current_user.get("stripe_subscription_id")
+    if sub_id:
+        try:
+            import stripe as stripe_direct
+            stripe_direct.api_key = STRIPE_API_KEY
+            stripe_direct.Subscription.cancel(sub_id)
+            logger.info(f"Cancelled subscription {sub_id} for deleted user {user_id}")
+        except Exception as e:
+            logger.warning(f"Could not cancel subscription for deleted user: {e}")
+
+    # Delete all user data from every collection
+    collections_to_clean = [
+        ("users", {"id": user_id}),
+        ("atlas_sessions", {"user_id": user_id}),
+        ("atlas_messages", {"user_id": user_id}),
+        ("quiz_attempts", {"user_id": user_id}),
+        ("notifications", {"user_id": user_id}),
+        ("push_tokens", {"user_id": user_id}),
+        ("feedback", {"user_id": user_id}),
+        ("payment_transactions", {"user_id": user_id}),
+        ("subscriptions", {"user_id": user_id}),
+        ("user_sessions", {"user_id": user_id}),
+        ("vip_alerts", {"user_id": user_id}),
+        ("user_intelligence", {"user_id": user_id}),
+        ("community_posts", {"author_id": user_id}),
+        ("community_comments", {"author_id": user_id}),
+        ("community_likes", {"user_id": user_id}),
+        ("follows", {"$or": [{"follower_id": user_id}, {"following_id": user_id}]}),
+    ]
+    deleted_counts = {}
+    for coll_name, query in collections_to_clean:
+        try:
+            result = await db[coll_name].delete_many(query)
+            if result.deleted_count > 0:
+                deleted_counts[coll_name] = result.deleted_count
+        except Exception:
+            pass
+
+    logger.info(f"Account deleted: {user_email} (id={user_id}) — cleaned: {deleted_counts}")
+
+    # Send confirmation email
+    try:
+        from services.email_service import send_mentova_email
+        email_tr = {
+            "fr": {"subject": "Votre compte Mentova a ete supprime", "title": "Compte supprime", "text": f"Bonjour {user_name},<br><br>Votre compte Mentova ({user_email}) et toutes vos donnees ont ete definitivement supprimes comme demande.<br><br>Nous sommes desoles de vous voir partir. Si vous changez d'avis, vous pouvez toujours creer un nouveau compte.", "bye": "L'equipe Mentova Academy"},
+            "en": {"subject": "Your Mentova account has been deleted", "title": "Account deleted", "text": f"Hello {user_name},<br><br>Your Mentova account ({user_email}) and all your data have been permanently deleted as requested.<br><br>We're sorry to see you go. If you change your mind, you can always create a new account.", "bye": "The Mentova Academy team"},
+            "es": {"subject": "Tu cuenta Mentova ha sido eliminada", "title": "Cuenta eliminada", "text": f"Hola {user_name},<br><br>Tu cuenta Mentova ({user_email}) y todos tus datos han sido eliminados permanentemente como solicitaste.<br><br>Lamentamos verte partir. Si cambias de opinion, siempre puedes crear una nueva cuenta.", "bye": "El equipo de Mentova Academy"},
+        }
+        et = email_tr.get(lang, email_tr["en"])
+        html = f"""
+        <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#09090b;color:#e4e4e7;padding:40px 32px;border-radius:16px;">
+            <h1 style="color:#EF4444;font-size:22px;margin-bottom:16px;">{et["title"]}</h1>
+            <p style="font-size:15px;color:#a1a1aa;line-height:1.7;">{et["text"]}</p>
+            <p style="font-size:14px;color:#71717a;margin-top:24px;">{et["bye"]}</p>
+        </div>
+        """
+        send_mentova_email(to_email=user_email, subject=et["subject"], html_content=html)
+    except Exception as e:
+        logger.error(f"Failed to send account deletion email: {e}")
+
+    return {"success": True, "message": "Account permanently deleted"}
+
+
 # ==================== PASSWORD RESET ROUTES ====================
 
 import random
