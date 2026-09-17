@@ -8,8 +8,6 @@
 
 ## CRITICAL: User Intelligence Routes
 Routes are now INLINE in server.py (not in a separate file) to ensure Render deployment works.
-The intel_router is defined and included with prefix="/api" at the end of server.py.
-Previous issue: separate file user_intelligence.py was not loading on Render.
 
 ## CRITICAL: GitHub Push
 DO NOT use CLI `git push`. Repository has branch protection rules.
@@ -30,41 +28,30 @@ Always instruct user to use "Save to Github" button in Emergent platform chat.
 - SEO: robots.txt, sitemap.xml, structured data
 - Session & event tracking
 - PDF Export for User Intelligence
-- Legacy cleanup (removed App Store mentions, old pricing, obsolete pages)
-- SEO Hub page: comparatif-plateformes-apprentissage-crypto.html
-- SEO Comparison: mentova-vs-binance-academy.html
-- SEO Brand: why-mentova.html
-- SEO Topical Authority - 7 cluster pages (Feb 2026):
-  - guide-debutant-cryptomonnaie.html (Guide debutant)
-  - apprendre-bitcoin-blockchain.html (Bitcoin & Blockchain)
-  - apprendre-defi-finance-decentralisee.html (DeFi)
-  - securite-crypto-guide.html (Securite crypto)
-  - apprendre-trading-crypto.html (Trading)
-  - investissement-crypto-debutant.html (Investissement)
-  - intelligence-artificielle-crypto-education.html (IA & Crypto)
+- Legacy cleanup
+- SEO Hub page + 10 total SEO pages with internal linking
+- SEO Topical Authority - 7 cluster pages (Feb 2026)
 - Updated sitemap.xml (18 URLs total)
-- Internal linking network across all SEO pages
 - Updated footers on EN/FR/ES homepages with full SEO link structure
+- **ATLAS UI/UX REDESIGN (Feb 2026)**:
+  - Premium minimal header with "Atlas" + subtitle
+  - VIP upgrade button for FREE users (hidden for VIP)
+  - VIP upgrade modal with 5 features (Memory, Chart Analysis, Market Intelligence, Personalized Learning, Daily Briefing) + $21.99/mo pricing + Stripe integration
+  - "Atlas réfléchit..." thinking animation (3 dots + pulsation, FR/EN/ES)
+  - FadeIn animation for all messages
+  - Redesigned welcome state with greeting + elegant suggestion cards
+  - Premium floating input bar (rounded, with image upload for VIP)
+  - Modern AI-style messages (more space, subtler colors)
+  - All text translated FR/EN/ES
+  - Degradation banner + upgrade prompt
+  - Language picker preserved
 
 ## Pending
 - User needs to "Save to Github" + Render Manual Deploy for User Intelligence time estimation fix
-- User needs to deploy static-site to Netlify for new SEO pages to go live
+- User needs to deploy static-site to Netlify for new SEO pages
+- User needs to deploy app to Netlify for Atlas redesign to go live
 
 ## Backlog
 - P2: Create /mentova-vs-tutor-ai and /mentova-vs-learning-crypto comparative pages
+- P2: Translate all 7 SEO cluster pages to EN and ES
 - P2: Monitor User Intelligence performance with large data sets
-- P2: Better app screenshots for marketing site
-
-## SEO Page Structure
-```
-Hub: comparatif-plateformes-apprentissage-crypto.html
-  |-- mentova-vs-binance-academy.html
-  |-- guide-debutant-cryptomonnaie.html
-  |    |-- apprendre-bitcoin-blockchain.html
-  |    |-- securite-crypto-guide.html
-  |    |-- apprendre-defi-finance-decentralisee.html
-  |    |-- apprendre-trading-crypto.html
-  |    |-- investissement-crypto-debutant.html
-  |-- intelligence-artificielle-crypto-education.html
-  |-- why-mentova.html
-```
