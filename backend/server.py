@@ -1521,11 +1521,46 @@ async def create_vip_checkout(
     try:
         from services.stripe_service import create_checkout_session
         result = await create_checkout_session(current_user, request.origin_url, db)
+
+        # Save payment_transactions record for the status endpoint
+        await db.payment_transactions.insert_one({
+            "id": str(uuid.uuid4()),
+            "session_id": result["session_id"],
+            "user_id": current_user["id"],
+            "user_email": current_user.get("email", ""),
+            "amount": 21.99,
+            "currency": "usd",
+            "status": "pending",
+            "payment_status": "unpaid",
+            "payment_type": "vip_subscription",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        })
+
         logger.info(f"VIP checkout created for user {current_user['id']}")
         return VIPCheckoutResponse(checkout_url=result["checkout_url"], session_id=result["session_id"])
     except Exception as e:
         logger.error(f"Stripe checkout error: {e}")
         raise HTTPException(status_code=500, detail=f"Erreur lors de la création du paiement: {str(e)}")
+
+
+@api_router.post("/admin/activate-vip/{user_id}")
+async def admin_activate_vip(user_id: str, current_user: dict = Depends(get_super_admin_user)):
+    """Super admin endpoint to manually activate VIP for a user."""
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    vip_expires = datetime.now(timezone.utc) + timedelta(days=32)
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {
+            "is_vip": True,
+            "vip_expires_at": vip_expires.isoformat(),
+            "vip_activated_at": datetime.now(timezone.utc).isoformat(),
+            "vip_status": "active",
+        }}
+    )
+    return {"success": True, "message": f"VIP activated for {user.get('email')} until {vip_expires.isoformat()}"}
+
 
 @api_router.get("/vip/checkout/status/{session_id}")
 async def get_checkout_status(
@@ -1537,42 +1572,46 @@ async def get_checkout_status(
     current_user = await get_current_user(credentials)
     
     try:
-        # Find transaction
+        # Find transaction in DB
         transaction = await db.payment_transactions.find_one({"session_id": session_id})
-        if not transaction:
-            raise HTTPException(status_code=404, detail="Transaction not found")
         
-        # Verify user owns this transaction
-        if transaction["user_id"] != current_user["id"]:
-            raise HTTPException(status_code=403, detail="Unauthorized access")
-        
-        # If already processed, return current status
-        if transaction.get("payment_status") == "paid":
+        # If already processed as paid, return immediately
+        if transaction and transaction.get("payment_status") == "paid":
             return {
                 "status": "complete",
                 "payment_status": "paid",
                 "message": "Paiement déjà traité - Votre abonnement VIP est actif!"
             }
         
-        # Check with Stripe
-        host_url = str(http_request.base_url).rstrip('/')
-        webhook_url = f"{host_url}/api/webhook/stripe"
-        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
+        # Verify user owns this transaction (if it exists)
+        if transaction and transaction.get("user_id") != current_user["id"]:
+            raise HTTPException(status_code=403, detail="Unauthorized access")
         
-        status: CheckoutStatusResponse = await stripe_checkout.get_checkout_status(session_id)
+        # Check directly with Stripe (works even without a local transaction record)
+        import stripe as stripe_direct
+        stripe_direct.api_key = STRIPE_API_KEY
+        stripe_session = stripe_direct.checkout.Session.retrieve(session_id)
         
-        # Update transaction
+        payment_status = stripe_session.payment_status  # "paid", "unpaid", "no_payment_required"
+        session_status = stripe_session.status  # "open", "complete", "expired"
+        
+        # Update or create transaction record
         await db.payment_transactions.update_one(
             {"session_id": session_id},
             {"$set": {
-                "status": status.status,
-                "payment_status": status.payment_status,
+                "status": session_status,
+                "payment_status": payment_status,
+                "user_id": current_user["id"],
                 "updated_at": datetime.now(timezone.utc).isoformat()
-            }}
+            }, "$setOnInsert": {
+                "id": str(uuid.uuid4()),
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            }},
+            upsert=True,
         )
         
         # If paid, activate VIP
-        if status.payment_status == "paid":
+        if payment_status == "paid":
             vip_expires = datetime.now(timezone.utc) + timedelta(days=VIP_DURATION_DAYS)
             now_iso = datetime.now(timezone.utc).isoformat()
             
@@ -1580,14 +1619,22 @@ async def get_checkout_status(
             config = await db.wave_config.find_one({"_id": "current"})
             is_founder = not (config or {}).get("wave2_active", False)
             
+            update_fields = {
+                "is_vip": True,
+                "vip_expires_at": vip_expires.isoformat(),
+                "vip_activated_at": now_iso,
+                "founding_member": is_founder,
+                "vip_status": "active",
+            }
+            # Save Stripe IDs if available
+            if stripe_session.customer:
+                update_fields["stripe_customer_id"] = stripe_session.customer
+            if stripe_session.subscription:
+                update_fields["stripe_subscription_id"] = stripe_session.subscription
+            
             await db.users.update_one(
                 {"id": current_user["id"]},
-                {"$set": {
-                    "is_vip": True,
-                    "vip_expires_at": vip_expires.isoformat(),
-                    "vip_activated_at": now_iso,
-                    "founding_member": is_founder,
-                }}
+                {"$set": update_fields}
             )
             
             # Also update pre_registrations so spots counter works
@@ -1622,8 +1669,8 @@ async def get_checkout_status(
             }
         
         return {
-            "status": status.status,
-            "payment_status": status.payment_status,
+            "status": session_status,
+            "payment_status": payment_status,
             "message": "Paiement en cours de traitement..."
         }
         
