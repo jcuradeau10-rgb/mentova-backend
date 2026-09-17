@@ -650,7 +650,7 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
         <ScrollView style={{ flex: 1 }}>
           {conversations.map(c => (
             <View key={c.id} style={[s.convItem, activeConvId === c.id && s.convItemActive]}>
-              <TouchableOpacity style={{ flex: 1 }} onPress={() => loadConversation(c.id)} data-testid={`conv-${c.id}`}>
+              <TouchableOpacity style={{ flex: 1, overflow: 'hidden' }} onPress={() => loadConversation(c.id)} activeOpacity={0.7} data-testid={`conv-${c.id}`}>
                 {renamingConvId === c.id ? (
                   <TextInput style={[s.convTitle, { borderBottomWidth: 1, borderBottomColor: '#A78BFA', paddingVertical: 2 }]} value={renameText} onChangeText={setRenameText} autoFocus onSubmitEditing={() => renameConversation(c.id)} onBlur={() => renameConversation(c.id)} maxLength={200} />
                 ) : (
@@ -658,9 +658,23 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
                 )}
               </TouchableOpacity>
               {renamingConvId !== c.id && (
-                <View style={{ flexDirection: 'row', gap: 12, paddingLeft: 8 }}>
-                  <TouchableOpacity onPress={() => { setRenamingConvId(c.id); setRenameText(c.title); }} style={{ padding: 6 }} data-testid={`conv-rename-${c.id}`}><Ionicons name="pencil-outline" size={18} color="#475569" /></TouchableOpacity>
-                  <TouchableOpacity onPress={() => deleteConversation(c.id)} style={{ padding: 6 }} data-testid={`conv-delete-${c.id}`}><Ionicons name="trash-outline" size={18} color="#EF4444" /></TouchableOpacity>
+                <View style={{ flexDirection: 'row', gap: 4, flexShrink: 0, zIndex: 10 }}>
+                  <TouchableOpacity
+                    onPress={(e) => { e.stopPropagation?.(); setRenamingConvId(c.id); setRenameText(c.title); }}
+                    style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: 'rgba(167,139,250,0.08)', justifyContent: 'center', alignItems: 'center' }}
+                    activeOpacity={0.6}
+                    data-testid={`conv-rename-${c.id}`}
+                  >
+                    <Ionicons name="pencil-outline" size={16} color="#A78BFA" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={(e) => { e.stopPropagation?.(); deleteConversation(c.id); }}
+                    style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: 'rgba(239,68,68,0.08)', justifyContent: 'center', alignItems: 'center' }}
+                    activeOpacity={0.6}
+                    data-testid={`conv-delete-${c.id}`}
+                  >
+                    <Ionicons name="trash-outline" size={16} color="#EF4444" />
+                  </TouchableOpacity>
                 </View>
               )}
             </View>
