@@ -1,57 +1,56 @@
 # Mentova Academy - PRD
 
 ## Architecture
-- Static site: /app/static-site/ -> Netlify (mentova-academy.com) Site ID: fad387b8-7645-4df4-b88c-8d272aa439ca
-- App: React Native Expo -> Netlify (app.mentova-academy.com) Site ID: a1331882-5ffb-439e-b1aa-a6cab3893378
+- Static site: /app/static-site/ -> Netlify (mentova-academy.com)
+- App: React Native Expo -> Netlify (app.mentova-academy.com)
 - Backend: FastAPI -> Render (mentova-api.onrender.com)
 - DB: MongoDB Atlas
 
-## CRITICAL: User Intelligence Routes
-Routes are now INLINE in server.py (not in a separate file) to ensure Render deployment works.
-
 ## CRITICAL: GitHub Push
-DO NOT use CLI `git push`. Repository has branch protection rules.
-Always instruct user to use "Save to Github" button in Emergent platform chat.
+DO NOT use CLI `git push`. Always use "Save to Github" button in Emergent platform.
 
 ## Credentials
 - Super Admin: jcuradeau.7@gmail.com / Crypto2026!
-- Netlify Token: nfp_et6ZSodb7Wj2mHSGNY4JrRnvrEYFxJVR3b9e
 
 ## Completed
+### Core Features
 - VIP System (7 features including Early Access)
 - Stripe Integration ($21.99/mo)
 - Smart Upgrade & Protection
-- UI/UX ChatGPT-style rebuild
 - User Intelligence System (inline in server.py)
 - Conversation rename/delete
-- New marketing homepage EN/FR/ES (editorial design)
-- SEO: robots.txt, sitemap.xml, structured data
 - Session & event tracking
 - PDF Export for User Intelligence
+
+### Atlas UI/UX Redesign (Feb 2026)
+- Premium minimal header with "Atlas" + subtitle
+- VIP upgrade button for FREE users (hidden for VIP)
+- VIP upgrade modal with 5 features + $21.99/mo pricing + Stripe
+- "Atlas réfléchit..." thinking animation (3 dots + pulsation, FR/EN/ES)
+- FadeIn animation for all messages
+- Redesigned welcome state with greeting + suggestion cards
+- Premium floating input bar (rounded, with image upload for VIP)
+- Modern AI-style messages
+- **Typewriter streaming effect** — word-by-word display of latest Atlas response
+- **Dark/Light theme support** — Atlas respects the existing theme toggle
+- All text translated FR/EN/ES
+
+### SEO & Marketing (Feb 2026)
+- Editorial marketing homepage EN/FR/ES
 - Legacy cleanup
-- SEO Hub page + 10 total SEO pages with internal linking
-- SEO Topical Authority - 7 cluster pages (Feb 2026)
-- Updated sitemap.xml (18 URLs total)
-- Updated footers on EN/FR/ES homepages with full SEO link structure
-- **ATLAS UI/UX REDESIGN (Feb 2026)**:
-  - Premium minimal header with "Atlas" + subtitle
-  - VIP upgrade button for FREE users (hidden for VIP)
-  - VIP upgrade modal with 5 features (Memory, Chart Analysis, Market Intelligence, Personalized Learning, Daily Briefing) + $21.99/mo pricing + Stripe integration
-  - "Atlas réfléchit..." thinking animation (3 dots + pulsation, FR/EN/ES)
-  - FadeIn animation for all messages
-  - Redesigned welcome state with greeting + elegant suggestion cards
-  - Premium floating input bar (rounded, with image upload for VIP)
-  - Modern AI-style messages (more space, subtler colors)
-  - All text translated FR/EN/ES
-  - Degradation banner + upgrade prompt
-  - Language picker preserved
+- 34 total HTML pages, 34 sitemap URLs
+- SEO Hub: comparatif-plateformes-apprentissage-crypto.html
+- 3 Comparison pages: vs Binance Academy, vs Tutor AI, vs Learning Crypto
+- Brand page: why-mentova.html
+- 7 FR cluster pages (Guide débutant, Bitcoin, DeFi, Sécurité, Trading, Investissement, IA)
+- 7 EN cluster pages (translations with English slugs)
+- 7 ES cluster pages (translations with Spanish slugs)
+- Full internal linking network
+- hreflang tags on all translated pages
+- Updated sitemap.xml with all URLs
 
 ## Pending
-- User needs to "Save to Github" + Render Manual Deploy for User Intelligence time estimation fix
-- User needs to deploy static-site to Netlify for new SEO pages
-- User needs to deploy app to Netlify for Atlas redesign to go live
+- User needs to "Save to Github" + deploy Netlify & Render
 
 ## Backlog
-- P2: Create /mentova-vs-tutor-ai and /mentova-vs-learning-crypto comparative pages
-- P2: Translate all 7 SEO cluster pages to EN and ES
-- P2: Monitor User Intelligence performance with large data sets
+- P3: Monitor User Intelligence performance with large data sets

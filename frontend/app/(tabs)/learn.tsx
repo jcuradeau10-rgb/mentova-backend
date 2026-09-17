@@ -245,6 +245,29 @@ function VipUpgradeModal({ visible, onClose, lang, onUpgrade }: { visible: boole
   );
 }
 
+// ============ TYPEWRITER TEXT (Client-side streaming) ============
+function TypewriterText({ text, style, speed = 12 }: { text: string; style?: any; speed?: number }) {
+  const [displayedText, setDisplayedText] = useState('');
+  const indexRef = useRef(0);
+
+  useEffect(() => {
+    setDisplayedText('');
+    indexRef.current = 0;
+    const words = text.split(' ');
+    const interval = setInterval(() => {
+      if (indexRef.current < words.length) {
+        setDisplayedText(prev => prev + (indexRef.current > 0 ? ' ' : '') + words[indexRef.current]);
+        indexRef.current++;
+      } else {
+        clearInterval(interval);
+      }
+    }, speed);
+    return () => clearInterval(interval);
+  }, [text, speed]);
+
+  return <Text style={style}>{displayedText}</Text>;
+}
+
 // ============ FADE IN MESSAGE ============
 function FadeInMessage({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const opacity = useRef(new Animated.Value(0)).current;
@@ -278,9 +301,11 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
   const [showVipModal, setShowVipModal] = useState(false);
   const [renamingConvId, setRenamingConvId] = useState<string | null>(null);
   const [renameText, setRenameText] = useState('');
+  const [latestAssistantIdx, setLatestAssistantIdx] = useState<number>(-1);
   const scrollRef = useRef<ScrollView>(null);
   const router = useRouter();
   const { setLanguage } = useTranslation();
+  const { colors, mode } = useThemeStore();
 
   const { selectedConversationId, triggerNewChat } = useAtlasNavStore();
 
@@ -363,7 +388,11 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
       const contentType = res.headers.get('content-type') || '';
       if (contentType.includes('application/json')) {
         const data = await res.json();
-        setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+        setMessages(prev => {
+          const newMsgs = [...prev, { role: 'assistant' as const, content: data.response }];
+          setLatestAssistantIdx(newMsgs.length - 1);
+          return newMsgs;
+        });
         if (data.upgrade_prompt && !isVip) setShowUpgradePrompt(true);
         if (data.model_degraded && !isVip) setModelDegraded(true);
         if (!activeConvId && data.conversation_id) { setActiveConvId(data.conversation_id); loadConversations(); }
@@ -443,9 +472,9 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
   // Sidebar
   if (showSidebar) {
     return (
-      <View style={s.sidebarWrap}>
-        <View style={s.sidebarHeader}>
-          <Text style={s.sidebarTitle}>{tAtlas("chat.conversations", lang)}</Text>
+      <View style={[s.sidebarWrap, { backgroundColor: colors.bg }]}>
+        <View style={[s.sidebarHeader, { borderBottomColor: colors.borderSubtle }]}>
+          <Text style={[s.sidebarTitle, { color: colors.text }]}>{tAtlas("chat.conversations", lang)}</Text>
           <TouchableOpacity onPress={() => setShowSidebar(false)} data-testid="close-sidebar">
             <Ionicons name="close" size={24} color="#94A3B8" />
           </TouchableOpacity>
@@ -480,14 +509,14 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
 
   // Main chat view
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#0B0914' }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={100}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.bg }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={100}>
       {/* Header — minimal and clean */}
-      <View style={s.chatHeader} data-testid="atlas-chat-header">
+      <View style={[s.chatHeader, { borderBottomColor: colors.borderSubtle }]} data-testid="atlas-chat-header">
         <View style={s.chatHeaderLeft}>
-          <View style={s.atlasAvatar}><Text style={s.atlasAvatarText}>A</Text></View>
+          <View style={[s.atlasAvatar, { backgroundColor: colors.primaryGlow, borderColor: colors.border }]}><Text style={[s.atlasAvatarText, { color: colors.primary }]}>A</Text></View>
           <View>
             <View style={s.chatHeaderTitleRow}>
-              <Text style={s.chatHeaderTitle}>Atlas</Text>
+              <Text style={[s.chatHeaderTitle, { color: colors.text }]}>Atlas</Text>
               <View style={s.onlineDot} />
             </View>
             <Text style={s.chatHeaderSub}>{tAtlas('chat.welcome.desc', lang)}</Text>
@@ -533,17 +562,17 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
         {messages.length === 0 && (
           <View style={s.welcomeWrap}>
             <View style={s.welcomeAvatarWrap}>
-              <View style={s.welcomeAvatar}><Text style={s.welcomeAvatarText}>A</Text></View>
+              <View style={[s.welcomeAvatar, { backgroundColor: colors.primaryGlow, borderColor: colors.border }]}><Text style={[s.welcomeAvatarText, { color: colors.primary }]}>A</Text></View>
             </View>
-            <Text style={s.welcomeGreeting}>{tAtlas("chat.welcome.greeting", lang)}</Text>
-            <Text style={s.welcomeDesc}>{tAtlas("chat.welcome.desc", lang)}</Text>
+            <Text style={[s.welcomeGreeting, { color: colors.text }]}>{tAtlas("chat.welcome.greeting", lang)}</Text>
+            <Text style={[s.welcomeDesc, { color: colors.textMuted }]}>{tAtlas("chat.welcome.desc", lang)}</Text>
             {/* Suggestion Cards */}
             <View style={s.sugGrid}>
               {['sug.1', 'sug.2', 'sug.3', 'sug.4'].map((key, i) => (
-                <TouchableOpacity key={key} style={s.sugCard} onPress={() => { setInput(tAtlas(key, lang)); }} testID={`suggestion-${i}`}>
+                <TouchableOpacity key={key} style={[s.sugCard, { backgroundColor: mode === 'light' ? colors.surface : 'rgba(255,255,255,0.02)', borderColor: mode === 'light' ? colors.border : 'rgba(255,255,255,0.05)' }]} onPress={() => { setInput(tAtlas(key, lang)); }} testID={`suggestion-${i}`}>
                   <Ionicons name={['logo-bitcoin', 'layers-outline', 'swap-horizontal-outline', 'bar-chart-outline'][i] as any} size={16} color={['#F59E0B', '#60A5FA', '#34D399', '#F87171'][i]} />
-                  <Text style={s.sugText} numberOfLines={2}>{tAtlas(key, lang)}</Text>
-                  <Ionicons name="arrow-forward" size={12} color="#475569" style={{ marginTop: 6 }} />
+                  <Text style={[s.sugText, { color: colors.textSecondary }]} numberOfLines={2}>{tAtlas(key, lang)}</Text>
+                  <Ionicons name="arrow-forward" size={12} color={colors.textMuted} style={{ marginTop: 6 }} />
                 </TouchableOpacity>
               ))}
             </View>
@@ -552,9 +581,13 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
         {messages.map((m, i) => (
           <FadeInMessage key={i} delay={m.role === 'assistant' ? 80 : 0}>
             <View style={[s.msgRow, m.role === 'user' && s.msgRowUser]} data-testid={`message-${i}`}>
-              {m.role === 'assistant' && <View style={s.msgAvatar}><Text style={s.msgAvatarText}>A</Text></View>}
-              <View style={[s.msgBubble, m.role === 'user' ? s.msgBubbleUser : s.msgBubbleAtlas]}>
-                <Text style={[s.msgText, m.role === 'user' && s.msgTextUser]}>{m.content}</Text>
+              {m.role === 'assistant' && <View style={[s.msgAvatar, { backgroundColor: colors.primaryGlow, borderColor: colors.border }]}><Text style={[s.msgAvatarText, { color: colors.primary }]}>A</Text></View>}
+              <View style={[s.msgBubble, m.role === 'user' ? s.msgBubbleUser : [s.msgBubbleAtlas, { backgroundColor: mode === 'light' ? colors.surface : 'rgba(167,139,250,0.06)', borderColor: mode === 'light' ? colors.border : 'rgba(167,139,250,0.08)' }]]}>
+                {m.role === 'assistant' && i === latestAssistantIdx ? (
+                  <TypewriterText text={m.content} style={[s.msgText, { color: colors.text }]} speed={15} />
+                ) : (
+                  <Text style={[s.msgText, m.role === 'user' ? s.msgTextUser : { color: colors.text }]}>{m.content}</Text>
+                )}
               </View>
             </View>
           </FadeInMessage>
@@ -595,19 +628,19 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
       )}
 
       {/* Input Bar — premium floating */}
-      <View style={s.inputBarWrap}>
-        <View style={s.inputBar} data-testid="chat-input-bar">
+      <View style={[s.inputBarWrap, { borderTopColor: colors.borderSubtle }]}>
+        <View style={[s.inputBar, { backgroundColor: mode === 'light' ? colors.inputBg : 'rgba(255,255,255,0.03)', borderColor: mode === 'light' ? colors.border : 'rgba(255,255,255,0.06)' }]} data-testid="chat-input-bar">
           {isVip && Platform.OS === 'web' && (
             <TouchableOpacity style={s.imageBtn} onPress={handleImageUpload} disabled={imageAnalyzing} data-testid="chart-upload-btn" testID="chart-upload-btn">
               <Ionicons name={imageAnalyzing ? 'hourglass-outline' : 'image-outline'} size={18} color={imageAnalyzing ? '#475569' : '#A78BFA'} />
             </TouchableOpacity>
           )}
           <TextInput
-            style={s.input}
+            style={[s.input, { color: colors.text }]}
             value={input}
             onChangeText={setInput}
             placeholder={tAtlas("chat.placeholder", lang)}
-            placeholderTextColor="#475569"
+            placeholderTextColor={colors.textMuted}
             multiline
             maxLength={2000}
             onKeyPress={(e: any) => { if (e.nativeEvent?.key === 'Enter' && !e.nativeEvent?.shiftKey) { e.preventDefault?.(); sendMessage(); } }}
@@ -786,6 +819,7 @@ function ProgressView({ token, lang }: { token: string; lang: string }) {
 export default function LearnScreen() {
   const { token } = useAuthStore();
   const { language } = useTranslation();
+  const { colors, mode } = useThemeStore();
   const lang = language || 'fr';
   const [tab, setTab] = useState<Tab>('chat');
   const [continueModuleMsg, setContinueModuleMsg] = useState<string | null>(null);
@@ -811,17 +845,17 @@ export default function LearnScreen() {
   }
 
   return (
-    <SafeAreaView style={s.container} edges={[]}>
+    <SafeAreaView style={[s.container, { backgroundColor: colors.bg }]} edges={[]}>
       {/* Sub-nav */}
-      <View style={s.subNav}>
+      <View style={[s.subNav, { borderBottomColor: colors.borderSubtle }]}>
         {([
           { key: 'chat' as Tab, icon: 'chatbubbles', label: tAtlas('tab.chat', lang) },
           { key: 'modules' as Tab, icon: 'library', label: tAtlas('tab.modules', lang) },
           { key: 'progress' as Tab, icon: 'stats-chart', label: tAtlas('tab.progress', lang) },
         ]).map(item => (
           <TouchableOpacity key={item.key} style={[s.subNavItem, tab === item.key && s.subNavActive]} onPress={() => setTab(item.key)} testID={`atlas-tab-${item.key}`}>
-            <Ionicons name={(tab === item.key ? item.icon : item.icon + '-outline') as any} size={14} color={tab === item.key ? '#A78BFA' : '#475569'} />
-            <Text style={[s.subNavText, tab === item.key && s.subNavTextActive]}>{item.label}</Text>
+            <Ionicons name={(tab === item.key ? item.icon : item.icon + '-outline') as any} size={14} color={tab === item.key ? '#A78BFA' : colors.textMuted} />
+            <Text style={[s.subNavText, { color: colors.textMuted }, tab === item.key && s.subNavTextActive]}>{item.label}</Text>
           </TouchableOpacity>
         ))}
       </View>
