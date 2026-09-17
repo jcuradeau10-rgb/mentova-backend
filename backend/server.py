@@ -1525,7 +1525,7 @@ async def create_vip_checkout(
         return VIPCheckoutResponse(checkout_url=result["checkout_url"], session_id=result["session_id"])
     except Exception as e:
         logger.error(f"Stripe checkout error: {e}")
-        raise HTTPException(status_code=500, detail="Erreur lors de la creation du paiement")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la création du paiement: {str(e)}")
 
 @api_router.get("/vip/checkout/status/{session_id}")
 async def get_checkout_status(

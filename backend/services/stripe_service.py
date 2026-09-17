@@ -50,7 +50,7 @@ def _ensure_product_and_price() -> str:
     else:
         product = stripe.Product.create(
             name=VIP_PRODUCT_NAME,
-            description="Mentova VIP - Atlas AI Premium, memoire persistante, briefing quotidien, outils pro",
+            description="Mentova VIP - Caufid Premium, mémoire persistante, briefing quotidien, outils pro",
             metadata={VIP_PRODUCT_METADATA_KEY: VIP_PRODUCT_METADATA_VALUE},
         )
         product_id = product.id
