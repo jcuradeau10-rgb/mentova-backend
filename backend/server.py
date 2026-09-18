@@ -439,11 +439,14 @@ async def deep_health_check():
         checks["ai_llm"] = {"status": "error", "detail": str(e)[:80]}
         overall = False
 
-    # 3. Stripe — only verify key is present (no API calls to avoid fake transactions)
-    if STRIPE_API_KEY:
+    # 3. Stripe — read-only check (Product.list does NOT create transactions)
+    try:
+        import stripe as stripe_check
+        stripe_check.api_key = STRIPE_API_KEY
+        stripe_check.Product.list(limit=1)
         checks["stripe"] = {"status": "ok"}
-    else:
-        checks["stripe"] = {"status": "error", "detail": "STRIPE_SK not set"}
+    except Exception as e:
+        checks["stripe"] = {"status": "error", "detail": str(e)[:80]}
         overall = False
 
     # 4. Brevo (Email) — only verify key is present (avoid false-positive 401 on restricted keys)

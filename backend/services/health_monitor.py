@@ -118,12 +118,17 @@ async def _run_checks(skip_ai: bool = False) -> Dict[str, dict]:
         except Exception as e:
             checks["ai_llm"] = {"status": "error", "detail": str(e)[:120]}
 
-    # 3. Stripe — only check that the API key is present (no API calls to avoid fake transactions)
-    stripe_key = os.environ.get("STRIPE_SK", "")
-    if stripe_key:
+    # 3. Stripe — read-only check (Product.list does NOT create transactions)
+    try:
+        stripe_key = os.environ.get("STRIPE_SK", "")
+        if not stripe_key:
+            raise Exception("STRIPE_SK not set")
+        import stripe as stripe_check
+        stripe_check.api_key = stripe_key
+        stripe_check.Product.list(limit=1)
         checks["stripe"] = {"status": "ok"}
-    else:
-        checks["stripe"] = {"status": "error", "detail": "STRIPE_SK not set"}
+    except Exception as e:
+        checks["stripe"] = {"status": "error", "detail": str(e)[:120]}
 
     # 4. Brevo (Email) — only verify key is present (avoid false-positive 401)
     brevo_key = os.environ.get("BREVO_API_KEY", "")
