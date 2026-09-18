@@ -692,20 +692,34 @@ Focus on being an excellent crypto education mentor.
         if not is_vip:
             use_model, is_degraded = await get_free_user_model(user_id, db)
 
-        # Call OpenAI with tools
+        # Call AI with tools — with retry for resilience
         max_tool_rounds = 5
         assistant_response = ""
         total_input_tokens = 0
         total_output_tokens = 0
 
+        async def _ai_call(msgs, tools, model):
+            """Call AI with automatic retry on transient failures."""
+            last_error = None
+            for attempt in range(3):
+                try:
+                    return await client.chat.completions.create(
+                        model=model,
+                        messages=msgs,
+                        tools=tools,
+                        tool_choice="auto",
+                        reasoning_effort="none",
+                    )
+                except Exception as e:
+                    last_error = e
+                    if attempt < 2:
+                        import asyncio
+                        await asyncio.sleep(1.5 * (attempt + 1))
+                        logger.warning(f"AI retry {attempt+1}/3: {str(e)[:80]}")
+            raise last_error
+
         for _ in range(max_tool_rounds):
-            response = await client.chat.completions.create(
-                model=use_model,
-                messages=messages,
-                tools=available_tools,
-                tool_choice="auto",
-                reasoning_effort="none",
-            )
+            response = await _ai_call(messages, available_tools, use_model)
             msg = response.choices[0].message
             if response.usage:
                 total_input_tokens += response.usage.prompt_tokens

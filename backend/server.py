@@ -78,10 +78,8 @@ ROOT_DIR = Path(__file__).parent
 UPLOADS_DIR = ROOT_DIR / "uploads"
 UPLOADS_DIR.mkdir(exist_ok=True)
 
-load_dotenv(ROOT_DIR / '.env', override=True)
-# Also try .env.render as fallback (for production without .env)
-if not os.environ.get('MONGO_URL'):
-    load_dotenv(ROOT_DIR / '.env.render', override=True)
+load_dotenv(ROOT_DIR / '.env.local')  # Local dev secrets (not in git)
+load_dotenv(ROOT_DIR / '.env')         # Non-sensitive config (in git)
 
 # Socket.IO server for real-time notifications
 sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*', logger=False)
@@ -413,6 +411,76 @@ async def health_check():
 @app.get("/api/health")
 async def api_health():
     return {"status": "ok", "app": "Mentova API", "version": "1.0.0"}
+
+@app.get("/api/health/deep")
+async def deep_health_check():
+    """Deep health check — verifies ALL external services."""
+    checks = {}
+    overall = True
+
+    # 1. MongoDB
+    try:
+        await db.command("ping")
+        checks["mongodb"] = {"status": "ok"}
+    except Exception as e:
+        checks["mongodb"] = {"status": "error", "detail": str(e)[:80]}
+        overall = False
+
+    # 2. AI (Emergent LLM)
+    try:
+        from routes.atlas_v3 import client as ai_client
+        resp = await ai_client.chat.completions.create(
+            model="gpt-5.6-terra",
+            messages=[{"role": "user", "content": "ping"}],
+            max_tokens=5,
+        )
+        checks["ai_llm"] = {"status": "ok", "model": "gpt-5.6-terra"}
+    except Exception as e:
+        checks["ai_llm"] = {"status": "error", "detail": str(e)[:80]}
+        overall = False
+
+    # 3. Stripe
+    try:
+        import stripe as stripe_check
+        stripe_check.api_key = STRIPE_API_KEY
+        stripe_check.Product.list(limit=1)
+        checks["stripe"] = {"status": "ok"}
+    except Exception as e:
+        checks["stripe"] = {"status": "error", "detail": str(e)[:80]}
+        overall = False
+
+    # 4. Brevo (Email)
+    try:
+        import urllib.request
+        req = urllib.request.Request("https://api.brevo.com/v3/account", headers={
+            "api-key": os.environ.get("BREVO_API_KEY", ""),
+            "accept": "application/json",
+        })
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            if resp.status == 200:
+                checks["email_brevo"] = {"status": "ok"}
+            else:
+                checks["email_brevo"] = {"status": "error", "detail": f"HTTP {resp.status}"}
+                overall = False
+    except Exception as e:
+        checks["email_brevo"] = {"status": "error", "detail": str(e)[:80]}
+        overall = False
+
+    # 5. Check critical env vars exist
+    critical_vars = ["MONGO_URL", "JWT_SECRET", "EMERGENT_LLM_KEY", "STRIPE_SK", "BREVO_API_KEY"]
+    missing = [v for v in critical_vars if not os.environ.get(v)]
+    if missing:
+        checks["env_vars"] = {"status": "error", "missing": missing}
+        overall = False
+    else:
+        checks["env_vars"] = {"status": "ok", "all_present": True}
+
+    status_code = 200 if overall else 503
+    from starlette.responses import JSONResponse
+    return JSONResponse(
+        status_code=status_code,
+        content={"status": "ok" if overall else "degraded", "checks": checks}
+    )
 
 # Mount static files for uploads
 app.mount("/api/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
