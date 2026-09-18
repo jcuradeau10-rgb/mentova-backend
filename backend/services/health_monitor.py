@@ -94,7 +94,7 @@ def _tg_test(timestamp: str, checks: Dict[str, dict]) -> str:
 
 # ─── Health checks ──────────────────────────────────────
 
-async def _run_checks() -> Dict[str, dict]:
+async def _run_checks(skip_ai: bool = False) -> Dict[str, dict]:
     """Run the same checks as /api/health/deep and return results dict."""
     checks = {}
 
@@ -105,17 +105,18 @@ async def _run_checks() -> Dict[str, dict]:
     except Exception as e:
         checks["mongodb"] = {"status": "error", "detail": str(e)[:120]}
 
-    # 2. AI (Emergent LLM)
-    try:
-        from routes.atlas_v3 import client as ai_client
-        await ai_client.chat.completions.create(
-            model="gpt-5.6-terra",
-            messages=[{"role": "user", "content": "ping"}],
-            max_tokens=5,
-        )
-        checks["ai_llm"] = {"status": "ok"}
-    except Exception as e:
-        checks["ai_llm"] = {"status": "error", "detail": str(e)[:120]}
+    # 2. AI (Emergent LLM) — checked less frequently to save credits
+    if not skip_ai:
+        try:
+            from routes.atlas_v3 import client as ai_client
+            await ai_client.chat.completions.create(
+                model="gpt-5.6-terra",
+                messages=[{"role": "user", "content": "ping"}],
+                max_tokens=5,
+            )
+            checks["ai_llm"] = {"status": "ok"}
+        except Exception as e:
+            checks["ai_llm"] = {"status": "error", "detail": str(e)[:120]}
 
     # 3. Stripe
     try:
@@ -280,11 +281,11 @@ async def _store_alert(event_type: str, service: str, detail: str = ""):
 _down_since: Dict[str, datetime] = {}
 
 
-async def _check_and_alert():
+async def _check_and_alert(skip_ai: bool = False):
     """Run health checks and send alerts on state transitions."""
     global _service_states, _down_since
 
-    checks = await _run_checks()
+    checks = await _run_checks(skip_ai=skip_ai)
     now = datetime.now(timezone.utc)
     ts = now.strftime("%Y-%m-%d %H:%M UTC")
 
@@ -343,14 +344,19 @@ async def get_alert_history(limit: int = 50) -> list:
 
 
 async def health_monitor_loop():
-    """Main background loop — runs every 5 minutes forever."""
+    """Main background loop — runs every 5 minutes forever.
+    AI check runs only every 3rd cycle (~15 min) to save LLM credits.
+    """
     logger.info("Health monitor loop started")
     await asyncio.sleep(30)
 
+    cycle = 0
     while True:
         try:
-            await _check_and_alert()
-            logger.info(f"Health check completed — states: { {k: v for k, v in _service_states.items()} }")
+            cycle += 1
+            skip_ai = (cycle % 3 != 0)
+            await _check_and_alert(skip_ai=skip_ai)
+            logger.info(f"Health check #{cycle} completed (ai={'skipped' if skip_ai else 'checked'}) — states: { {k: v for k, v in _service_states.items()} }")
         except Exception as e:
             logger.error(f"Health monitor error: {e}")
         await asyncio.sleep(CHECK_INTERVAL_SECONDS)
