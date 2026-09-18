@@ -37,7 +37,7 @@
   - Login blocks unverified emails (returns `email_not_verified`)
 
 - **Deep Health Check**: `/api/health/deep` monitors MongoDB, AI (Emergent LLM), Stripe, Brevo, and env vars. Fixed false-positive 401 by using `TransactionalEmailsApi.get_smtp_report()` instead of `AccountApi.get_account()`.
-- **Auto-Alert System**: Background monitor runs every 5 min. Sends DOWN/RECOVERY emails to jcuradeau.7@gmail.com on state transitions. Anti-spam: only alerts on ok->error or error->ok. History stored in MongoDB. Endpoints: `GET /api/health/alerts/history`, `POST /api/health/alerts/test`.
+- **Auto-Alert System**: Background monitor runs every 5 min. Sends DOWN/RECOVERY emails to jcuradeau.7@hotmail.com on state transitions. Anti-spam: only alerts on ok->error or error->ok. History stored in MongoDB. Endpoints: `GET /api/health/alerts/history`, `POST /api/health/alerts/test`.
 - **Security**: All API keys removed from Git. Managed via Render env vars only. AI uses Emergent LLM Key proxy.
 - **Account Deletion**: Full backend cascade delete + confirmation email
 - **Feedback Tab**: Modernized with 5-star rating, categories (bug/feature/general)

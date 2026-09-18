@@ -13007,7 +13007,7 @@ async def start_health_monitor():
     """Start the automated health monitoring with email alerts."""
     init_monitor(db)
     asyncio.create_task(health_monitor_loop())
-    logger.info("Health monitor started — checking every 5 min, alerts to jcuradeau.7@gmail.com")
+    logger.info("Health monitor started — checking every 5 min, alerts to jcuradeau.7@hotmail.com")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
