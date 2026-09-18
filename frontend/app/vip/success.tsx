@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -56,54 +56,53 @@ function t(key: string, lang: string): string {
 export default function VIPSuccessScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const { token, isAuthenticated } = useAuthStore();
+  const { token, isAuthenticated, checkAuth } = useAuthStore();
   const { language } = useTranslation();
   const lang = language || 'fr';
 
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
-  const [authReady, setAuthReady] = useState(false);
   const [resolvedToken, setResolvedToken] = useState<string | null>(null);
+  const tokenAttempts = React.useRef(0);
 
-  // Wait for auth to be ready — restore token from storage if needed
+  // Restore token — retry a few times since Zustand/AsyncStorage may need time after Stripe redirect
   useEffect(() => {
     const resolveAuth = async () => {
       if (token) {
         setResolvedToken(token);
-        setAuthReady(true);
         return;
       }
-      // Token not in state yet — try to get it from AsyncStorage
       try {
         const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
         const stored = await AsyncStorage.getItem('token');
         if (stored) {
           setResolvedToken(stored);
-          setAuthReady(true);
+          // Also refresh auth state
+          checkAuth();
           return;
         }
       } catch {}
-      // No token at all
-      setAuthReady(true);
+      // Retry up to 5 times (Zustand might still be loading)
+      tokenAttempts.current += 1;
+      if (tokenAttempts.current < 5) {
+        setTimeout(resolveAuth, 800);
+      }
     };
     resolveAuth();
-  }, [token, isAuthenticated]);
+  }, [token]);
 
   useEffect(() => {
-    if (!authReady) return;
-    setMessage(t('checking', lang));
+    if (!resolvedToken) return;
     const sessionId = params.session_id as string;
-    if (sessionId && resolvedToken) {
+    if (sessionId) {
+      setMessage(t('checking', lang));
       checkPayment(sessionId);
-    } else if (!resolvedToken) {
-      setStatus('error');
-      setMessage(t('loginNeeded', lang));
     }
-  }, [authReady, resolvedToken, params.session_id]);
+  }, [resolvedToken, params.session_id]);
 
   const checkPayment = async (sessionId: string) => {
     try {
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 12; i++) {
         const res = await fetch(`${API}/api/vip/checkout/status/${sessionId}`, {
           headers: { Authorization: `Bearer ${resolvedToken}` },
         });
@@ -112,7 +111,15 @@ export default function VIPSuccessScreen() {
         if (data.payment_status === 'paid') {
           setStatus('success');
           setMessage(t('activated', lang));
-          setTimeout(() => { router.replace('/(tabs)/learn'); }, 4000);
+          // Refresh auth state to get VIP permissions
+          checkAuth();
+          setTimeout(() => {
+            if (Platform.OS === 'web') {
+              window.location.href = '/';
+            } else {
+              router.replace('/(tabs)/learn');
+            }
+          }, 3000);
           return;
         } else if (data.status === 'expired') {
           setStatus('error');
