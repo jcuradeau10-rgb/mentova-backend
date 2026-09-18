@@ -27,11 +27,14 @@ from services.atlas_protection import (
 logger = logging.getLogger("atlas_v3")
 atlas_router = APIRouter(prefix="/api/atlas")
 
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+EMERGENT_LLM_KEY = os.environ.get("EMERGENT_LLM_KEY", "")
 JWT_SECRET = os.environ.get("JWT_SECRET", "cryptonai_super_secret_key_2025_secure_32bytes")
 MODEL = "gpt-5.6-terra"
 
-client = AsyncOpenAI(api_key=OPENAI_API_KEY)
+client = AsyncOpenAI(
+    api_key=EMERGENT_LLM_KEY,
+    base_url="https://integrations.emergentagent.com/llm/v1",
+)
 optional_security = HTTPBearer(auto_error=False)
 
 # ============ RATE LIMITING ============
