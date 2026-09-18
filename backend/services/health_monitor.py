@@ -12,7 +12,7 @@ from typing import Dict, Optional
 
 logger = logging.getLogger("health_monitor")
 
-ALERT_EMAIL = "jcuradeau.7@gmail.com"
+ALERT_EMAIL = "jcuradeau.7@hotmail.com"
 CHECK_INTERVAL_SECONDS = 5 * 60  # 5 minutes
 
 # In-memory state tracker: service_name -> "ok" | "error"
