@@ -15,7 +15,7 @@ from typing import Dict
 logger = logging.getLogger("health_monitor")
 
 ALERT_EMAIL = "jcuradeau.7@hotmail.com"
-CHECK_INTERVAL_SECONDS = 5 * 60  # 5 minutes
+CHECK_INTERVAL_SECONDS = 30 * 60  # 30 minutes
 
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
