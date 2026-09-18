@@ -36,6 +36,14 @@
   - Verify-email screen with resend option
   - Login blocks unverified emails (returns `email_not_verified`)
 
+- **Deep Health Check**: `/api/health/deep` monitors MongoDB, AI (Emergent LLM), Stripe, Brevo, and env vars. Fixed false-positive 401 by using `TransactionalEmailsApi.get_smtp_report()` instead of `AccountApi.get_account()`.
+- **Security**: All API keys removed from Git. Managed via Render env vars only. AI uses Emergent LLM Key proxy.
+- **Account Deletion**: Full backend cascade delete + confirmation email
+- **Feedback Tab**: Modernized with 5-star rating, categories (bug/feature/general)
+- **VIP Welcome Email**: Sent on checkout success + webhook fallback
+- **Push Notifications**: Framework + cron for streak reminders
+- **Touch Bug Fix**: z-index/propagation fix on conversation rename/delete
+
 ## Key Endpoints
 - `POST /api/auth/register` — password validation + email verification + language
 - `POST /api/auth/verify-email` — verify 6-digit code

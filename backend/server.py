@@ -449,7 +449,7 @@ async def deep_health_check():
         checks["stripe"] = {"status": "error", "detail": str(e)[:80]}
         overall = False
 
-    # 4. Brevo (Email)
+    # 4. Brevo (Email) — uses TransactionalEmailsApi (same scope as real sends)
     try:
         brevo_key = os.environ.get("BREVO_API_KEY", "")
         if not brevo_key:
@@ -457,9 +457,10 @@ async def deep_health_check():
         import sib_api_v3_sdk
         config = sib_api_v3_sdk.Configuration()
         config.api_key['api-key'] = brevo_key
-        account_api = sib_api_v3_sdk.AccountApi(sib_api_v3_sdk.ApiClient(config))
-        account = account_api.get_account()
-        checks["email_brevo"] = {"status": "ok", "account": account.email}
+        api_client = sib_api_v3_sdk.ApiClient(config)
+        txn_api = sib_api_v3_sdk.TransactionalEmailsApi(api_client)
+        txn_api.get_smtp_report(days=1, limit=1)
+        checks["email_brevo"] = {"status": "ok"}
     except Exception as e:
         checks["email_brevo"] = {"status": "error", "detail": str(e)[:80]}
         overall = False
