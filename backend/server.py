@@ -481,6 +481,9 @@ async def deep_health_check():
         content={"status": "ok" if overall else "degraded", "checks": checks}
     )
 
+# Health monitor init (endpoints registered below after get_current_user)
+from services.health_monitor import init_monitor, send_test_alert, get_alert_history, health_monitor_loop
+
 # Mount static files for uploads
 app.mount("/api/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
@@ -669,6 +672,26 @@ def get_user_role(user: dict) -> str:
     if user.get("email") == SUPER_ADMIN_EMAIL:
         return "super_admin"
     return user.get("role", "user")
+
+# ============================================
+# HEALTH MONITOR — Alert History & Test
+# ============================================
+
+@app.get("/api/health/alerts/history")
+async def alert_history(limit: int = 50, current_user: dict = Depends(get_current_user)):
+    """Get health alert history (admin only)."""
+    if current_user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Admin only")
+    alerts = await get_alert_history(limit=limit)
+    return {"success": True, "alerts": alerts}
+
+@app.post("/api/health/alerts/test")
+async def test_alert(current_user: dict = Depends(get_current_user)):
+    """Send a test alert email to confirm monitoring works (admin only)."""
+    if current_user.get("role") not in ["admin", "super_admin"]:
+        raise HTTPException(status_code=403, detail="Admin only")
+    checks = await send_test_alert()
+    return {"success": True, "message": "Test alert email sent", "checks": checks}
 
 # ==================== AUTH ROUTES ====================
 
@@ -12978,6 +13001,13 @@ async def start_rss_news_cache():
 
 
 
+
+@app.on_event("startup")
+async def start_health_monitor():
+    """Start the automated health monitoring with email alerts."""
+    init_monitor(db)
+    asyncio.create_task(health_monitor_loop())
+    logger.info("Health monitor started — checking every 5 min, alerts to jcuradeau.7@gmail.com")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
