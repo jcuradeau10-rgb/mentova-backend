@@ -134,6 +134,7 @@ async def create_checkout_session(user: dict, origin_url: str, db) -> dict:
         subscription_data={"metadata": {"user_id": user["id"]}},
         metadata={"user_id": user["id"]},
         allow_promotion_codes=True,
+        payment_method_options={"card": {"request_three_d_secure": "any"}},
     )
 
     return {"checkout_url": session.url, "session_id": session.id}
