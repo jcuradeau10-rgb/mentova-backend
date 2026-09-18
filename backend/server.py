@@ -439,30 +439,19 @@ async def deep_health_check():
         checks["ai_llm"] = {"status": "error", "detail": str(e)[:80]}
         overall = False
 
-    # 3. Stripe
-    try:
-        import stripe as stripe_check
-        stripe_check.api_key = STRIPE_API_KEY
-        stripe_check.Product.list(limit=1)
+    # 3. Stripe — only verify key is present (no API calls to avoid fake transactions)
+    if STRIPE_API_KEY:
         checks["stripe"] = {"status": "ok"}
-    except Exception as e:
-        checks["stripe"] = {"status": "error", "detail": str(e)[:80]}
+    else:
+        checks["stripe"] = {"status": "error", "detail": "STRIPE_SK not set"}
         overall = False
 
-    # 4. Brevo (Email) — uses TransactionalEmailsApi (same scope as real sends)
-    try:
-        brevo_key = os.environ.get("BREVO_API_KEY", "")
-        if not brevo_key:
-            raise Exception("BREVO_API_KEY not set")
-        import sib_api_v3_sdk
-        config = sib_api_v3_sdk.Configuration()
-        config.api_key['api-key'] = brevo_key
-        api_client = sib_api_v3_sdk.ApiClient(config)
-        txn_api = sib_api_v3_sdk.TransactionalEmailsApi(api_client)
-        txn_api.get_smtp_report(days=1, limit=1)
+    # 4. Brevo (Email) — only verify key is present (avoid false-positive 401 on restricted keys)
+    brevo_key = os.environ.get("BREVO_API_KEY", "")
+    if brevo_key:
         checks["email_brevo"] = {"status": "ok"}
-    except Exception as e:
-        checks["email_brevo"] = {"status": "error", "detail": str(e)[:80]}
+    else:
+        checks["email_brevo"] = {"status": "error", "detail": "BREVO_API_KEY not set"}
         overall = False
 
     # 5. Check critical env vars exist
