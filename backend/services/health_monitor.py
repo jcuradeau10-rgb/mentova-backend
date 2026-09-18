@@ -1,19 +1,24 @@
 """
 Mentova Health Monitor — Automated alerting system.
-Runs a deep health check every 5 minutes. Sends alert/recovery emails via Brevo.
+Runs a deep health check every 5 minutes.
+Sends alerts via TWO channels: Brevo (email) + Telegram (backup).
 Anti-spam: only sends on state transitions (ok -> error, error -> ok).
 Stores full alert history in MongoDB.
 """
 import os
 import asyncio
 import logging
+import httpx
 from datetime import datetime, timezone
-from typing import Dict, Optional
+from typing import Dict
 
 logger = logging.getLogger("health_monitor")
 
 ALERT_EMAIL = "jcuradeau.7@hotmail.com"
 CHECK_INTERVAL_SECONDS = 5 * 60  # 5 minutes
+
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 
 # In-memory state tracker: service_name -> "ok" | "error"
 _service_states: Dict[str, str] = {}
@@ -24,10 +29,70 @@ _db = None
 
 def init_monitor(db):
     """Initialize the monitor with a database reference."""
-    global _db
+    global _db, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
     _db = db
-    logger.info(f"Health monitor initialized — checking every {CHECK_INTERVAL_SECONDS}s, alerts to {ALERT_EMAIL}")
+    TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
+    tg_status = "OK" if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID else "NOT CONFIGURED"
+    logger.info(f"Health monitor initialized — every {CHECK_INTERVAL_SECONDS}s | email: {ALERT_EMAIL} | telegram: {tg_status}")
 
+
+# ─── Telegram ───────────────────────────────────────────
+
+async def _send_telegram(text: str):
+    """Send a message via Telegram Bot API."""
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        logger.warning("Telegram not configured — skipping")
+        return
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": text, "parse_mode": "HTML"}
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.post(url, json=payload)
+            if resp.status_code == 200:
+                logger.info("Telegram alert sent")
+            else:
+                logger.error(f"Telegram API error {resp.status_code}: {resp.text[:120]}")
+    except Exception as e:
+        logger.error(f"Telegram send failed: {e}")
+
+
+def _tg_alert_down(service: str, detail: str, timestamp: str) -> str:
+    return (
+        f"<b>ALERTE — Service en panne</b>\n\n"
+        f"<b>Service:</b> {service}\n"
+        f"<b>Statut:</b> HORS LIGNE\n"
+        f"<b>Erreur:</b> {detail}\n"
+        f"<b>Heure:</b> {timestamp}\n\n"
+        f"<i>Mentova Health Monitor</i>"
+    )
+
+
+def _tg_alert_recovery(service: str, downtime_min: int, timestamp: str) -> str:
+    return (
+        f"<b>OK — Service retabli</b>\n\n"
+        f"<b>Service:</b> {service}\n"
+        f"<b>Statut:</b> EN LIGNE\n"
+        f"<b>Duree panne:</b> ~{downtime_min} min\n"
+        f"<b>Heure:</b> {timestamp}\n\n"
+        f"<i>Mentova Health Monitor</i>"
+    )
+
+
+def _tg_test(timestamp: str, checks: Dict[str, dict]) -> str:
+    lines = ["<b>TEST — Monitoring Actif</b>\n"]
+    for svc, info in checks.items():
+        status = info.get("status", "unknown")
+        icon = "\u2705" if status == "ok" else "\u274c"
+        lines.append(f"{icon} <b>{svc}</b>: {status.upper()}")
+    lines.append(f"\n<b>Heure:</b> {timestamp}")
+    lines.append(f"<b>Frequence:</b> 5 min")
+    lines.append(f"<b>Email:</b> {ALERT_EMAIL}")
+    lines.append(f"\n<i>Mentova Health Monitor — 24/7</i>")
+    return "\n".join(lines)
+
+
+# ─── Health checks ──────────────────────────────────────
 
 async def _run_checks() -> Dict[str, dict]:
     """Run the same checks as /api/health/deep and return results dict."""
@@ -43,7 +108,7 @@ async def _run_checks() -> Dict[str, dict]:
     # 2. AI (Emergent LLM)
     try:
         from routes.atlas_v3 import client as ai_client
-        resp = await ai_client.chat.completions.create(
+        await ai_client.chat.completions.create(
             model="gpt-5.6-terra",
             messages=[{"role": "user", "content": "ping"}],
             max_tokens=5,
@@ -82,8 +147,9 @@ async def _run_checks() -> Dict[str, dict]:
     return checks
 
 
+# ─── Email templates ────────────────────────────────────
+
 def _build_alert_html(service: str, detail: str, timestamp: str) -> str:
-    """Build an HTML email for a service DOWN alert."""
     return f"""
     <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#09090b;color:#e4e4e7;border-radius:16px;overflow:hidden;">
         <div style="background:linear-gradient(135deg,#DC2626,#991B1B);padding:28px 32px;text-align:center;">
@@ -109,16 +175,12 @@ def _build_alert_html(service: str, detail: str, timestamp: str) -> str:
                     <td style="padding:10px 0;color:#e4e4e7;font-size:13px;text-align:right;">{timestamp}</td>
                 </tr>
             </table>
-            <p style="font-size:13px;color:#71717a;margin-top:20px;text-align:center;">
-                Ce courriel est envoy&eacute; automatiquement par Mentova Health Monitor.
-            </p>
+            <p style="font-size:13px;color:#71717a;margin-top:20px;text-align:center;">Mentova Health Monitor — Surveillance 24/7</p>
         </div>
-    </div>
-    """
+    </div>"""
 
 
 def _build_recovery_html(service: str, downtime_minutes: int, timestamp: str) -> str:
-    """Build an HTML email for a service RECOVERY alert."""
     return f"""
     <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#09090b;color:#e4e4e7;border-radius:16px;overflow:hidden;">
         <div style="background:linear-gradient(135deg,#16A34A,#15803D);padding:28px 32px;text-align:center;">
@@ -144,16 +206,12 @@ def _build_recovery_html(service: str, downtime_minutes: int, timestamp: str) ->
                     <td style="padding:10px 0;color:#e4e4e7;font-size:13px;text-align:right;">{timestamp}</td>
                 </tr>
             </table>
-            <p style="font-size:13px;color:#71717a;margin-top:20px;text-align:center;">
-                Ce courriel est envoy&eacute; automatiquement par Mentova Health Monitor.
-            </p>
+            <p style="font-size:13px;color:#71717a;margin-top:20px;text-align:center;">Mentova Health Monitor — Surveillance 24/7</p>
         </div>
-    </div>
-    """
+    </div>"""
 
 
 def _build_test_html(timestamp: str, checks: Dict[str, dict]) -> str:
-    """Build an HTML email for a test alert."""
     rows = ""
     for svc, info in checks.items():
         status = info.get("status", "unknown")
@@ -164,7 +222,6 @@ def _build_test_html(timestamp: str, checks: Dict[str, dict]) -> str:
             <td style="padding:8px 0;color:#e4e4e7;font-size:14px;">{svc}</td>
             <td style="padding:8px 0;color:{color};font-weight:700;font-size:14px;text-align:right;">{label}</td>
         </tr>"""
-
     return f"""
     <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#09090b;color:#e4e4e7;border-radius:16px;overflow:hidden;">
         <div style="background:linear-gradient(135deg,#7C3AED,#4F46E5);padding:28px 32px;text-align:center;">
@@ -173,54 +230,46 @@ def _build_test_html(timestamp: str, checks: Dict[str, dict]) -> str:
         </div>
         <div style="padding:28px 32px;">
             <p style="font-size:14px;color:#a1a1aa;margin-bottom:16px;">
-                Ce courriel confirme que le syst&egrave;me d'alerte automatique Mentova fonctionne correctement.
-                Vous recevrez une alerte si un service tombe, et une notification de r&eacute;cup&eacute;ration quand il revient.
+                Le syst&egrave;me d'alerte Mentova fonctionne. Vous recevrez une alerte par <b>email + Telegram</b> si un service tombe.
             </p>
             <div style="background:#18181b;border-radius:10px;padding:16px;margin-bottom:16px;">
-                <p style="color:#a1a1aa;font-size:12px;margin:0 0 10px 0;text-transform:uppercase;letter-spacing:1px;">
-                    &Eacute;tat actuel des services
-                </p>
+                <p style="color:#a1a1aa;font-size:12px;margin:0 0 10px 0;text-transform:uppercase;letter-spacing:1px;">&Eacute;tat actuel</p>
                 <table style="width:100%;border-collapse:collapse;">{rows}</table>
             </div>
             <table style="width:100%;border-collapse:collapse;">
-                <tr>
-                    <td style="padding:6px 0;color:#a1a1aa;font-size:13px;">Fr&eacute;quence</td>
-                    <td style="padding:6px 0;color:#e4e4e7;font-size:13px;text-align:right;">Toutes les 5 minutes</td>
-                </tr>
-                <tr>
-                    <td style="padding:6px 0;color:#a1a1aa;font-size:13px;">Destination</td>
-                    <td style="padding:6px 0;color:#e4e4e7;font-size:13px;text-align:right;">{ALERT_EMAIL}</td>
-                </tr>
-                <tr>
-                    <td style="padding:6px 0;color:#a1a1aa;font-size:13px;">Heure du test</td>
-                    <td style="padding:6px 0;color:#e4e4e7;font-size:13px;text-align:right;">{timestamp}</td>
-                </tr>
+                <tr><td style="padding:6px 0;color:#a1a1aa;font-size:13px;">Fr&eacute;quence</td><td style="padding:6px 0;color:#e4e4e7;font-size:13px;text-align:right;">Toutes les 5 minutes</td></tr>
+                <tr><td style="padding:6px 0;color:#a1a1aa;font-size:13px;">Email</td><td style="padding:6px 0;color:#e4e4e7;font-size:13px;text-align:right;">{ALERT_EMAIL}</td></tr>
+                <tr><td style="padding:6px 0;color:#a1a1aa;font-size:13px;">Telegram</td><td style="padding:6px 0;color:#e4e4e7;font-size:13px;text-align:right;">@MentovaAlerts_bot</td></tr>
             </table>
-            <p style="font-size:13px;color:#71717a;margin-top:20px;text-align:center;">
-                Mentova Health Monitor — Surveillance 24/7
-            </p>
+            <p style="font-size:13px;color:#71717a;margin-top:20px;text-align:center;">Mentova Health Monitor — Surveillance 24/7</p>
         </div>
-    </div>
-    """
+    </div>"""
 
 
-async def _send_alert_email(subject: str, html: str):
-    """Send an alert email via Brevo."""
+# ─── Alert dispatch (both channels) ────────────────────
+
+async def _send_alert(subject: str, html: str, telegram_text: str):
+    """Send alert via BOTH Brevo email and Telegram."""
+    # Email
     try:
         from services.email_service import send_mentova_email
         send_mentova_email(to_email=ALERT_EMAIL, subject=subject, html_content=html)
         logger.info(f"Alert email sent: {subject}")
     except Exception as e:
-        logger.error(f"Failed to send alert email: {e}")
+        logger.error(f"Email alert failed: {e}")
+
+    # Telegram (backup — works even if Brevo is down)
+    await _send_telegram(telegram_text)
 
 
 async def _store_alert(event_type: str, service: str, detail: str = ""):
     """Store an alert event in MongoDB for history."""
     try:
         await _db.health_alerts.insert_one({
-            "event_type": event_type,  # "down", "recovered", "test"
+            "event_type": event_type,
             "service": service,
             "detail": detail,
+            "channels": ["email", "telegram"],
             "timestamp": datetime.now(timezone.utc).isoformat(),
         })
     except Exception as e:
@@ -241,31 +290,29 @@ async def _check_and_alert():
 
     for service, info in checks.items():
         current = info.get("status", "unknown")
-        previous = _service_states.get(service, "ok")  # assume ok on first run
+        previous = _service_states.get(service, "ok")
 
         if previous == "ok" and current == "error":
-            # Service just went DOWN
             detail = info.get("detail", "Unknown error")
             _down_since[service] = now
             logger.warning(f"SERVICE DOWN: {service} — {detail}")
 
-            html = _build_alert_html(service, detail, ts)
-            await _send_alert_email(
+            await _send_alert(
                 subject=f"[ALERTE] Mentova — {service} est HORS LIGNE",
-                html=html,
+                html=_build_alert_html(service, detail, ts),
+                telegram_text=_tg_alert_down(service, detail, ts),
             )
             await _store_alert("down", service, detail)
 
         elif previous == "error" and current == "ok":
-            # Service just RECOVERED
             down_start = _down_since.pop(service, now)
             downtime_min = max(1, int((now - down_start).total_seconds() / 60))
             logger.info(f"SERVICE RECOVERED: {service} after ~{downtime_min} min")
 
-            html = _build_recovery_html(service, downtime_min, ts)
-            await _send_alert_email(
+            await _send_alert(
                 subject=f"[OK] Mentova — {service} est de retour EN LIGNE",
-                html=html,
+                html=_build_recovery_html(service, downtime_min, ts),
+                telegram_text=_tg_alert_recovery(service, downtime_min, ts),
             )
             await _store_alert("recovered", service, f"downtime ~{downtime_min} min")
 
@@ -273,17 +320,17 @@ async def _check_and_alert():
 
 
 async def send_test_alert():
-    """Send a test alert email with current status of all services."""
+    """Send a test alert via both email and Telegram."""
     checks = await _run_checks()
     now = datetime.now(timezone.utc)
     ts = now.strftime("%Y-%m-%d %H:%M UTC")
 
-    html = _build_test_html(ts, checks)
-    await _send_alert_email(
+    await _send_alert(
         subject="[TEST] Mentova Health Monitor — Systeme d'alerte actif",
-        html=html,
+        html=_build_test_html(ts, checks),
+        telegram_text=_tg_test(ts, checks),
     )
-    await _store_alert("test", "all", "Test alert sent")
+    await _store_alert("test", "all", "Test alert sent (email + telegram)")
     return checks
 
 
@@ -298,7 +345,6 @@ async def get_alert_history(limit: int = 50) -> list:
 async def health_monitor_loop():
     """Main background loop — runs every 5 minutes forever."""
     logger.info("Health monitor loop started")
-    # Wait 30s on first startup to let services initialize
     await asyncio.sleep(30)
 
     while True:
