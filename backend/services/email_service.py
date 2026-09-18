@@ -14,11 +14,12 @@ _api_instance = None
 
 def _get_api():
     global _api_instance
-    if _api_instance is None:
-        if not BREVO_API_KEY:
+    key = os.environ.get("BREVO_API_KEY", "")
+    if _api_instance is None or not key:
+        if not key:
             raise Exception("BREVO_API_KEY not configured")
         config = sib_api_v3_sdk.Configuration()
-        config.api_key['api-key'] = BREVO_API_KEY
+        config.api_key['api-key'] = key
         _api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(config))
     return _api_instance
 
