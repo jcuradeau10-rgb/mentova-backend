@@ -451,17 +451,15 @@ async def deep_health_check():
 
     # 4. Brevo (Email)
     try:
-        import urllib.request
-        req = urllib.request.Request("https://api.brevo.com/v3/account", headers={
-            "api-key": os.environ.get("BREVO_API_KEY", ""),
-            "accept": "application/json",
-        })
-        with urllib.request.urlopen(req, timeout=5) as resp:
-            if resp.status == 200:
-                checks["email_brevo"] = {"status": "ok"}
-            else:
-                checks["email_brevo"] = {"status": "error", "detail": f"HTTP {resp.status}"}
-                overall = False
+        brevo_key = os.environ.get("BREVO_API_KEY", "")
+        if not brevo_key:
+            raise Exception("BREVO_API_KEY not set")
+        import sib_api_v3_sdk
+        config = sib_api_v3_sdk.Configuration()
+        config.api_key['api-key'] = brevo_key
+        account_api = sib_api_v3_sdk.AccountApi(sib_api_v3_sdk.ApiClient(config))
+        account = account_api.get_account()
+        checks["email_brevo"] = {"status": "ok", "account": account.email}
     except Exception as e:
         checks["email_brevo"] = {"status": "error", "detail": str(e)[:80]}
         overall = False
