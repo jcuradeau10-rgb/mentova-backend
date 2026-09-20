@@ -746,9 +746,9 @@ async def register(user_data: UserCreate):
     try:
         from services.email_service import send_mentova_email
         email_tr = {
-            "fr": {"subject": "Confirmez votre email - Mentova Academy", "title": "Bienvenue sur Mentova!", "text": "Voici votre code de vérification:", "footer": "Si vous n'avez pas créé de compte, ignorez cet email."},
+            "fr": {"subject": "Confirmez votre email - Mentova Academy", "title": "Bienvenue sur Mentova !", "text": "Voici votre code de v\u00e9rification :", "footer": "Si vous n'avez pas cr\u00e9\u00e9 de compte, ignorez cet email."},
             "en": {"subject": "Confirm your email - Mentova Academy", "title": "Welcome to Mentova!", "text": "Here is your verification code:", "footer": "If you didn't create an account, ignore this email."},
-            "es": {"subject": "Confirma tu email - Mentova Academy", "title": "¡Bienvenido a Mentova!", "text": "Aqui esta tu codigo de verificacion:", "footer": "Si no creaste una cuenta, ignora este email."},
+            "es": {"subject": "Confirma tu email - Mentova Academy", "title": "\u00a1Bienvenido a Mentova!", "text": "Aqu\u00ed est\u00e1 tu c\u00f3digo de verificaci\u00f3n:", "footer": "Si no creaste una cuenta, ignora este email."},
         }
         et = email_tr.get(lang, email_tr["en"])
         html = f"""
@@ -822,9 +822,9 @@ async def resend_verification(body: dict = Body(...)):
         from services.email_service import send_mentova_email
         lang = user.get("language", "fr")
         email_tr = {
-            "fr": {"subject": "Nouveau code de vérification - Mentova", "title": "Nouveau code", "text": "Voici votre nouveau code:", "footer": "Si vous n'avez pas demandé ce code, ignorez cet email."},
+            "fr": {"subject": "Nouveau code de v\u00e9rification - Mentova", "title": "Nouveau code", "text": "Voici votre nouveau code :", "footer": "Si vous n'avez pas demand\u00e9 ce code, ignorez cet email."},
             "en": {"subject": "New verification code - Mentova", "title": "New code", "text": "Here is your new code:", "footer": "If you didn't request this code, ignore this email."},
-            "es": {"subject": "Nuevo codigo de verificacion - Mentova", "title": "Nuevo codigo", "text": "Aqui esta tu nuevo codigo:", "footer": "Si no solicitaste este codigo, ignora este email."},
+            "es": {"subject": "Nuevo c\u00f3digo de verificaci\u00f3n - Mentova", "title": "Nuevo c\u00f3digo", "text": "Aqu\u00ed est\u00e1 tu nuevo c\u00f3digo:", "footer": "Si no solicitaste este c\u00f3digo, ignora este email."},
         }
         et = email_tr.get(lang, email_tr["en"])
         html = f"""
@@ -999,9 +999,9 @@ async def delete_my_account(credentials: HTTPAuthorizationCredentials = Depends(
     try:
         from services.email_service import send_mentova_email
         email_tr = {
-            "fr": {"subject": "Votre compte Mentova a ete supprime", "title": "Compte supprime", "text": f"Bonjour {user_name},<br><br>Votre compte Mentova ({user_email}) et toutes vos donnees ont ete definitivement supprimes comme demande.<br><br>Nous sommes desoles de vous voir partir. Si vous changez d'avis, vous pouvez toujours creer un nouveau compte.", "bye": "L'equipe Mentova Academy"},
+            "fr": {"subject": "Votre compte Mentova a \u00e9t\u00e9 supprim\u00e9", "title": "Compte supprim\u00e9", "text": f"Bonjour {user_name},<br><br>Votre compte Mentova ({user_email}) et toutes vos donn\u00e9es ont \u00e9t\u00e9 d\u00e9finitivement supprim\u00e9s comme demand\u00e9.<br><br>Nous sommes d\u00e9sol\u00e9s de vous voir partir. Si vous changez d'avis, vous pouvez toujours cr\u00e9er un nouveau compte.", "bye": "L'\u00e9quipe Mentova Academy"},
             "en": {"subject": "Your Mentova account has been deleted", "title": "Account deleted", "text": f"Hello {user_name},<br><br>Your Mentova account ({user_email}) and all your data have been permanently deleted as requested.<br><br>We're sorry to see you go. If you change your mind, you can always create a new account.", "bye": "The Mentova Academy team"},
-            "es": {"subject": "Tu cuenta Mentova ha sido eliminada", "title": "Cuenta eliminada", "text": f"Hola {user_name},<br><br>Tu cuenta Mentova ({user_email}) y todos tus datos han sido eliminados permanentemente como solicitaste.<br><br>Lamentamos verte partir. Si cambias de opinion, siempre puedes crear una nueva cuenta.", "bye": "El equipo de Mentova Academy"},
+            "es": {"subject": "Tu cuenta Mentova ha sido eliminada", "title": "Cuenta eliminada", "text": f"Hola {user_name},<br><br>Tu cuenta Mentova ({user_email}) y todos tus datos han sido eliminados permanentemente como solicitaste.<br><br>Lamentamos verte partir. Si cambias de opini\u00f3n, siempre puedes crear una nueva cuenta.", "bye": "El equipo de Mentova Academy"},
         }
         et = email_tr.get(lang, email_tr["en"])
         html = f"""
@@ -1031,9 +1031,9 @@ def send_reset_email(to_email: str, reset_code: str, lang: str = "fr") -> bool:
     """Send password reset email via Brevo, translated."""
     try:
         tr = {
-            "fr": {"subject": "Votre code de reinitialisation - Mentova", "sub": "Votre plateforme crypto", "title": "Reinitialisation de mot de passe", "text": "Vous avez demande la reinitialisation de votre mot de passe. Voici votre code de verification :", "expires": "Ce code expire dans <strong style=\"color:#FFFFFF;\">15 minutes</strong>.", "ignore": "Si vous n'avez pas fait cette demande, ignorez cet email. Votre compte reste securise.", "footer": "Mentova Academy &mdash; Ne partagez jamais ce code avec personne."},
-            "en": {"subject": "Your reset code - Mentova", "sub": "Your crypto platform", "title": "Password reset", "text": "You requested a password reset. Here is your verification code:", "expires": "This code expires in <strong style=\"color:#FFFFFF;\">15 minutes</strong>.", "ignore": "If you didn't make this request, ignore this email. Your account remains secure.", "footer": "Mentova Academy &mdash; Never share this code with anyone."},
-            "es": {"subject": "Tu codigo de reinicio - Mentova", "sub": "Tu plataforma crypto", "title": "Reinicio de contrasena", "text": "Solicitaste un reinicio de contrasena. Aqui esta tu codigo de verificacion:", "expires": "Este codigo expira en <strong style=\"color:#FFFFFF;\">15 minutos</strong>.", "ignore": "Si no hiciste esta solicitud, ignora este email. Tu cuenta permanece segura.", "footer": "Mentova Academy &mdash; Nunca compartas este codigo con nadie."},
+            "fr": {"subject": "Votre code de r\u00e9initialisation - Mentova", "sub": "Votre plateforme crypto", "title": "R\u00e9initialisation de mot de passe", "text": "Vous avez demand\u00e9 la r\u00e9initialisation de votre mot de passe. Voici votre code de v\u00e9rification :", "expires": "Ce code expire dans <strong style=\"color:#FFFFFF;\">15 minutes</strong>.", "ignore": "Si vous n'avez pas fait cette demande, ignorez cet email. Votre compte reste s\u00e9curis\u00e9.", "footer": "Mentova Academy. Ne partagez jamais ce code avec personne."},
+            "en": {"subject": "Your reset code - Mentova", "sub": "Your crypto platform", "title": "Password reset", "text": "You requested a password reset. Here is your verification code:", "expires": "This code expires in <strong style=\"color:#FFFFFF;\">15 minutes</strong>.", "ignore": "If you didn't make this request, ignore this email. Your account remains secure.", "footer": "Mentova Academy. Never share this code with anyone."},
+            "es": {"subject": "Tu c\u00f3digo de reinicio - Mentova", "sub": "Tu plataforma crypto", "title": "Reinicio de contrase\u00f1a", "text": "Solicitaste un reinicio de contrase\u00f1a. Aqu\u00ed est\u00e1 tu c\u00f3digo de verificaci\u00f3n:", "expires": "Este c\u00f3digo expira en <strong style=\"color:#FFFFFF;\">15 minutos</strong>.", "ignore": "Si no hiciste esta solicitud, ignora este email. Tu cuenta permanece segura.", "footer": "Mentova Academy. Nunca compartas este c\u00f3digo con nadie."},
         }
         t = tr.get(lang, tr["en"])
         html_content = f"""

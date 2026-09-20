@@ -57,21 +57,21 @@ def send_vip_welcome_email(to_email: str, user_name: str, lang: str = "fr") -> d
     """Send VIP welcome email with all premium features listed."""
     tr = {
         "fr": {
-            "subject": "Bienvenue dans le VIP Mentova!",
-            "title": "Bienvenue dans le VIP!",
+            "subject": "Bienvenue dans le VIP Mentova !",
+            "title": "Bienvenue dans le VIP !",
             "greeting": f"Bonjour {user_name},",
-            "intro": "Votre abonnement VIP Mentova est maintenant actif. Vous beneficiez de toutes les fonctionnalites premium :",
+            "intro": "Votre abonnement VIP Mentova est maintenant actif. Vous b\u00e9n\u00e9ficiez de toutes les fonctionnalit\u00e9s premium :",
             "features": [
-                ("Memoire de Caufid", "Caufid retient vos preferences, votre niveau et vos objectifs."),
-                ("Analyse de graphiques", "Envoyez une image de graphique pour une analyse technique adaptee."),
-                ("Intelligence de marche", "Donnees et actualites en temps reel pour contextualiser vos echanges."),
-                ("Apprentissage personnalise", "Caufid adapte ses explications a votre niveau et evolue avec vous."),
-                ("Briefing quotidien", "Chaque jour, un resume personnalise des evenements importants du marche."),
-                ("Acces anticipe", "Soyez les premiers a tester les nouvelles fonctionnalites."),
+                ("M\u00e9moire de Caufid", "Caufid retient vos pr\u00e9f\u00e9rences, votre niveau et vos objectifs."),
+                ("Analyse de graphiques", "Envoyez une image de graphique pour une analyse technique adapt\u00e9e."),
+                ("Intelligence de march\u00e9", "Donn\u00e9es et actualit\u00e9s en temps r\u00e9el pour contextualiser vos \u00e9changes."),
+                ("Apprentissage personnalis\u00e9", "Caufid adapte ses explications \u00e0 votre niveau et \u00e9volue avec vous."),
+                ("Briefing quotidien", "Chaque jour, un r\u00e9sum\u00e9 personnalis\u00e9 des \u00e9v\u00e9nements importants du march\u00e9."),
+                ("Acc\u00e8s anticip\u00e9", "Soyez les premiers \u00e0 tester les nouvelles fonctionnalit\u00e9s."),
             ],
             "cta": "Ouvrir Mentova",
-            "outro": "Merci pour votre confiance. Bonne exploration!",
-            "team": "L'equipe Mentova Academy",
+            "outro": "Merci pour votre confiance. Bonne exploration !",
+            "team": "L'\u00e9quipe Mentova Academy",
         },
         "en": {
             "subject": "Welcome to Mentova VIP!",
@@ -91,20 +91,20 @@ def send_vip_welcome_email(to_email: str, user_name: str, lang: str = "fr") -> d
             "team": "The Mentova Academy team",
         },
         "es": {
-            "subject": "Bienvenido al VIP de Mentova!",
-            "title": "Bienvenido al VIP!",
+            "subject": "\u00a1Bienvenido al VIP de Mentova!",
+            "title": "\u00a1Bienvenido al VIP!",
             "greeting": f"Hola {user_name},",
-            "intro": "Tu suscripcion VIP de Mentova esta activa. Tienes acceso a todas las funciones premium:",
+            "intro": "Tu suscripci\u00f3n VIP de Mentova est\u00e1 activa. Tienes acceso a todas las funciones premium:",
             "features": [
                 ("Memoria de Caufid", "Caufid recuerda tus preferencias, nivel y objetivos."),
-                ("Analisis de graficos", "Envia una imagen de grafico para un analisis tecnico adaptado."),
+                ("An\u00e1lisis de gr\u00e1ficos", "Env\u00eda una imagen de gr\u00e1fico para un an\u00e1lisis t\u00e9cnico adaptado."),
                 ("Inteligencia de mercado", "Datos y noticias en tiempo real para contextualizar tus conversaciones."),
                 ("Aprendizaje personalizado", "Caufid adapta sus explicaciones a tu nivel y evoluciona contigo."),
-                ("Briefing diario", "Cada dia, un resumen personalizado de los eventos importantes del mercado."),
-                ("Acceso anticipado", "Se el primero en probar las nuevas funciones."),
+                ("Briefing diario", "Cada d\u00eda, un resumen personalizado de los eventos importantes del mercado."),
+                ("Acceso anticipado", "S\u00e9 el primero en probar las nuevas funciones."),
             ],
             "cta": "Abrir Mentova",
-            "outro": "Gracias por tu confianza. Buena exploracion!",
+            "outro": "\u00a1Gracias por tu confianza. Buena exploraci\u00f3n!",
             "team": "El equipo de Mentova Academy",
         },
     }
@@ -140,4 +140,3 @@ def send_vip_welcome_email(to_email: str, user_name: str, lang: str = "fr") -> d
     </div>
     """
     return send_mentova_email(to_email=to_email, subject=t["subject"], html_content=html)
-
