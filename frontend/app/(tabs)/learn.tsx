@@ -720,7 +720,6 @@ function CaufidIntroGlow({ children }: { children: React.ReactNode }) {
 
   // Main chat view
   return (
-    <CaufidIntroGlow>
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.bg }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={100}>
       {/* Header — compact column layout for mobile */}
       <View style={[s.chatHeader, { borderBottomColor: colors.borderSubtle }]} data-testid="atlas-chat-header">
@@ -874,7 +873,6 @@ function CaufidIntroGlow({ children }: { children: React.ReactNode }) {
         <BadgeCelebration badge={celebrationBadge} lang={lang} onClose={() => setCelebrationBadge(null)} />
       )}
     </KeyboardAvoidingView>
-    </CaufidIntroGlow>
   );
 }
 
