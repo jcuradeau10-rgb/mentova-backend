@@ -742,6 +742,19 @@ async def register(user_data: UserCreate, request: Request):
     else:
         device_type = "Other"
 
+    # Geo-locate IP (non-blocking, best-effort)
+    geo_data = {"country": "Unknown", "city": "Unknown", "region": "Unknown"}
+    try:
+        import httpx as _httpx
+        async with _httpx.AsyncClient(timeout=3) as _geo_client:
+            _geo_resp = await _geo_client.get(f"http://ip-api.com/json/{client_ip}?fields=status,country,regionName,city")
+            if _geo_resp.status_code == 200:
+                _geo = _geo_resp.json()
+                if _geo.get("status") == "success":
+                    geo_data = {"country": _geo.get("country", "Unknown"), "city": _geo.get("city", "Unknown"), "region": _geo.get("regionName", "Unknown")}
+    except Exception:
+        pass
+
     user_doc = {
         "id": user_id,
         "email": user_data.email,
@@ -758,6 +771,9 @@ async def register(user_data: UserCreate, request: Request):
         "registration_ip": client_ip,
         "registration_device": device_type,
         "registration_user_agent": user_agent,
+        "registration_country": geo_data["country"],
+        "registration_city": geo_data["city"],
+        "registration_region": geo_data["region"],
         "progress": {
             "modules_completed": [],
             "current_level": "beginner",
