@@ -13018,9 +13018,8 @@ async def start_email_scheduler_task():
 
 @app.on_event("startup")
 async def start_coingecko_cache():
-    """Start the CoinGecko zero-user-call scheduler"""
-    asyncio.create_task(_coingecko_scheduler())
-    logger.info("CoinGecko scheduler started (zero-user-call mode) — prices every 120s, long charts hourly")
+    """CoinGecko scheduler DISABLED — market feature temporarily removed"""
+    logger.info("CoinGecko scheduler DISABLED — market feature temporarily removed")
 
 @app.on_event("startup")
 async def start_rss_news_cache():

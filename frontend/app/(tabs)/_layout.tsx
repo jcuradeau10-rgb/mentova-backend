@@ -12,7 +12,6 @@ const BREAKPOINT = 768;
 
 const NAV_ITEMS = [
   { name: 'index', icon: 'home', label: 'Home', labelKey: 'nav.home' },
-  { name: 'market', icon: 'trending-up', label: 'Market', labelKey: 'nav.market' },
   { name: 'news', icon: 'newspaper', label: 'News', labelKey: 'nav.news' },
   { name: 'profile', icon: 'person', label: 'Profile', labelKey: 'nav.profile' },
 ];
@@ -303,7 +302,7 @@ export default function TabLayout() {
         >
           <Tabs.Screen name="learn" options={{ title: 'Caufid' }} />
           <Tabs.Screen name="index" options={{ title: 'Home' }} />
-          <Tabs.Screen name="market" options={{ title: 'Market' }} />
+          <Tabs.Screen name="market" options={{ href: null }} />
           <Tabs.Screen name="news" options={{ title: 'News' }} />
           <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
           <Tabs.Screen name="ai" options={{ href: null }} />
