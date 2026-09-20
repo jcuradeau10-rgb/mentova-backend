@@ -17,7 +17,7 @@ const PILLARS = [
   {
     icon: 'trending-up' as const,
     title: 'Trade',
-    desc: 'AI-powered chart analysis and real-time market insights. GPT-4o turns complex data into clear signals.',
+    desc: 'AI-powered chart analysis and real-time market insights. Caufid turns complex data into clear signals.',
     gradient: ['#10B981', '#059669'] as const,
   },
   {
@@ -32,7 +32,7 @@ const HIGHLIGHTS = [
   { icon: 'globe-outline' as const, label: '3 Languages', sub: 'FR / EN / ES' },
   { icon: 'flash-outline' as const, label: 'Real-time', sub: 'Live news & prices' },
   { icon: 'shield-checkmark-outline' as const, label: 'Stripe Payments', sub: 'Secure transactions' },
-  { icon: 'sparkles-outline' as const, label: 'AI Inside', sub: 'GPT-4o powered' },
+  { icon: 'sparkles-outline' as const, label: 'AI Inside', sub: 'Caufid AI' },
 ];
 
 const FEATURES = [
@@ -44,7 +44,7 @@ const FEATURES = [
   { icon: 'ribbon' as const, title: 'Affiliates', desc: 'Full influencer program with Stripe Connect payouts', color: '#06B6D4' },
 ];
 
-const TECH = ['React Native', 'Expo', 'FastAPI', 'MongoDB', 'Stripe', 'OpenAI GPT-4o', 'WebSocket', 'i18n'];
+const TECH = ['React Native', 'Expo', 'FastAPI', 'MongoDB', 'Stripe', 'Caufid AI', 'WebSocket', 'i18n'];
 
 export default function WelcomeReview() {
   const router = useRouter();

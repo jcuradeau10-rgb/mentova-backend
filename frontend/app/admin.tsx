@@ -616,8 +616,8 @@ export default function AdminScreen() {
           </View>
         )}
 
-        {/* ATLAS AI */}
-        <Text style={{ fontSize: 14, fontWeight: '800', color: '#8B5CF6', marginBottom: 8 }}>ATLAS AI</Text>
+        {/* CAUFID AI */}
+        <Text style={{ fontSize: 14, fontWeight: '800', color: '#8B5CF6', marginBottom: 8 }}>CAUFID AI</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
           <StatBox label="Appels aujourd'hui" value={atlas.calls_today || 0} icon="planet" color="#8B5CF6" />
           <StatBox label="Appels (7j)" value={atlas.calls_week || 0} icon="chatbubble" color="#6366F1" />

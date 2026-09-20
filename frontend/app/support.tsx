@@ -22,7 +22,7 @@ const supportI18n: Record<string, Record<string, string>> = {
 const faqI18n: Record<string, { q: Record<string, string>; a: Record<string, string> }> = {
   faq1: {
     q: { fr: 'Qu\'est-ce que Mentova ?', en: 'What is Mentova?', es: 'Que es Mentova?' },
-    a: { fr: 'Mentova est une plateforme d\'apprentissage crypto alimentee par Caufid, un mentor IA personnalise. Atlas s\'adapte a votre niveau et vous guide a travers des modules structures pour maitriser les cryptomonnaies.', en: 'Mentova is a crypto learning platform powered by Caufid, a personalized AI mentor. Caufid adapts to your level and guides you through structured modules to master cryptocurrencies.', es: 'Mentova es una plataforma de aprendizaje crypto impulsada por Caufid, un mentor IA personalizado. Caufid se adapta a tu nivel y te guia a traves de modulos estructurados para dominar las criptomonedas.' },
+    a: { fr: 'Mentova est une plateforme d\'apprentissage crypto alimentee par Caufid, un mentor IA personnalise. Caufid s\'adapte a votre niveau et vous guide a travers des modules structures pour maitriser les cryptomonnaies.', en: 'Mentova is a crypto learning platform powered by Caufid, a personalized AI mentor. Caufid adapts to your level and guides you through structured modules to master cryptocurrencies.', es: 'Mentova es una plataforma de aprendizaje crypto impulsada por Caufid, un mentor IA personalizado. Caufid se adapta a tu nivel y te guia a traves de modulos estructurados para dominar las criptomonedas.' },
   },
   faq2: {
     q: { fr: 'Comment fonctionne Caufid ?', en: 'How does Caufid work?', es: 'Como funciona Caufid?' },
@@ -34,7 +34,7 @@ const faqI18n: Record<string, { q: Record<string, string>; a: Record<string, str
   },
   faq4: {
     q: { fr: 'Comment suivre ma progression ?', en: 'How do I track my progress?', es: 'Como sigo mi progreso?' },
-    a: { fr: 'Rendez-vous dans l\'onglet Atlas, section "Progression". Vous y trouverez votre niveau global, vos competences detaillees, les modules completes et votre historique de quiz.', en: 'Go to the Caufid tab, "Progress" section. You\'ll find your overall level, detailed skills, completed modules, and quiz history.', es: 'Ve a la pestana Caufid, seccion "Progreso". Encontraras tu nivel general, habilidades detalladas, modulos completados e historial de quizzes.' },
+    a: { fr: 'Rendez-vous dans l\'onglet Caufid, section "Progression". Vous y trouverez votre niveau global, vos competences detaillees, les modules completes et votre historique de quiz.', en: 'Go to the Caufid tab, "Progress" section. You\'ll find your overall level, detailed skills, completed modules, and quiz history.', es: 'Ve a la pestana Caufid, seccion "Progreso". Encontraras tu nivel general, habilidades detalladas, modulos completados e historial de quizzes.' },
   },
   faq5: {
     q: { fr: 'Mes donnees sont-elles securisees ?', en: 'Is my data secure?', es: 'Mis datos estan seguros?' },
