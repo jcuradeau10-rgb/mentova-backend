@@ -15,7 +15,7 @@ const tr: Record<string, Record<string, string>> = {
   resend: { fr: 'Renvoyer le code', en: 'Resend code', es: 'Reenviar codigo' },
   resent: { fr: 'Code renvoye!', en: 'Code resent!', es: 'Codigo reenviado!' },
   invalid: { fr: 'Code invalide', en: 'Invalid code', es: 'Codigo invalido' },
-  success: { fr: 'Email verifie!', en: 'Email verified!', es: 'Email verificado!' },
+  success: { fr: 'Email vérifié !', en: 'Email verified!', es: 'Email verificado!' },
   check: { fr: 'Verifiez vos emails (et les spams)', en: 'Check your inbox (and spam folder)', es: 'Revisa tu correo (y la carpeta de spam)' },
   successSub: { fr: 'Redirection en cours...', en: 'Redirecting...', es: 'Redirigiendo...' },
 };

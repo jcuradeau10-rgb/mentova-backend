@@ -32,10 +32,10 @@ const tr: Record<string, Record<string, string>> = {
   toolsDesc: { fr: 'Rainbow Chart, Halving, alertes, portefeuille', en: 'Rainbow Chart, Halving, alerts, portfolio', es: 'Rainbow Chart, Halving, alertas, portafolio' },
   earlyAccess: { fr: 'Acces anticipé', en: 'Early Access', es: 'Acceso anticipado' },
   earlyAccessDesc: { fr: 'Testez les nouvelles fonctionnalités avant tout le monde', en: 'Test new features before everyone else', es: 'Prueba las nuevas funciones antes que nadie' },
-  premiumMsg: { fr: 'Vous avez acces a la meilleure version de Caufid', en: 'You have access to the best version of Caufid', es: 'Tienes acceso a la mejor version de Caufid' },
+  premiumMsg: { fr: 'Vous avez accès à la meilleure version de Caufid', en: 'You have access to the best version of Caufid', es: 'Tienes acceso a la mejor versión de Caufid' },
   premiumDesc: { fr: 'Mémoire personnalisée, intelligence de marché, apprentissage adapté à votre niveau, briefing quotidien et analyse de graphiques — Caufid VIP est conçu pour vous accompagner comme un vrai mentor.', en: 'Personalized memory, market intelligence, learning adapted to your level, daily briefing and chart analysis — Caufid VIP is designed to guide you like a real mentor.', es: 'Memoria personalizada, inteligencia de mercado, aprendizaje adaptado a tu nivel, briefing diario y análisis de gráficos — Caufid VIP está diseñado para guiarte como un verdadero mentor.' },
   openAtlas: { fr: 'Ouvrir Caufid', en: 'Open Caufid', es: 'Abrir Caufid' },
-  locked: { fr: 'Passez VIP pour debloquer', en: 'Upgrade to VIP to unlock', es: 'Pase a VIP para desbloquear' },
+  locked: { fr: 'Passez VIP pour débloquer', en: 'Upgrade to VIP to unlock', es: 'Pase a VIP para desbloquear' },
 };
 
 function t(key: string, lang: string): string { return tr[key]?.[lang] || tr[key]?.['en'] || key; }

@@ -29,7 +29,7 @@ const i18n: Record<string, Record<string, string>> = {
   'chat.placeholder': { fr: 'Écris ton message...', en: 'Write your message...', es: 'Escribe tu mensaje...' },
   'chat.welcome.title': { fr: "Caufid", en: "Caufid", es: "Caufid" },
   'chat.welcome.desc': { fr: 'Votre mentor personnel en crypto & finance', en: 'Your personal crypto & finance mentor', es: 'Tu mentor personal en crypto y finanzas' },
-  'chat.welcome.greeting': { fr: 'Bonjour, comment puis-je vous aider ?', en: 'Hello, how can I help you?', es: 'Hola, como puedo ayudarte?' },
+  'chat.welcome.greeting': { fr: 'Bonjour, comment puis-je vous aider ?', en: 'Hello, how can I help you?', es: 'Hola, ¿cómo puedo ayudarte?' },
   'chat.error': { fr: 'Erreur de connexion. Réessaie.', en: 'Connection error. Try again.', es: 'Error de conexión. Inténtalo de nuevo.' },
   'chat.conversations': { fr: 'Conversations', en: 'Conversations', es: 'Conversaciones' },
   'chat.new': { fr: 'Nouvelle conversation', en: 'New conversation', es: 'Nueva conversación' },
@@ -51,7 +51,7 @@ const i18n: Record<string, Record<string, string>> = {
   'mod.content': { fr: 'Contenu du module', en: 'Module content', es: 'Contenido del módulo' },
   'mod.quiz_history': { fr: 'Historique des quiz', en: 'Quiz history', es: 'Historial de quiz' },
   'mod.objective': { fr: 'Objectif', en: 'Objective', es: 'Objetivo' },
-  'mod.continue': { fr: 'Continuer ce module', en: 'Continue this module', es: 'Continuar este modulo' },
+  'mod.continue': { fr: 'Continuer ce module', en: 'Continue this module', es: 'Continuar este módulo' },
   // Filters
   'filter.all': { fr: 'Tous', en: 'All', es: 'Todos' },
   'filter.in_progress': { fr: 'En cours', en: 'In progress', es: 'En curso' },
@@ -82,7 +82,7 @@ const i18n: Record<string, Record<string, string>> = {
   'prog.onboarding_hint': { fr: 'Discute avec Caufid pour évaluer ton niveau', en: 'Chat with Caufid to evaluate your level', es: 'Habla con Caufid para evaluar tu nivel' },
   'prog.error': { fr: 'Erreur de chargement', en: 'Loading error', es: 'Error de carga' },
   // Smart Upgrade Prompt
-  'upgrade.title': { fr: 'Caufid peut aller encore plus loin', en: 'Caufid can go even further', es: 'Caufid puede ir aun mas lejos' },
+  'upgrade.title': { fr: 'Caufid peut aller encore plus loin', en: 'Caufid can go even further', es: 'Caufid puede ir aún más lejos' },
   'upgrade.desc': { fr: 'Avec VIP, bénéficiez d\'une mémoire personnalisée, de l\'analyse de graphiques, et d\'une expérience Caufid complète.', en: 'With VIP, get personalized memory, chart analysis, and a complete Caufid experience.', es: 'Con VIP, obtén memoria personalizada, análisis de gráficos y una experiencia Caufid completa.' },
   'upgrade.cta': { fr: 'Passer à VIP', en: 'Upgrade to VIP', es: 'Pasar a VIP' },
   'upgrade.badge': { fr: 'Mettre à niveau', en: 'Upgrade', es: 'Mejorar' },
@@ -571,7 +571,6 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
       setMessages(prev => [...prev, { role: 'assistant', content: tAtlas("chat.error", lang) }]);
     }
     setLoading(false);
-    setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 200);
     // Check for new badges after each response
     setTimeout(() => checkNewBadges(), 1500);
   }, [input, loading, activeConvId, token, lang, loadConversations, checkNewBadges]);
@@ -732,7 +731,7 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
       )}
 
       {/* Messages */}
-      <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={s.messagesContainer} onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}>
+      <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={s.messagesContainer}>
         {messages.length === 0 && (
           <View style={s.welcomeWrap}>
             <View style={s.welcomeAvatarWrap}>
