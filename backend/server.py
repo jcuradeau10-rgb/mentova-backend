@@ -4574,8 +4574,7 @@ async def vip_ai_analyze(
 ):
     """Advanced AI analysis for VIP users"""
     try:
-        from openai import AsyncOpenAI as _OpenAI
-        _client = _OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
+        from routes.atlas_v3 import client as _client
         system_prompt = f"""Tu es un analyste crypto expert VIP. Tu fournis des analyses detaillees et professionnelles.
 Type d'analyse demandee: {analysis_type}
 {"Crypto analysee: " + crypto_symbol if crypto_symbol else ""}
@@ -4633,8 +4632,7 @@ async def get_daily_briefing(lang: str = "en", user: dict = Depends(require_vip)
             except Exception:
                 pass
         
-        from openai import AsyncOpenAI as _OpenAI
-        _client = _OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
+        from routes.atlas_v3 import client as _client
         
         system_prompt = f"""You are a professional crypto market analyst providing a daily briefing.
 You MUST respond entirely in {target_lang}.
@@ -4691,8 +4689,7 @@ async def vip_ai_analyze_image(
 ):
     """Advanced AI image/chart analysis for VIP users using OpenAI Vision"""
     try:
-        from openai import AsyncOpenAI as _OpenAI
-        _client = _OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
+        from routes.atlas_v3 import client as _client
         
         is_chart = request.analysis_type == "chart_analysis"
         

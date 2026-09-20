@@ -387,13 +387,14 @@ function VipUpgradeModal({ visible, onClose, lang, token }: { visible: boolean; 
 
 // ============ TYPEWRITER TEXT (Client-side streaming) ============
 function TypewriterText({ text, style, speed = 12 }: { text: string; style?: any; speed?: number }) {
+  const safeText = text || '';
   const [displayedText, setDisplayedText] = useState('');
   const indexRef = useRef(0);
 
   useEffect(() => {
     setDisplayedText('');
     indexRef.current = 0;
-    const words = text.split(' ');
+    const words = safeText.split(' ');
     const interval = setInterval(() => {
       if (indexRef.current < words.length) {
         setDisplayedText(prev => prev + (indexRef.current > 0 ? ' ' : '') + words[indexRef.current]);
@@ -403,7 +404,7 @@ function TypewriterText({ text, style, speed = 12 }: { text: string; style?: any
       }
     }, speed);
     return () => clearInterval(interval);
-  }, [text, speed]);
+  }, [safeText, speed]);
 
   return <Text style={style}>{displayedText}</Text>;
 }
@@ -478,7 +479,7 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
             });
             const data = await res.json();
             if (data.response) {
-              setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+              setMessages(prev => [...prev, { role: 'assistant', content: data.response || '' }]);
               if (!activeConvId && data.conversation_id) { setActiveConvId(data.conversation_id); loadConversations(); }
             }
           } catch (e) { console.error(e); }
@@ -526,7 +527,7 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
   const loadConversation = useCallback(async (convId: string) => {
     try {
       const data = await api(`/api/atlas/conversations/${convId}`, token);
-      setMessages(data.messages || []);
+      setMessages((data.messages || []).map((m: any) => ({ role: m.role, content: m.content || '' })));
       setActiveConvId(convId);
       setShowSidebar(false);
     } catch (e) { console.error('Load conv error:', e); }
@@ -550,11 +551,14 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
       const contentType = res.headers.get('content-type') || '';
       if (contentType.includes('application/json')) {
         const data = await res.json();
-        setMessages(prev => {
-          const newMsgs = [...prev, { role: 'assistant' as const, content: data.response }];
-          setLatestAssistantIdx(newMsgs.length - 1);
-          return newMsgs;
-        });
+        const responseText = data.response || data.message || data.text || '';
+        if (responseText) {
+          setMessages(prev => {
+            const newMsgs = [...prev, { role: 'assistant' as const, content: responseText }];
+            setLatestAssistantIdx(newMsgs.length - 1);
+            return newMsgs;
+          });
+        }
         if (data.upgrade_prompt && !isVip) setShowUpgradePrompt(true);
         if (data.model_degraded && !isVip) setModelDegraded(true);
         if (!activeConvId && data.conversation_id) { setActiveConvId(data.conversation_id); loadConversations(); }
@@ -800,9 +804,9 @@ function CaufidIntroGlow({ children }: { children: React.ReactNode }) {
               {m.role === 'assistant' && <View style={[s.msgAvatar, { backgroundColor: colors.primaryGlow, borderColor: colors.border }]}><Text style={[s.msgAvatarText, { color: colors.primary }]}>C</Text></View>}
               <View style={[s.msgBubble, m.role === 'user' ? s.msgBubbleUser : [s.msgBubbleAtlas, { backgroundColor: mode === 'light' ? colors.surface : 'rgba(167,139,250,0.06)', borderColor: mode === 'light' ? colors.border : 'rgba(167,139,250,0.08)' }]]}>
                 {m.role === 'assistant' && i === latestAssistantIdx ? (
-                  <TypewriterText text={m.content} style={[s.msgText, { color: colors.text }]} speed={15} />
+                  <TypewriterText text={m.content || ''} style={[s.msgText, { color: colors.text }]} speed={15} />
                 ) : (
-                  <Text style={[s.msgText, m.role === 'user' ? s.msgTextUser : { color: colors.text }]}>{m.content}</Text>
+                  <Text style={[s.msgText, m.role === 'user' ? s.msgTextUser : { color: colors.text }]}>{m.content || ''}</Text>
                 )}
               </View>
             </View>
