@@ -691,7 +691,6 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
 // ============ PREMIUM INTRO GLOW ============
 function CaufidIntroGlow({ children }: { children: React.ReactNode }) {
   const glowAnim = useRef(new Animated.Value(0)).current;
-  const [showGlow, setShowGlow] = useState(true);
 
   useEffect(() => {
     Animated.timing(glowAnim, {
@@ -699,7 +698,7 @@ function CaufidIntroGlow({ children }: { children: React.ReactNode }) {
       duration: 1200,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: false,
-    }).start(() => setShowGlow(false));
+    }).start();
   }, []);
 
   const borderColor = glowAnim.interpolate({
@@ -707,23 +706,12 @@ function CaufidIntroGlow({ children }: { children: React.ReactNode }) {
     outputRange: ['rgba(124,58,237,0.8)', 'rgba(167,139,250,0.9)', 'rgba(96,165,250,0.7)', 'rgba(124,58,237,0)'],
   });
 
-  const shadowOpacity = glowAnim.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [0.6, 0.3, 0],
-  });
-
-  if (!showGlow) return <View style={{ flex: 1 }}>{children}</View>;
-
   return (
     <Animated.View style={{
       flex: 1,
       borderWidth: 1.5,
       borderColor,
       borderRadius: 2,
-      shadowColor: '#7C3AED',
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity,
-      shadowRadius: 12,
     }}>
       {children}
     </Animated.View>
