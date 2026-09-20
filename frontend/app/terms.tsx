@@ -19,11 +19,11 @@ const SECTIONS = [
   },
   {
     title: '4. VIP Membership',
-    content: 'Mentova offers a VIP membership subscription that provides access to premium features including the Academy, advanced tools, private community, and the mentor marketplace. VIP subscriptions are billed on a recurring basis (monthly or annually) through the Apple App Store. You can cancel your subscription at any time through your Apple ID settings. Cancellation takes effect at the end of the current billing period. No partial refunds are provided for unused portions of a billing period.'
+    content: 'Mentova offers a VIP membership subscription ($21.99/month) that provides access to premium features including personalized memory with Caufid, chart analysis, market intelligence, daily briefings, and personalized learning. VIP subscriptions are billed on a recurring monthly basis through Stripe. You can cancel your subscription at any time through your account settings. Cancellation takes effect at the end of the current billing period. No partial refunds are provided for unused portions of a billing period.'
   },
   {
-    title: '5. Mentor Marketplace',
-    content: 'Mentova hosts content created by independent mentors ("Mentors"). Mentors are verified professionals but operate independently. Mentova does not guarantee the accuracy, quality, or outcomes of any mentor-created content. Purchases made through the marketplace are subject to the refund policy outlined in Section 8. Mentova acts as an intermediary platform and is not responsible for the content or advice provided by Mentors.'
+    title: '5. Educational Content',
+    content: 'All content on the platform, including Caufid\'s responses, learning modules, and market analyses, is strictly for educational purposes. Mentova does not guarantee the accuracy or completeness of any content. The platform does not provide financial advice, investment advice, or trading signals. Users are solely responsible for any decisions they make based on information obtained through the platform.'
   },
   {
     title: '6. User Conduct',

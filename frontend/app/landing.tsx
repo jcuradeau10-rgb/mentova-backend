@@ -59,7 +59,7 @@ export default function LandingPage() {
           <TouchableOpacity style={styles.ctaBtn} onPress={handleDownload} data-testid="landing-download-btn">
             <LinearGradient colors={['#7C3AED', '#6D28D9']} style={styles.ctaGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
               <Ionicons name="logo-apple" size={20} color="#fff" />
-              <Text style={styles.ctaText}>Download on the App Store</Text>
+              <Text style={styles.ctaText}>Open Mentova</Text>
             </LinearGradient>
           </TouchableOpacity>
         </Animated.View>

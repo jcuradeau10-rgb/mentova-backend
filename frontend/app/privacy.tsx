@@ -35,7 +35,7 @@ const SECTIONS = [
   },
   {
     title: '8. Third-Party Services',
-    content: 'The App may integrate with or link to third-party services. These include:\n\n• Apple App Store (for subscriptions and payments)\n• Stripe (for payment processing)\n• CoinGecko (for cryptocurrency market data)\n\nThese third-party services have their own privacy policies, and we encourage you to review them. We are not responsible for the privacy practices of third-party services.'
+    content: 'The App may integrate with or link to third-party services. These include:\n\n• Stripe (for payment processing)\n• CoinGecko (for cryptocurrency market data)\n\nThese third-party services have their own privacy policies, and we encourage you to review them. We are not responsible for the privacy practices of third-party services.'
   },
   {
     title: '9. Children\'s Privacy',

@@ -37,7 +37,7 @@ const HIGHLIGHTS = [
 
 const FEATURES = [
   { icon: 'diamond' as const, title: 'VIP Hub', desc: 'Premium tools, AI analysis, portfolio tracking, daily briefings', color: '#FFD700' },
-  { icon: 'storefront' as const, title: 'Marketplace', desc: 'Verified mentors sell courses, sessions, and exclusive content', color: '#10B981' },
+  { icon: 'storefront' as const, title: 'Community', desc: 'Active forum, strategy sharing, and peer learning with other crypto enthusiasts', color: '#10B981' },
   { icon: 'newspaper' as const, title: 'Live News', desc: 'Real-time crypto news, auto-translated, smart categorization', color: '#EF4444' },
   { icon: 'chatbubbles' as const, title: 'Community', desc: 'Moderated forum, strategy sharing, mentor interactions', color: '#F97316' },
   { icon: 'bar-chart' as const, title: 'AI Charts', desc: 'Upload any chart, get instant AI-powered technical analysis', color: '#8B5CF6' },
@@ -76,7 +76,7 @@ export default function WelcomeReview() {
           <LinearGradient colors={['#0A0A1A', '#0F0826', '#050510']} style={s.hero}>
             <View style={s.heroBadge}>
               <Ionicons name="shield-checkmark" size={12} color="#10B981" />
-              <Text style={s.heroBadgeText}>App Store Review Build</Text>
+              <Text style={s.heroBadgeText}>Web App</Text>
             </View>
 
             <View style={s.logoRow}>
