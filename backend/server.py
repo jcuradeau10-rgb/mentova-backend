@@ -13001,6 +13001,39 @@ async def start_health_monitor():
     asyncio.create_task(health_monitor_loop())
     logger.info("Health monitor started — checking every 5 min, alerts to jcuradeau.7@hotmail.com")
 
+@app.on_event("startup")
+async def startup_env_check():
+    """CRITICAL: Verify all required env vars are present at boot.
+    Sends Telegram alert immediately if anything is missing."""
+    required = {
+        "MONGO_URL": "Base de donnees",
+        "JWT_SECRET": "Authentification",
+        "EMERGENT_LLM_KEY": "IA (Caufid)",
+        "STRIPE_SK": "Paiements Stripe",
+        "BREVO_API_KEY": "Emails (verification, VIP, etc.)",
+    }
+    missing = {k: desc for k, desc in required.items() if not os.environ.get(k)}
+    if missing:
+        msg = "<b>CRITIQUE — Variables manquantes au demarrage!</b>\n\n"
+        for k, desc in missing.items():
+            msg += f"<b>{k}</b>: {desc}\n"
+        msg += "\n<i>Ajouter sur Render → Environment → env vars</i>"
+        logger.critical(f"MISSING ENV VARS: {list(missing.keys())}")
+        # Send Telegram alert
+        tg_token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+        tg_chat = os.environ.get("TELEGRAM_CHAT_ID", "")
+        if tg_token and tg_chat:
+            try:
+                async with httpx.AsyncClient(timeout=10) as c:
+                    await c.post(
+                        f"https://api.telegram.org/bot{tg_token}/sendMessage",
+                        json={"chat_id": tg_chat, "text": msg, "parse_mode": "HTML"},
+                    )
+            except Exception:
+                pass
+    else:
+        logger.info("Startup env check: all critical variables present")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
