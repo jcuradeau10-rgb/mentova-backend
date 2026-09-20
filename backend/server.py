@@ -688,7 +688,7 @@ async def test_alert(current_user: dict = Depends(get_current_user)):
 # ==================== AUTH ROUTES ====================
 
 @api_router.post("/auth/register", response_model=TokenResponse)
-async def register(user_data: UserCreate):
+async def register(user_data: UserCreate, request: Request):
     # Verify CAPTCHA (non-blocking: log warning if missing but allow register)
     if user_data.captcha_token:
         captcha_valid = await verify_recaptcha(user_data.captcha_token)
@@ -721,6 +721,27 @@ async def register(user_data: UserCreate):
     lang = (user_data.language or "fr").lower()
     if lang not in ("fr", "en", "es"):
         lang = "fr"
+    # Capture registration metadata (IP, device, browser)
+    client_ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "unknown")
+    if "," in client_ip:
+        client_ip = client_ip.split(",")[0].strip()
+    user_agent = request.headers.get("user-agent", "unknown")
+
+    # Parse device type from user agent
+    ua_lower = user_agent.lower()
+    if "iphone" in ua_lower or "ipad" in ua_lower:
+        device_type = "iOS"
+    elif "android" in ua_lower:
+        device_type = "Android"
+    elif "macintosh" in ua_lower or "mac os" in ua_lower:
+        device_type = "Mac"
+    elif "windows" in ua_lower:
+        device_type = "Windows"
+    elif "linux" in ua_lower:
+        device_type = "Linux"
+    else:
+        device_type = "Other"
+
     user_doc = {
         "id": user_id,
         "email": user_data.email,
@@ -734,6 +755,9 @@ async def register(user_data: UserCreate):
         "email_verified": False,
         "email_verify_code": verify_code,
         "email_verify_sent_at": datetime.now(timezone.utc).isoformat(),
+        "registration_ip": client_ip,
+        "registration_device": device_type,
+        "registration_user_agent": user_agent,
         "progress": {
             "modules_completed": [],
             "current_level": "beginner",
