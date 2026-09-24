@@ -123,6 +123,25 @@ const i18n: Record<string, Record<string, string>> = {
   'vip.briefing': { fr: 'Briefing quotidien', en: 'Daily Briefing', es: 'Briefing diario' },
   'vip.briefing.desc': { fr: 'Recevez un briefing personnalisé chaque jour.', en: 'Receive a personalized briefing every day.', es: 'Recibe un briefing personalizado cada día.' },
   'vip.back': { fr: 'Retour', en: 'Back', es: 'Volver' },
+  // Progression Hub
+  'hub.daily_goals': { fr: 'Objectifs du jour', en: "Today's Goals", es: 'Objetivos del d\u00eda' },
+  'hub.skills': { fr: 'Comp\u00e9tences', en: 'Skills', es: 'Competencias' },
+  'hub.badges': { fr: 'Badges', en: 'Badges', es: 'Insignias' },
+  'hub.modules_overview': { fr: 'Modules', en: 'Modules', es: 'M\u00f3dulos' },
+  'hub.quiz_stats': { fr: 'Quiz', en: 'Quiz', es: 'Quiz' },
+  'hub.avg_score': { fr: 'Score moyen', en: 'Avg. score', es: 'Puntuaci\u00f3n media' },
+  'hub.perfect_scores': { fr: 'Parfaits', en: 'Perfect', es: 'Perfectos' },
+  'hub.days_active': { fr: 'Jours actifs', en: 'Days active', es: 'D\u00edas activos' },
+  'hub.in_progress': { fr: 'En cours', en: 'In progress', es: 'En curso' },
+  'hub.completed': { fr: 'Compl\u00e9t\u00e9s', en: 'Completed', es: 'Completados' },
+  'hub.mastered': { fr: 'Ma\u00eetris\u00e9s', en: 'Mastered', es: 'Dominados' },
+  'hub.priority.resume': { fr: 'Reprendre', en: 'Resume', es: 'Continuar' },
+  'hub.priority.start': { fr: 'Commence ton parcours', en: 'Start your journey', es: 'Comienza tu camino' },
+  'hub.priority.start_desc': { fr: 'Discute avec Caufid pour cr\u00e9er ton premier module', en: 'Chat with Caufid to create your first module', es: 'Habla con Caufid para crear tu primer m\u00f3dulo' },
+  'hub.priority.strengthen': { fr: 'Renforcer', en: 'Strengthen', es: 'Reforzar' },
+  'hub.bonus_xp': { fr: 'Bonus', en: 'Bonus', es: 'Bonus' },
+  'hub.almost': { fr: 'Presque d\u00e9bloqu\u00e9', en: 'Almost unlocked', es: 'Casi desbloqueado' },
+  'hub.recent': { fr: 'R\u00e9cents', en: 'Recent', es: 'Recientes' },
 };
 
 function tAtlas(key: string, lang: string): string {
@@ -994,78 +1013,342 @@ function ModulesView({ token, lang, onContinueModule }: { token: string; lang: s
 }
 
 // ============ PROGRESS VIEW ============
-function ProgressView({ token, lang }: { token: string; lang: string }) {
-  const [data, setData] = useState<any>(null);
-  const [gamData, setGamData] = useState<any>(null);
+function ProgressView({ token, lang, onAction }: { token: string; lang: string; onAction?: (type: string, data?: string) => void }) {
+  const [hub, setHub] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const xpAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Promise.all([
-      api('/api/atlas/progress', token).catch(() => null),
-      api('/api/atlas/gamification', token).catch(() => null),
-    ]).then(([prog, gam]) => { setData(prog); setGamData(gam); setLoading(false); });
-  }, [token]);
+    setLoading(true);
+    api(`/api/atlas/progression/hub?lang=${lang}`, token)
+      .then(data => {
+        if (data?.success) {
+          setHub(data);
+          Animated.timing(xpAnim, {
+            toValue: data.xp_progress || 0,
+            duration: 1000,
+            easing: Easing.out(Easing.cubic),
+            useNativeDriver: false,
+          }).start();
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [token, lang]);
 
-  if (loading) return <ActivityIndicator size="large" color="#A78BFA" style={{ marginTop: 40 }} />;
-  if (!data) return <Text style={{ color: '#64748B', textAlign: 'center', marginTop: 40 }}>{tAtlas('prog.error', lang)}</Text>;
+  if (loading) return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 60 }}>
+      <ActivityIndicator size="large" color="#A78BFA" />
+    </View>
+  );
 
-  const profile = data.profile || {};
-  const summary = data.modules_summary || {};
-  const categories = data.categories || {};
-  const quizzes = data.recent_quizzes || [];
-  const levelColors: Record<string, string> = { unknown: '#64748B', beginner: '#10B981', intermediate: '#F59E0B', advanced: '#EF4444', expert: '#A78BFA' };
-  const levelLabels = (l: string) => tAtlas(`level.${l}`, lang);
-  const skillFields = [
-    { key: 'crypto_level', label: tAtlas('skill.crypto', lang), icon: 'logo-bitcoin' },
-    { key: 'blockchain_level', label: tAtlas('skill.blockchain', lang), icon: 'cube' },
-    { key: 'trading_level', label: tAtlas('skill.trading', lang), icon: 'trending-up' },
-    { key: 'finance_level', label: tAtlas('skill.finance', lang), icon: 'cash' },
-    { key: 'risk_management_level', label: tAtlas('skill.risk', lang), icon: 'shield-checkmark' },
-  ];
+  if (!hub) return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40 }}>
+      <Ionicons name="alert-circle-outline" size={32} color="#475569" />
+      <Text style={{ color: '#64748B', marginTop: 12, fontSize: 14 }}>{tAtlas('prog.error', lang)}</Text>
+    </View>
+  );
+
+  const levelName = hub[`level_name_${lang}`] || hub.level_name_en;
+  const goals = hub.daily_goals?.goals || [];
+  const badges = hub.badges || [];
+  const skills = hub.skills || [];
+  const recentMods = hub.recent_modules || [];
+  const stats = hub.stats || {};
+  const streakBestLabel = lang === 'fr' ? 'Record' : lang === 'es' ? 'Record' : 'Best';
+
+  const badgeCats: Record<string, any[]> = {};
+  for (const b of badges) {
+    if (!badgeCats[b.category]) badgeCats[b.category] = [];
+    badgeCats[b.category].push(b);
+  }
+
+  const catLabels: Record<string, Record<string, string>> = {
+    first_steps: { fr: 'Premiers pas', en: 'First Steps', es: 'Primeros pasos' },
+    quiz: { fr: 'Quiz', en: 'Quiz', es: 'Quiz' },
+    modules: { fr: 'Modules', en: 'Modules', es: 'Modulos' },
+    streak: { fr: 'Regularite', en: 'Streak', es: 'Racha' },
+    excellence: { fr: 'Excellence', en: 'Excellence', es: 'Excelencia' },
+    mastery: { fr: 'Maitrise', en: 'Mastery', es: 'Maestria' },
+    milestones: { fr: 'Jalons XP', en: 'XP Milestones', es: 'Hitos XP' },
+  };
+
+  const handlePriority = () => {
+    if (!hub.priority || !onAction) return;
+    if (hub.priority.type === 'resume_module') {
+      const msg = lang === 'fr' ? `Je veux continuer le module "${hub.priority.title}". Reprends la ou on en etait.`
+        : lang === 'es' ? `Quiero continuar el modulo "${hub.priority.title}". Retoma donde lo dejamos.`
+        : `I want to continue the module "${hub.priority.title}". Pick up where we left off.`;
+      onAction('chat', msg);
+    } else if (hub.priority.type === 'start_learning') {
+      const msg = lang === 'fr' ? 'Je veux commencer mon parcours. Propose-moi un premier module.'
+        : lang === 'es' ? 'Quiero empezar mi camino de aprendizaje. Proponme un primer modulo.'
+        : 'I want to start my learning journey. Suggest a first module for me.';
+      onAction('chat', msg);
+    } else if (hub.priority.type === 'strengthen_skill') {
+      const msg = lang === 'fr' ? `Je veux renforcer ma competence en "${hub.priority.title}". Cree-moi un module adapte.`
+        : lang === 'es' ? `Quiero reforzar mi competencia en "${hub.priority.title}". Creame un modulo adaptado.`
+        : `I want to strengthen my "${hub.priority.title}" skill. Create a tailored module for me.`;
+      onAction('chat', msg);
+    }
+  };
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
-      {/* Streak & Badges */}
-      {gamData && (
-        <>
-          <View style={s.progressCard}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-              <Text style={s.progressCardTitle}>{tAtlas('gam.streak', lang)}</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <Ionicons name="flame" size={22} color={gamData.streak > 0 ? '#F59E0B' : '#334155'} />
-                <Text style={{ fontSize: 24, fontWeight: '800', color: gamData.streak > 0 ? '#F59E0B' : '#64748B' }}>{gamData.streak}</Text>
-                <Text style={{ fontSize: 12, color: '#64748B' }}>{tAtlas('gam.days', lang)}</Text>
+    <ScrollView contentContainerStyle={ph.container} showsVerticalScrollIndicator={false} data-testid="progression-hub">
+
+      {/* HERO: Level + XP */}
+      <View style={ph.heroCard} data-testid="hero-level-card">
+        <View style={ph.heroTop}>
+          <View style={[ph.levelCircle, { borderColor: hub.level_color }]}>
+            <Text style={[ph.levelNum, { color: hub.level_color }]}>{hub.level}</Text>
+          </View>
+          <View style={{ flex: 1, marginLeft: 16 }}>
+            <Text style={ph.heroLevelName}>{levelName}</Text>
+            <Text style={ph.heroXpText}>{hub.total_xp.toLocaleString()} XP</Text>
+          </View>
+          {hub.streak > 0 && (
+            <View style={ph.streakPill} data-testid="streak-badge">
+              <Ionicons name="flame" size={16} color="#F59E0B" />
+              <Text style={ph.streakPillNum}>{hub.streak}</Text>
+            </View>
+          )}
+        </View>
+        <View style={ph.xpBarWrap}>
+          <View style={ph.xpBarBg}>
+            <Animated.View style={[ph.xpBarFill, {
+              backgroundColor: hub.level_color,
+              width: xpAnim.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }),
+            }]} />
+          </View>
+          {hub.next_level && (
+            <Text style={ph.xpHint}>
+              {hub.xp_for_next_level} XP {'\u2192'} {hub.next_level[`name_${lang}`] || hub.next_level.name_en}
+            </Text>
+          )}
+        </View>
+      </View>
+
+      {/* QUICK STATS */}
+      <View style={ph.qkRow} data-testid="quick-stats">
+        <View style={ph.qkCard}>
+          <Ionicons name="flame" size={18} color={hub.streak > 0 ? '#F59E0B' : '#334155'} />
+          <Text style={ph.qkVal}>{hub.streak}</Text>
+          <Text style={ph.qkLabel}>{tAtlas('gam.streak', lang)}</Text>
+          {hub.streak_best > 0 && <Text style={ph.qkSub}>{streakBestLabel}: {hub.streak_best}</Text>}
+        </View>
+        <View style={ph.qkCard}>
+          <Ionicons name="ribbon" size={18} color="#A78BFA" />
+          <Text style={ph.qkVal}>{hub.badges_earned}</Text>
+          <Text style={ph.qkLabel}>{tAtlas('gam.badges', lang)}</Text>
+          <Text style={ph.qkSub}>/ {hub.badges_total}</Text>
+        </View>
+        <View style={ph.qkCard}>
+          <Ionicons name="library" size={18} color="#3B82F6" />
+          <Text style={ph.qkVal}>{hub.modules_completed}</Text>
+          <Text style={ph.qkLabel}>{tAtlas('prog.modules', lang)}</Text>
+          <Text style={ph.qkSub}>/ {hub.modules_total}</Text>
+        </View>
+      </View>
+
+      {/* PRIORITY CARD */}
+      {hub.priority && (
+        <TouchableOpacity style={ph.prioCard} onPress={handlePriority} activeOpacity={0.7} data-testid="priority-card">
+          <View style={ph.prioIcon}>
+            <Ionicons
+              name={hub.priority.type === 'resume_module' ? 'play-circle' : hub.priority.type === 'start_learning' ? 'rocket' : 'fitness'}
+              size={22} color="#A78BFA"
+            />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={ph.prioLabel}>
+              {hub.priority.type === 'resume_module' ? tAtlas('hub.priority.resume', lang)
+                : hub.priority.type === 'start_learning' ? tAtlas('hub.priority.start', lang)
+                : tAtlas('hub.priority.strengthen', lang)}
+            </Text>
+            <Text style={ph.prioTitle} numberOfLines={2}>
+              {hub.priority.title || tAtlas('hub.priority.start_desc', lang)}
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color="#475569" />
+        </TouchableOpacity>
+      )}
+
+      {/* DAILY GOALS */}
+      {goals.length > 0 && (
+        <View style={ph.sec} data-testid="daily-goals-section">
+          <Text style={ph.secTitle}>{tAtlas('hub.daily_goals', lang)}</Text>
+          <View style={ph.card}>
+            {goals.map((g: any, i: number) => (
+              <View key={g.id || i} style={[ph.goalRow, i < goals.length - 1 && { borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.04)' }]}>
+                <View style={[ph.goalChk, g.completed && { backgroundColor: 'rgba(16,185,129,0.15)', borderColor: '#10B981' }]}>
+                  {g.completed
+                    ? <Ionicons name="checkmark" size={12} color="#10B981" />
+                    : <Text style={ph.goalChkTxt}>{g.current}/{g.target}</Text>}
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={[ph.goalName, g.completed && { color: '#64748B', textDecorationLine: 'line-through' }]}>
+                    {g[`name_${lang}`] || g.name_en}
+                  </Text>
+                  {!g.completed && (
+                    <View style={ph.goalBarBg}>
+                      <View style={[ph.goalBarFill, { width: `${Math.min((g.current / g.target) * 100, 100)}%` }]} />
+                    </View>
+                  )}
+                </View>
+                <Text style={ph.goalXp}>+{g.xp_reward}</Text>
+              </View>
+            ))}
+            {hub.daily_goals?.all_completed && (
+              <View style={ph.goalBonus}>
+                <Ionicons name="star" size={14} color="#F59E0B" />
+                <Text style={ph.goalBonusTxt}>+{hub.daily_goals.bonus_xp} XP {tAtlas('hub.bonus_xp', lang)}</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      )}
+
+      {/* SKILLS */}
+      <View style={ph.sec} data-testid="skills-section">
+        <Text style={ph.secTitle}>{tAtlas('hub.skills', lang)}</Text>
+        <View style={ph.card}>
+          {skills.map((sk: any, i: number) => (
+            <View key={sk.key} style={i < skills.length - 1 ? { marginBottom: 14 } : undefined}>
+              <View style={ph.skHead}>
+                <Ionicons name={sk.icon as any} size={15} color="#A78BFA" />
+                <Text style={ph.skName}>{sk[`name_${lang}`] || sk.name_en}</Text>
+                <Text style={ph.skScore}>{sk.score}/10</Text>
+              </View>
+              <View style={ph.skBarBg}>
+                <View style={[ph.skBarFill, {
+                  width: `${Math.max(sk.score * 10, 2)}%`,
+                  backgroundColor: sk.score >= 7 ? '#10B981' : sk.score >= 4 ? '#F59E0B' : '#A78BFA',
+                }]} />
               </View>
             </View>
-          </View>
-          <View style={s.progressCard}>
-            <Text style={s.progressCardTitle}>{tAtlas('gam.badges', lang)} ({gamData.earned_count}/{gamData.total_badges} {tAtlas('gam.earned', lang)})</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 }}>
-              {(gamData.badges || []).map((b: any) => (
-                <View key={b.id} style={{ alignItems: 'center', width: 72, opacity: b.earned ? 1 : 0.3 }} data-testid={`badge-${b.id}`}>
-                  <View style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: b.earned ? 'rgba(167,139,250,0.15)' : 'rgba(255,255,255,0.03)', borderWidth: 1, borderColor: b.earned ? 'rgba(167,139,250,0.3)' : 'rgba(255,255,255,0.05)', alignItems: 'center', justifyContent: 'center', marginBottom: 4 }}>
-                    <Ionicons name={b.icon as any} size={20} color={b.earned ? '#A78BFA' : '#334155'} />
+          ))}
+        </View>
+      </View>
+
+      {/* ALMOST UNLOCKED */}
+      {hub.almost_unlocked?.length > 0 && (
+        <View style={ph.sec} data-testid="almost-unlocked">
+          <Text style={ph.secTitle}>{tAtlas('hub.almost', lang)}</Text>
+          {hub.almost_unlocked.map((au: any) => (
+            <View key={au.badge_id} style={ph.almostCard}>
+              <Ionicons name="lock-open" size={16} color="#F59E0B" />
+              <View style={{ flex: 1, marginLeft: 10 }}>
+                <Text style={ph.almostName}>{au.name}</Text>
+                <Text style={ph.almostSub}>
+                  {au.remaining} {lang === 'fr' ? 'restant(s)' : lang === 'es' ? 'restante(s)' : 'remaining'}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* BADGES */}
+      <View style={ph.sec} data-testid="badges-section">
+        <Text style={ph.secTitle}>{tAtlas('hub.badges', lang)} ({hub.badges_earned}/{hub.badges_total})</Text>
+        {Object.entries(badgeCats).map(([cat, catBadges]) => (
+          <View key={cat} style={{ marginBottom: 16 }}>
+            <Text style={ph.bdgCatLabel}>{catLabels[cat]?.[lang] || catLabels[cat]?.en || cat}</Text>
+            <View style={ph.bdgGrid}>
+              {catBadges.map((b: any) => (
+                <View key={b.id} style={[ph.bdgItem, !b.earned && { opacity: 0.35 }]} data-testid={`badge-${b.id}`}>
+                  <View style={[ph.bdgIcon, b.earned && { backgroundColor: 'rgba(167,139,250,0.15)', borderColor: 'rgba(167,139,250,0.3)' }]}>
+                    <Ionicons name={b.icon as any} size={18} color={b.earned ? '#A78BFA' : '#475569'} />
                   </View>
-                  <Text style={{ fontSize: 9, color: b.earned ? '#E2E8F0' : '#475569', textAlign: 'center', lineHeight: 12 }} numberOfLines={2}>{b.name?.[lang] || b.name?.en || b.id}</Text>
+                  <Text style={ph.bdgLabel} numberOfLines={2}>{b[`name_${lang}`] || b.name_en}</Text>
                   {!b.earned && b.progress > 0 && (
-                    <View style={{ width: 36, height: 2, borderRadius: 1, backgroundColor: 'rgba(255,255,255,0.06)', marginTop: 3 }}>
-                      <View style={{ width: `${Math.round(b.progress * 100)}%`, height: 2, borderRadius: 1, backgroundColor: '#A78BFA' }} />
+                    <View style={ph.bdgProgBg}>
+                      <View style={[ph.bdgProgFill, { width: `${Math.round(b.progress * 100)}%` }]} />
                     </View>
                   )}
                 </View>
               ))}
             </View>
           </View>
-        </>
+        ))}
+      </View>
+
+      {/* MODULES OVERVIEW */}
+      <View style={ph.sec} data-testid="modules-overview">
+        <Text style={ph.secTitle}>{tAtlas('hub.modules_overview', lang)}</Text>
+        <View style={ph.card}>
+          <View style={ph.modRow}>
+            <View style={ph.modItem}>
+              <Text style={[ph.modNum, { color: '#F1F5F9' }]}>{hub.modules_total}</Text>
+              <Text style={ph.modLabel}>{tAtlas('prog.total', lang)}</Text>
+            </View>
+            <View style={ph.modItem}>
+              <Text style={[ph.modNum, { color: '#3B82F6' }]}>{hub.modules_in_progress}</Text>
+              <Text style={ph.modLabel}>{tAtlas('hub.in_progress', lang)}</Text>
+            </View>
+            <View style={ph.modItem}>
+              <Text style={[ph.modNum, { color: '#10B981' }]}>{hub.modules_completed}</Text>
+              <Text style={ph.modLabel}>{tAtlas('hub.completed', lang)}</Text>
+            </View>
+            <View style={ph.modItem}>
+              <Text style={[ph.modNum, { color: '#F59E0B' }]}>{hub.modules_mastered}</Text>
+              <Text style={ph.modLabel}>{tAtlas('hub.mastered', lang)}</Text>
+            </View>
+          </View>
+          {recentMods.length > 0 && (
+            <>
+              <View style={ph.divider} />
+              <Text style={ph.rcLabel}>{tAtlas('hub.recent', lang)}</Text>
+              {recentMods.map((m: any) => (
+                <View key={m.id} style={ph.rcRow}>
+                  <View style={[ph.rcDot, {
+                    backgroundColor: m.status === 'mastered' ? '#F59E0B' : m.status === 'completed' ? '#10B981' : m.status === 'in_progress' ? '#3B82F6' : '#475569',
+                  }]} />
+                  <Text style={ph.rcTitle} numberOfLines={1}>{m.title}</Text>
+                  <Text style={ph.rcScore}>{m.mastery_score}%</Text>
+                </View>
+              ))}
+            </>
+          )}
+        </View>
+      </View>
+
+      {/* QUIZ STATS */}
+      {stats.quiz_count > 0 && (
+        <View style={ph.sec} data-testid="quiz-stats">
+          <Text style={ph.secTitle}>{tAtlas('hub.quiz_stats', lang)}</Text>
+          <View style={ph.card}>
+            <View style={ph.qzRow}>
+              <View style={ph.qzItem}>
+                <Ionicons name="document-text" size={16} color="#A78BFA" />
+                <Text style={ph.qzVal}>{stats.quiz_count}</Text>
+                <Text style={ph.qzLabel}>Quiz</Text>
+              </View>
+              <View style={ph.qzItem}>
+                <Ionicons name="analytics" size={16} color="#3B82F6" />
+                <Text style={ph.qzVal}>{stats.avg_quiz_score}%</Text>
+                <Text style={ph.qzLabel}>{tAtlas('hub.avg_score', lang)}</Text>
+              </View>
+              <View style={ph.qzItem}>
+                <Ionicons name="flash" size={16} color="#F59E0B" />
+                <Text style={ph.qzVal}>{stats.perfect_scores}</Text>
+                <Text style={ph.qzLabel}>{tAtlas('hub.perfect_scores', lang)}</Text>
+              </View>
+              <View style={ph.qzItem}>
+                <Ionicons name="calendar" size={16} color="#10B981" />
+                <Text style={ph.qzVal}>{stats.days_active}</Text>
+                <Text style={ph.qzLabel}>{tAtlas('hub.days_active', lang)}</Text>
+              </View>
+            </View>
+          </View>
+        </View>
       )}
-      <View style={s.progressCard}><Text style={s.progressCardTitle}>{tAtlas('prog.level', lang)}</Text><View style={s.levelRow}><View style={[s.levelBadge, { backgroundColor: (levelColors[profile.overall_level] || '#64748B') + '20' }]}><Text style={[s.levelBadgeText, { color: levelColors[profile.overall_level] || '#64748B' }]}>{levelLabels(profile.overall_level || 'unknown')}</Text></View>{!profile.onboarding_completed && <Text style={s.onboardingHint}>{tAtlas('prog.onboarding_hint', lang)}</Text>}</View></View>
-      <View style={s.progressCard}><Text style={s.progressCardTitle}>{tAtlas('prog.skills', lang)}</Text>{skillFields.map(sf => { const val = profile[sf.key] || 0; return <View key={sf.key} style={s.skillRow}><Ionicons name={sf.icon as any} size={16} color="#64748B" style={{ width: 24 }} /><Text style={s.skillLabel}>{sf.label}</Text><View style={s.skillBarBg}><View style={[s.skillBarFill, { width: `${val * 10}%` }]} /></View><Text style={s.skillVal}>{val}/10</Text></View>; })}</View>
-      <View style={s.progressCard}><Text style={s.progressCardTitle}>{tAtlas('prog.modules', lang)}</Text><View style={s.statsRow}><View style={s.statBox}><Text style={s.statNum}>{summary.total || 0}</Text><Text style={s.statLabel}>{tAtlas('prog.total', lang)}</Text></View><View style={s.statBox}><Text style={[s.statNum, { color: '#3B82F6' }]}>{summary.in_progress || 0}</Text><Text style={s.statLabel}>{tAtlas('prog.in_progress', lang)}</Text></View><View style={s.statBox}><Text style={[s.statNum, { color: '#F59E0B' }]}>{summary.mastered || 0}</Text><Text style={s.statLabel}>{tAtlas('prog.mastered', lang)}</Text></View></View></View>
-      {Object.keys(categories).length > 0 && <View style={s.progressCard}><Text style={s.progressCardTitle}>{tAtlas('prog.categories', lang)}</Text>{Object.entries(categories).map(([cat, info]: [string, any]) => <View key={cat} style={s.catRow}><Text style={s.catName}>{cat}</Text><View style={s.catBarBg}><View style={[s.catBarFill, { width: `${info.avg_mastery}%` }]} /></View><Text style={s.catPct}>{Math.round(info.avg_mastery)}%</Text></View>)}</View>}
-      {quizzes.length > 0 && <View style={s.progressCard}><Text style={s.progressCardTitle}>{tAtlas('prog.recent_quiz', lang)}</Text>{quizzes.slice(0, 5).map((q: any, i: number) => <View key={i} style={s.quizRow}><Ionicons name="document-text" size={14} color="#A78BFA" /><Text style={s.quizScore}>{Math.round(q.score)}%</Text><Text style={s.quizMeta}>{q.correct_answers}/{q.questions_count}</Text><Text style={s.quizDate}>{new Date(q.created_at).toLocaleDateString()}</Text></View>)}</View>}
+
+      <View style={{ height: 40 }} />
     </ScrollView>
   );
 }
+
 
 // ============ MAIN COMPONENT ============
 export default function LearnScreen() {
@@ -1113,7 +1396,7 @@ export default function LearnScreen() {
       </View>
       {tab === 'chat' && <ChatView token={token} lang={lang} initialMessage={continueModuleMsg} onMessageSent={() => setContinueModuleMsg(null)} />}
       {tab === 'modules' && <ModulesView token={token} lang={lang} onContinueModule={handleContinueModule} />}
-      {tab === 'progress' && <ProgressView token={token} lang={lang} />}
+      {tab === 'progress' && <ProgressView token={token} lang={lang} onAction={(type, data) => { if (type === 'chat') { setContinueModuleMsg(data || null); setTab('chat'); } else if (type === 'modules') { setTab('modules'); } }} />}
     </SafeAreaView>
   );
 }
@@ -1322,4 +1605,90 @@ const s = StyleSheet.create({
   vipCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#A78BFA', borderRadius: 12, paddingVertical: 14, marginBottom: 12 },
   vipCtaText: { fontSize: 15, fontWeight: '700', color: '#0B0914' },
   vipCancel: { fontSize: 11, color: '#475569', textAlign: 'center' },
+});
+
+const ph = StyleSheet.create({
+  container: { padding: 16, paddingTop: 8, paddingBottom: 20 },
+
+  // Hero
+  heroCard: { backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)', marginBottom: 12 },
+  heroTop: { flexDirection: 'row', alignItems: 'center' },
+  levelCircle: { width: 52, height: 52, borderRadius: 26, borderWidth: 2.5, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.3)' },
+  levelNum: { fontSize: 22, fontWeight: '800' },
+  heroLevelName: { fontSize: 18, fontWeight: '700', color: '#F1F5F9', letterSpacing: -0.3 },
+  heroXpText: { fontSize: 13, color: '#64748B', marginTop: 2 },
+  streakPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(245,158,11,0.1)', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(245,158,11,0.2)' },
+  streakPillNum: { fontSize: 15, fontWeight: '800', color: '#F59E0B' },
+  xpBarWrap: { marginTop: 16 },
+  xpBarBg: { height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.06)', overflow: 'hidden' },
+  xpBarFill: { height: 6, borderRadius: 3 },
+  xpHint: { fontSize: 11, color: '#475569', marginTop: 6, textAlign: 'right' },
+
+  // Quick stats
+  qkRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
+  qkCard: { flex: 1, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 12, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' },
+  qkVal: { fontSize: 20, fontWeight: '800', color: '#F1F5F9', marginTop: 6 },
+  qkLabel: { fontSize: 11, color: '#64748B', marginTop: 2 },
+  qkSub: { fontSize: 10, color: '#334155', marginTop: 1 },
+
+  // Priority
+  prioCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(167,139,250,0.06)', borderRadius: 14, padding: 16, borderWidth: 1, borderColor: 'rgba(167,139,250,0.12)', marginBottom: 16, gap: 12 },
+  prioIcon: { width: 44, height: 44, borderRadius: 12, backgroundColor: 'rgba(167,139,250,0.12)', alignItems: 'center', justifyContent: 'center' },
+  prioLabel: { fontSize: 11, fontWeight: '700', color: '#A78BFA', textTransform: 'uppercase', letterSpacing: 0.5 },
+  prioTitle: { fontSize: 14, fontWeight: '600', color: '#E2E8F0', marginTop: 2 },
+
+  // Sections
+  sec: { marginBottom: 16 },
+  secTitle: { fontSize: 12, fontWeight: '700', color: '#64748B', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 },
+  card: { backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 14, padding: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' },
+
+  // Daily goals
+  goalRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, gap: 12 },
+  goalChk: { width: 28, height: 28, borderRadius: 8, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.03)' },
+  goalChkTxt: { fontSize: 9, color: '#64748B', fontWeight: '600' },
+  goalName: { fontSize: 13, fontWeight: '500', color: '#E2E8F0' },
+  goalBarBg: { height: 3, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.06)', marginTop: 6 },
+  goalBarFill: { height: 3, borderRadius: 2, backgroundColor: '#A78BFA' },
+  goalXp: { fontSize: 11, color: '#475569', fontWeight: '600' },
+  goalBonus: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingTop: 12, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.04)' },
+  goalBonusTxt: { fontSize: 12, fontWeight: '700', color: '#F59E0B' },
+
+  // Skills
+  skHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
+  skName: { fontSize: 13, color: '#E2E8F0', fontWeight: '500', flex: 1 },
+  skScore: { fontSize: 12, color: '#64748B', fontWeight: '600' },
+  skBarBg: { height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.06)' },
+  skBarFill: { height: 4, borderRadius: 2 },
+
+  // Almost unlocked
+  almostCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(245,158,11,0.06)', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: 'rgba(245,158,11,0.12)', marginBottom: 8 },
+  almostName: { fontSize: 13, fontWeight: '600', color: '#F59E0B' },
+  almostSub: { fontSize: 11, color: '#64748B', marginTop: 2 },
+
+  // Badges
+  bdgCatLabel: { fontSize: 11, color: '#475569', fontWeight: '600', marginBottom: 8, textTransform: 'capitalize' },
+  bdgGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  bdgItem: { alignItems: 'center', width: 68, marginBottom: 8 },
+  bdgIcon: { width: 42, height: 42, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.03)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)', alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
+  bdgLabel: { fontSize: 9, color: '#94A3B8', textAlign: 'center', lineHeight: 12 },
+  bdgProgBg: { width: 34, height: 2, borderRadius: 1, backgroundColor: 'rgba(255,255,255,0.06)', marginTop: 3 },
+  bdgProgFill: { height: 2, borderRadius: 1, backgroundColor: '#A78BFA' },
+
+  // Modules overview
+  modRow: { flexDirection: 'row', justifyContent: 'space-around' },
+  modItem: { alignItems: 'center', gap: 2 },
+  modNum: { fontSize: 22, fontWeight: '800' },
+  modLabel: { fontSize: 10, color: '#64748B' },
+  divider: { height: 1, backgroundColor: 'rgba(255,255,255,0.04)', marginVertical: 14 },
+  rcLabel: { fontSize: 11, color: '#475569', fontWeight: '600', marginBottom: 8 },
+  rcRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6 },
+  rcDot: { width: 6, height: 6, borderRadius: 3 },
+  rcTitle: { fontSize: 13, color: '#E2E8F0', flex: 1 },
+  rcScore: { fontSize: 12, fontWeight: '700', color: '#64748B' },
+
+  // Quiz stats
+  qzRow: { flexDirection: 'row', justifyContent: 'space-around' },
+  qzItem: { alignItems: 'center', gap: 4 },
+  qzVal: { fontSize: 18, fontWeight: '800', color: '#F1F5F9' },
+  qzLabel: { fontSize: 10, color: '#64748B' },
 });
