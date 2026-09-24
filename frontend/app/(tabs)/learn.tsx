@@ -163,6 +163,119 @@ function api(path: string, token: string, opts: any = {}) {
   }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); });
 }
 
+// ============ XP TOAST ============
+function XpToast({ amount, onDone }: { amount: number; onDone: () => void }) {
+  const translateY = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(0.5)).current;
+
+  useEffect(() => {
+    Animated.sequence([
+      Animated.parallel([
+        Animated.spring(scale, { toValue: 1, friction: 5, tension: 100, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+      ]),
+      Animated.delay(1200),
+      Animated.parallel([
+        Animated.timing(translateY, { toValue: -60, duration: 600, easing: Easing.in(Easing.ease), useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 0, duration: 600, useNativeDriver: true }),
+      ]),
+    ]).start(() => onDone());
+  }, []);
+
+  return (
+    <Animated.View style={{
+      position: 'absolute', top: 80, alignSelf: 'center', zIndex: 300,
+      transform: [{ translateY }, { scale }], opacity,
+    }}>
+      <View style={{
+        flexDirection: 'row', alignItems: 'center', gap: 8,
+        backgroundColor: '#0F0A1E', borderRadius: 14, paddingHorizontal: 20, paddingVertical: 12,
+        borderWidth: 1, borderColor: 'rgba(167,139,250,0.3)',
+        shadowColor: '#A78BFA', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12,
+      }}>
+        <Ionicons name="star" size={18} color="#F59E0B" />
+        <Text style={{ fontSize: 18, fontWeight: '800', color: '#F59E0B' }}>+{amount} XP</Text>
+      </View>
+    </Animated.View>
+  );
+}
+
+// ============ LEVEL UP CELEBRATION ============
+function LevelUpCelebration({ level, name, color, lang, onClose }: { level: number; name: string; color: string; lang: string; onClose: () => void }) {
+  const scale = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  const ring1 = useRef(new Animated.Value(0)).current;
+  const ring2 = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.sequence([
+      Animated.parallel([
+        Animated.spring(scale, { toValue: 1, friction: 4, tension: 60, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 1, duration: 400, useNativeDriver: true }),
+      ]),
+      Animated.parallel([
+        Animated.loop(Animated.sequence([
+          Animated.timing(ring1, { toValue: 1, duration: 2000, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+          Animated.timing(ring1, { toValue: 0, duration: 2000, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        ])),
+        Animated.loop(Animated.sequence([
+          Animated.timing(ring2, { toValue: 1, duration: 2500, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+          Animated.timing(ring2, { toValue: 0, duration: 2500, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        ])),
+      ]),
+    ]).start();
+    const timer = setTimeout(onClose, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const titleText = lang === 'fr' ? 'Niveau superieur !' : lang === 'es' ? 'Nuevo nivel!' : 'Level Up!';
+
+  return (
+    <Animated.View style={{
+      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.75)', justifyContent: 'center', alignItems: 'center', zIndex: 250,
+      opacity,
+    }}>
+      <Animated.View style={{ transform: [{ scale }], alignItems: 'center' }}>
+        <Text style={{ fontSize: 12, fontWeight: '700', color: color, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 20 }}>
+          {titleText}
+        </Text>
+        <View style={{ position: 'relative', alignItems: 'center', justifyContent: 'center', width: 120, height: 120, marginBottom: 20 }}>
+          <Animated.View style={{
+            position: 'absolute', width: 120, height: 120, borderRadius: 60,
+            borderWidth: 2, borderColor: color,
+            opacity: ring1.interpolate({ inputRange: [0, 1], outputRange: [0.15, 0.4] }),
+            transform: [{ scale: ring1.interpolate({ inputRange: [0, 1], outputRange: [1, 1.3] }) }],
+          }} />
+          <Animated.View style={{
+            position: 'absolute', width: 100, height: 100, borderRadius: 50,
+            borderWidth: 1.5, borderColor: color,
+            opacity: ring2.interpolate({ inputRange: [0, 1], outputRange: [0.1, 0.3] }),
+            transform: [{ scale: ring2.interpolate({ inputRange: [0, 1], outputRange: [1, 1.4] }) }],
+          }} />
+          <View style={{
+            width: 80, height: 80, borderRadius: 40,
+            backgroundColor: `${color}20`, borderWidth: 3, borderColor: color,
+            alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Text style={{ fontSize: 32, fontWeight: '800', color: color }}>{level}</Text>
+          </View>
+        </View>
+        <Text style={{ fontSize: 24, fontWeight: '800', color: '#F1F5F9', letterSpacing: -0.5 }}>{name}</Text>
+        <TouchableOpacity onPress={onClose} style={{
+          marginTop: 28, paddingHorizontal: 28, paddingVertical: 12, borderRadius: 12,
+          backgroundColor: `${color}20`, borderWidth: 1, borderColor: `${color}40`,
+        }}>
+          <Text style={{ fontSize: 14, fontWeight: '600', color: color }}>OK</Text>
+        </TouchableOpacity>
+      </Animated.View>
+    </Animated.View>
+  );
+}
+
+
+
 // ============ BADGE CELEBRATION ============
 function BadgeCelebration({ badge, lang, onClose }: { badge: any; lang: string; onClose: () => void }) {
   const scale = useRef(new Animated.Value(0)).current;
@@ -1197,6 +1310,10 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
   const [showXpHist, setShowXpHist] = useState(false);
   const [selSkill, setSelSkill] = useState<any>(null);
   const [showLevels, setShowLevels] = useState(false);
+  const [celebrations, setCelebrations] = useState<any[]>([]);
+  const [showXpToast, setShowXpToast] = useState<number | null>(null);
+  const [celebBadge, setCelebBadge] = useState<any>(null);
+  const [celebLevel, setCelebLevel] = useState<any>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -1204,6 +1321,15 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
       .then(data => {
         if (data?.success) {
           setHub(data);
+          // Process celebrations
+          const celebs = data.celebrations || [];
+          if (celebs.length > 0) {
+            setCelebrations(celebs);
+            const first = celebs[0];
+            if (first.type === 'xp_gained') setShowXpToast(first.amount);
+            else if (first.type === 'level_up') setCelebLevel(first);
+            else if (first.type === 'badge_earned') setCelebBadge(first.badge);
+          }
           Animated.timing(xpAnim, {
             toValue: data.xp_progress || 0,
             duration: 1000,
@@ -1274,6 +1400,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
   };
 
   return (
+    <>
     <ScrollView contentContainerStyle={ph.container} showsVerticalScrollIndicator={false} testID="progression-hub">
 
       {/* HERO: Level + XP */}
@@ -1559,6 +1686,21 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
 
       <View style={{ height: 40 }} />
     </ScrollView>
+
+    {/* CELEBRATIONS */}
+    {showXpToast && <XpToast amount={showXpToast} onDone={() => {
+      setShowXpToast(null);
+      const next = celebrations.find((c: any) => c.type === 'level_up');
+      if (next) { setCelebLevel(next); }
+      else { const nb = celebrations.find((c: any) => c.type === 'badge_earned'); if (nb) setCelebBadge(nb.badge); }
+    }} />}
+    {celebLevel && <LevelUpCelebration level={celebLevel.new_level} name={celebLevel[`name_${lang}`] || celebLevel.name_en} color={celebLevel.color} lang={lang} onClose={() => {
+      setCelebLevel(null);
+      const nb = celebrations.find((c: any) => c.type === 'badge_earned');
+      if (nb) setCelebBadge(nb.badge);
+    }} />}
+    {celebBadge && <BadgeCelebration badge={{ ...celebBadge, name: { fr: celebBadge.name_fr, en: celebBadge.name_en, es: celebBadge.name_es } }} lang={lang} onClose={() => setCelebBadge(null)} />}
+    </>
   );
 }
 

@@ -355,6 +355,50 @@ async def get_weekly_challenge(user_id: str) -> Optional[dict]:
     return existing
 
 
+async def _get_celebrations(user_id: str, current_xp: int, current_level: int, badges: list) -> list:
+    """Compare current state with last seen to generate celebration events."""
+    user = await _db.users.find_one({"id": user_id}, {"_prog_seen": 1})
+    seen = user.get("_prog_seen", {}) if user else {}
+    celebrations = []
+
+    last_xp = seen.get("xp", 0)
+    last_level = seen.get("level", 0)
+    last_badge_ids = set(seen.get("badges", []))
+
+    # XP gained (skip first load when last_xp is 0)
+    xp_diff = current_xp - last_xp
+    if xp_diff > 0 and last_xp > 0:
+        celebrations.append({"type": "xp_gained", "amount": xp_diff})
+
+    # Level up
+    if current_level > last_level and last_level > 0:
+        lvl = get_level_for_xp(current_xp)
+        celebrations.append({
+            "type": "level_up",
+            "new_level": current_level,
+            "name_fr": lvl["name_fr"], "name_en": lvl["name_en"], "name_es": lvl["name_es"],
+            "color": lvl["color"],
+        })
+
+    # New badges
+    current_earned = {b["id"] for b in badges if b["earned"]}
+    new_badge_ids = current_earned - last_badge_ids
+    if new_badge_ids and last_badge_ids:  # Skip first load
+        for bid in new_badge_ids:
+            badge = next((b for b in badges if b["id"] == bid), None)
+            if badge:
+                celebrations.append({"type": "badge_earned", "badge": badge})
+
+    # Update seen state
+    await _db.users.update_one({"id": user_id}, {"$set": {"_prog_seen": {
+        "xp": current_xp,
+        "level": current_level,
+        "badges": list(current_earned),
+    }}})
+
+    return celebrations
+
+
 async def get_progression_hub(user_id: str, lang: str = "fr") -> dict:
     """Get the complete Progression Hub data for a user."""
     metrics = await compute_metrics(user_id)
@@ -509,6 +553,9 @@ async def get_progression_hub(user_id: str, lang: str = "fr") -> dict:
 
         # Levels roadmap
         "levels": [{"level": l["level"], "name_fr": l["name_fr"], "name_en": l["name_en"], "name_es": l["name_es"], "xp_threshold": l["xp_threshold"], "color": l["color"]} for l in LEVELS],
+
+        # Celebrations (compare with last seen state)
+        "celebrations": await _get_celebrations(user_id, total_xp, level_info["level"], badges),
     }
 
 
