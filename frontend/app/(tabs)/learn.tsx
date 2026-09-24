@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView,
-  KeyboardAvoidingView, Platform, ActivityIndicator, Dimensions, Modal, Animated, Easing,
+  KeyboardAvoidingView, Platform, ActivityIndicator, Dimensions, Modal, Animated, Easing, Share,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -1224,12 +1224,13 @@ function XpHistoryModal({ visible, token, lang, onClose }: { visible: boolean; t
 }
 
 // ============ SKILL DETAIL MODAL ============
-function SkillDetailModal({ visible, skill, lang, relatedMods, onClose }: { visible: boolean; skill: any; lang: string; relatedMods: any[]; onClose: () => void }) {
+function SkillDetailModal({ visible, skill, lang, relatedMods, userName, onShowCert, onClose }: { visible: boolean; skill: any; lang: string; relatedMods: any[]; userName?: string; onShowCert?: () => void; onClose: () => void }) {
   if (!skill) return null;
   const name = skill[`name_${lang}`] || skill.name_en;
   const scoreColor = skill.score >= 7 ? '#10B981' : skill.score >= 4 ? '#F59E0B' : '#A78BFA';
   const levelLabel = skill.score >= 8 ? (lang === 'fr' ? 'Expert' : 'Expert') : skill.score >= 5 ? (lang === 'fr' ? 'Intermediaire' : 'Intermediate') : skill.score >= 2 ? (lang === 'fr' ? 'Debutant' : 'Beginner') : (lang === 'fr' ? 'Non evalue' : 'Not evaluated');
   const mods = relatedMods.filter((m: any) => (m.category || '').toLowerCase().includes(skill.key));
+  const canCertify = skill.score >= 5;
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableOpacity style={mds.overlay} activeOpacity={1} onPress={onClose}>
@@ -1253,9 +1254,78 @@ function SkillDetailModal({ visible, skill, lang, relatedMods, onClose }: { visi
               ))}
             </View>
           )}
-          <Text style={mds.tipTxt}>
-            {lang === 'fr' ? 'Demande a Caufid de creer un module pour ameliorer cette competence.' : lang === 'es' ? 'Pide a Caufid que cree un modulo para mejorar esta competencia.' : 'Ask Caufid to create a module to improve this skill.'}
-          </Text>
+          {canCertify && onShowCert ? (
+            <TouchableOpacity onPress={() => { onClose(); setTimeout(onShowCert, 300); }} style={mds.certBtn} testID="show-certificate-btn">
+              <Ionicons name="ribbon" size={16} color="#F59E0B" />
+              <Text style={mds.certBtnTxt}>{lang === 'fr' ? 'Voir le certificat' : lang === 'es' ? 'Ver certificado' : 'View Certificate'}</Text>
+            </TouchableOpacity>
+          ) : (
+            <Text style={mds.tipTxt}>
+              {lang === 'fr' ? 'Demande a Caufid de creer un module pour ameliorer cette competence.' : lang === 'es' ? 'Pide a Caufid que cree un modulo para mejorar esta competencia.' : 'Ask Caufid to create a module to improve this skill.'}
+            </Text>
+          )}
+        </TouchableOpacity>
+      </TouchableOpacity>
+    </Modal>
+  );
+}
+
+// ============ CERTIFICATE MODAL ============
+function CertificateModal({ visible, skill, userName, levelName, levelNum, lang, onClose }: { visible: boolean; skill: any; userName: string; levelName: string; levelNum: number; lang: string; onClose: () => void }) {
+  if (!skill) return null;
+  const name = skill[`name_${lang}`] || skill.name_en;
+  const scoreColor = skill.score >= 7 ? '#10B981' : skill.score >= 4 ? '#F59E0B' : '#A78BFA';
+  const date = new Date().toLocaleDateString(lang === 'fr' ? 'fr-FR' : lang === 'es' ? 'es-ES' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const handleShare = async () => {
+    const msg = lang === 'fr'
+      ? `J'ai obtenu un certificat ${name} sur Mentova Academy ! Score: ${skill.score}/10, Niveau ${levelNum}. #Mentova #Crypto`
+      : lang === 'es'
+      ? `Obtuve un certificado de ${name} en Mentova Academy! Puntuacion: ${skill.score}/10, Nivel ${levelNum}. #Mentova #Crypto`
+      : `I earned a ${name} certificate on Mentova Academy! Score: ${skill.score}/10, Level ${levelNum}. #Mentova #Crypto`;
+    try {
+      await Share.share({ message: msg });
+    } catch {}
+  };
+
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <TouchableOpacity style={mds.overlay} activeOpacity={1} onPress={onClose}>
+        <TouchableOpacity activeOpacity={1} style={[mds.modal, { padding: 0, overflow: 'hidden' }]}>
+          <TouchableOpacity style={[mds.closeBtn, { top: 10, right: 10 }]} onPress={onClose}><Ionicons name="close" size={20} color="#64748B" /></TouchableOpacity>
+          {/* Certificate Card */}
+          <View style={cert.card} testID="certificate-card">
+            <View style={cert.header}>
+              <Text style={cert.brand}>MENTOVA ACADEMY</Text>
+              <View style={cert.dividerLine} />
+              <Text style={cert.certLabel}>{lang === 'fr' ? 'CERTIFICAT' : lang === 'es' ? 'CERTIFICADO' : 'CERTIFICATE'}</Text>
+            </View>
+            <View style={[cert.iconWrap, { borderColor: scoreColor }]}>
+              <Ionicons name={skill.icon as any} size={32} color={scoreColor} />
+            </View>
+            <Text style={cert.skillName}>{name}</Text>
+            <View style={cert.scoreRow}>
+              <View style={cert.scoreBg}>
+                <View style={[cert.scoreFill, { width: `${skill.score * 10}%`, backgroundColor: scoreColor }]} />
+              </View>
+              <Text style={[cert.scoreText, { color: scoreColor }]}>{skill.score}/10</Text>
+            </View>
+            <View style={cert.awardRow}>
+              <Text style={cert.awardLabel}>{lang === 'fr' ? 'Decerne a' : lang === 'es' ? 'Otorgado a' : 'Awarded to'}</Text>
+              <Text style={cert.awardName}>{userName}</Text>
+            </View>
+            <View style={cert.footer}>
+              <Text style={cert.footerText}>{lang === 'fr' ? 'Niveau' : 'Level'} {levelNum} — {levelName}</Text>
+              <Text style={cert.footerDate}>{date}</Text>
+            </View>
+          </View>
+          {/* Actions */}
+          <View style={cert.actions}>
+            <TouchableOpacity onPress={handleShare} style={cert.shareBtn} testID="share-certificate-btn">
+              <Ionicons name="share-social" size={18} color="#A78BFA" />
+              <Text style={cert.shareTxt}>{lang === 'fr' ? 'Partager' : lang === 'es' ? 'Compartir' : 'Share'}</Text>
+            </TouchableOpacity>
+          </View>
         </TouchableOpacity>
       </TouchableOpacity>
     </Modal>
@@ -1309,6 +1379,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
   const [selBadge, setSelBadge] = useState<any>(null);
   const [showXpHist, setShowXpHist] = useState(false);
   const [selSkill, setSelSkill] = useState<any>(null);
+  const [certSkill, setCertSkill] = useState<any>(null);
   const [showLevels, setShowLevels] = useState(false);
   const [celebrations, setCelebrations] = useState<any[]>([]);
   const [showXpToast, setShowXpToast] = useState<number | null>(null);
@@ -1681,7 +1752,8 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
       {/* DETAIL MODALS */}
       <BadgeDetailModal visible={!!selBadge} badge={selBadge} lang={lang} onClose={() => setSelBadge(null)} />
       <XpHistoryModal visible={showXpHist} token={token} lang={lang} onClose={() => setShowXpHist(false)} />
-      <SkillDetailModal visible={!!selSkill} skill={selSkill} lang={lang} relatedMods={recentMods} onClose={() => setSelSkill(null)} />
+      <SkillDetailModal visible={!!selSkill} skill={selSkill} lang={lang} relatedMods={recentMods} userName={useAuthStore.getState().name || ''} onShowCert={() => setCertSkill(selSkill)} onClose={() => setSelSkill(null)} />
+      <CertificateModal visible={!!certSkill} skill={certSkill} userName={useAuthStore.getState().name || ''} levelName={hub?.[`level_name_${lang}`] || hub?.level_name_en || ''} levelNum={hub?.level || 1} lang={lang} onClose={() => setCertSkill(null)} />
       <LevelsRoadmapModal visible={showLevels} levels={hub.levels || []} currentLevel={hub.level} totalXp={hub.total_xp} lang={lang} onClose={() => setShowLevels(false)} />
 
       <View style={{ height: 40 }} />
@@ -2088,4 +2160,30 @@ const mds = StyleSheet.create({
   lvlNum: { fontSize: 16, fontWeight: '800' },
   lvlName: { fontSize: 14, fontWeight: '500', color: '#64748B', flex: 1 },
   lvlXp: { fontSize: 11, color: '#475569', marginTop: 2 },
+  // Certificate button in skill modal
+  certBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 16, paddingVertical: 12, borderRadius: 12, backgroundColor: 'rgba(245,158,11,0.1)', borderWidth: 1, borderColor: 'rgba(245,158,11,0.2)' },
+  certBtnTxt: { fontSize: 14, fontWeight: '600', color: '#F59E0B' },
+});
+
+const cert = StyleSheet.create({
+  card: { backgroundColor: '#0A0718', padding: 28, alignItems: 'center' },
+  header: { alignItems: 'center', marginBottom: 20 },
+  brand: { fontSize: 10, fontWeight: '700', color: '#475569', letterSpacing: 3 },
+  dividerLine: { width: 40, height: 1, backgroundColor: 'rgba(167,139,250,0.3)', marginVertical: 10 },
+  certLabel: { fontSize: 14, fontWeight: '800', color: '#A78BFA', letterSpacing: 2 },
+  iconWrap: { width: 64, height: 64, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 2, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
+  skillName: { fontSize: 22, fontWeight: '800', color: '#F1F5F9', marginBottom: 8 },
+  scoreRow: { flexDirection: 'row', alignItems: 'center', gap: 10, width: '80%', marginBottom: 20 },
+  scoreBg: { flex: 1, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.06)' },
+  scoreFill: { height: 6, borderRadius: 3 },
+  scoreText: { fontSize: 14, fontWeight: '800' },
+  awardRow: { alignItems: 'center', marginBottom: 16 },
+  awardLabel: { fontSize: 11, color: '#475569', textTransform: 'uppercase', letterSpacing: 1 },
+  awardName: { fontSize: 18, fontWeight: '700', color: '#E2E8F0', marginTop: 4 },
+  footer: { alignItems: 'center', paddingTop: 16, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.04)', width: '100%' },
+  footerText: { fontSize: 12, color: '#64748B' },
+  footerDate: { fontSize: 11, color: '#334155', marginTop: 2 },
+  actions: { padding: 16, alignItems: 'center', borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.04)' },
+  shareBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 24, borderRadius: 12, backgroundColor: 'rgba(167,139,250,0.1)', borderWidth: 1, borderColor: 'rgba(167,139,250,0.2)' },
+  shareTxt: { fontSize: 14, fontWeight: '600', color: '#A78BFA' },
 });

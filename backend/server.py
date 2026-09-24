@@ -5212,6 +5212,11 @@ async def send_streak_reminders(secret: str = ""):
         user = await db.users.find_one({"id": user_id})
         if not user or user.get("is_banned"):
             continue
+        # Check if user has streak reminders enabled
+        user_settings = await db.user_settings.find_one({"user_id": user_id})
+        notif_prefs = (user_settings or {}).get("notifications", {})
+        if notif_prefs.get("streak_reminder") is False:
+            continue
         lang = user.get("language", "fr")
 
         # Compute streak

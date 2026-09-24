@@ -76,6 +76,7 @@ export default function SettingsScreen() {
     community_reply: true,
     price_alerts: true,
     promotions: false,
+    streak_reminder: true,
   });
   const [privacy, setPrivacy] = useState({
     profile_public: true,
@@ -889,6 +890,7 @@ export default function SettingsScreen() {
             </View>
             <ScrollView style={styles.modalContent}>
               {[
+                { key: 'streak_reminder', icon: 'flame', label: language === 'fr' ? 'Rappel de streak quotidien' : language === 'es' ? 'Recordatorio de racha diario' : 'Daily streak reminder' },
                 { key: 'new_message', icon: 'chatbubble', label: t('settings.notifNewMessage') },
                 { key: 'new_booking', icon: 'calendar', label: t('settings.notifNewBooking') },
                 { key: 'booking_confirmed', icon: 'checkmark-circle', label: t('settings.notifBookingConfirmed') },
