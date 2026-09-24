@@ -1285,7 +1285,13 @@ function CertificateModal({ visible, skill, userName, levelName, levelNum, lang,
       : `I earned a ${name} certificate on Mentova Academy! Score: ${skill.score}/10, Level ${levelNum}. #Mentova #Crypto`;
     try {
       await Share.share({ message: msg });
-    } catch {}
+    } catch {
+      // Web fallback: copy to clipboard
+      if (Platform.OS === 'web' && navigator?.clipboard) {
+        await navigator.clipboard.writeText(msg);
+        alert(lang === 'fr' ? 'Copie dans le presse-papiers !' : 'Copied to clipboard!');
+      }
+    }
   };
 
   return (

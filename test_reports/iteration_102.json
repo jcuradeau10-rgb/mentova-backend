@@ -1,0 +1,36 @@
+{
+  "summary": "Tested Certificate + Streak Reminder features (iter 102). Backend: 6/6 pytest passing — /api/atlas/progression/hub now returns a 'celebrations' array (verified type field ∈ {xp_gained, level_up, badge_earned}); /api/cron/streak-reminders correctly rejects missing/wrong secret with 403 and succeeds with the correct CRON_SECRET returning {success:true, sent:<int>, total_users:<int>}. Source review confirms the cron loop reads user_settings.notifications.streak_reminder and skips users where it is explicitly False. Frontend (via web preview): (1) Logged in as jcuradeau.7@gmail.com. (2) Settings > Notifications modal opens and 'Daily streak reminder' is the FIRST row with a flame icon and a toggle (label i18n verified in English). (3) Progress tab renders progression-hub with all Phase 2-4 sections (Skills 5 items @0/10, Badges 3/32 across First Steps/Quiz/Modules/Streak/Excellence/Mastery categories, streak/priority/hero already validated in iter 101). (4) Clicking Finance skill opens SkillDetailModal showing 'Finance', 'NOT EVALUATED', 0/10 bar, and — because score < 5 — shows the fallback tip 'Ask Caufid to create a module to improve this skill.' The [data-testid='show-certificate-btn'] is correctly NOT rendered (threshold enforced). (5) CertificateModal + XpToast + BadgeCelebration components confirmed in source at learn.tsx lines 167/280/1274, with 'MENTOVA ACADEMY' / 'CERTIFICATE' / skill name / score bar / user name / level / date and a Share button wired to Share.share().",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Settings > Notifications modal", "issues": ["Only the new 'Daily streak reminder' row is translated. All other rows still show raw i18n keys: 'settings.notifNewMessage', 'settings.notifNewBooking', 'settings.notifBookingConfirmed', 'settings.notifNewReview', 'settings.notifCommunityReply', 'settings.notifPriceAlerts', 'settings.notifPromotions'. Pre-existing (not caused by this iteration), but visible next to the new toggle and inconsistent."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_certificates_streak.py",
+    "/app/test_reports/pytest/certificates_streak.xml"
+  ],
+  "action_items": [
+    "(Nice-to-have) Add missing English/French/Spanish translations for the other Notification labels (settings.notifNewMessage etc.) so the Notifications modal is fully localised alongside the new streak reminder row.",
+    "(Nice-to-have) The 'View Certificate' button could not be exercised in this run because the test account's max skill score is 0/10 (threshold >=5). Consider seeding a skill_score of >=5 for QA to enable e2e certificate + share testing.",
+    "(Optional) Add testID='certificate-modal', 'notifications-modal', 'streak-reminder-toggle' for future e2e scoping.",
+    "(Optional) On web the Share API from react-native maps to navigator.share which is not available on desktop browsers — the try/catch swallows the failure silently. Consider showing a fallback (copy-to-clipboard toast) so the Share button feels responsive on web."
+  ],
+  "critical_code_review_comments": [
+    "learn.tsx is now 2190 lines (was 1950 after Phase 4). The new CertificateModal (+cert styles) has pushed it further. Extraction into /components/progression/* is now overdue.",
+    "_get_celebrations() writes _prog_seen every call to /hub — including read-only visits — meaning celebrations for xp_gained/level_up/badge_earned are only shown ONCE across all devices/sessions. If the user is on device A when the change occurs and never opens /hub there, device B will overwrite _prog_seen with post-event values and the celebration is lost forever. Consider marking seen only after the client acknowledges the celebration (e.g. POST /progression/celebrations/ack).",
+    "CertificateModal.handleShare uses Share.share which throws on web (unsupported). The empty catch hides the failure — user gets no feedback. Add a web fallback (navigator.clipboard.writeText + toast).",
+    "Cron endpoint secret defaults to 'mentova-cron-2026' if CRON_SECRET env var is unset — that's a hard-coded fallback in production code. Prefer failing closed (raise 500) when CRON_SECRET is not configured.",
+    "settings/index.tsx line 893 uses hard-coded strings for the streak reminder label instead of the i18n helper used elsewhere — inconsistent with the rest of the Notifications list (which uses translation keys, though those keys are currently missing translations)."
+  ],
+  "updated_files": ["/app/backend/tests/test_certificates_streak.py"],
+  "success_rate": {"backend": "100% (6/6)", "frontend": "100% of testable surface (Skill modal + cert button gating + streak toggle visible; certificate card render not exercisable without skill_score>=5 seed)"},
+  "test_credentials": "jcuradeau.7@gmail.com / Crypto2026! (super_admin, VIP)",
+  "seed_data_creation": "None. /hub was fetched by the test — this may have mutated _prog_seen for the test user. Not user-visible in current state.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Certificate + Streak features complete. New backend contract: /api/atlas/progression/hub -> data.celebrations: list[{type, ...}]. Cron: POST /api/cron/streak-reminders?secret=<CRON_SECRET> — 403 without/wrong, 200 with. Frontend testIDs available so far: progression-hub, skills-section, badges-section, hero-level-card, priority-card, daily-goals-section, modules-overview, quiz-stats, analyze-progression-btn, show-certificate-btn (only rendered when skill.score>=5), certificate-card (inside CertificateModal). Missing testIDs: notifications-modal, streak-reminder-toggle, certificate-modal (root), cert-share-btn — add for deeper e2e. To fully exercise the certificate flow, seed at least one skill with score>=5 in progression_service (or via a dev endpoint). Note: the Notifications modal shows raw i18n keys for legacy toggles — pre-existing, unrelated to this iteration.",
+  "rca of the issue": "N/A — features implemented as specified. Only limitation is that the certificate visual couldn't be visually rendered because no skill in the seeded account reaches score>=5, but the source & wiring (SkillDetailModal.onShowCert -> setCertSkill -> CertificateModal visible) are verified."
+}
