@@ -12369,6 +12369,11 @@ from routes.admin import router as admin_router, set_admin_deps
 set_admin_deps(db)
 app.include_router(admin_router, prefix="/api")
 
+# Progression Hub router
+from routes.progression import router as progression_router, set_progression_deps
+set_progression_deps(db)
+app.include_router(progression_router, prefix="/api/atlas")
+
 # Analytics router
 from routes.analytics import router as analytics_router, set_analytics_db, track_api_call, track_coingecko_call, track_atlas_call, _flush_loop
 set_analytics_db(db)

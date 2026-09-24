@@ -227,6 +227,16 @@ async def tool_record_quiz_result(user_id: str, module_id: str, questions_count:
             {"id": module_id, "user_id": user_id},
             {"$inc": {"attempt_count": 1}, "$set": {"updated_at": utcnow()}}
         )
+    # Award XP
+    try:
+        from services.progression_service import award_xp, update_daily_goal_progress
+        quiz_id = attempt.id
+        await award_xp(user_id, "QUIZ_COMPLETED", f"quiz_{quiz_id}", f"Quiz completed: score {score}%")
+        if score >= 100:
+            await award_xp(user_id, "QUIZ_PERFECT", f"quiz_perfect_{quiz_id}", "Perfect quiz score")
+        await update_daily_goal_progress(user_id, "answer_questions", correct_answers)
+    except Exception as e:
+        logger.warning(f"XP award failed for quiz: {e}")
     return {"success": True, "quiz_id": attempt.id, "score": score}
 
 
@@ -270,6 +280,13 @@ async def tool_mark_module_mastered(user_id: str, module_id: str) -> dict:
         {"module_id": module_id, "user_id": user_id},
         {"$set": {"mastery_score": max(mod.get("mastery_score", 0), 90), "review_required": False, "progress_percentage": 100, "updated_at": utcnow()}}
     )
+    # Award XP for mastery
+    try:
+        from services.progression_service import award_xp, update_daily_goal_progress
+        await award_xp(user_id, "MODULE_MASTERED", f"mastery_{module_id}", f"Module mastered: {mod.get('title', '')}")
+        await update_daily_goal_progress(user_id, "master_concept")
+    except Exception as e:
+        logger.warning(f"XP award failed: {e}")
     return {"success": True, "module_id": module_id, "status": "mastered"}
 
 
