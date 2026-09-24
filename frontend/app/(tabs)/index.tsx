@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   Modal,
   Linking,
   Share,
+  AppState,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -182,6 +183,22 @@ export default function HomeScreen() {
 
   useEffect(() => {
     fetchData();
+  }, []);
+
+  // Auto-refresh progression when returning from background
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        const token = useAuthStore.getState().token;
+        if (token) {
+          const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+          const lang = useAuthStore.getState().language || 'en';
+          fetch(`${backendUrl}/api/atlas/progression/hub?lang=${lang}`, { headers: { Authorization: `Bearer ${token}` } })
+            .then(r => r.json()).then(d => { if (d.success) setProgData(d); }).catch(() => {});
+        }
+      }
+    });
+    return () => sub.remove();
   }, []);
 
   const onRefresh = () => {
