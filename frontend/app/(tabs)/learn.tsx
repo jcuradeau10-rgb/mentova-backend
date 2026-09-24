@@ -1094,10 +1094,10 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
   };
 
   return (
-    <ScrollView contentContainerStyle={ph.container} showsVerticalScrollIndicator={false} data-testid="progression-hub">
+    <ScrollView contentContainerStyle={ph.container} showsVerticalScrollIndicator={false} testID="progression-hub">
 
       {/* HERO: Level + XP */}
-      <View style={ph.heroCard} data-testid="hero-level-card">
+      <View style={ph.heroCard} testID="hero-level-card">
         <View style={ph.heroTop}>
           <View style={[ph.levelCircle, { borderColor: hub.level_color }]}>
             <Text style={[ph.levelNum, { color: hub.level_color }]}>{hub.level}</Text>
@@ -1107,7 +1107,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
             <Text style={ph.heroXpText}>{hub.total_xp.toLocaleString()} XP</Text>
           </View>
           {hub.streak > 0 && (
-            <View style={ph.streakPill} data-testid="streak-badge">
+            <View style={ph.streakPill} testID="streak-badge">
               <Ionicons name="flame" size={16} color="#F59E0B" />
               <Text style={ph.streakPillNum}>{hub.streak}</Text>
             </View>
@@ -1129,7 +1129,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
       </View>
 
       {/* QUICK STATS */}
-      <View style={ph.qkRow} data-testid="quick-stats">
+      <View style={ph.qkRow} testID="quick-stats">
         <View style={ph.qkCard}>
           <Ionicons name="flame" size={18} color={hub.streak > 0 ? '#F59E0B' : '#334155'} />
           <Text style={ph.qkVal}>{hub.streak}</Text>
@@ -1152,7 +1152,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
 
       {/* PRIORITY CARD */}
       {hub.priority && (
-        <TouchableOpacity style={ph.prioCard} onPress={handlePriority} activeOpacity={0.7} data-testid="priority-card">
+        <TouchableOpacity style={ph.prioCard} onPress={handlePriority} activeOpacity={0.7} testID="priority-card">
           <View style={ph.prioIcon}>
             <Ionicons
               name={hub.priority.type === 'resume_module' ? 'play-circle' : hub.priority.type === 'start_learning' ? 'rocket' : 'fitness'}
@@ -1175,7 +1175,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
 
       {/* DAILY GOALS */}
       {goals.length > 0 && (
-        <View style={ph.sec} data-testid="daily-goals-section">
+        <View style={ph.sec} testID="daily-goals-section">
           <Text style={ph.secTitle}>{tAtlas('hub.daily_goals', lang)}</Text>
           <View style={ph.card}>
             {goals.map((g: any, i: number) => (
@@ -1209,7 +1209,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
       )}
 
       {/* SKILLS */}
-      <View style={ph.sec} data-testid="skills-section">
+      <View style={ph.sec} testID="skills-section">
         <Text style={ph.secTitle}>{tAtlas('hub.skills', lang)}</Text>
         <View style={ph.card}>
           {skills.map((sk: any, i: number) => (
@@ -1232,7 +1232,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
 
       {/* ALMOST UNLOCKED */}
       {hub.almost_unlocked?.length > 0 && (
-        <View style={ph.sec} data-testid="almost-unlocked">
+        <View style={ph.sec} testID="almost-unlocked">
           <Text style={ph.secTitle}>{tAtlas('hub.almost', lang)}</Text>
           {hub.almost_unlocked.map((au: any) => (
             <View key={au.badge_id} style={ph.almostCard}>
@@ -1249,14 +1249,14 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
       )}
 
       {/* BADGES */}
-      <View style={ph.sec} data-testid="badges-section">
+      <View style={ph.sec} testID="badges-section">
         <Text style={ph.secTitle}>{tAtlas('hub.badges', lang)} ({hub.badges_earned}/{hub.badges_total})</Text>
         {Object.entries(badgeCats).map(([cat, catBadges]) => (
           <View key={cat} style={{ marginBottom: 16 }}>
             <Text style={ph.bdgCatLabel}>{catLabels[cat]?.[lang] || catLabels[cat]?.en || cat}</Text>
             <View style={ph.bdgGrid}>
               {catBadges.map((b: any) => (
-                <View key={b.id} style={[ph.bdgItem, !b.earned && { opacity: 0.35 }]} data-testid={`badge-${b.id}`}>
+                <View key={b.id} style={[ph.bdgItem, !b.earned && { opacity: 0.35 }]} testID={`badge-${b.id}`}>
                   <View style={[ph.bdgIcon, b.earned && { backgroundColor: 'rgba(167,139,250,0.15)', borderColor: 'rgba(167,139,250,0.3)' }]}>
                     <Ionicons name={b.icon as any} size={18} color={b.earned ? '#A78BFA' : '#475569'} />
                   </View>
@@ -1274,7 +1274,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
       </View>
 
       {/* MODULES OVERVIEW */}
-      <View style={ph.sec} data-testid="modules-overview">
+      <View style={ph.sec} testID="modules-overview">
         <Text style={ph.secTitle}>{tAtlas('hub.modules_overview', lang)}</Text>
         <View style={ph.card}>
           <View style={ph.modRow}>
@@ -1315,7 +1315,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
 
       {/* QUIZ STATS */}
       {stats.quiz_count > 0 && (
-        <View style={ph.sec} data-testid="quiz-stats">
+        <View style={ph.sec} testID="quiz-stats">
           <Text style={ph.secTitle}>{tAtlas('hub.quiz_stats', lang)}</Text>
           <View style={ph.card}>
             <View style={ph.qzRow}>

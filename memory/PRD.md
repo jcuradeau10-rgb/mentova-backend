@@ -29,21 +29,28 @@
 - SEO: 44 pages (FR/EN/ES), sitemap, hreflang
 - Email migration: Resend -> Brevo
 - Stripe Webhook configured (refund/dispute -> immediate VIP revocation)
-- **Registration Security**:
-  - Password: 8+ chars + 1 special character (validated backend + frontend)
-  - Email verification: 6-digit code sent via Brevo, must verify before login
-  - Language selection at registration (FR/EN/ES) 
-  - Verify-email screen with resend option
-  - Login blocks unverified emails (returns `email_not_verified`)
-
-- **Deep Health Check**: `/api/health/deep` monitors MongoDB, AI (Emergent LLM), Stripe, Brevo, and env vars. Fixed false-positive 401 by using `TransactionalEmailsApi.get_smtp_report()` instead of `AccountApi.get_account()`.
-- **Auto-Alert System**: Background monitor runs every 5 min. Sends DOWN/RECOVERY alerts via **dual channel: Brevo email (jcuradeau.7@hotmail.com) + Telegram (@MentovaAlerts_bot)**. Anti-spam: only alerts on state transitions. History in MongoDB. Endpoints: `GET /api/health/alerts/history`, `POST /api/health/alerts/test`. Telegram acts as backup if Brevo is down.
-- **Full Site Audit (Sept 2026)**: Complete audit of 60+ static pages + frontend app. Removed all Atlas references, marketplace descriptions, Apple App Store mentions, old pricing, French words in English text. Updated legal pages (Terms, Support, Privacy) in FR/EN/ES. Fixed ES homepage with proper Spanish translations. Renamed CSS class t-atlas to t-caufid. Updated all "February 2026" dates. Aligned all 3 languages to same product positioning: Mentova = personalized finance & crypto education with Caufid AI mentor.
-- **Account Deletion**: Full backend cascade delete + confirmation email
-- **Feedback Tab**: Modernized with 5-star rating, categories (bug/feature/general)
-- **VIP Welcome Email**: Sent on checkout success + webhook fallback
+- **Registration Security**: Password 8+ chars + 1 special, email verification (6-digit code), language selection
+- **Deep Health Check**: `/api/health/deep` monitors MongoDB, AI, Stripe, Brevo, env vars
+- **Auto-Alert System**: 5-min background monitor, Brevo + Telegram dual-channel alerts
+- **Full Site Audit**: 60+ static pages, removed legacy text, updated legal pages
+- **Account Deletion**: Full cascade delete + confirmation email
+- **Feedback Tab**: 5-star rating + categories
+- **VIP Welcome Email**: Sent on checkout + webhook fallback
 - **Push Notifications**: Framework + cron for streak reminders
 - **Touch Bug Fix**: z-index/propagation fix on conversation rename/delete
+
+### Progression Hub
+- **Phase 1 (Backend)**: Created `progression_service.py` with XP awards, 9 levels, 32 badges (7 categories), daily goals, weekly challenges, skill tracking. Created `routes/progression.py` with `/api/atlas/progression/hub` endpoint. Idempotent XP awards, auto-migration for existing users. (DONE)
+- **Phase 2 (Frontend)**: Complete rewrite of `ProgressView` component in `learn.tsx`. Premium dark-themed Progression Hub displaying:
+  - Hero section: Level number + name + XP bar (animated) + streak pill
+  - Quick Stats: 3 cards (Streak, Badges earned/total, Modules completed/total)
+  - Priority Card: Context-aware "next step" recommendation (resume module / start learning / strengthen skill) with interactive navigation to Chat tab
+  - Daily Goals: 3 daily objectives with progress bars and XP rewards
+  - Skills: 5 skill bars (Finance, Crypto, Blockchain, Trading, Risk Management) with color-coded progress
+  - Badge Gallery: 32 badges grouped by 7 categories with earned/locked visual states and progress bars
+  - Modules Overview: 4 stat counters + recent modules list with status dots
+  - Quiz Stats: Quiz count, avg score, perfect scores, days active
+  - All data from real API (no mocked data). Trilingual (FR/EN/ES). (DONE - Tested 100%)
 
 ## Key Endpoints
 - `POST /api/auth/register` — password validation + email verification + language
@@ -53,3 +60,12 @@
 - `POST /api/vip/cancel` — Cancel at period end
 - `POST /api/vip/reactivate` — Undo cancellation
 - `POST /api/webhook/stripe` — Handles all Stripe events
+- `GET /api/atlas/progression/hub` — Progression Hub (Level, XP, Badges, Skills, Goals, Priority)
+- `GET /api/atlas/progression/xp-history` — XP transaction history
+- `GET /api/atlas/progression/badges` — All badges with progress
+- `POST /api/atlas/progression/migrate` — Manual user migration
+
+## Upcoming Tasks
+- **Phase 3 (P1)**: Detailed views — Modals/Pages for Badges, Skills Tree, Full Learning Path, History, Certificates
+- **Phase 4 (P1)**: Deep Caufid Integration — AI explains progression score, recommends/creates modules based on weaknesses
+- **Phase 5 (P2)**: Micro-interactions — XP gain popup, Badge unlock animations, level-up celebration

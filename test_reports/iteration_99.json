@@ -1,0 +1,30 @@
+{
+  "summary": "Tested Progression Hub (Phase 2) end-to-end. Backend GET /api/atlas/progression/hub returns 200 with all required fields (level, level_name_*, total_xp, xp_for_next_level, xp_progress, streak, 5 skills, 32 badges across 7 categories, modules counts, daily_goals with 3 goals, priority, quiz stats). Frontend ProgressView renders the full hub correctly: hero (Level 1 Curious, 80 XP, animated XP bar to 20 XP -> Explorer), quick stats (Streak 0, Badges 3/32, Modules 0/3), priority RESUME card with correct module title, 3 daily goals (0/1 +20, 0/5 +15, 0/1 +25), 5 skills at 0/10, all 7 badge categories with earned/locked visual states, modules overview (3/3/0/0) with recent list showing progress %, and quiz stats (1 quiz, 100% avg, 1 perfect, 3 days active). Priority-card click navigates to Chat tab and pre-fills the correct message ('I want to continue the module \"...\". Pick up where we left off.'). 12/12 backend tests pass, all critical frontend flows verified.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "ProgressView priority card", "issue": "data-testid=\"priority-card\" prop on TouchableOpacity is not emitted to DOM by React Native Web. Use testID=\"priority-card\" instead so it gets translated to data-testid. Functionality works when clicking the visible RESUME text.", "selector": "[data-testid='priority-card']", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_progression_hub.py",
+    "/app/test_reports/pytest/progression_hub.xml"
+  ],
+  "action_items": [
+    "(Optional/low) Change data-testid=\"priority-card\" to testID=\"priority-card\" on the TouchableOpacity at learn.tsx:1155 for reliable e2e selection. Other tabs already use testID which flows to data-testid correctly."
+  ],
+  "critical_code_review_comments": [
+    "learn.tsx is very large (1695+ lines). Consider extracting ProgressView and its ph StyleSheet into a dedicated module to improve maintainability.",
+    "TouchableOpacity uses raw data-testid attr which is not standard for RN Web; testID is the RN Web convention and is what other buttons in the app use (atlas-tab-progress etc.). Inconsistency reduces test-ability."
+  ],
+  "updated_files": ["/app/backend/tests/test_progression_hub.py"],
+  "success_rate": {"backend": "100% (12/12)", "frontend": "100% critical flows"},
+  "test_credentials": "admin jcuradeau.7@gmail.com / Crypto2026! (VIP permanent)",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Progression Hub API schema is flat (not nested under 'xp'/'level' objects): fields include level (int), level_name_fr/en/es, total_xp, xp_for_next_level, xp_progress, streak, skills (list of 5), badges (list of 32), badges_earned/total, modules_total/in_progress/completed/mastered, recent_modules, daily_goals={goals:[], all_completed, bonus_xp, date}, priority={type,title,...}, stats. Frontend Progress tab is [data-testid='atlas-tab-progress']. Priority card lacks a working testid.",
+  "rca of the issue": "N/A - feature works as specified."
+}
