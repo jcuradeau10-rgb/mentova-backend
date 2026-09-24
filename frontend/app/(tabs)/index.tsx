@@ -410,7 +410,7 @@ export default function HomeScreen() {
               <TouchableOpacity 
                 style={styles.quickStatCard}
                 onPress={() => router.push('/(tabs)/learn')}
-                data-testid="home-stat-level"
+                testID="home-stat-level"
               >
                 <View style={styles.quickStatHeader}>
                   <View style={[styles.quickStatIconBg, { backgroundColor: progData ? `${progData.level_color}20` : 'rgba(167,139,250,0.15)' }]}>
@@ -431,7 +431,7 @@ export default function HomeScreen() {
               <TouchableOpacity 
                 style={styles.quickStatCard}
                 onPress={() => router.push('/(tabs)/learn')}
-                data-testid="home-stat-streak"
+                testID="home-stat-streak"
               >
                 <View style={styles.quickStatHeader}>
                   <View style={[styles.quickStatIconBg, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
@@ -455,7 +455,7 @@ export default function HomeScreen() {
               <TouchableOpacity 
                 style={styles.quickStatCard}
                 onPress={() => router.push('/(tabs)/learn')}
-                data-testid="home-stat-badges"
+                testID="home-stat-badges"
               >
                 <View style={styles.quickStatHeader}>
                   <View style={[styles.quickStatIconBg, { backgroundColor: 'rgba(167, 139, 250, 0.15)' }]}>

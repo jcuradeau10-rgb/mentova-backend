@@ -133,7 +133,7 @@ function SidebarContent({ onNavigate }: { onNavigate: (route: string) => void })
   const convGroups = groupConversations(conversations);
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       {/* Top */}
       <View style={st.sideTop}>
         <Text style={[st.logo, { color: c.text }]}>Mentova<Text style={{ color: c.primary }}>.</Text></Text>
@@ -145,11 +145,13 @@ function SidebarContent({ onNavigate }: { onNavigate: (route: string) => void })
         <Text style={[st.newChatText, { color: c.primary }]}>{t('nav.newChat') || 'New Chat'}</Text>
       </TouchableOpacity>
 
+      {/* Dismiss overlay — above scroll, below dropdown */}
+      {convMenu && (
+        <Pressable style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 50 }} onPress={() => setConvMenu(null)} />
+      )}
+
       {/* Conversations - scrollable */}
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-        {convMenu && (
-          <Pressable style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 100 }} onPress={() => setConvMenu(null)} />
-        )}
+      <ScrollView style={{ flex: 1, zIndex: 60 }} showsVerticalScrollIndicator={false}>
         {convGroups.length > 0 && (
           <View style={st.convSection}>
             {convGroups.map((group) => (
@@ -241,7 +243,7 @@ function SidebarContent({ onNavigate }: { onNavigate: (route: string) => void })
           </TouchableOpacity>
         </View>
       </View>
-    </>
+    </View>
   );
 }
 

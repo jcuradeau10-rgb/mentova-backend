@@ -3,37 +3,35 @@
 ## Architecture
 - Static site: /app/static-site/ -> Netlify
 - App: React Native Expo -> Netlify  
-- Backend: FastAPI -> Render (mentova-api.onrender.com)
+- Backend: FastAPI -> Render
 - DB: MongoDB Atlas
-- Email: Brevo (Sendinblue)
 
 ## CRITICAL: Branding
-- The AI mentor is named **Caufid** (not Atlas)
-- Internal API routes use `/api/atlas/` for backward compatibility
+- AI mentor = **Caufid** (not Atlas). Routes use `/api/atlas/` for backward compat.
 
 ## Credentials
 - Super Admin: jcuradeau.7@gmail.com / Crypto2026!
 
 ### Progression Hub (All Phases Complete)
-- **Phase 1 (Backend)**: XP awards, 9 levels, 32 badges (7 categories), daily goals, skill tracking
-- **Phase 2 (Frontend)**: ProgressView with 8 sections (Hero, Stats, Priority, Goals, Skills, Badges, Modules, Quiz)
-- **Phase 3 (Detail Modals)**: Badge Detail, XP History, Skill Detail, Levels Roadmap modals
-- **Phase 4 (Caufid Integration)**: AI progression awareness, get_progression_data tool, CTA button
-- **Phase 5 (Micro-interactions)**: XP Toast, Badge Celebration, Level-Up animation, celebration chaining
+- Phase 1-5: Backend XP/levels/badges, Frontend ProgressView (8 sections), Detail Modals (4), Caufid AI integration, Micro-interactions (XP toast, badge celebration, level-up)
 
-### Additional Features (Complete)
-- **Certificats partageables**: CertificateModal with premium card design (MENTOVA ACADEMY branding, skill icon, score bar, user name, level, date). Share button with web clipboard fallback. Appears in SkillDetailModal when score >= 5. (DONE)
-- **Streak notifications**: "Daily streak reminder" toggle added to Settings > Notifications modal (flame icon, top position). Backend cron /api/cron/streak-reminders respects streak_reminder preference. Trilingual (FR/EN/ES). (DONE)
+### Additional Features
+- Certificats partageables (score >= 5 threshold)
+- Streak notifications (toggle in Settings)
+- Home page: Progression summary cards (Level, Streak, Badges) replacing crypto prices
+- Sidebar conversation rename/delete: Fixed for mobile (restructured touch handling, overlay stacking)
 
 ## Key Endpoints
 - POST /api/atlas/chat (with progression awareness)
-- GET /api/atlas/progression/hub (includes celebrations + levels)
+- GET /api/atlas/progression/hub (celebrations + levels)
 - GET /api/atlas/progression/xp-history, /badges
-- POST /api/atlas/progression/migrate
-- POST /api/cron/streak-reminders (requires CRON_SECRET)
+- POST /api/cron/streak-reminders
+
+## Recent Fixes
+- Conversation rename/delete: Removed nested TouchableOpacity causing mobile touch conflicts, moved overlay outside ScrollView to fix z-index stacking, added hitSlop for mobile touch targets
+- Home page: Replaced BTC/ETH/USDT crypto price cards with dynamic progression summary (Level + XP bar, Streak, Badges count + progress bar), data from /api/atlas/progression/hub
 
 ## Known Limitations
-- Certificate visual only visible when skill score >= 5 (no test account has this yet)
-- Celebrations only show once per device (no ack system — Phase 5+ improvement)
-- learn.tsx is ~2190 lines (refactoring deferred per user request)
-- Notification labels (except streak_reminder) show raw i18n keys — pre-existing issue
+- Certificate visual only visible when skill score >= 5
+- learn.tsx is ~2200 lines (refactoring deferred)
+- Notification labels (except streak_reminder) show raw i18n keys — pre-existing
