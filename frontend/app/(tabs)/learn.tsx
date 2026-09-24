@@ -387,14 +387,15 @@ function VipUpgradeModal({ visible, onClose, lang, token }: { visible: boolean; 
 
 // ============ TYPEWRITER TEXT (Client-side streaming) ============
 function TypewriterText({ text, style, speed = 12 }: { text: string; style?: any; speed?: number }) {
-  const safeText = text || '';
+  const safeText = String(text ?? '').replace(/\bundefined\b/g, '');
   const [displayedText, setDisplayedText] = useState('');
   const indexRef = useRef(0);
 
   useEffect(() => {
     setDisplayedText('');
     indexRef.current = 0;
-    const words = safeText.split(' ');
+    if (!safeText) return;
+    const words = safeText.split(' ').filter(w => w !== 'undefined');
     const interval = setInterval(() => {
       if (indexRef.current < words.length) {
         setDisplayedText(prev => prev + (indexRef.current > 0 ? ' ' : '') + words[indexRef.current]);
@@ -527,7 +528,7 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
   const loadConversation = useCallback(async (convId: string) => {
     try {
       const data = await api(`/api/atlas/conversations/${convId}`, token);
-      setMessages((data.messages || []).map((m: any) => ({ role: m.role, content: m.content || '' })));
+      setMessages((data.messages || []).map((m: any) => ({ role: m.role, content: String(m.content ?? '').replace(/\bundefined\b/g, '') })));
       setActiveConvId(convId);
       setShowSidebar(false);
     } catch (e) { console.error('Load conv error:', e); }
@@ -551,7 +552,7 @@ function ChatView({ token, lang, initialMessage, onMessageSent }: { token: strin
       const contentType = res.headers.get('content-type') || '';
       if (contentType.includes('application/json')) {
         const data = await res.json();
-        const responseText = data.response || data.message || data.text || '';
+        const responseText = String(data.response || data.message || data.text || '').replace(/\bundefined\b/g, '');
         if (responseText) {
           setMessages(prev => {
             const newMsgs = [...prev, { role: 'assistant' as const, content: responseText }];
@@ -791,9 +792,9 @@ function CaufidIntroGlow({ children }: { children: React.ReactNode }) {
               {m.role === 'assistant' && <View style={[s.msgAvatar, { backgroundColor: colors.primaryGlow, borderColor: colors.border }]}><Text style={[s.msgAvatarText, { color: colors.primary }]}>C</Text></View>}
               <View style={[s.msgBubble, m.role === 'user' ? s.msgBubbleUser : [s.msgBubbleAtlas, { backgroundColor: mode === 'light' ? colors.surface : 'rgba(167,139,250,0.06)', borderColor: mode === 'light' ? colors.border : 'rgba(167,139,250,0.08)' }]]}>
                 {m.role === 'assistant' && i === latestAssistantIdx ? (
-                  <TypewriterText text={m.content || ''} style={[s.msgText, { color: colors.text }]} speed={15} />
+                  <TypewriterText text={String(m.content ?? '')} style={[s.msgText, { color: colors.text }]} speed={15} />
                 ) : (
-                  <Text style={[s.msgText, m.role === 'user' ? s.msgTextUser : { color: colors.text }]}>{m.content || ''}</Text>
+                  <Text style={[s.msgText, m.role === 'user' ? s.msgTextUser : { color: colors.text }]}>{String(m.content ?? '').replace(/\bundefined\b/g, '')}</Text>
                 )}
               </View>
             </View>
