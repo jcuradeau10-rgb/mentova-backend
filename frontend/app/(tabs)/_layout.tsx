@@ -146,7 +146,10 @@ function SidebarContent({ onNavigate }: { onNavigate: (route: string) => void })
       </TouchableOpacity>
 
       {/* Conversations - scrollable */}
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} onTouchStart={() => { if (convMenu) setConvMenu(null); }}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+        {convMenu && (
+          <Pressable style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 100 }} onPress={() => setConvMenu(null)} />
+        )}
         {convGroups.length > 0 && (
           <View style={st.convSection}>
             {convGroups.map((group) => (
@@ -355,10 +358,10 @@ const st = StyleSheet.create({
   convGroupLabel: { fontSize: 11, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, paddingHorizontal: 4, paddingVertical: 6, marginTop: 4 },
   convItem: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 8, borderRadius: 8, marginBottom: 1, flex: 1 },
   convTitle: { fontSize: 13, flex: 1 },
-  convItemWrap: { flexDirection: 'row', alignItems: 'center', borderRadius: 8, marginBottom: 1, position: 'relative' as const },
+  convItemWrap: { flexDirection: 'row', alignItems: 'center', borderRadius: 8, marginBottom: 1, position: 'relative' as const, overflow: 'visible' as const },
   convMenuBtn: { padding: 10, marginRight: 0, zIndex: 10 },
-  convDropdown: { position: 'absolute' as const, right: 0, top: 40, borderRadius: 10, borderWidth: 1, zIndex: 200, minWidth: 150, overflow: 'hidden' as const, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 10 },
-  convDropItem: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 14, paddingHorizontal: 16 },
+  convDropdown: { position: 'absolute' as const, right: 0, top: 40, borderRadius: 10, borderWidth: 1, zIndex: 999, minWidth: 150, overflow: 'visible' as const, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 50 },
+  convDropItem: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 16, paddingHorizontal: 18 },
   convDropText: { fontSize: 14, fontWeight: '500' },
   renameRow: { flexDirection: 'row', alignItems: 'center', flex: 1, gap: 6, paddingHorizontal: 8, paddingVertical: 4 },
   renameInput: { flex: 1, fontSize: 13, borderWidth: 1, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4 },

@@ -124,6 +124,7 @@ export default function HomeScreen() {
   const { t, loadLanguage } = useTranslation();
   const [cryptoPrices, setCryptoPrices] = useState<any[]>([]);
   const [globalStats, setGlobalStats] = useState<any>(null);
+  const [progData, setProgData] = useState<any>(null);
   const [news, setNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -155,20 +156,21 @@ export default function HomeScreen() {
 
   const fetchData = async () => {
     try {
-      const [pricesRes, globalRes, newsRes] = await Promise.all([
-        cryptoAPI.getPrices(),
-        cryptoAPI.getGlobalStats(),
+      const [newsRes] = await Promise.all([
         newsAPI.getNews({ limit: 10 }),
       ]);
       
-      if (pricesRes.data.success) {
-        setCryptoPrices(pricesRes.data.data.slice(0, 5));
-      }
-      if (globalRes.data.success) {
-        setGlobalStats(globalRes.data.data);
-      }
       if (newsRes.data.success) {
         setNews(newsRes.data.data);
+      }
+
+      // Fetch progression data
+      const token = useAuthStore.getState().token;
+      if (token) {
+        const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+        const lang = useAuthStore.getState().language || 'en';
+        fetch(`${backendUrl}/api/atlas/progression/hub?lang=${lang}`, { headers: { Authorization: `Bearer ${token}` } })
+          .then(r => r.json()).then(d => { if (d.success) setProgData(d); }).catch(() => {});
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -396,7 +398,7 @@ export default function HomeScreen() {
           </Animated.View>
         </AnimatedSection>
 
-        {/* Quick Market Stats */}
+        {/* Progression Summary */}
         <AnimatedSection delay={100}>
           <View style={styles.quickStatsContainer}>
             <ScrollView 
@@ -404,56 +406,70 @@ export default function HomeScreen() {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.quickStatsScroll}
             >
-              {cryptoPrices.slice(0, 3).map((crypto, index) => (
-                <TouchableOpacity 
-                  key={crypto.id || index}
-                  style={styles.quickStatCard}
-                  onPress={() => router.push('/(tabs)/market')}
-                  data-testid={`quick-stat-${crypto.symbol}`}
-                >
-                  <View style={styles.quickStatHeader}>
-                    <Image 
-                      source={{ uri: crypto.image }} 
-                      style={styles.cryptoIcon}
-                    />
-                    <Text style={styles.quickStatSymbol}>{crypto.symbol?.toUpperCase()}</Text>
+              {/* Level Card */}
+              <TouchableOpacity 
+                style={styles.quickStatCard}
+                onPress={() => router.push('/(tabs)/learn')}
+                data-testid="home-stat-level"
+              >
+                <View style={styles.quickStatHeader}>
+                  <View style={[styles.quickStatIconBg, { backgroundColor: progData ? `${progData.level_color}20` : 'rgba(167,139,250,0.15)' }]}>
+                    <Ionicons name="school" size={18} color={progData?.level_color || '#A78BFA'} />
                   </View>
-                  <Text style={styles.quickStatPrice}>{formatPrice(crypto.current_price)}</Text>
-                  <View style={[
-                    styles.quickStatChange,
-                    { backgroundColor: crypto.price_change_percentage_24h >= 0 ? 'rgba(0, 217, 165, 0.15)' : 'rgba(239, 68, 68, 0.15)' }
-                  ]}>
-                    <Ionicons 
-                      name={crypto.price_change_percentage_24h >= 0 ? 'arrow-up' : 'arrow-down'} 
-                      size={12} 
-                      color={crypto.price_change_percentage_24h >= 0 ? '#00D9A5' : '#EF4444'} 
-                    />
-                    <Text style={[
-                      styles.quickStatChangeText,
-                      { color: crypto.price_change_percentage_24h >= 0 ? '#00D9A5' : '#EF4444' }
-                    ]}>
-                      {Math.abs(crypto.price_change_percentage_24h).toFixed(2)}%
-                    </Text>
+                  <Text style={styles.quickStatSymbol}>Level</Text>
+                </View>
+                <Text style={styles.quickStatPrice}>{progData?.level || 1}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <View style={{ flex: 1, height: 3, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.06)' }}>
+                    <View style={{ height: 3, borderRadius: 2, backgroundColor: progData?.level_color || '#A78BFA', width: `${(progData?.xp_progress || 0) * 100}%` }} />
                   </View>
-                </TouchableOpacity>
-              ))}
-              
-              {globalStats && (
-                <TouchableOpacity 
-                  style={[styles.quickStatCard, styles.quickStatCardWide]}
-                  onPress={() => router.push('/(tabs)/market')}
-                  data-testid="quick-stat-global"
-                >
-                  <View style={styles.quickStatHeader}>
-                    <View style={[styles.quickStatIconBg, { backgroundColor: 'rgba(124, 58, 237, 0.15)' }]}>
-                      <Ionicons name="globe" size={18} color="#7C3AED" />
-                    </View>
-                    <Text style={styles.quickStatSymbol}>{t('home.global')}</Text>
+                  <Text style={{ fontSize: 10, color: '#475569' }}>{progData?.total_xp || 0} XP</Text>
+                </View>
+              </TouchableOpacity>
+
+              {/* Streak Card */}
+              <TouchableOpacity 
+                style={styles.quickStatCard}
+                onPress={() => router.push('/(tabs)/learn')}
+                data-testid="home-stat-streak"
+              >
+                <View style={styles.quickStatHeader}>
+                  <View style={[styles.quickStatIconBg, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
+                    <Ionicons name="flame" size={18} color="#F59E0B" />
                   </View>
-                  <Text style={styles.quickStatPrice}>{formatNumber(globalStats.total_market_cap?.usd || 0)}</Text>
-                  <Text style={styles.quickStatLabel}>{t('home.totalCap')}</Text>
-                </TouchableOpacity>
-              )}
+                  <Text style={styles.quickStatSymbol}>Streak</Text>
+                </View>
+                <Text style={styles.quickStatPrice}>{progData?.streak || 0}</Text>
+                <View style={[
+                  styles.quickStatChange,
+                  { backgroundColor: (progData?.streak || 0) > 0 ? 'rgba(245, 158, 11, 0.15)' : 'rgba(100,116,139,0.15)' }
+                ]}>
+                  <Ionicons name={(progData?.streak || 0) > 0 ? 'checkmark' : 'time'} size={12} color={(progData?.streak || 0) > 0 ? '#F59E0B' : '#64748B'} />
+                  <Text style={[styles.quickStatChangeText, { color: (progData?.streak || 0) > 0 ? '#F59E0B' : '#64748B' }]}>
+                    {(progData?.streak || 0) > 0 ? 'Active' : 'Start!'}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+
+              {/* Badges Card */}
+              <TouchableOpacity 
+                style={styles.quickStatCard}
+                onPress={() => router.push('/(tabs)/learn')}
+                data-testid="home-stat-badges"
+              >
+                <View style={styles.quickStatHeader}>
+                  <View style={[styles.quickStatIconBg, { backgroundColor: 'rgba(167, 139, 250, 0.15)' }]}>
+                    <Ionicons name="ribbon" size={18} color="#A78BFA" />
+                  </View>
+                  <Text style={styles.quickStatSymbol}>Badges</Text>
+                </View>
+                <Text style={styles.quickStatPrice}>{progData?.badges_earned || 0}<Text style={{ fontSize: 14, color: '#475569' }}>/{progData?.badges_total || 32}</Text></Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <View style={{ flex: 1, height: 3, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.06)' }}>
+                    <View style={{ height: 3, borderRadius: 2, backgroundColor: '#A78BFA', width: `${((progData?.badges_earned || 0) / (progData?.badges_total || 32)) * 100}%` }} />
+                  </View>
+                </View>
+              </TouchableOpacity>
             </ScrollView>
           </View>
         </AnimatedSection>
