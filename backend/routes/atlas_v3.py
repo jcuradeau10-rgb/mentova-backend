@@ -447,6 +447,14 @@ TOOLS = [
             }
         }
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_progression_data",
+            "description": "Get the user's full progression data: XP, level, streak, badges earned, skill scores, daily goals, modules stats, quiz performance. Use this to analyze the user's learning journey, identify weaknesses, celebrate achievements, and recommend next steps.",
+            "parameters": {"type": "object", "properties": {}, "required": []},
+        }
+    },
 ]
 
 
@@ -488,6 +496,9 @@ async def execute_tool(name: str, args: dict, user_id: str) -> str:
             )
         elif name == "mark_module_mastered":
             result = await tool_mark_module_mastered(user_id, args["module_id"])
+        elif name == "get_progression_data":
+            from services.progression_service import get_progression_hub
+            result = await get_progression_hub(user_id, "en")
         else:
             result = {"error": f"Unknown tool: {name}"}
         return json.dumps(result, default=str)
@@ -594,6 +605,18 @@ Notify users when modules are created. Create modules for meaningful educational
 
 110. FINAL PRINCIPLE
 Your purpose is to maximize the user's understanding, reasoning ability, practical competence, and independence. Listen before teaching. Understand before testing. Answer before questioning when appropriate. Let the user think instead of always making them choose. Challenge without discouraging. Remember without inventing. Personalize without assuming. Teach without creating dependence. Create modules when they genuinely help. Adapt continuously. And always prioritize the user's actual learning journey over a rigid conversational script.
+
+111-115. PROGRESSION AWARENESS
+You have access to the user's progression data via the get_progression_data tool. This includes their XP, level, streak, badges earned, skill scores (0-10 per domain), daily goals, module stats, and quiz performance.
+When the user asks about their progression, learning journey, or wants recommendations:
+- Call get_progression_data to get the latest metrics.
+- Analyze their strengths (high skill scores, earned badges, completed modules) and weaknesses (low skill scores, incomplete modules).
+- Recommend specific actions: which skill to focus on, what type of module to create, or which concepts to review.
+- Celebrate genuine achievements naturally (new badges, level-ups, streaks) without being excessively enthusiastic.
+- If asked to create a personalized learning plan, base it on the actual skill gaps shown in their progression data.
+- When creating modules, prioritize the weakest skills to build a balanced knowledge base.
+- Do NOT make up progression data. Only use what the tool returns.
+- The progression summary is also included in the context automatically, so you always have basic awareness of the user's level and stats.
 """
 
 
@@ -609,6 +632,22 @@ async def build_context(user_id: str, is_vip: bool = False) -> str:
 
     db = _get_db()
     if db is not None:
+        # Progression summary (always included)
+        try:
+            from services.progression_service import compute_metrics, get_level_for_xp
+            metrics = await compute_metrics(user_id)
+            lvl = get_level_for_xp(metrics["total_xp"])
+            prog_lines = [
+                f"Level {lvl['level']} ({lvl['name_en']}), {metrics['total_xp']} XP",
+                f"Streak: {metrics['streak']} days (best: {metrics['streak_best']})",
+                f"Modules completed: {metrics['modules_completed']}, mastered: {metrics['modules_mastered']}",
+                f"Quizzes: {metrics['quiz_count']} (perfect: {metrics['perfect_scores']})",
+                f"Skills — Finance: {metrics['skill_finance']}/10, Crypto: {metrics['skill_crypto']}/10, Blockchain: {metrics['skill_blockchain']}/10, Trading: {metrics['skill_trading']}/10, Risk: {metrics['skill_risk']}/10",
+            ]
+            parts.append("PROGRESSION SUMMARY:\n" + "\n".join(prog_lines))
+        except Exception as e:
+            logger.debug(f"Could not load progression: {e}")
+
         # VIP: include persistent memories
         if is_vip:
             mems = []

@@ -142,6 +142,8 @@ const i18n: Record<string, Record<string, string>> = {
   'hub.bonus_xp': { fr: 'Bonus', en: 'Bonus', es: 'Bonus' },
   'hub.almost': { fr: 'Presque d\u00e9bloqu\u00e9', en: 'Almost unlocked', es: 'Casi desbloqueado' },
   'hub.recent': { fr: 'R\u00e9cents', en: 'Recent', es: 'Recientes' },
+  'hub.analyze': { fr: 'Analyser ma progression', en: 'Analyze my progress', es: 'Analizar mi progreso' },
+  'hub.analyze_desc': { fr: 'Caufid analyse tes forces et faiblesses', en: 'Caufid analyzes your strengths and weaknesses', es: 'Caufid analiza tus fortalezas y debilidades' },
 };
 
 function tAtlas(key: string, lang: string): string {
@@ -1523,6 +1525,32 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
       )}
 
 
+      {/* CAUFID ANALYSIS CTA */}
+      <TouchableOpacity
+        style={ph.ctaCard}
+        activeOpacity={0.7}
+        testID="analyze-progression-btn"
+        onPress={() => {
+          const msg = lang === 'fr'
+            ? 'Analyse ma progression en detail. Identifie mes forces, mes faiblesses, et recommande-moi un plan d\'apprentissage personnalise.'
+            : lang === 'es'
+            ? 'Analiza mi progreso en detalle. Identifica mis fortalezas, debilidades, y recomiendame un plan de aprendizaje personalizado.'
+            : 'Analyze my progress in detail. Identify my strengths, weaknesses, and recommend a personalized learning plan.';
+          onAction?.('chat', msg);
+        }}
+      >
+        <View style={ph.ctaLeft}>
+          <View style={ph.ctaIcon}>
+            <Ionicons name="sparkles" size={20} color="#A78BFA" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={ph.ctaTitle}>{tAtlas('hub.analyze', lang)}</Text>
+            <Text style={ph.ctaDesc}>{tAtlas('hub.analyze_desc', lang)}</Text>
+          </View>
+        </View>
+        <Ionicons name="arrow-forward-circle" size={24} color="#A78BFA" />
+      </TouchableOpacity>
+
       {/* DETAIL MODALS */}
       <BadgeDetailModal visible={!!selBadge} badge={selBadge} lang={lang} onClose={() => setSelBadge(null)} />
       <XpHistoryModal visible={showXpHist} token={token} lang={lang} onClose={() => setShowXpHist(false)} />
@@ -1876,6 +1904,13 @@ const ph = StyleSheet.create({
   qzItem: { alignItems: 'center', gap: 4 },
   qzVal: { fontSize: 18, fontWeight: '800', color: '#F1F5F9' },
   qzLabel: { fontSize: 10, color: '#64748B' },
+
+  // CTA
+  ctaCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(167,139,250,0.06)', borderRadius: 16, padding: 18, borderWidth: 1, borderColor: 'rgba(167,139,250,0.15)', marginBottom: 8, gap: 12 },
+  ctaLeft: { flexDirection: 'row', alignItems: 'center', flex: 1, gap: 14 },
+  ctaIcon: { width: 44, height: 44, borderRadius: 14, backgroundColor: 'rgba(167,139,250,0.12)', alignItems: 'center', justifyContent: 'center' },
+  ctaTitle: { fontSize: 14, fontWeight: '700', color: '#E2E8F0' },
+  ctaDesc: { fontSize: 11, color: '#64748B', marginTop: 2 },
 });
 
 const mds = StyleSheet.create({
