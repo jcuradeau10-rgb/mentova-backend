@@ -1,0 +1,24 @@
+{
+  "summary": "Phase 3 Progression Hub detail modals tested end-to-end. Backend: /api/atlas/progression/hub now returns 'levels' array (9 items, sequential 1..9, ascending xp_threshold, starts at 0, names Curious..Master, each with name_fr/en/es, xp_threshold, color). /api/atlas/progression/xp-history returns {success, history: [...]} with action_type, xp_amount, description, created_at per item. 13/13 backend tests pass (added test_hub_levels_array + strengthened test_xp_history). Frontend: on Progress tab, all 4 modals open and dismiss correctly — (1) Level circle '1' opens Levels Roadmap modal showing 'Levels' title, 80 XP, timeline of all 9 levels with XP thresholds (0, 100, 300, 600, 1000, 1800, ..., 8000) and Curious highlighted as current. (2) Clicking the XP bar area opens XP History modal listing migration entry +0, Perfect quiz score +50 (9/24/2026), Quiz completed +30 with icons and dates. (3) Clicking earned badge 'First Day' opens Badge Detail modal showing title 'First Day', category 'FIRST STEPS' and green 'Earned' pill with check icon. (4) Clicking locked badge 'streak_7' opens Badge Detail modal with '7 Days' title, 'STREAK' category, '7-day streak' description and 0/7 progress bar. (5) Clicking Finance skill opens Skill Detail modal showing 'Finance' name, 'NOT EVALUATED' level label (uppercase CSS), 0/10 score bar and Caufid tip. All modals dismiss on X button, Escape key, and overlay click. Progress tab still renders all Phase 2 sections (hero, quick stats 0/3/0, priority RESUME, 3 daily goals, 5 skills, 32 badges across 7 categories, modules, quiz stats).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_progression_hub.py",
+    "/app/test_reports/pytest/progression_hub_phase3.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "learn.tsx is now 1915 lines. Strongly recommend extracting the 4 detail modals (BadgeDetailModal, XpHistoryModal, SkillDetailModal, LevelsRoadmapModal) and ProgressView into a dedicated /components/progression/ folder for maintainability.",
+    "SkillDetailModal.relatedMods filter uses recent_modules only (max ~5 items). Consider fetching the full modules list or exposing a category->skill mapping so 'Related modules' is meaningful once the user has more modules.",
+    "XpHistoryModal reloads history on every open but does not show any error UI on API failure (catch is swallowed). Consider adding an error state.",
+    "Modal 'overlay click to dismiss' relies on nesting TouchableOpacity inside TouchableOpacity which can be fragile; a dedicated Pressable + stopPropagation would be cleaner."
+  ],
+  "updated_files": ["/app/backend/tests/test_progression_hub.py"],
+  "success_rate": {"backend": "100% (13/13)", "frontend": "100% (all 4 modals + dismissal verified)"},
+  "test_credentials": "jcuradeau.7@gmail.com / Crypto2026! (super_admin, VIP)",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Progression Hub Phase 3 modals are functional. hub response now contains levels: [{level:int, name_fr, name_en, name_es, xp_threshold:int, color}] x 9. testIDs available: progression-hub, hero-level-card, streak-badge, quick-stats, priority-card, daily-goals-section, skills-section, badges-section (badge-<id> for each), modules-overview, quiz-stats. Modals are opened via hero-level-card level number, hero-level-card XP bar TouchableOpacity, badge-<id> tap, skill row tap. No testIDs on modals themselves — consider adding testID='levels-modal', 'xp-history-modal', 'badge-detail-modal', 'skill-detail-modal' for future e2e scoping.",
+  "rca of the issue": "N/A — feature works as specified."
+}

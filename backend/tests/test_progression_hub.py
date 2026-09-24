@@ -107,4 +107,30 @@ def test_xp_history(token):
     r = requests.get(f"{BASE_URL}/api/atlas/progression/xp-history?limit=5",
                      headers={"Authorization": f"Bearer {token}"}, timeout=30)
     assert r.status_code == 200
-    assert "history" in r.json()
+    d = r.json()
+    assert "history" in d
+    assert isinstance(d["history"], list)
+    if d["history"]:
+        h0 = d["history"][0]
+        for k in ["action_type", "xp_amount", "description", "created_at"]:
+            assert k in h0, f"Missing key {k} in xp-history item"
+
+
+# ============ Phase 3: Levels roadmap in hub response ============
+def test_hub_levels_array(hub):
+    lvls = hub.get("levels")
+    assert isinstance(lvls, list), "hub.levels must be a list"
+    assert len(lvls) == 9, f"Expected 9 levels, got {len(lvls) if lvls else 0}"
+    # Structure of each level
+    for idx, lvl in enumerate(lvls):
+        for k in ["level", "name_fr", "name_en", "name_es", "xp_threshold", "color"]:
+            assert k in lvl, f"Level {idx} missing key {k}"
+    # Sequential 1..9
+    assert [l["level"] for l in lvls] == list(range(1, 10))
+    # Thresholds ascending, starts at 0
+    thresholds = [l["xp_threshold"] for l in lvls]
+    assert thresholds[0] == 0
+    assert thresholds == sorted(thresholds)
+    # Names correctness
+    assert lvls[0]["name_en"] == "Curious"
+    assert lvls[-1]["name_en"] == "Master"
