@@ -30,6 +30,10 @@ export default function Root({ children }: { children: React.ReactNode }) {
         <meta name="theme-color" content="#0A0A1A" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
+        {/* Google Ads Tag */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18465662025"></script>
+        <script dangerouslySetInnerHTML={{ __html: "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18465662025');" }} />
+
         <ScrollViewStyleReset />
       </head>
       <body>{children}</body>

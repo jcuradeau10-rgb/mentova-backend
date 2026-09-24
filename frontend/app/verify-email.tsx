@@ -96,6 +96,10 @@ export default function VerifyEmailScreen() {
       const data = await res.json();
       if (res.ok && data.success) {
         setSuccess(true);
+        // Google Ads conversion tracking
+        if (Platform.OS === 'web' && typeof window !== 'undefined' && (window as any).gtag) {
+          (window as any).gtag('event', 'conversion', { 'send_to': 'AW-18465662025/19-cCOz8hYAdEMnIjuVE' });
+        }
         await AsyncStorage.removeItem('pending_verify_email');
         setTimeout(() => router.replace('/login'), 2000);
       } else {
