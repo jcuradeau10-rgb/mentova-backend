@@ -506,6 +506,9 @@ async def get_progression_hub(user_id: str, lang: str = "fr") -> dict:
         # Recent
         "recent_concepts": recent_concepts,
         "xp_history": xp_history,
+
+        # Levels roadmap
+        "levels": [{"level": l["level"], "name_fr": l["name_fr"], "name_en": l["name_en"], "name_es": l["name_es"], "xp_threshold": l["xp_threshold"], "color": l["color"]} for l in LEVELS],
     }
 
 

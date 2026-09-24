@@ -1013,10 +1013,188 @@ function ModulesView({ token, lang, onContinueModule }: { token: string; lang: s
 }
 
 // ============ PROGRESS VIEW ============
+// ============ BADGE DETAIL MODAL ============
+function BadgeDetailModal({ visible, badge, lang, onClose }: { visible: boolean; badge: any; lang: string; onClose: () => void }) {
+  if (!badge) return null;
+  const name = badge[`name_${lang}`] || badge.name_en;
+  const catMap: Record<string, Record<string, string>> = {
+    first_steps: { fr: 'Premiers pas', en: 'First Steps', es: 'Primeros pasos' },
+    quiz: { fr: 'Quiz', en: 'Quiz', es: 'Quiz' },
+    modules: { fr: 'Modules', en: 'Modules', es: 'Modules' },
+    streak: { fr: 'Regularite', en: 'Streak', es: 'Racha' },
+    excellence: { fr: 'Excellence', en: 'Excellence', es: 'Excelencia' },
+    mastery: { fr: 'Maitrise', en: 'Mastery', es: 'Maestria' },
+    milestones: { fr: 'Jalons XP', en: 'XP Milestones', es: 'Hitos XP' },
+  };
+  const metricDesc: Record<string, Record<string, string>> = {
+    days_active: { fr: `Sois actif ${badge.threshold} jour(s)`, en: `Be active for ${badge.threshold} day(s)`, es: `Se activo ${badge.threshold} dia(s)` },
+    modules_completed: { fr: `Complete ${badge.threshold} module(s)`, en: `Complete ${badge.threshold} module(s)`, es: `Completa ${badge.threshold} modulo(s)` },
+    quiz_count: { fr: `Passe ${badge.threshold} quiz`, en: `Complete ${badge.threshold} quizzes`, es: `Completa ${badge.threshold} quiz` },
+    perfect_scores: { fr: `Obtiens ${badge.threshold} score(s) parfait(s)`, en: `Get ${badge.threshold} perfect score(s)`, es: `Obten ${badge.threshold} nota(s) perfecta(s)` },
+    modules_mastered: { fr: `Maitrise ${badge.threshold} module(s)`, en: `Master ${badge.threshold} module(s)`, es: `Domina ${badge.threshold} modulo(s)` },
+    streak: { fr: `Serie de ${badge.threshold} jour(s)`, en: `${badge.threshold}-day streak`, es: `Racha de ${badge.threshold} dia(s)` },
+    total_xp: { fr: `Gagne ${badge.threshold} XP`, en: `Earn ${badge.threshold} XP`, es: `Gana ${badge.threshold} XP` },
+  };
+  let desc = metricDesc[badge.metric]?.[lang] || metricDesc[badge.metric]?.en || '';
+  if (badge.metric?.startsWith('skill_')) {
+    const sk = badge.metric.replace('skill_', '');
+    desc = lang === 'fr' ? `Atteins le niveau ${badge.threshold} en ${sk}` : lang === 'es' ? `Alcanza nivel ${badge.threshold} en ${sk}` : `Reach level ${badge.threshold} in ${sk}`;
+  }
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <TouchableOpacity style={mds.overlay} activeOpacity={1} onPress={onClose}>
+        <TouchableOpacity activeOpacity={1} style={mds.modal}>
+          <TouchableOpacity style={mds.closeBtn} onPress={onClose}><Ionicons name="close" size={20} color="#64748B" /></TouchableOpacity>
+          <View style={[mds.bigIcon, badge.earned && { backgroundColor: 'rgba(167,139,250,0.15)', borderColor: 'rgba(167,139,250,0.35)' }]}>
+            <Ionicons name={badge.icon as any} size={36} color={badge.earned ? '#A78BFA' : '#475569'} />
+          </View>
+          <Text style={mds.modalTitle}>{name}</Text>
+          <Text style={mds.catLabel}>{catMap[badge.category]?.[lang] || badge.category}</Text>
+          {badge.earned ? (
+            <View style={mds.earnedPill}><Ionicons name="checkmark-circle" size={14} color="#10B981" /><Text style={mds.earnedTxt}>{lang === 'fr' ? 'Obtenu' : lang === 'es' ? 'Obtenido' : 'Earned'}</Text></View>
+          ) : (
+            <>
+              <Text style={mds.desc}>{desc}</Text>
+              <View style={mds.progRow}>
+                <View style={mds.progBg}><View style={[mds.progFill, { width: `${Math.round(badge.progress * 100)}%` }]} /></View>
+                <Text style={mds.progTxt}>{badge.current_value}/{badge.threshold}</Text>
+              </View>
+            </>
+          )}
+        </TouchableOpacity>
+      </TouchableOpacity>
+    </Modal>
+  );
+}
+
+// ============ XP HISTORY MODAL ============
+function XpHistoryModal({ visible, token, lang, onClose }: { visible: boolean; token: string; lang: string; onClose: () => void }) {
+  const [history, setHistory] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (visible) {
+      setLoading(true);
+      api('/api/atlas/progression/xp-history?limit=30', token)
+        .then(d => setHistory(d?.history || []))
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }
+  }, [visible]);
+  const actionIcons: Record<string, string> = { MODULE_COMPLETED: 'book', MODULE_MASTERED: 'school', QUIZ_COMPLETED: 'ribbon', QUIZ_PERFECT: 'flash', DAILY_GOAL_ITEM: 'star', DAILY_GOAL_COMPLETED: 'trophy', STREAK_3: 'flame', STREAK_7: 'flame', MIGRATION: 'sync' };
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <TouchableOpacity style={mds.overlay} activeOpacity={1} onPress={onClose}>
+        <TouchableOpacity activeOpacity={1} style={[mds.modal, { maxHeight: '80%' }]}>
+          <TouchableOpacity style={mds.closeBtn} onPress={onClose}><Ionicons name="close" size={20} color="#64748B" /></TouchableOpacity>
+          <Text style={mds.modalTitle}>{lang === 'fr' ? 'Historique XP' : lang === 'es' ? 'Historial XP' : 'XP History'}</Text>
+          {loading ? <ActivityIndicator color="#A78BFA" style={{ marginTop: 20 }} /> : (
+            <ScrollView style={{ marginTop: 16, maxHeight: 400 }} showsVerticalScrollIndicator={false}>
+              {history.length === 0 && <Text style={mds.emptyTxt}>{lang === 'fr' ? 'Aucune transaction' : 'No transactions'}</Text>}
+              {history.map((h: any, i: number) => (
+                <View key={i} style={mds.histRow}>
+                  <View style={mds.histIcon}><Ionicons name={(actionIcons[h.action_type] || 'add-circle') as any} size={16} color="#A78BFA" /></View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={mds.histDesc} numberOfLines={1}>{h.description || h.action_type}</Text>
+                    {h.created_at && <Text style={mds.histDate}>{new Date(h.created_at).toLocaleDateString()}</Text>}
+                  </View>
+                  <Text style={mds.histXp}>+{h.xp_amount}</Text>
+                </View>
+              ))}
+            </ScrollView>
+          )}
+        </TouchableOpacity>
+      </TouchableOpacity>
+    </Modal>
+  );
+}
+
+// ============ SKILL DETAIL MODAL ============
+function SkillDetailModal({ visible, skill, lang, relatedMods, onClose }: { visible: boolean; skill: any; lang: string; relatedMods: any[]; onClose: () => void }) {
+  if (!skill) return null;
+  const name = skill[`name_${lang}`] || skill.name_en;
+  const scoreColor = skill.score >= 7 ? '#10B981' : skill.score >= 4 ? '#F59E0B' : '#A78BFA';
+  const levelLabel = skill.score >= 8 ? (lang === 'fr' ? 'Expert' : 'Expert') : skill.score >= 5 ? (lang === 'fr' ? 'Intermediaire' : 'Intermediate') : skill.score >= 2 ? (lang === 'fr' ? 'Debutant' : 'Beginner') : (lang === 'fr' ? 'Non evalue' : 'Not evaluated');
+  const mods = relatedMods.filter((m: any) => (m.category || '').toLowerCase().includes(skill.key));
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <TouchableOpacity style={mds.overlay} activeOpacity={1} onPress={onClose}>
+        <TouchableOpacity activeOpacity={1} style={mds.modal}>
+          <TouchableOpacity style={mds.closeBtn} onPress={onClose}><Ionicons name="close" size={20} color="#64748B" /></TouchableOpacity>
+          <View style={[mds.bigIcon, { borderColor: scoreColor }]}><Ionicons name={skill.icon as any} size={36} color={scoreColor} /></View>
+          <Text style={mds.modalTitle}>{name}</Text>
+          <Text style={[mds.catLabel, { color: scoreColor }]}>{levelLabel}</Text>
+          <View style={mds.progRow}>
+            <View style={mds.progBg}><View style={[mds.progFill, { width: `${Math.max(skill.score * 10, 2)}%`, backgroundColor: scoreColor }]} /></View>
+            <Text style={mds.progTxt}>{skill.score}/10</Text>
+          </View>
+          {mods.length > 0 && (
+            <View style={{ marginTop: 16 }}>
+              <Text style={mds.subLabel}>{lang === 'fr' ? 'Modules lies' : 'Related modules'}</Text>
+              {mods.slice(0, 5).map((m: any) => (
+                <View key={m.id} style={mds.relRow}>
+                  <View style={[mds.relDot, { backgroundColor: m.status === 'mastered' ? '#F59E0B' : m.status === 'completed' ? '#10B981' : '#3B82F6' }]} />
+                  <Text style={mds.relTitle} numberOfLines={1}>{m.title}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+          <Text style={mds.tipTxt}>
+            {lang === 'fr' ? 'Demande a Caufid de creer un module pour ameliorer cette competence.' : lang === 'es' ? 'Pide a Caufid que cree un modulo para mejorar esta competencia.' : 'Ask Caufid to create a module to improve this skill.'}
+          </Text>
+        </TouchableOpacity>
+      </TouchableOpacity>
+    </Modal>
+  );
+}
+
+// ============ LEVELS ROADMAP MODAL ============
+function LevelsRoadmapModal({ visible, levels, currentLevel, totalXp, lang, onClose }: { visible: boolean; levels: any[]; currentLevel: number; totalXp: number; lang: string; onClose: () => void }) {
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <TouchableOpacity style={mds.overlay} activeOpacity={1} onPress={onClose}>
+        <TouchableOpacity activeOpacity={1} style={[mds.modal, { maxHeight: '80%' }]}>
+          <TouchableOpacity style={mds.closeBtn} onPress={onClose}><Ionicons name="close" size={20} color="#64748B" /></TouchableOpacity>
+          <Text style={mds.modalTitle}>{lang === 'fr' ? 'Niveaux' : lang === 'es' ? 'Niveles' : 'Levels'}</Text>
+          <Text style={mds.desc}>{totalXp.toLocaleString()} XP</Text>
+          <ScrollView style={{ marginTop: 12, maxHeight: 400 }} showsVerticalScrollIndicator={false}>
+            {(levels || []).map((lvl: any, i: number) => {
+              const past = lvl.level < currentLevel;
+              const isCurrent = lvl.level === currentLevel;
+              const name = lvl[`name_${lang}`] || lvl.name_en;
+              return (
+                <View key={lvl.level} style={mds.lvlRow}>
+                  <View style={mds.lvlTL}>
+                    <View style={[mds.lvlDot, { backgroundColor: (past || isCurrent) ? lvl.color : 'rgba(255,255,255,0.08)' }, isCurrent && { borderWidth: 2.5, borderColor: '#F1F5F9' }]} />
+                    {i < (levels || []).length - 1 && <View style={[mds.lvlLine, { backgroundColor: past ? 'rgba(167,139,250,0.25)' : 'rgba(255,255,255,0.04)' }]} />}
+                  </View>
+                  <View style={[mds.lvlCard, isCurrent && { borderColor: lvl.color, backgroundColor: `${lvl.color}10` }]}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <Text style={[mds.lvlNum, { color: lvl.color }]}>{lvl.level}</Text>
+                      <Text style={[mds.lvlName, (past || isCurrent) && { color: '#E2E8F0' }]}>{name}</Text>
+                      {isCurrent && <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: lvl.color, marginLeft: 'auto' }} />}
+                    </View>
+                    <Text style={mds.lvlXp}>{lvl.xp_threshold.toLocaleString()} XP</Text>
+                  </View>
+                </View>
+              );
+            })}
+          </ScrollView>
+        </TouchableOpacity>
+      </TouchableOpacity>
+    </Modal>
+  );
+}
+
+
+
 function ProgressView({ token, lang, onAction }: { token: string; lang: string; onAction?: (type: string, data?: string) => void }) {
   const [hub, setHub] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const xpAnim = useRef(new Animated.Value(0)).current;
+  const [selBadge, setSelBadge] = useState<any>(null);
+  const [showXpHist, setShowXpHist] = useState(false);
+  const [selSkill, setSelSkill] = useState<any>(null);
+  const [showLevels, setShowLevels] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -1099,9 +1277,9 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
       {/* HERO: Level + XP */}
       <View style={ph.heroCard} testID="hero-level-card">
         <View style={ph.heroTop}>
-          <View style={[ph.levelCircle, { borderColor: hub.level_color }]}>
+          <TouchableOpacity onPress={() => setShowLevels(true)} style={[ph.levelCircle, { borderColor: hub.level_color }]}>
             <Text style={[ph.levelNum, { color: hub.level_color }]}>{hub.level}</Text>
-          </View>
+          </TouchableOpacity>
           <View style={{ flex: 1, marginLeft: 16 }}>
             <Text style={ph.heroLevelName}>{levelName}</Text>
             <Text style={ph.heroXpText}>{hub.total_xp.toLocaleString()} XP</Text>
@@ -1113,7 +1291,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
             </View>
           )}
         </View>
-        <View style={ph.xpBarWrap}>
+        <TouchableOpacity onPress={() => setShowXpHist(true)} activeOpacity={0.7} style={ph.xpBarWrap}>
           <View style={ph.xpBarBg}>
             <Animated.View style={[ph.xpBarFill, {
               backgroundColor: hub.level_color,
@@ -1125,7 +1303,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
               {hub.xp_for_next_level} XP {'\u2192'} {hub.next_level[`name_${lang}`] || hub.next_level.name_en}
             </Text>
           )}
-        </View>
+        </TouchableOpacity>
       </View>
 
       {/* QUICK STATS */}
@@ -1213,7 +1391,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
         <Text style={ph.secTitle}>{tAtlas('hub.skills', lang)}</Text>
         <View style={ph.card}>
           {skills.map((sk: any, i: number) => (
-            <View key={sk.key} style={i < skills.length - 1 ? { marginBottom: 14 } : undefined}>
+            <TouchableOpacity key={sk.key} onPress={() => setSelSkill(sk)} activeOpacity={0.7} style={i < skills.length - 1 ? { marginBottom: 14 } : undefined}>
               <View style={ph.skHead}>
                 <Ionicons name={sk.icon as any} size={15} color="#A78BFA" />
                 <Text style={ph.skName}>{sk[`name_${lang}`] || sk.name_en}</Text>
@@ -1225,7 +1403,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
                   backgroundColor: sk.score >= 7 ? '#10B981' : sk.score >= 4 ? '#F59E0B' : '#A78BFA',
                 }]} />
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
       </View>
@@ -1256,7 +1434,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
             <Text style={ph.bdgCatLabel}>{catLabels[cat]?.[lang] || catLabels[cat]?.en || cat}</Text>
             <View style={ph.bdgGrid}>
               {catBadges.map((b: any) => (
-                <View key={b.id} style={[ph.bdgItem, !b.earned && { opacity: 0.35 }]} testID={`badge-${b.id}`}>
+                <TouchableOpacity key={b.id} onPress={() => setSelBadge(b)} activeOpacity={0.6} style={[ph.bdgItem, !b.earned && { opacity: 0.35 }]} testID={`badge-${b.id}`}>
                   <View style={[ph.bdgIcon, b.earned && { backgroundColor: 'rgba(167,139,250,0.15)', borderColor: 'rgba(167,139,250,0.3)' }]}>
                     <Ionicons name={b.icon as any} size={18} color={b.earned ? '#A78BFA' : '#475569'} />
                   </View>
@@ -1266,7 +1444,7 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
                       <View style={[ph.bdgProgFill, { width: `${Math.round(b.progress * 100)}%` }]} />
                     </View>
                   )}
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
           </View>
@@ -1343,6 +1521,13 @@ function ProgressView({ token, lang, onAction }: { token: string; lang: string; 
           </View>
         </View>
       )}
+
+
+      {/* DETAIL MODALS */}
+      <BadgeDetailModal visible={!!selBadge} badge={selBadge} lang={lang} onClose={() => setSelBadge(null)} />
+      <XpHistoryModal visible={showXpHist} token={token} lang={lang} onClose={() => setShowXpHist(false)} />
+      <SkillDetailModal visible={!!selSkill} skill={selSkill} lang={lang} relatedMods={recentMods} onClose={() => setSelSkill(null)} />
+      <LevelsRoadmapModal visible={showLevels} levels={hub.levels || []} currentLevel={hub.level} totalXp={hub.total_xp} lang={lang} onClose={() => setShowLevels(false)} />
 
       <View style={{ height: 40 }} />
     </ScrollView>
@@ -1691,4 +1876,39 @@ const ph = StyleSheet.create({
   qzItem: { alignItems: 'center', gap: 4 },
   qzVal: { fontSize: 18, fontWeight: '800', color: '#F1F5F9' },
   qzLabel: { fontSize: 10, color: '#64748B' },
+});
+
+const mds = StyleSheet.create({
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', padding: 24 },
+  modal: { width: '100%', maxWidth: 400, backgroundColor: '#0F0A1E', borderRadius: 20, padding: 28, borderWidth: 1, borderColor: 'rgba(167,139,250,0.12)', position: 'relative' },
+  closeBtn: { position: 'absolute', top: 14, right: 14, zIndex: 10, padding: 4 },
+  bigIcon: { width: 72, height: 72, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 2, borderColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginBottom: 16, marginTop: 8 },
+  modalTitle: { fontSize: 20, fontWeight: '700', color: '#F1F5F9', textAlign: 'center', marginBottom: 4 },
+  catLabel: { fontSize: 12, color: '#64748B', textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 16 },
+  earnedPill: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: 'rgba(16,185,129,0.1)', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 10, alignSelf: 'center' },
+  earnedTxt: { fontSize: 13, fontWeight: '600', color: '#10B981' },
+  desc: { fontSize: 13, color: '#94A3B8', textAlign: 'center', marginBottom: 12 },
+  progRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 4 },
+  progBg: { flex: 1, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.06)' },
+  progFill: { height: 6, borderRadius: 3, backgroundColor: '#A78BFA' },
+  progTxt: { fontSize: 12, color: '#64748B', fontWeight: '600', width: 40, textAlign: 'right' },
+  emptyTxt: { fontSize: 13, color: '#475569', textAlign: 'center', marginTop: 20 },
+  histRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.04)' },
+  histIcon: { width: 32, height: 32, borderRadius: 8, backgroundColor: 'rgba(167,139,250,0.1)', alignItems: 'center', justifyContent: 'center' },
+  histDesc: { fontSize: 13, color: '#E2E8F0' },
+  histDate: { fontSize: 11, color: '#475569', marginTop: 2 },
+  histXp: { fontSize: 14, fontWeight: '700', color: '#A78BFA' },
+  subLabel: { fontSize: 12, fontWeight: '600', color: '#64748B', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 },
+  relRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 6 },
+  relDot: { width: 6, height: 6, borderRadius: 3 },
+  relTitle: { fontSize: 13, color: '#E2E8F0', flex: 1 },
+  tipTxt: { fontSize: 12, color: '#475569', textAlign: 'center', marginTop: 16, fontStyle: 'italic' },
+  lvlRow: { flexDirection: 'row', marginBottom: 0 },
+  lvlTL: { width: 24, alignItems: 'center' },
+  lvlDot: { width: 12, height: 12, borderRadius: 6 },
+  lvlLine: { width: 2, flex: 1, marginVertical: 2 },
+  lvlCard: { flex: 1, marginLeft: 12, marginBottom: 10, paddingVertical: 10, paddingHorizontal: 14, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', backgroundColor: 'rgba(255,255,255,0.02)' },
+  lvlNum: { fontSize: 16, fontWeight: '800' },
+  lvlName: { fontSize: 14, fontWeight: '500', color: '#64748B', flex: 1 },
+  lvlXp: { fontSize: 11, color: '#475569', marginTop: 2 },
 });
