@@ -20,41 +20,36 @@
 
 ## Completed
 - VIP System + Stripe ($21.99/mo) with full checkout/cancel/refund/webhook flow
-- User Intelligence + PDF Export
-- Session tracking
+- User Intelligence + PDF Export, Session tracking
 - Caufid UI/UX Redesign (premium, themed, streaming)
 - Global rebranding Atlas -> Caufid
 - Quiz Gamification: 11 badges + daily streaks
-- GA4 tracking on all 44 static pages
-- SEO: 44 pages (FR/EN/ES), sitemap, hreflang
+- GA4 tracking + SEO: 44 pages (FR/EN/ES), sitemap, hreflang
 - Email migration: Resend -> Brevo
-- Stripe Webhook configured (refund/dispute -> immediate VIP revocation)
-- Registration Security: Password 8+ chars + 1 special, email verification (6-digit code), language selection
-- Deep Health Check: /api/health/deep monitors MongoDB, AI, Stripe, Brevo, env vars
-- Auto-Alert System: 5-min background monitor, Brevo + Telegram dual-channel alerts
-- Full Site Audit: 60+ static pages, removed legacy text, updated legal pages
-- Account Deletion, Feedback Tab, VIP Welcome Email, Push Notifications, Touch Bug Fix
+- Stripe Webhook (refund/dispute -> VIP revocation)
+- Registration Security, Account Deletion, Feedback Tab, VIP Welcome Email, Push Notifications
+- Deep Health Check + Auto-Alert System (Brevo + Telegram)
+- Full Site Audit: 60+ pages cleaned
 
-### Progression Hub (Complete)
-- **Phase 1 (Backend)**: progression_service.py with XP awards, 9 levels, 32 badges (7 categories), daily goals, weekly challenges, skill tracking. Routes at /api/atlas/progression/hub, /xp-history, /badges, /migrate. (DONE)
-- **Phase 2 (Frontend)**: Complete ProgressView rewrite with 8 sections: Hero (Level/XP bar animated), Quick Stats (Streak/Badges/Modules), Priority Card (interactive), Daily Goals, Skills (5 bars), Badge Gallery (32 badges, 7 categories), Modules Overview, Quiz Stats. All real API data, trilingual. (DONE - 100% tested)
-- **Phase 3 (Detail Modals)**: 4 interactive modals added:
-  - **Badge Detail Modal**: Tap any badge → shows icon, name, category, earned/locked status, progress bar with current/threshold, metric description
-  - **XP History Modal**: Tap XP bar → scrollable list of XP transactions from API with icons, descriptions, dates, amounts
-  - **Skill Detail Modal**: Tap a skill → score, level label (Expert/Intermediate/Beginner/Not evaluated), related modules, Caufid tip
-  - **Levels Roadmap Modal**: Tap level circle → all 9 levels timeline (Curieux→Maitre) with XP thresholds, current level highlighted
-  - Backend: Added `levels` array to hub response. (DONE - 100% tested, 13/13 backend + all frontend flows)
+### Progression Hub (Phases 1-4 Complete)
+- **Phase 1 (Backend)**: progression_service.py — XP awards, 9 levels, 32 badges (7 categories), daily goals, skill tracking. Endpoints: /hub, /xp-history, /badges, /migrate. (DONE)
+- **Phase 2 (Frontend)**: Complete ProgressView with 8 sections: Hero, Quick Stats, Priority Card, Daily Goals, Skills, Badge Gallery, Modules Overview, Quiz Stats. Trilingual. (DONE)
+- **Phase 3 (Detail Modals)**: 4 interactive modals: Badge Detail, XP History, Skill Detail, Levels Roadmap. All clickable elements. (DONE)
+- **Phase 4 (Caufid Integration)**: 
+  - New AI tool `get_progression_data` giving Caufid full access to progression metrics
+  - Automatic progression summary injection in chat context (Level, XP, streak, skills, modules, quizzes)
+  - System prompt updated with sections 111-115 for progression awareness (analyze strengths/weaknesses, recommend modules, celebrate achievements)
+  - Frontend CTA "Analyze my progress" button in Progression Hub → auto-sends analysis request to Caufid
+  - Caufid now provides detailed personalized analysis with strengths, weaknesses, module priorities, and learning plans based on real data (DONE - 100% tested)
 
 ## Key Endpoints
 - POST /api/auth/register, /verify-email, /resend-verification
 - POST /api/vip/checkout, /cancel, /reactivate
 - POST /api/webhook/stripe
-- GET /api/atlas/progression/hub (Level, XP, Badges, Skills, Goals, Priority, Levels)
-- GET /api/atlas/progression/xp-history
-- GET /api/atlas/progression/badges
+- POST /api/atlas/chat (with progression awareness)
+- GET /api/atlas/progression/hub, /xp-history, /badges
 - POST /api/atlas/progression/migrate
 
 ## Upcoming Tasks
-- **Phase 4 (P1)**: Deep Caufid Integration — AI explains progression score, recommends/creates modules based on weaknesses
 - **Phase 5 (P2)**: Micro-interactions — XP gain popup, Badge unlock animations, level-up celebration
-- **Refactoring (P2)**: Extract ProgressView + modals into /components/progression/ folder (learn.tsx is 1915 lines)
+- **Refactoring (P2)**: Extract ProgressView + modals into /components/progression/ folder (learn.tsx ~1950 lines)
