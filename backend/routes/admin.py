@@ -3,7 +3,7 @@ import os
 import uuid
 from datetime import datetime, timezone, timedelta
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Body
+from fastapi import APIRouter, Depends, HTTPException, Body, Request
 from fastapi.security import HTTPBearer
 
 import logging
@@ -306,8 +306,12 @@ async def admin_set_pro(
     return {"success": True, "message": message}
 
 @router.post("/admin/users/{user_id}/send-caufid-email")
-async def admin_send_caufid_email(user_id: str, body: dict = {}, admin_user: dict = Depends(_admin_auth)):
+async def admin_send_caufid_email(user_id: str, request: Request, admin_user: dict = Depends(_admin_auth)):
     """Send an email template to a specific user."""
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
     user = await _db().users.find_one({"id": user_id})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -316,14 +320,17 @@ async def admin_send_caufid_email(user_id: str, body: dict = {}, admin_user: dic
     lang = body.get("lang", user.get("language", "en") or "en")
     name = user.get("name", "").split("@")[0] if "@" in user.get("name", "") else user.get("name", "User")
     
-    if template == "caufid_reengagement":
-        result = send_caufid_reengagement_email(to_email=user["email"], user_name=name, lang=lang)
-    elif template == "welcome_guide":
-        result = send_welcome_guide_email(to_email=user["email"], user_name=name, lang=lang)
-    elif template == "progression_update":
-        result = await send_progression_update_email(to_email=user["email"], user_name=name, user_id=user_id, lang=lang, db=_db())
-    else:
-        raise HTTPException(status_code=400, detail=f"Unknown template: {template}")
+    try:
+        if template == "caufid_reengagement":
+            result = send_caufid_reengagement_email(to_email=user["email"], user_name=name, lang=lang)
+        elif template == "welcome_guide":
+            result = send_welcome_guide_email(to_email=user["email"], user_name=name, lang=lang)
+        elif template == "progression_update":
+            result = await send_progression_update_email(to_email=user["email"], user_name=name, user_id=user_id, lang=lang, db=_db())
+        else:
+            raise HTTPException(status_code=400, detail=f"Unknown template: {template}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Email error: {str(e)}")
     
     if result.get("success"):
         return {"success": True, "message": f"Email [{template}] sent to {user['email']} [{lang}]"}
