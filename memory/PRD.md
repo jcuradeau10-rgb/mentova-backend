@@ -19,36 +19,48 @@
 - Certificats partageables, Streak notifications toggle
 - Home page: Progression summary cards replacing crypto prices
 - Sidebar conversation rename/delete: Fixed for mobile
-- **Progression System Page**: Premium static page explaining Mentova's progression system
-  - 3 languages: FR `/fr/systeme-de-progression.html`, EN `/progression-system.html`, ES `/es/sistema-de-progreso.html`
-  - 14 sections, SEO, footer links
-- **Auto-refresh Home progression**: AppState listener
-- **Google Ads**: Base tag + email-verification conversion event
-- **Admin Email System** (NEW - Oct 2026): 
-  - 3 reusable email templates sent from admin panel via User Intelligence:
-    1. **Réengagement Caufid** (`caufid_reengagement`) - Invite inactive users to discover Caufid
-    2. **Guide de bienvenue** (`welcome_guide`) - Mentova intro and first steps
-    3. **Mise à jour progression** (`progression_update`) - Personalized progression summary with real XP/level data
-  - Language selection: FR / EN / ES per email
-  - Template + language modal in admin panel
-  - Backend endpoint: POST /api/admin/users/{user_id}/send-caufid-email with {template, lang}
-  - Email service: /app/backend/services/email_service.py (Brevo API)
-  - Extensible: new templates can be added by creating function + adding to template list
-  - All emails signed by Caufid, no financial advice claims
+- Progression System Page: Premium static page (FR/EN/ES) with SEO
+- Auto-refresh Home progression: AppState listener
+- Google Ads: Base tag + email-verification conversion event
+
+### Admin Email System (Complete - Oct 2026)
+- 3 reusable templates: Réengagement Caufid, Guide de bienvenue, Mise à jour progression
+- Template + language (FR/EN/ES) selection modal in admin panel
+- Backend: POST /api/admin/users/{user_id}/send-caufid-email
+- Email service: /app/backend/services/email_service.py (Brevo API)
+
+### Email Analytics, Bulk Send & Preview (NEW - Oct 2026)
+- **Email Analytics**: MongoDB `email_logs` collection, GET /api/admin/email-logs endpoint
+  - Dedicated "Emails" tab in admin panel with stats (total, today, failures) + full history log
+  - Every email sent via admin is automatically logged with user, template, lang, status, timestamp
+- **Bulk Email Send**: POST /api/admin/bulk-email/count and /api/admin/bulk-email/send
+  - 4 filters: Inactive 7+ days, Inactive 30+ days, New users (48h), All users
+  - Modal shows matching user count before send, with confirmation
+  - 0.3s rate limit between sends to avoid Brevo throttling
+- **Email Preview**: GET /api/admin/email-preview?template=X&lang=Y
+  - Returns HTML preview of any template in any language
+  - Preview button in both single-user and bulk email modals
+  - Web-only HTML rendering with dangerouslySetInnerHTML
 
 ## Key Endpoints
 - POST /api/atlas/chat, GET /api/atlas/progression/hub, /xp-history, /badges
 - POST /api/cron/streak-reminders
 - POST /api/admin/users/{user_id}/send-caufid-email
+- GET /api/admin/email-logs
+- GET /api/admin/email-preview
+- POST /api/admin/bulk-email/count
+- POST /api/admin/bulk-email/send
 
 ## Key Files
 - /app/backend/services/email_service.py - Email templates and delivery
-- /app/backend/routes/admin.py - Admin endpoints including email send
-- /app/frontend/app/admin.tsx - Admin panel with email modal
-- /app/frontend/utils/api.ts - API client including sendCaufidEmail
+- /app/backend/routes/admin.py - Admin endpoints (email send, logs, preview, bulk)
+- /app/frontend/app/admin.tsx - Admin panel with email tab, modals
+- /app/frontend/utils/api.ts - API client
 
 ## Known Limitations
 - Certificate visual only visible when skill score >= 5
 - learn.tsx is ~2200 lines (refactoring deferred)
 - Static site pages deployed via Netlify (not previewable in Expo dev server)
 - Brevo email sending requires whitelisted IP (works on Render production, not preview)
+- Email preview uses dangerouslySetInnerHTML (web only)
+- Earlier emails (before analytics feature) are not in the log
