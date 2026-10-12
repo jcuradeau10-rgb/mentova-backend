@@ -388,3 +388,85 @@ async def send_progression_update_email(to_email: str, user_name: str, user_id: 
         <p style="font-size:14px;color:#a1a1aa;margin:24px 0 4px;">{t["signoff"]}</p>
         <p style="font-size:14px;font-weight:600;color:#a78bfa;margin:0;">Caufid</p>'''
     return send_mentova_email(to_email=to_email, subject=t["subject"], html_content=_email_shell(t, body))
+
+
+def send_feedback_request_email(to_email: str, user_name: str, lang: str = "fr") -> dict:
+    """Send feedback request email — ask users to help improve Mentova."""
+    tr = {
+        "fr": {
+            "subject": "Aidez-nous \u00e0 am\u00e9liorer Mentova",
+            "sender_role": "Votre mentor IA \u2014 Mentova Academy",
+            "footer": "Mentova Academy \u2014 \u00c9ducation financi\u00e8re personnalis\u00e9e",
+            "greeting": f"Bonjour {user_name},",
+            "intro": "Votre exp\u00e9rience sur Mentova compte \u00e9norm\u00e9ment pour nous. Que vous soyez l\u00e0 depuis le d\u00e9but ou que vous veniez de nous d\u00e9couvrir, votre avis peut changer la direction de la plateforme.",
+            "why_title": "Pourquoi votre avis compte\u00a0?",
+            "why_text": "Chaque fonctionnalit\u00e9, chaque module et chaque am\u00e9lioration de Mentova est guid\u00e9e par les retours de nos utilisateurs. En quelques secondes, vous pouvez nous aider \u00e0 construire une meilleure exp\u00e9rience pour tout le monde.",
+            "options_title": "Vous pouvez\u00a0:",
+            "options": [
+                ("\u2b50 Partager un t\u00e9moignage", "Dites-nous ce que vous aimez sur Mentova."),
+                ("\U0001f4a1 Sugg\u00e9rer une am\u00e9lioration", "Qu\u2019est-ce qu\u2019on pourrait faire mieux\u00a0?"),
+                ("\U0001f41b Signaler un probl\u00e8me", "Quelque chose ne fonctionne pas comme pr\u00e9vu\u00a0?"),
+                ("\U0001f680 Proposer une fonctionnalit\u00e9", "Quelle fonctionnalit\u00e9 r\u00eavez-vous d\u2019avoir\u00a0?"),
+            ],
+            "closing": "Cela prend moins d\u2019une minute et \u00e7a fait toute la diff\u00e9rence.",
+            "cta": "Donner mon avis",
+            "signoff": "Merci pour votre soutien,",
+        },
+        "en": {
+            "subject": "Help us improve Mentova",
+            "sender_role": "Your AI mentor \u2014 Mentova Academy",
+            "footer": "Mentova Academy \u2014 Personalized financial education",
+            "greeting": f"Hello {user_name},",
+            "intro": "Your experience on Mentova matters tremendously to us. Whether you\u2019ve been here from the start or just discovered us, your feedback can shape the direction of the platform.",
+            "why_title": "Why your feedback matters?",
+            "why_text": "Every feature, every module and every improvement on Mentova is guided by our users\u2019 feedback. In just a few seconds, you can help us build a better experience for everyone.",
+            "options_title": "You can:",
+            "options": [
+                ("\u2b50 Share a testimonial", "Tell us what you love about Mentova."),
+                ("\U0001f4a1 Suggest an improvement", "What could we do better?"),
+                ("\U0001f41b Report a problem", "Something not working as expected?"),
+                ("\U0001f680 Propose a feature", "What feature would you dream of having?"),
+            ],
+            "closing": "It takes less than a minute and makes all the difference.",
+            "cta": "Give my feedback",
+            "signoff": "Thank you for your support,",
+        },
+        "es": {
+            "subject": "Ay\u00fadanos a mejorar Mentova",
+            "sender_role": "Tu mentor IA \u2014 Mentova Academy",
+            "footer": "Mentova Academy \u2014 Educaci\u00f3n financiera personalizada",
+            "greeting": f"Hola {user_name},",
+            "intro": "Tu experiencia en Mentova es muy importante para nosotros. Ya sea que lleves tiempo aqu\u00ed o acabes de descubrirnos, tu opini\u00f3n puede cambiar la direcci\u00f3n de la plataforma.",
+            "why_title": "\u00bfPor qu\u00e9 importa tu opini\u00f3n?",
+            "why_text": "Cada funci\u00f3n, cada m\u00f3dulo y cada mejora en Mentova est\u00e1 guiada por los comentarios de nuestros usuarios. En solo unos segundos, puedes ayudarnos a construir una mejor experiencia para todos.",
+            "options_title": "Puedes:",
+            "options": [
+                ("\u2b50 Compartir un testimonio", "Cu\u00e9ntanos qu\u00e9 te gusta de Mentova."),
+                ("\U0001f4a1 Sugerir una mejora", "\u00bfQu\u00e9 podr\u00edamos hacer mejor?"),
+                ("\U0001f41b Reportar un problema", "\u00bfAlgo no funciona como esperabas?"),
+                ("\U0001f680 Proponer una funci\u00f3n", "\u00bfQu\u00e9 funci\u00f3n te gustar\u00eda tener?"),
+            ],
+            "closing": "Toma menos de un minuto y marca toda la diferencia.",
+            "cta": "Dar mi opini\u00f3n",
+            "signoff": "Gracias por tu apoyo,",
+        },
+    }
+    t = tr.get(lang, tr["en"])
+    options_html = ""
+    option_colors = [("#EC4899", "rgba(236,72,153,0.12)"), ("#F59E0B", "rgba(245,158,11,0.12)"), ("#EF4444", "rgba(239,68,68,0.12)"), ("#3B82F6", "rgba(59,130,246,0.12)")]
+    for i, (title, desc) in enumerate(t["options"]):
+        color, bg = option_colors[i]
+        options_html += f'<div style="margin-bottom:10px;padding:14px;background:{bg};border:1px solid rgba(255,255,255,0.06);border-radius:10px;"><div style="font-size:14px;font-weight:600;color:{color};margin-bottom:2px;">{title}</div><div style="font-size:13px;color:#71717a;line-height:1.5;">{desc}</div></div>'
+    body = f'''<p style="font-size:15px;color:#e4e4e7;line-height:1.7;margin:0 0 16px;">{t["greeting"]}</p>
+        <p style="font-size:15px;color:#a1a1aa;line-height:1.7;margin:0 0 24px;">{t["intro"]}</p>
+        <div style="background:#18181b;border:1px solid #27272a;border-radius:12px;padding:20px;margin-bottom:20px;">
+            <div style="font-size:14px;font-weight:600;color:#fafafa;margin-bottom:8px;">{t["why_title"]}</div>
+            <div style="font-size:13px;color:#a1a1aa;line-height:1.6;">{t["why_text"]}</div>
+        </div>
+        <div style="font-size:14px;font-weight:600;color:#fafafa;margin-bottom:12px;">{t["options_title"]}</div>
+        {options_html}
+        <p style="font-size:14px;color:#a1a1aa;line-height:1.6;margin:16px 0 24px;">{t["closing"]}</p>
+        <div style="text-align:center;margin:28px 0;"><a href="https://app.mentova-academy.com/feedback" style="background:#7C3AED;color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:600;font-size:15px;display:inline-block;">{t["cta"]}</a></div>
+        <p style="font-size:14px;color:#a1a1aa;margin:24px 0 4px;">{t["signoff"]}</p>
+        <p style="font-size:14px;font-weight:600;color:#a78bfa;margin:0;">Caufid</p>'''
+    return send_mentova_email(to_email=to_email, subject=t["subject"], html_content=_email_shell(t, body))

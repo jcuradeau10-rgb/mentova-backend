@@ -307,7 +307,7 @@ async def admin_set_pro(
 
 async def _send_template_email(user: dict, template: str, lang: str):
     """Internal: send a single template email and log it."""
-    from services.email_service import send_caufid_reengagement_email, send_welcome_guide_email, send_progression_update_email
+    from services.email_service import send_caufid_reengagement_email, send_welcome_guide_email, send_progression_update_email, send_feedback_request_email
     name = user.get("name", "").split("@")[0] if "@" in user.get("name", "") else user.get("name", "User")
     if template == "caufid_reengagement":
         result = send_caufid_reengagement_email(to_email=user["email"], user_name=name, lang=lang)
@@ -315,6 +315,8 @@ async def _send_template_email(user: dict, template: str, lang: str):
         result = send_welcome_guide_email(to_email=user["email"], user_name=name, lang=lang)
     elif template == "progression_update":
         result = await send_progression_update_email(to_email=user["email"], user_name=name, user_id=user["id"], lang=lang, db=_db())
+    elif template == "feedback_request":
+        result = send_feedback_request_email(to_email=user["email"], user_name=name, lang=lang)
     else:
         raise ValueError(f"Unknown template: {template}")
     # Log the email
@@ -618,6 +620,9 @@ async def get_email_preview(template: str = "caufid_reengagement", lang: str = "
     elif template == "progression_update":
         tr = _get_progression_translations(preview_name, lang, level=3, total_xp=450, modules_completed=5)
         html = _build_progression_html(tr)
+    elif template == "feedback_request":
+        tr = _get_feedback_translations(preview_name, lang)
+        html = _build_feedback_html(tr)
     else:
         raise HTTPException(status_code=400, detail=f"Unknown template: {template}")
     return {"success": True, "html": html, "subject": tr.get("subject", "")}
@@ -763,6 +768,60 @@ def _build_progression_html(t: dict) -> str:
     </div>
     <div style="padding:16px 24px;border-top:1px solid #27272a;text-align:center;"><p style="font-size:10px;color:#52525b;margin:0;">{t["footer"]}</p></div>
 </div>'''
+
+
+def _get_feedback_translations(name: str, lang: str) -> dict:
+    tr = {
+        "fr": {"subject": "Aidez-nous \u00e0 am\u00e9liorer Mentova", "greeting": f"Bonjour {name},", "sender_role": "Votre mentor IA", "footer": "Mentova Academy",
+               "intro": "Votre exp\u00e9rience compte \u00e9norm\u00e9ment. Votre avis peut changer la direction de la plateforme.",
+               "why_title": "Pourquoi votre avis compte\u00a0?",
+               "why_text": "Chaque am\u00e9lioration est guid\u00e9e par vos retours.",
+               "options_title": "Vous pouvez\u00a0:",
+               "options": [("\u2b50 T\u00e9moignage", "Ce que vous aimez."), ("\U0001f4a1 Am\u00e9lioration", "Ce qu\u2019on pourrait mieux faire."), ("\U0001f41b Probl\u00e8me", "Quelque chose ne marche pas."), ("\U0001f680 Fonctionnalit\u00e9", "Ce que vous r\u00eavez d\u2019avoir.")],
+               "closing": "Moins d\u2019une minute, toute la diff\u00e9rence.", "cta": "Donner mon avis", "signoff": "Merci,"},
+        "en": {"subject": "Help us improve Mentova", "greeting": f"Hello {name},", "sender_role": "Your AI mentor", "footer": "Mentova Academy",
+               "intro": "Your experience matters tremendously. Your feedback can shape the platform\u2019s direction.",
+               "why_title": "Why your feedback matters?",
+               "why_text": "Every improvement is guided by your feedback.",
+               "options_title": "You can:",
+               "options": [("\u2b50 Testimonial", "What you love."), ("\U0001f4a1 Improvement", "What we could do better."), ("\U0001f41b Problem", "Something not working."), ("\U0001f680 Feature", "What you\u2019d dream of.")],
+               "closing": "Less than a minute, all the difference.", "cta": "Give feedback", "signoff": "Thanks,"},
+        "es": {"subject": "Ay\u00fadanos a mejorar Mentova", "greeting": f"Hola {name},", "sender_role": "Tu mentor IA", "footer": "Mentova Academy",
+               "intro": "Tu experiencia es muy importante. Tu opini\u00f3n puede cambiar la direcci\u00f3n de la plataforma.",
+               "why_title": "\u00bfPor qu\u00e9 importa tu opini\u00f3n?",
+               "why_text": "Cada mejora est\u00e1 guiada por tus comentarios.",
+               "options_title": "Puedes:",
+               "options": [("\u2b50 Testimonio", "Lo que te gusta."), ("\U0001f4a1 Mejora", "Lo que podr\u00edamos hacer mejor."), ("\U0001f41b Problema", "Algo no funciona."), ("\U0001f680 Funci\u00f3n", "Lo que te gustar\u00eda tener.")],
+               "closing": "Menos de un minuto, toda la diferencia.", "cta": "Dar mi opini\u00f3n", "signoff": "Gracias,"},
+    }
+    return tr.get(lang, tr["en"])
+
+
+def _build_feedback_html(t: dict) -> str:
+    option_colors = [("#EC4899", "rgba(236,72,153,0.12)"), ("#F59E0B", "rgba(245,158,11,0.12)"), ("#EF4444", "rgba(239,68,68,0.12)"), ("#3B82F6", "rgba(59,130,246,0.12)")]
+    options_html = ""
+    for i, (title, desc) in enumerate(t["options"]):
+        color, bg = option_colors[i]
+        options_html += f'<div style="margin-bottom:8px;padding:10px;background:{bg};border-radius:8px;"><span style="font-size:13px;font-weight:600;color:{color};">{title}</span> <span style="font-size:12px;color:#71717a;">— {desc}</span></div>'
+    return f'''<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#09090b;color:#e4e4e7;border-radius:16px;overflow:hidden;border:1px solid #27272a;">
+    <div style="padding:24px;border-bottom:1px solid #27272a;"><div style="font-size:16px;font-weight:700;color:#fafafa;">Mentova<span style="color:#a78bfa;">.</span></div></div>
+    <div style="padding:24px;">
+        <p style="font-size:14px;color:#e4e4e7;margin:0 0 12px;">{t["greeting"]}</p>
+        <p style="font-size:13px;color:#a1a1aa;margin:0 0 16px;">{t["intro"]}</p>
+        <div style="background:#18181b;border:1px solid #27272a;border-radius:10px;padding:14px;margin-bottom:14px;">
+            <div style="font-size:13px;font-weight:600;color:#fafafa;margin-bottom:6px;">{t["why_title"]}</div>
+            <div style="font-size:12px;color:#a1a1aa;">{t["why_text"]}</div>
+        </div>
+        <div style="font-size:13px;font-weight:600;color:#fafafa;margin-bottom:10px;">{t["options_title"]}</div>
+        {options_html}
+        <p style="font-size:13px;color:#a1a1aa;margin:12px 0 16px;">{t["closing"]}</p>
+        <div style="text-align:center;margin:20px 0;"><a href="#" style="background:#7C3AED;color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:600;font-size:14px;display:inline-block;">{t["cta"]}</a></div>
+        <p style="font-size:13px;color:#a1a1aa;margin:16px 0 2px;">{t["signoff"]}</p>
+        <p style="font-size:13px;font-weight:600;color:#a78bfa;margin:0;">Caufid</p>
+    </div>
+    <div style="padding:16px 24px;border-top:1px solid #27272a;text-align:center;"><p style="font-size:10px;color:#52525b;margin:0;">{t["footer"]}</p></div>
+</div>'''
+
 
 
 # ── Bulk Email Send ──────────────────────────────────────────────

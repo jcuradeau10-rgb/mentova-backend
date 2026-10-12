@@ -2210,6 +2210,7 @@ export default function AdminScreen() {
     { id: 'caufid_reengagement', icon: 'sparkles' as const, title: 'R\u00e9engagement Caufid', desc: 'Invite l\u2019utilisateur \u00e0 d\u00e9couvrir Caufid' },
     { id: 'welcome_guide', icon: 'rocket' as const, title: 'Guide de bienvenue', desc: 'Pr\u00e9sentation de Mentova et premiers pas' },
     { id: 'progression_update', icon: 'trending-up' as const, title: 'Mise \u00e0 jour progression', desc: 'R\u00e9sum\u00e9 personnalis\u00e9 de la progression' },
+    { id: 'feedback_request', icon: 'chatbubble-ellipses' as const, title: 'Demande de feedback', desc: 'Aidez-nous \u00e0 am\u00e9liorer Mentova' },
   ];
 
   const FILTERS = [
