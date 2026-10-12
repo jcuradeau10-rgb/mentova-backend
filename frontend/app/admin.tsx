@@ -146,6 +146,10 @@ export default function AdminScreen() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [selectedProApp, setSelectedProApp] = useState<any | null>(null);
   const [showUserModal, setShowUserModal] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [emailTemplate, setEmailTemplate] = useState('caufid_reengagement');
+  const [emailLang, setEmailLang] = useState('fr');
+  const [emailSending, setEmailSending] = useState(false);
   const [showPostModal, setShowPostModal] = useState(false);
   const [showProAppModal, setShowProAppModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -2329,21 +2333,14 @@ export default function AdminScreen() {
                   <Text style={styles.actionButtonText}>User Intelligence</Text>
                 </TouchableOpacity>
 
-                {/* Send Caufid Re-engagement Email */}
+                {/* Send Email Button */}
                 <TouchableOpacity
                   style={[styles.actionButton, { backgroundColor: '#0F0A1E', borderWidth: 1, borderColor: 'rgba(167,139,250,0.3)' }]}
-                  onPress={async () => {
-                    try {
-                      await adminAPI.sendCaufidEmail(selectedUser.id);
-                      showSuccess(`Courriel Caufid envoy\u00e9 \u00e0 ${selectedUser.email}`);
-                    } catch (e) {
-                      alert('Erreur lors de l\u2019envoi du courriel');
-                    }
-                  }}
+                  onPress={() => { setEmailLang(selectedUser.language || 'en'); setShowEmailModal(true); }}
                   data-testid="send-caufid-email-btn"
                 >
                   <Ionicons name="mail" size={22} color="#A78BFA" />
-                  <Text style={[styles.actionButtonText, { color: '#A78BFA' }]}>Envoyer courriel Caufid</Text>
+                  <Text style={[styles.actionButtonText, { color: '#A78BFA' }]}>Envoyer un courriel</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -2443,6 +2440,79 @@ export default function AdminScreen() {
                 <View style={{ height: 40 }} />
               </ScrollView>
             )}
+          </View>
+        </View>
+      </Modal>
+
+      {/* Email Send Modal */}
+      <Modal visible={showEmailModal} animationType="fade" transparent onRequestClose={() => setShowEmailModal(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { maxWidth: 440, maxHeight: '80%' }]}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Envoyer un courriel</Text>
+              <TouchableOpacity onPress={() => setShowEmailModal(false)}>
+                <Ionicons name="close" size={24} color="#A1A1AA" />
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+              {selectedUser && (
+                <View style={{ padding: 20 }}>
+                  <Text style={{ color: '#A1A1AA', fontSize: 13, marginBottom: 4 }}>Destinataire</Text>
+                  <Text style={{ color: '#FAFAFA', fontSize: 15, fontWeight: '600', marginBottom: 20 }}>{selectedUser.name} ({selectedUser.email})</Text>
+
+                  <Text style={{ color: '#A1A1AA', fontSize: 13, marginBottom: 8 }}>Langue du courriel</Text>
+                  <View style={{ flexDirection: 'row', gap: 8, marginBottom: 24 }}>
+                    {[{ code: 'fr', label: 'Fran\u00e7ais' }, { code: 'en', label: 'English' }, { code: 'es', label: 'Espa\u00f1ol' }].map(l => (
+                      <TouchableOpacity key={l.code} onPress={() => setEmailLang(l.code)}
+                        style={{ flex: 1, paddingVertical: 10, borderRadius: 8, alignItems: 'center',
+                          backgroundColor: emailLang === l.code ? '#7C3AED' : '#27272A',
+                          borderWidth: 1, borderColor: emailLang === l.code ? '#7C3AED' : '#3F3F46' }}>
+                        <Text style={{ color: emailLang === l.code ? '#FFF' : '#A1A1AA', fontWeight: '600', fontSize: 13 }}>{l.label}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+
+                  <Text style={{ color: '#A1A1AA', fontSize: 13, marginBottom: 8 }}>Mod\u00e8le de courriel</Text>
+                  {[
+                    { id: 'caufid_reengagement', icon: 'sparkles', title: 'R\u00e9engagement Caufid', desc: 'Invite l\u2019utilisateur \u00e0 d\u00e9couvrir Caufid et le syst\u00e8me de progression' },
+                    { id: 'welcome_guide', icon: 'rocket', title: 'Guide de bienvenue', desc: 'Pr\u00e9sentation de Mentova, premiers pas et fonctionnalit\u00e9s cl\u00e9s' },
+                    { id: 'progression_update', icon: 'trending-up', title: 'Mise \u00e0 jour progression', desc: 'R\u00e9sum\u00e9 de la progression de l\u2019utilisateur et prochaines \u00e9tapes' },
+                  ].map(tpl => (
+                    <TouchableOpacity key={tpl.id} onPress={() => setEmailTemplate(tpl.id)}
+                      style={{ flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 10, marginBottom: 8,
+                        backgroundColor: emailTemplate === tpl.id ? 'rgba(124,58,237,0.15)' : '#18181B',
+                        borderWidth: 1, borderColor: emailTemplate === tpl.id ? '#7C3AED' : '#27272A' }}>
+                      <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: emailTemplate === tpl.id ? 'rgba(124,58,237,0.2)' : '#27272A', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                        <Ionicons name={tpl.icon as any} size={18} color={emailTemplate === tpl.id ? '#A78BFA' : '#71717A'} />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ color: '#FAFAFA', fontSize: 14, fontWeight: '600' }}>{tpl.title}</Text>
+                        <Text style={{ color: '#71717A', fontSize: 12, marginTop: 2 }}>{tpl.desc}</Text>
+                      </View>
+                      {emailTemplate === tpl.id && <Ionicons name="checkmark-circle" size={20} color="#7C3AED" />}
+                    </TouchableOpacity>
+                  ))}
+
+                  <TouchableOpacity
+                    onPress={async () => {
+                      setEmailSending(true);
+                      try {
+                        await adminAPI.sendCaufidEmail(selectedUser.id, emailTemplate, emailLang);
+                        setShowEmailModal(false);
+                        showSuccess(`Courriel envoy\u00e9 \u00e0 ${selectedUser.email}`);
+                      } catch (e) {
+                        alert('Erreur lors de l\u2019envoi');
+                      } finally {
+                        setEmailSending(false);
+                      }
+                    }}
+                    disabled={emailSending}
+                    style={{ marginTop: 20, backgroundColor: '#7C3AED', paddingVertical: 14, borderRadius: 10, alignItems: 'center', opacity: emailSending ? 0.6 : 1 }}>
+                    <Text style={{ color: '#FFF', fontWeight: '700', fontSize: 15 }}>{emailSending ? 'Envoi en cours...' : 'Envoyer le courriel'}</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </ScrollView>
           </View>
         </View>
       </Modal>
