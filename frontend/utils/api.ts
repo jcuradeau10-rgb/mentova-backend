@@ -143,6 +143,8 @@ export const adminAPI = {
     api.put(`/admin/users/${userId}/set-vip`, null, { params: { is_vip: isVip, months: months || 1 } }),
   setUserPro: (userId: string, isPro: boolean, badgeLevel?: string) =>
     api.put(`/admin/users/${userId}/set-pro`, null, { params: { is_pro: isPro, badge_level: badgeLevel || 'basic' } }),
+  sendCaufidEmail: (userId: string) =>
+    api.post(`/admin/users/${userId}/send-caufid-email`),
   
   // Content moderation
   getPosts: (params?: { search?: string; category?: string; limit?: number; skip?: number }) =>

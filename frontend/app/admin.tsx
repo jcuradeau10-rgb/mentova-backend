@@ -2329,6 +2329,23 @@ export default function AdminScreen() {
                   <Text style={styles.actionButtonText}>User Intelligence</Text>
                 </TouchableOpacity>
 
+                {/* Send Caufid Re-engagement Email */}
+                <TouchableOpacity
+                  style={[styles.actionButton, { backgroundColor: '#0F0A1E', borderWidth: 1, borderColor: 'rgba(167,139,250,0.3)' }]}
+                  onPress={async () => {
+                    try {
+                      await adminAPI.sendCaufidEmail(selectedUser.id);
+                      showSuccess(`Courriel Caufid envoy\u00e9 \u00e0 ${selectedUser.email}`);
+                    } catch (e) {
+                      alert('Erreur lors de l\u2019envoi du courriel');
+                    }
+                  }}
+                  data-testid="send-caufid-email-btn"
+                >
+                  <Ionicons name="mail" size={22} color="#A78BFA" />
+                  <Text style={[styles.actionButtonText, { color: '#A78BFA' }]}>Envoyer courriel Caufid</Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity
                   style={[styles.actionButton, selectedUser.is_banned ? styles.actionButtonSuccess : styles.actionButtonDanger]}
                   onPress={() => handleBanUser(selectedUser)}

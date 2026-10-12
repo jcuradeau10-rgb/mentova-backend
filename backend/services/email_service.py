@@ -140,3 +140,104 @@ def send_vip_welcome_email(to_email: str, user_name: str, lang: str = "fr") -> d
     </div>
     """
     return send_mentova_email(to_email=to_email, subject=t["subject"], html_content=html)
+
+
+
+def send_caufid_reengagement_email(to_email: str, user_name: str, lang: str = "fr") -> dict:
+    """Send re-engagement email from Caufid to new users with little/no interaction."""
+    tr = {
+        "fr": {
+            "subject": "Votre parcours Mentova n\u2019attend que vous",
+            "greeting": f"Bonjour {user_name},",
+            "intro": "Je suis Caufid, votre mentor sur Mentova. J\u2019ai remarqu\u00e9 que vous avez cr\u00e9\u00e9 votre compte r\u00e9cemment, mais que nous n\u2019avons pas encore eu l\u2019occasion d\u2019\u00e9changer vraiment.",
+            "intro2": "Je voulais prendre un moment pour vous expliquer comment je fonctionne, parce que Mentova n\u2019est pas un simple chatbot.",
+            "how_title": "Comment \u00e7a fonctionne\u00a0?",
+            "steps": [
+                ("On discute ensemble", "Dites-moi ce que vous connaissez d\u00e9j\u00e0, ce qui vous int\u00e9resse, vos objectifs. Plus on \u00e9change, mieux je comprends votre niveau."),
+                ("Je cr\u00e9e votre profil d\u2019apprentissage", "Je note vos connaissances, vos lacunes et vos centres d\u2019int\u00e9r\u00eat pour construire un parcours qui vous correspond."),
+                ("Je cr\u00e9e des modules sur mesure", "Des le\u00e7ons et des quiz adapt\u00e9s \u00e0 votre niveau, pas un programme g\u00e9n\u00e9rique identique pour tout le monde."),
+                ("Votre progression est suivie", "XP, niveaux, badges, comp\u00e9tences \u2014 tout est mesur\u00e9 pour que vous puissiez voir le chemin parcouru."),
+            ],
+            "closing": "Tout commence par une simple conversation. Dites-moi ce que vous aimeriez apprendre, et je m\u2019occupe du reste.",
+            "cta": "Discuter avec Caufid",
+            "signoff": "\u00c0 bient\u00f4t,",
+            "sender_name": "Caufid",
+            "sender_role": "Votre mentor IA \u2014 Mentova Academy",
+            "footer": "Mentova Academy \u2014 \u00c9ducation financi\u00e8re personnalis\u00e9e",
+        },
+        "en": {
+            "subject": "Your Mentova journey is waiting for you",
+            "greeting": f"Hello {user_name},",
+            "intro": "I\u2019m Caufid, your mentor on Mentova. I noticed you recently created your account, but we haven\u2019t had the chance to really talk yet.",
+            "intro2": "I wanted to take a moment to explain how I work, because Mentova isn\u2019t just a simple chatbot.",
+            "how_title": "How does it work?",
+            "steps": [
+                ("We chat together", "Tell me what you already know, what interests you, your goals. The more we exchange, the better I understand your level."),
+                ("I build your learning profile", "I note your knowledge, gaps and interests to build a path that fits you."),
+                ("I create tailored modules", "Lessons and quizzes adapted to your level, not a generic program identical for everyone."),
+                ("Your progress is tracked", "XP, levels, badges, skills \u2014 everything is measured so you can see how far you\u2019ve come."),
+            ],
+            "closing": "It all starts with a simple conversation. Tell me what you\u2019d like to learn, and I\u2019ll take care of the rest.",
+            "cta": "Chat with Caufid",
+            "signoff": "See you soon,",
+            "sender_name": "Caufid",
+            "sender_role": "Your AI mentor \u2014 Mentova Academy",
+            "footer": "Mentova Academy \u2014 Personalized financial education",
+        },
+        "es": {
+            "subject": "Tu camino en Mentova te est\u00e1 esperando",
+            "greeting": f"Hola {user_name},",
+            "intro": "Soy Caufid, tu mentor en Mentova. Not\u00e9 que creaste tu cuenta recientemente, pero a\u00fan no hemos tenido la oportunidad de conversar realmente.",
+            "intro2": "Quer\u00eda tomarme un momento para explicarte c\u00f3mo funciono, porque Mentova no es un simple chatbot.",
+            "how_title": "\u00bfC\u00f3mo funciona?",
+            "steps": [
+                ("Conversamos juntos", "Cu\u00e9ntame lo que ya sabes, lo que te interesa, tus objetivos. Cuanto m\u00e1s hablemos, mejor entender\u00e9 tu nivel."),
+                ("Creo tu perfil de aprendizaje", "Anoto tus conocimientos, tus lagunas y tus intereses para construir un camino que te corresponda."),
+                ("Creo m\u00f3dulos a tu medida", "Lecciones y quiz adaptados a tu nivel, no un programa gen\u00e9rico id\u00e9ntico para todos."),
+                ("Tu progreso se mide", "XP, niveles, insignias, competencias \u2014 todo se mide para que puedas ver el camino recorrido."),
+            ],
+            "closing": "Todo empieza con una simple conversaci\u00f3n. Dime qu\u00e9 te gustar\u00eda aprender, y yo me encargo del resto.",
+            "cta": "Hablar con Caufid",
+            "signoff": "Hasta pronto,",
+            "sender_name": "Caufid",
+            "sender_role": "Tu mentor IA \u2014 Mentova Academy",
+            "footer": "Mentova Academy \u2014 Educaci\u00f3n financiera personalizada",
+        },
+    }
+    t = tr.get(lang, tr["en"])
+    step_colors = [("#a78bfa", "rgba(167,139,250,0.15)"), ("#3B82F6", "rgba(59,130,246,0.15)"), ("#10B981", "rgba(16,185,129,0.15)"), ("#F59E0B", "rgba(245,158,11,0.15)")]
+    steps_html = ""
+    for i, (title, desc) in enumerate(t["steps"]):
+        color, bg = step_colors[i]
+        mb = "margin-bottom:16px;" if i < len(t["steps"]) - 1 else ""
+        steps_html += f'''<div style="{mb}"><table cellpadding="0" cellspacing="0" border="0"><tr><td style="vertical-align:top;padding-right:12px;"><div style="width:24px;height:24px;border-radius:6px;background:{bg};text-align:center;line-height:24px;"><span style="color:{color};font-size:12px;font-weight:700;">{i+1}</span></div></td><td><div style="font-size:14px;font-weight:500;color:#e4e4e7;">{title}</div><div style="font-size:13px;color:#71717a;line-height:1.6;margin-top:2px;">{desc}</div></td></tr></table></div>'''
+
+    html = f'''<div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:520px;margin:0 auto;background:#09090b;color:#e4e4e7;border-radius:16px;overflow:hidden;border:1px solid #27272a;">
+    <div style="padding:32px 32px 24px;border-bottom:1px solid #27272a;">
+        <div style="font-size:18px;font-weight:700;color:#fafafa;letter-spacing:-0.3px;">Mentova<span style="color:#a78bfa;">.</span></div>
+    </div>
+    <div style="padding:32px;">
+        <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;"><tr>
+            <td style="vertical-align:middle;padding-right:14px;"><div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#7C3AED,#a78bfa);text-align:center;line-height:40px;"><span style="color:#fff;font-weight:700;font-size:16px;">C</span></div></td>
+            <td style="vertical-align:middle;"><div style="font-size:15px;font-weight:600;color:#fafafa;">{t["sender_name"]}</div><div style="font-size:12px;color:#71717a;">{t["sender_role"]}</div></td>
+        </tr></table>
+        <p style="font-size:15px;color:#e4e4e7;line-height:1.7;margin:0 0 16px;">{t["greeting"]}</p>
+        <p style="font-size:15px;color:#a1a1aa;line-height:1.7;margin:0 0 16px;">{t["intro"]}</p>
+        <p style="font-size:15px;color:#a1a1aa;line-height:1.7;margin:0 0 24px;">{t["intro2"]}</p>
+        <div style="background:#18181b;border:1px solid #27272a;border-radius:12px;padding:24px;margin-bottom:24px;">
+            <div style="font-size:14px;font-weight:600;color:#fafafa;margin-bottom:16px;">{t["how_title"]}</div>
+            {steps_html}
+        </div>
+        <p style="font-size:15px;color:#a1a1aa;line-height:1.7;margin:0 0 24px;">{t["closing"]}</p>
+        <div style="text-align:center;margin:28px 0;">
+            <a href="https://app.mentova-academy.com" style="background:#7C3AED;color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:600;font-size:15px;display:inline-block;">{t["cta"]}</a>
+        </div>
+        <p style="font-size:14px;color:#a1a1aa;line-height:1.7;margin:24px 0 4px;">{t["signoff"]}</p>
+        <p style="font-size:14px;font-weight:600;color:#a78bfa;margin:0;">{t["sender_name"]}</p>
+        <p style="font-size:12px;color:#71717a;margin:4px 0 0;">{t["sender_role"]}</p>
+    </div>
+    <div style="padding:20px 32px;border-top:1px solid #27272a;text-align:center;">
+        <p style="font-size:11px;color:#52525b;margin:0;">{t["footer"]}</p>
+    </div>
+</div>'''
+    return send_mentova_email(to_email=to_email, subject=t["subject"], html_content=html)
