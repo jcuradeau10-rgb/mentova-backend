@@ -145,6 +145,14 @@ export const adminAPI = {
     api.put(`/admin/users/${userId}/set-pro`, null, { params: { is_pro: isPro, badge_level: badgeLevel || 'basic' } }),
   sendCaufidEmail: (userId: string, template: string = 'caufid_reengagement', lang: string = 'fr') =>
     api.post(`/admin/users/${userId}/send-caufid-email`, { template, lang }),
+  getEmailLogs: (params?: { limit?: number; skip?: number; template?: string }) =>
+    api.get('/admin/email-logs', { params }),
+  getEmailPreview: (template: string, lang: string) =>
+    api.get('/admin/email-preview', { params: { template, lang } }),
+  bulkEmailCount: (filter: string) =>
+    api.post('/admin/bulk-email/count', { filter }),
+  bulkEmailSend: (filter: string, template: string, lang: string) =>
+    api.post('/admin/bulk-email/send', { filter, template, lang }),
   
   // Content moderation
   getPosts: (params?: { search?: string; category?: string; limit?: number; skip?: number }) =>

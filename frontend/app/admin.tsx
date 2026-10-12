@@ -12,6 +12,7 @@ import {
   RefreshControl,
   Dimensions,
   Pressable,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -56,7 +57,7 @@ interface AdminLog {
   timestamp: string;
 }
 
-type TabType = 'dashboard' | 'users' | 'posts' | 'pro' | 'revenue' | 'reports' | 'stats' | 'logs' | 'feedback' | 'affiliates' | 'analytics';
+type TabType = 'dashboard' | 'users' | 'posts' | 'pro' | 'revenue' | 'reports' | 'stats' | 'logs' | 'feedback' | 'affiliates' | 'analytics' | 'emails';
 
 interface AdminStats {
   overview: {
@@ -150,6 +151,19 @@ export default function AdminScreen() {
   const [emailTemplate, setEmailTemplate] = useState('caufid_reengagement');
   const [emailLang, setEmailLang] = useState('fr');
   const [emailSending, setEmailSending] = useState(false);
+  const [emailLogs, setEmailLogs] = useState<any[]>([]);
+  const [emailLogsTotal, setEmailLogsTotal] = useState(0);
+  const [emailLogsLoading, setEmailLogsLoading] = useState(false);
+  const [emailPreviewHtml, setEmailPreviewHtml] = useState('');
+  const [emailPreviewSubject, setEmailPreviewSubject] = useState('');
+  const [showEmailPreview, setShowEmailPreview] = useState(false);
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [bulkFilter, setBulkFilter] = useState('inactive_7d');
+  const [bulkTemplate, setBulkTemplate] = useState('caufid_reengagement');
+  const [bulkLang, setBulkLang] = useState('fr');
+  const [bulkCount, setBulkCount] = useState<number | null>(null);
+  const [bulkSending, setBulkSending] = useState(false);
+  const [bulkResult, setBulkResult] = useState<any>(null);
   const [showPostModal, setShowPostModal] = useState(false);
   const [showProAppModal, setShowProAppModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -2167,6 +2181,124 @@ export default function AdminScreen() {
     );
   };
 
+  const fetchEmailLogs = async () => {
+    setEmailLogsLoading(true);
+    try {
+      const res = await adminAPI.getEmailLogs({ limit: 100 });
+      setEmailLogs(res.data?.data || []);
+      setEmailLogsTotal(res.data?.total || 0);
+    } catch {} finally { setEmailLogsLoading(false); }
+  };
+
+  const loadEmailPreview = async (tpl: string, lang: string) => {
+    try {
+      const res = await adminAPI.getEmailPreview(tpl, lang);
+      setEmailPreviewHtml(res.data?.html || '');
+      setEmailPreviewSubject(res.data?.subject || '');
+    } catch {}
+  };
+
+  const loadBulkCount = async (filter: string) => {
+    setBulkCount(null);
+    try {
+      const res = await adminAPI.bulkEmailCount(filter);
+      setBulkCount(res.data?.count ?? 0);
+    } catch {}
+  };
+
+  const TEMPLATES = [
+    { id: 'caufid_reengagement', icon: 'sparkles' as const, title: 'R\u00e9engagement Caufid', desc: 'Invite l\u2019utilisateur \u00e0 d\u00e9couvrir Caufid' },
+    { id: 'welcome_guide', icon: 'rocket' as const, title: 'Guide de bienvenue', desc: 'Pr\u00e9sentation de Mentova et premiers pas' },
+    { id: 'progression_update', icon: 'trending-up' as const, title: 'Mise \u00e0 jour progression', desc: 'R\u00e9sum\u00e9 personnalis\u00e9 de la progression' },
+  ];
+
+  const FILTERS = [
+    { id: 'inactive_7d', label: 'Inactif 7+ jours', icon: 'time' as const },
+    { id: 'inactive_30d', label: 'Inactif 30+ jours', icon: 'hourglass' as const },
+    { id: 'new_48h', label: 'Nouveaux (48h)', icon: 'person-add' as const },
+    { id: 'all', label: 'Tous les utilisateurs', icon: 'people' as const },
+  ];
+
+  const LANGS = [{ code: 'fr', label: 'FR' }, { code: 'en', label: 'EN' }, { code: 'es', label: 'ES' }];
+
+  const templateLabel = (id: string) => TEMPLATES.find(t => t.id === id)?.title || id;
+  const filterLabel = (id: string) => FILTERS.find(f => f.id === id)?.label || id;
+
+  const renderEmails = () => {
+    if (emailLogs.length === 0 && !emailLogsLoading) fetchEmailLogs();
+    return (
+      <View data-testid="emails-tab">
+        {/* Header actions */}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <Text style={{ color: '#FAFAFA', fontSize: 18, fontWeight: '700' }}>Courriels</Text>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <TouchableOpacity
+              data-testid="bulk-email-btn"
+              onPress={() => { setBulkResult(null); setBulkCount(null); setShowBulkModal(true); loadBulkCount(bulkFilter); }}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, backgroundColor: '#7C3AED', borderRadius: 8 }}>
+              <Ionicons name="send" size={16} color="#FFF" />
+              <Text style={{ color: '#FFF', fontWeight: '600', fontSize: 13 }}>Envoi groupé</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={fetchEmailLogs}
+              style={{ padding: 8, backgroundColor: 'rgba(124,58,237,0.15)', borderRadius: 8 }}>
+              <Ionicons name="refresh" size={18} color="#7C3AED" />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Stats summary */}
+        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
+          {[
+            { label: 'Total envoyés', value: emailLogsTotal, color: '#7C3AED' },
+            { label: 'Aujourd\u2019hui', value: emailLogs.filter(l => l.sent_at?.startsWith(new Date().toISOString().slice(0, 10))).length, color: '#10B981' },
+            { label: '\u00c9checs', value: emailLogs.filter(l => l.status === 'failed').length, color: '#EF4444' },
+          ].map((s, i) => (
+            <View key={i} style={{ flex: 1, backgroundColor: '#18181B', borderRadius: 10, padding: 14, borderWidth: 1, borderColor: '#27272A', alignItems: 'center' }}>
+              <Text style={{ color: s.color, fontSize: 22, fontWeight: '800' }}>{s.value}</Text>
+              <Text style={{ color: '#71717A', fontSize: 11, marginTop: 2 }}>{s.label}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Email logs table */}
+        {emailLogsLoading ? (
+          <View style={{ padding: 40, alignItems: 'center' }}>
+            <ActivityIndicator color="#7C3AED" />
+          </View>
+        ) : emailLogs.length === 0 ? (
+          <View style={{ padding: 40, alignItems: 'center' }}>
+            <Ionicons name="mail-open-outline" size={40} color="#3F3F46" />
+            <Text style={{ color: '#71717A', marginTop: 8 }}>Aucun courriel envoyé</Text>
+          </View>
+        ) : (
+          emailLogs.map((log, i) => (
+            <View key={log.id || i} style={{ backgroundColor: '#18181B', borderRadius: 10, padding: 14, marginBottom: 8, borderWidth: 1, borderColor: '#27272A' }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
+                  <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: log.status === 'sent' ? '#10B981' : '#EF4444' }} />
+                  <Text style={{ color: '#FAFAFA', fontSize: 13, fontWeight: '600' }} numberOfLines={1}>{log.user_email}</Text>
+                </View>
+                <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
+                  <View style={{ paddingHorizontal: 6, paddingVertical: 2, backgroundColor: 'rgba(124,58,237,0.15)', borderRadius: 4 }}>
+                    <Text style={{ color: '#A78BFA', fontSize: 10, fontWeight: '600' }}>{log.lang?.toUpperCase()}</Text>
+                  </View>
+                  <View style={{ paddingHorizontal: 6, paddingVertical: 2, backgroundColor: 'rgba(167,139,250,0.1)', borderRadius: 4 }}>
+                    <Text style={{ color: '#71717A', fontSize: 10 }}>{templateLabel(log.template)}</Text>
+                  </View>
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={{ color: '#52525B', fontSize: 11 }}>{log.user_name}</Text>
+                <Text style={{ color: '#52525B', fontSize: 11 }}>{log.sent_at ? new Date(log.sent_at).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' }) : ''}</Text>
+              </View>
+            </View>
+          ))
+        )}
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <LinearGradient colors={['#0A0A1A', '#0F0520', '#0A0A1A']} style={StyleSheet.absoluteFill} />
@@ -2206,6 +2338,7 @@ export default function AdminScreen() {
               { key: 'logs', icon: 'time', label: 'Journaux', superAdminOnly: false },
               { key: 'feedback', icon: 'chatbubble-ellipses', label: `Feedback${newFeedbackCount > 0 ? ` (${newFeedbackCount})` : ''}`, superAdminOnly: true },
               { key: 'affiliates', icon: 'people-circle', label: 'Affiliation', superAdminOnly: true },
+              { key: 'emails', icon: 'mail', label: 'Emails', superAdminOnly: true },
             ] as const)
               .filter(tab => !tab.superAdminOnly || isSuperAdmin)
               .map(tab => (
@@ -2266,6 +2399,7 @@ export default function AdminScreen() {
           {activeTab === 'logs' && renderLogs()}
           {activeTab === 'feedback' && isSuperAdmin && renderFeedback()}
           {activeTab === 'affiliates' && isSuperAdmin && renderAffiliates()}
+          {activeTab === 'emails' && isSuperAdmin && renderEmails()}
 
           <View style={{ height: 40 }} />
         </ScrollView>
@@ -2447,15 +2581,15 @@ export default function AdminScreen() {
       {/* Email Send Modal */}
       <Modal visible={showEmailModal} animationType="fade" transparent onRequestClose={() => setShowEmailModal(false)}>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { maxWidth: 440, maxHeight: '80%' }]}>
+          <View style={[styles.modalContent, { maxWidth: 440, maxHeight: '85%' }]}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Envoyer un courriel</Text>
-              <TouchableOpacity onPress={() => setShowEmailModal(false)}>
+              <TouchableOpacity onPress={() => { setShowEmailModal(false); setShowEmailPreview(false); }}>
                 <Ionicons name="close" size={24} color="#A1A1AA" />
               </TouchableOpacity>
             </View>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-              {selectedUser && (
+              {selectedUser && !showEmailPreview && (
                 <View style={{ padding: 20 }}>
                   <Text style={{ color: '#A1A1AA', fontSize: 13, marginBottom: 4 }}>Destinataire</Text>
                   <Text style={{ color: '#FAFAFA', fontSize: 15, fontWeight: '600', marginBottom: 20 }}>{selectedUser.name} ({selectedUser.email})</Text>
@@ -2473,17 +2607,13 @@ export default function AdminScreen() {
                   </View>
 
                   <Text style={{ color: '#A1A1AA', fontSize: 13, marginBottom: 8 }}>Mod\u00e8le de courriel</Text>
-                  {[
-                    { id: 'caufid_reengagement', icon: 'sparkles', title: 'R\u00e9engagement Caufid', desc: 'Invite l\u2019utilisateur \u00e0 d\u00e9couvrir Caufid et le syst\u00e8me de progression' },
-                    { id: 'welcome_guide', icon: 'rocket', title: 'Guide de bienvenue', desc: 'Pr\u00e9sentation de Mentova, premiers pas et fonctionnalit\u00e9s cl\u00e9s' },
-                    { id: 'progression_update', icon: 'trending-up', title: 'Mise \u00e0 jour progression', desc: 'R\u00e9sum\u00e9 de la progression de l\u2019utilisateur et prochaines \u00e9tapes' },
-                  ].map(tpl => (
+                  {TEMPLATES.map(tpl => (
                     <TouchableOpacity key={tpl.id} onPress={() => setEmailTemplate(tpl.id)}
                       style={{ flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 10, marginBottom: 8,
                         backgroundColor: emailTemplate === tpl.id ? 'rgba(124,58,237,0.15)' : '#18181B',
                         borderWidth: 1, borderColor: emailTemplate === tpl.id ? '#7C3AED' : '#27272A' }}>
                       <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: emailTemplate === tpl.id ? 'rgba(124,58,237,0.2)' : '#27272A', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-                        <Ionicons name={tpl.icon as any} size={18} color={emailTemplate === tpl.id ? '#A78BFA' : '#71717A'} />
+                        <Ionicons name={tpl.icon} size={18} color={emailTemplate === tpl.id ? '#A78BFA' : '#71717A'} />
                       </View>
                       <View style={{ flex: 1 }}>
                         <Text style={{ color: '#FAFAFA', fontSize: 14, fontWeight: '600' }}>{tpl.title}</Text>
@@ -2493,29 +2623,211 @@ export default function AdminScreen() {
                     </TouchableOpacity>
                   ))}
 
-                  <TouchableOpacity
-                    onPress={async () => {
-                      setEmailSending(true);
-                      try {
-                        await adminAPI.sendCaufidEmail(selectedUser.id, emailTemplate, emailLang);
-                        setShowEmailModal(false);
-                        showSuccess(`Courriel envoy\u00e9 \u00e0 ${selectedUser.email}`);
-                      } catch (e) {
-                        alert('Erreur lors de l\u2019envoi');
-                      } finally {
-                        setEmailSending(false);
-                      }
-                    }}
-                    disabled={emailSending}
-                    style={{ marginTop: 20, backgroundColor: '#7C3AED', paddingVertical: 14, borderRadius: 10, alignItems: 'center', opacity: emailSending ? 0.6 : 1 }}>
-                    <Text style={{ color: '#FFF', fontWeight: '700', fontSize: 15 }}>{emailSending ? 'Envoi en cours...' : 'Envoyer le courriel'}</Text>
-                  </TouchableOpacity>
+                  <View style={{ flexDirection: 'row', gap: 8, marginTop: 20 }}>
+                    <TouchableOpacity
+                      data-testid="preview-email-btn"
+                      onPress={() => { loadEmailPreview(emailTemplate, emailLang); setShowEmailPreview(true); }}
+                      style={{ flex: 1, borderWidth: 1, borderColor: '#3F3F46', paddingVertical: 14, borderRadius: 10, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6 }}>
+                      <Ionicons name="eye" size={16} color="#A78BFA" />
+                      <Text style={{ color: '#A78BFA', fontWeight: '600', fontSize: 14 }}>Aperçu</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      data-testid="send-email-confirm-btn"
+                      onPress={async () => {
+                        setEmailSending(true);
+                        try {
+                          await adminAPI.sendCaufidEmail(selectedUser.id, emailTemplate, emailLang);
+                          setShowEmailModal(false);
+                          showSuccess(`Courriel envoyé à ${selectedUser.email}`);
+                        } catch (e) {
+                          alert('Erreur lors de l\u2019envoi');
+                        } finally {
+                          setEmailSending(false);
+                        }
+                      }}
+                      disabled={emailSending}
+                      style={{ flex: 1, backgroundColor: '#7C3AED', paddingVertical: 14, borderRadius: 10, alignItems: 'center', opacity: emailSending ? 0.6 : 1, flexDirection: 'row', justifyContent: 'center', gap: 6 }}>
+                      <Ionicons name="send" size={16} color="#FFF" />
+                      <Text style={{ color: '#FFF', fontWeight: '700', fontSize: 14 }}>{emailSending ? 'Envoi...' : 'Envoyer'}</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+              {showEmailPreview && (
+                <View style={{ padding: 20 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                    <TouchableOpacity onPress={() => setShowEmailPreview(false)} style={{ marginRight: 10 }}>
+                      <Ionicons name="arrow-back" size={20} color="#A78BFA" />
+                    </TouchableOpacity>
+                    <Text style={{ color: '#FAFAFA', fontSize: 15, fontWeight: '600', flex: 1 }}>Aperçu du courriel</Text>
+                  </View>
+                  {emailPreviewSubject ? (
+                    <View style={{ marginBottom: 12, paddingHorizontal: 10, paddingVertical: 6, backgroundColor: '#18181B', borderRadius: 6 }}>
+                      <Text style={{ color: '#71717A', fontSize: 11 }}>Sujet</Text>
+                      <Text style={{ color: '#E4E4E7', fontSize: 13, fontWeight: '500' }}>{emailPreviewSubject}</Text>
+                    </View>
+                  ) : null}
+                  {emailPreviewHtml ? (
+                    <View style={{ borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: '#27272A' }}>
+                      {Platform.OS === 'web' ? (
+                        <div
+                          style={{ maxHeight: 400, overflowY: 'auto' as any, background: '#09090b' }}
+                          dangerouslySetInnerHTML={{ __html: emailPreviewHtml }}
+                        />
+                      ) : (
+                        <Text style={{ color: '#A1A1AA', padding: 16, fontSize: 12 }}>Aperçu disponible sur le web uniquement</Text>
+                      )}
+                    </View>
+                  ) : (
+                    <View style={{ padding: 30, alignItems: 'center' }}><ActivityIndicator color="#7C3AED" /></View>
+                  )}
                 </View>
               )}
             </ScrollView>
           </View>
         </View>
       </Modal>
+
+      {/* Bulk Email Modal */}
+      <Modal visible={showBulkModal} animationType="fade" transparent onRequestClose={() => setShowBulkModal(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { maxWidth: 460, maxHeight: '85%' }]}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Envoi group&#233;</Text>
+              <TouchableOpacity onPress={() => setShowBulkModal(false)}>
+                <Ionicons name="close" size={24} color="#A1A1AA" />
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+              <View style={{ padding: 20 }}>
+                {bulkResult ? (
+                  <View data-testid="bulk-result">
+                    <View style={{ alignItems: 'center', paddingVertical: 24 }}>
+                      <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: bulkResult.failed > 0 ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                        <Ionicons name={bulkResult.failed > 0 ? 'warning' : 'checkmark-circle'} size={28} color={bulkResult.failed > 0 ? '#EF4444' : '#10B981'} />
+                      </View>
+                      <Text style={{ color: '#FAFAFA', fontSize: 18, fontWeight: '700', marginBottom: 4 }}>Envoi termin&#233;</Text>
+                      <Text style={{ color: '#A1A1AA', fontSize: 14 }}>{bulkResult.sent} envoy&#233;{bulkResult.sent > 1 ? 's' : ''}{bulkResult.failed > 0 ? `, ${bulkResult.failed} &#233;chec${bulkResult.failed > 1 ? 's' : ''}` : ''}</Text>
+                    </View>
+                    <TouchableOpacity onPress={() => { setShowBulkModal(false); setBulkResult(null); fetchEmailLogs(); setActiveTab('emails'); }}
+                      style={{ backgroundColor: '#7C3AED', paddingVertical: 14, borderRadius: 10, alignItems: 'center' }}>
+                      <Text style={{ color: '#FFF', fontWeight: '700', fontSize: 15 }}>Voir l'historique</Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <>
+                    <Text style={{ color: '#A1A1AA', fontSize: 13, marginBottom: 8 }}>Filtre d'utilisateurs</Text>
+                    {FILTERS.map(f => (
+                      <TouchableOpacity key={f.id} onPress={() => { setBulkFilter(f.id); loadBulkCount(f.id); }}
+                        data-testid={`bulk-filter-${f.id}`}
+                        style={{ flexDirection: 'row', alignItems: 'center', padding: 12, borderRadius: 10, marginBottom: 6,
+                          backgroundColor: bulkFilter === f.id ? 'rgba(124,58,237,0.15)' : '#18181B',
+                          borderWidth: 1, borderColor: bulkFilter === f.id ? '#7C3AED' : '#27272A' }}>
+                        <Ionicons name={f.icon} size={18} color={bulkFilter === f.id ? '#A78BFA' : '#71717A'} style={{ marginRight: 10 }} />
+                        <Text style={{ color: bulkFilter === f.id ? '#FAFAFA' : '#A1A1AA', fontSize: 14, fontWeight: '500', flex: 1 }}>{f.label}</Text>
+                        {bulkFilter === f.id && <Ionicons name="checkmark-circle" size={18} color="#7C3AED" />}
+                      </TouchableOpacity>
+                    ))}
+                    {bulkCount !== null && (
+                      <View style={{ backgroundColor: 'rgba(124,58,237,0.1)', borderRadius: 8, padding: 10, marginTop: 4, marginBottom: 12, alignItems: 'center' }}>
+                        <Text style={{ color: '#A78BFA', fontSize: 13, fontWeight: '600' }}>{bulkCount} utilisateur{bulkCount !== 1 ? 's' : ''} correspondant{bulkCount !== 1 ? 's' : ''}</Text>
+                      </View>
+                    )}
+
+                    <Text style={{ color: '#A1A1AA', fontSize: 13, marginBottom: 8, marginTop: 12 }}>Mod&#232;le</Text>
+                    {TEMPLATES.map(tpl => (
+                      <TouchableOpacity key={tpl.id} onPress={() => setBulkTemplate(tpl.id)}
+                        style={{ flexDirection: 'row', alignItems: 'center', padding: 12, borderRadius: 10, marginBottom: 6,
+                          backgroundColor: bulkTemplate === tpl.id ? 'rgba(124,58,237,0.15)' : '#18181B',
+                          borderWidth: 1, borderColor: bulkTemplate === tpl.id ? '#7C3AED' : '#27272A' }}>
+                        <Ionicons name={tpl.icon} size={16} color={bulkTemplate === tpl.id ? '#A78BFA' : '#71717A'} style={{ marginRight: 10 }} />
+                        <View style={{ flex: 1 }}>
+                          <Text style={{ color: '#FAFAFA', fontSize: 13, fontWeight: '600' }}>{tpl.title}</Text>
+                          <Text style={{ color: '#71717A', fontSize: 11 }}>{tpl.desc}</Text>
+                        </View>
+                        {bulkTemplate === tpl.id && <Ionicons name="checkmark-circle" size={18} color="#7C3AED" />}
+                      </TouchableOpacity>
+                    ))}
+
+                    <Text style={{ color: '#A1A1AA', fontSize: 13, marginBottom: 8, marginTop: 12 }}>Langue</Text>
+                    <View style={{ flexDirection: 'row', gap: 8, marginBottom: 20 }}>
+                      {LANGS.map(l => (
+                        <TouchableOpacity key={l.code} onPress={() => setBulkLang(l.code)}
+                          style={{ flex: 1, paddingVertical: 10, borderRadius: 8, alignItems: 'center',
+                            backgroundColor: bulkLang === l.code ? '#7C3AED' : '#27272A',
+                            borderWidth: 1, borderColor: bulkLang === l.code ? '#7C3AED' : '#3F3F46' }}>
+                          <Text style={{ color: bulkLang === l.code ? '#FFF' : '#A1A1AA', fontWeight: '600', fontSize: 13 }}>{l.label}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+
+                    <View style={{ flexDirection: 'row', gap: 8 }}>
+                      <TouchableOpacity
+                        onPress={() => { loadEmailPreview(bulkTemplate, bulkLang); setShowEmailPreview(true); setShowBulkModal(false); }}
+                        style={{ flex: 1, borderWidth: 1, borderColor: '#3F3F46', paddingVertical: 14, borderRadius: 10, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6 }}>
+                        <Ionicons name="eye" size={16} color="#A78BFA" />
+                        <Text style={{ color: '#A78BFA', fontWeight: '600', fontSize: 14 }}>Aper&#231;u</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        data-testid="bulk-send-confirm-btn"
+                        disabled={bulkSending || bulkCount === 0}
+                        onPress={async () => {
+                          setBulkSending(true);
+                          try {
+                            const res = await adminAPI.bulkEmailSend(bulkFilter, bulkTemplate, bulkLang);
+                            setBulkResult(res.data);
+                          } catch (e) {
+                            alert('Erreur lors de l\u2019envoi group\u00e9');
+                          } finally { setBulkSending(false); }
+                        }}
+                        style={{ flex: 1, backgroundColor: '#7C3AED', paddingVertical: 14, borderRadius: 10, alignItems: 'center', opacity: (bulkSending || bulkCount === 0) ? 0.5 : 1, flexDirection: 'row', justifyContent: 'center', gap: 6 }}>
+                        <Ionicons name="send" size={16} color="#FFF" />
+                        <Text style={{ color: '#FFF', fontWeight: '700', fontSize: 14 }}>{bulkSending ? 'Envoi...' : 'Envoyer'}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                )}
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Email Preview Standalone Modal */}
+      <Modal visible={showEmailPreview && !showEmailModal} animationType="fade" transparent onRequestClose={() => setShowEmailPreview(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { maxWidth: 560, maxHeight: '85%' }]}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Aper&#231;u du courriel</Text>
+              <TouchableOpacity onPress={() => setShowEmailPreview(false)}>
+                <Ionicons name="close" size={24} color="#A1A1AA" />
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={{ flex: 1 }}>
+              <View style={{ padding: 20 }}>
+                {emailPreviewSubject ? (
+                  <View style={{ marginBottom: 12, paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#18181B', borderRadius: 8 }}>
+                    <Text style={{ color: '#71717A', fontSize: 11 }}>Sujet</Text>
+                    <Text style={{ color: '#E4E4E7', fontSize: 14, fontWeight: '500' }}>{emailPreviewSubject}</Text>
+                  </View>
+                ) : null}
+                {emailPreviewHtml ? (
+                  <View style={{ borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: '#27272A' }}>
+                    {Platform.OS === 'web' ? (
+                      <div style={{ maxHeight: 500, overflowY: 'auto' as any, background: '#09090b' }} dangerouslySetInnerHTML={{ __html: emailPreviewHtml }} />
+                    ) : (
+                      <Text style={{ color: '#A1A1AA', padding: 16, fontSize: 12 }}>Aper&#231;u web uniquement</Text>
+                    )}
+                  </View>
+                ) : (
+                  <View style={{ padding: 30, alignItems: 'center' }}><ActivityIndicator color="#7C3AED" /></View>
+                )}
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
 
       {/* Post Detail Modal */}
       <Modal visible={showPostModal} animationType="slide" transparent onRequestClose={() => setShowPostModal(false)}>
